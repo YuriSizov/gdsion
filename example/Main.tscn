@@ -1,0 +1,121 @@
+[gd_scene load_steps=9 format=3 uid="uid://btlcavlirkxet"]
+
+[ext_resource type="Script" path="res://Main.gd" id="1_8sk4m"]
+[ext_resource type="Script" path="res://gui/Visualizer.gd" id="2_3u74r"]
+[ext_resource type="Texture2D" uid="uid://13wsrwe0hcno" path="res://icons/play.png" id="2_rk7ks"]
+[ext_resource type="Texture2D" uid="uid://xh41omtsrrr7" path="res://icons/godot.png" id="3_7khnb"]
+[ext_resource type="Script" path="res://gui/PianoRoll.gd" id="3_71u1t"]
+[ext_resource type="Script" path="res://gui/InstrumentSelector.gd" id="4_0mkok"]
+[ext_resource type="Texture2D" uid="uid://c37ayws6ebi88" path="res://icons/arrow_left.png" id="4_btwgs"]
+[ext_resource type="Texture2D" uid="uid://bp1awbe5naawb" path="res://icons/arrow_right.png" id="5_ururd"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_8sk4m")
+
+[node name="Visualizer" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 83.0
+offset_bottom = -162.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_3u74r")
+
+[node name="PianoRoll" type="Control" parent="."]
+layout_mode = 1
+anchor_top = 0.733
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 17.0
+offset_top = 0.0159607
+offset_right = -17.0
+offset_bottom = -38.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("3_71u1t")
+
+[node name="InstrumentSelector" type="HBoxContainer" parent="PianoRoll"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -83.0
+offset_top = -47.0
+offset_right = -2.0
+offset_bottom = -7.0
+grow_horizontal = 0
+grow_vertical = 0
+script = ExtResource("4_0mkok")
+
+[node name="LeftButton" type="Button" parent="PianoRoll/InstrumentSelector"]
+custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+icon = ExtResource("4_btwgs")
+flat = true
+expand_icon = true
+
+[node name="Label" type="Label" parent="PianoRoll/InstrumentSelector"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "[INSTRUMENT NAME]"
+
+[node name="RightButton" type="Button" parent="PianoRoll/InstrumentSelector"]
+auto_translate_mode = 1
+custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+icon = ExtResource("5_ururd")
+flat = true
+expand_icon = true
+
+[node name="PlayButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 28.0
+offset_right = 277.0
+offset_bottom = 86.0
+focus_mode = 0
+text = "Play Tune"
+icon = ExtResource("2_rk7ks")
+flat = true
+expand_icon = true
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -112.0
+offset_top = 24.0
+offset_right = -39.0
+offset_bottom = 100.0
+grow_horizontal = 0
+texture = ExtResource("3_7khnb")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="KenneyLabel" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -303.0
+offset_top = -24.0
+offset_right = -2.0
+offset_bottom = -7.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/default_color = Color(0.56255, 0.612323, 0.606761, 1)
+theme_override_font_sizes/normal_font_size = 14
+bbcode_enabled = true
+text = "Features icons and fonts by [url=https://kenney.nl/]Kenney[/url]"

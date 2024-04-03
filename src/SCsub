@@ -1,0 +1,12 @@
+#!/usr/bin/env python
+
+Import("env")
+
+env.add_source_files(env.library_sources, "*.cpp")
+
+SConscript("effector/SCsub")
+SConscript("events/SCsub")
+SConscript("processor/SCsub")
+SConscript("sequencer/SCsub")
+SConscript("templates/SCsub")
+SConscript("utils/SCsub")

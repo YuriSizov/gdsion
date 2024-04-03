@@ -1,0 +1,8 @@
+#!/usr/bin/env python
+
+Import("env")
+
+env.add_source_files(env.library_sources, "*.cpp")
+
+SConscript("base/SCsub")
+SConscript("simulator/SCsub")

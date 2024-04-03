@@ -1,0 +1,109 @@
+### Project-specific ignores ##
+
+bin/*
+!bin/*.gdextension
+example/bin/
+
+### Godot project development ###
+
+# Godot 4+ specific ignores.
+.godot/
+
+### GDExtension/C++ development ###
+
+# Buildsystem
+compile_commands.json
+
+# C/C++ generated
+*.a
+*.ax
+*.d
+*.dll
+*.lib
+*.lo
+*.o
+*.os
+*.ox
+*.Plo
+*.so
+# Binutils tmp linker output of the form "stXXXXXX" where "X" is alphanumeric
+st[A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9]
+
+# Python development
+.venv
+venv
+
+# Python generated
+__pycache__/
+*.pyc
+
+# SCons
+.sconf_temp
+.sconsign*.dblite
+.scons_env.json
+.scons_node_count
+
+# Files built by Visual Studio
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.pch
+*.pdb
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
+*.log
+*.tlog
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+
+### IDEs and code editors ###
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+.history/
+
+
+### Operating systems ###
+
+# Linux
+*~
+.directory
+
+# macOS
+.DS_Store
+__MACOSX
+
+# Windows
+# https://github.com/github/gitignore/blob/main/Global/Windows.gitignore
+[Tt]humbs.db
+[Tt]humbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
