@@ -79,8 +79,8 @@ public:
 	static String mml_ma3_params(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
 	static String mml_al_params(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
 
-	static void parse_voice_setting(SiMMLVoice *p_voice, String p_mml, Vector<SiMMLEnvelopeTable *> p_envelopes = Vector<SiMMLEnvelopeTable *>());
-	static String mml_voice_setting(const SiMMLVoice *p_voice);
+	static void parse_voice_setting(const Ref<SiMMLVoice> &p_voice, String p_mml, Vector<SiMMLEnvelopeTable *> p_envelopes = Vector<SiMMLEnvelopeTable *>());
+	static String mml_voice_setting(const Ref<SiMMLVoice> &p_voice);
 
 	//
 
@@ -101,7 +101,7 @@ public:
 	// TODO: The sound reference table is mostly needed for passing a map of Flash Sound objects. Some code changes may be needed in places that utilize that.
 	static bool parse_sampler_wave(SiOPMWaveSamplerTable *p_table, int p_note_number, String p_mml, HashMap<String, Variant> p_sound_ref_table);
 	static bool parse_pcm_wave(SiOPMWavePCMTable *p_table, String p_mml, HashMap<String, Variant> p_sound_ref_table);
-	static bool parse_pcm_voice(SiMMLVoice *p_voice, String p_mml, String p_postfix, Vector<SiMMLEnvelopeTable *> p_envelopes = Vector<SiMMLEnvelopeTable *>());
+	static bool parse_pcm_voice(const Ref<SiMMLVoice> &p_voice, String p_mml, String p_postfix, Vector<SiMMLEnvelopeTable *> p_envelopes = Vector<SiMMLEnvelopeTable *>());
 };
 
 #endif // SION_TRANSLATOR_UTIL_H

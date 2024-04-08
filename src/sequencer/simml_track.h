@@ -10,6 +10,7 @@
 #include <godot_cpp/core/object.hpp>
 #include <godot_cpp/variant/callable.hpp>
 #include <godot_cpp/templates/vector.hpp>
+#include "sion_enums.h"
 #include "sequencer/base/beats_per_minute.h"
 #include "sequencer/simml_ref_table.h"
 #include "templates/singly_linked_list.h"
@@ -292,7 +293,7 @@ public:
 
 	// Channel properties.
 
-	void set_channel_module_type(SiMMLRefTable::ModuleType p_type, int p_channel_num = INT32_MIN, int p_tone_num = INT32_MIN);
+	void set_channel_module_type(SiONModuleType p_type, int p_channel_num = INT32_MIN, int p_tone_num = INT32_MIN);
 
 	void reset_volume_offset();
 

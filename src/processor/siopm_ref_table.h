@@ -11,18 +11,18 @@
 #include <godot_cpp/templates/hash_map.hpp>
 #include <godot_cpp/templates/vector.hpp>
 #include <godot_cpp/variant/variant.hpp>
+#include "sion_enums.h"
+#include "sequencer/simml_voice.h"
 
 using namespace godot;
 
-class SiMMLVoice;
 class SiOPMWavePCMTable;
 class SiOPMWaveSamplerData;
 class SiOPMWaveSamplerTable;
 class SiOPMWaveTable;
 
 // Reference data object for the processor and related operations.
-class SiOPMRefTable : public Object {
-	GDCLASS(SiOPMRefTable, Object)
+class SiOPMRefTable {
 
 	static SiOPMRefTable *_instance;
 
@@ -33,9 +33,9 @@ class SiOPMRefTable : public Object {
 	// Overriding custom wave tables.
 	Vector<SiOPMWaveTable *> _stencil_custom_wave_tables;
 	// PCM voices.
-	Vector<SiMMLVoice *> _pcm_voices;
+	Vector<Ref<SiMMLVoice>> _pcm_voices;
 	// Overriding PCM voices.
-	Vector<SiMMLVoice *> _stencil_pcm_voices;
+	Vector<Ref<SiMMLVoice>> _stencil_pcm_voices;
 
 	//
 
@@ -47,9 +47,6 @@ class SiOPMRefTable : public Object {
 	void _expand_ma3_waves(int p_index);
 	void _create_lfo_tables();
 	void _create_filter_tables();
-
-protected:
-	static void _bind_methods() {}
 
 public:
 	static SiOPMRefTable *get_instance() { return _instance; }
@@ -98,54 +95,6 @@ public:
 	static const int ENV_BOTTOM           = (LOG_VOLUME_BITS * LOG_TABLE_RESOLUTION) >> 2;   // Minimum gain of envelope = 832
 	static const int ENV_TOP              = ENV_BOTTOM - (1<<ENV_BITS);                      // Maximum gain of envelope = -192
 	static const int ENV_BOTTOM_SSGEC     = 1<<(ENV_BITS-3);                                 // Minimum gain of ssgec envelope = 128
-
-	enum PitchTableType {
-		PT_OPM = 0,
-		PT_PCM = 1,
-		PT_PSG = 2,
-		PT_OPM_NOISE = 3,
-		PT_PSG_NOISE = 4,
-		PT_APU_NOISE = 5,
-		PT_GB_NOISE = 6,
-		PT_MAX = 7
-	};
-
-	enum PulseGeneratorType {
-		PG_SINE				= 0,    // sine wave
-		PG_SAW_UP			= 1,    // upward saw wave
-		PG_SAW_DOWN			= 2,    // downward saw wave
-		PG_TRIANGLE_FC		= 3,    // triangle wave quantized by 4bit
-		PG_TRIANGLE			= 4,    // triangle wave
-		PG_SQUARE			= 5,    // square wave
-		PG_NOISE			= 6,    // 32k white noise
-		PG_KNMBSMM			= 7,    // knmbsmm wave
-		PG_SYNC_LOW			= 8,    // pseudo sync (low freq.)
-		PG_SYNC_HIGH		= 9,    // pseudo sync (high freq.)
-		PG_OFFSET			= 10,   // offset
-		PG_SAW_VC6			= 11,   // vc6 saw (32 samples saw)
-									// ( 12- 15) reserved
-		PG_NOISE_WHITE		= 16,   // 16k white noise
-		PG_NOISE_PULSE		= 17,   // 16k pulse noise
-		PG_NOISE_SHORT		= 18,   // fc short noise
-		PG_NOISE_HIPAS		= 19,   // high pass noise
-		PG_NOISE_PINK		= 20,   // pink noise
-		PG_NOISE_GB_SHORT	= 21,   // gb short noise
-									// ( 22- 23) reserved
-		PG_PC_NZ_16BIT		= 24,   // pitch controlable periodic noise
-		PG_PC_NZ_SHORT		= 25,   // pitch controlable 93byte noise
-		PG_PC_NZ_OPM		= 26,   // pulse noise with OPM noise table
-									// ( 27- 31) reserved
-		PG_MA3_WAVE			= 32,   // ( 32- 63) MA3 waveforms.     PG_MA3_WAVE+[0,31]
-		PG_PULSE			= 64,   // ( 64- 79) square pulse wave. PG_PULSE+[0,15]
-		PG_PULSE_SPIKE		= 80,   // ( 80- 95) square pulse wave. PG_PULSE_SPIKE+[0,15]
-									// ( 96-127) reserved
-		PG_RAMP				= 128,  // (128-255) ramp wave.         PG_RAMP+[0,127]
-		PG_CUSTOM			= 256,  // (256-383) custom wave table. PG_CUSTOM+[0,127]
-		PG_PCM				= 384,  // (384-511) PCM data.          PG_PCM+[0,128]
-
-		PG_USER_CUSTOM		= -1,   // User registered custom wave table.
-		PG_USER_PCM			= -2,   // User registered PCM data.
-	};
 
 	// TODO: Maybe use better names to explain what these constants hold, not what they are used for.
 	// Also it's a bit awkward that MAX is overlapping with another value.
@@ -320,11 +269,11 @@ public:
 	SiOPMWaveTable *get_wave_table(int p_index);
 	SiOPMWavePCMTable *get_pcm_data(int p_index);
 
-	SiMMLVoice *get_global_pcm_voice(int p_index);
-	SiMMLVoice *set_global_pcm_voice(int p_index, SiMMLVoice *p_from_voice);
+	Ref<SiMMLVoice> get_global_pcm_voice(int p_index);
+	Ref<SiMMLVoice> set_global_pcm_voice(int p_index, const Ref<SiMMLVoice> &p_from_voice);
 
 	void set_stencil_custom_wave_tables(Vector<SiOPMWaveTable *> p_tables) { _stencil_custom_wave_tables = p_tables; }
-	void set_stencil_pcm_voices(Vector<SiMMLVoice *> p_tables) { _stencil_pcm_voices = p_tables; }
+	void set_stencil_pcm_voices(Vector<Ref<SiMMLVoice>> p_tables) { _stencil_pcm_voices = p_tables; }
 
 	//
 

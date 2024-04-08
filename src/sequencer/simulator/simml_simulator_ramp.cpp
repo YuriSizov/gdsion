@@ -6,10 +6,9 @@
 
 #include "simml_simulator_ramp.h"
 
-#include "processor/siopm_ref_table.h"
-#include "sequencer/simml_ref_table.h"
+#include "sion_enums.h"
 
 SiMMLSimulatorRamp::SiMMLSimulatorRamp() :
-		SiMMLSimulatorBase(SiMMLRefTable::MT_RAMP, 1, memnew(SiMMLSimulatorVoiceSet(128, SiOPMRefTable::PG_RAMP))) {
+		SiMMLSimulatorBase(MT_RAMP, 1, memnew(SiMMLSimulatorVoiceSet(128, PG_RAMP))) {
 	// Empty.
 }

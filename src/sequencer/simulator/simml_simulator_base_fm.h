@@ -21,7 +21,7 @@ protected:
 public:
 	virtual MMLSequence *select_tone(SiMMLTrack *p_track, int p_voice_index) override;
 
-	SiMMLSimulatorBaseFM(SiMMLRefTable::ModuleType p_type, int p_channel_num);
+	SiMMLSimulatorBaseFM(SiONModuleType p_type, int p_channel_num);
 };
 
 #endif // SIMML_SIMULATOR_BASE_FM_H

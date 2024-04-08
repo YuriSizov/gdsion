@@ -75,23 +75,24 @@ void SiMMLData::set_sampler_table(int p_index, SiOPMWaveSamplerTable *p_sampler)
 // Voices.
 
 SiOPMChannelParams *SiMMLData::get_channel_params(int p_index) {
-	SiMMLVoice *voice = memnew(SiMMLVoice);
+	Ref<SiMMLVoice> voice;
+	voice.instantiate();
 	_fm_voices.write[p_index] = voice;
 
 	return voice->get_channel_params();
 }
 
-void SiMMLData::set_voice(int p_index, SiMMLVoice *p_voice) {
+void SiMMLData::set_voice(int p_index, const Ref<SiMMLVoice> &p_voice) {
 	ERR_FAIL_INDEX(p_index, SiMMLRefTable::VOICE_MAX);
 	ERR_FAIL_COND_MSG(!p_voice->is_suitable_for_fm_voice(), "SiMMLData: Cannot set voice data which is not suitable for FM voices.");
 
 	_fm_voices.write[p_index] = p_voice;
 }
 
-SiMMLVoice *SiMMLData::get_pcm_voice(int p_index) {
+Ref<SiMMLVoice> SiMMLData::get_pcm_voice(int p_index) {
 	int index = p_index & (SiOPMRefTable::PCM_DATA_MAX - 1);
-	if (!_pcm_voices[index]) {
-		SiMMLVoice *voice = SiMMLVoice::create_blank_pcm_voice(index);
+	if (_pcm_voices[index].is_null()) {
+		Ref<SiMMLVoice> voice = SiMMLVoice::create_blank_pcm_voice(index);
 		_pcm_voices.write[index] = voice;
 	}
 
@@ -107,7 +108,7 @@ void SiMMLData::clear() {
 		_envelope_tables.write[i] = nullptr;
 	}
 	for (int i = 0; i < SiMMLRefTable::VOICE_MAX; i++) {
-		_fm_voices.write[i] = nullptr;
+		_fm_voices.write[i] = Ref<SiMMLVoice>();
 	}
 
 	for (int i = 0; i < SiOPMRefTable::WAVE_TABLE_MAX; i++) {
@@ -117,13 +118,13 @@ void SiMMLData::clear() {
 		}
 	}
 	for (int i = 0; i < SiOPMRefTable::PCM_DATA_MAX; i++) {
-		if (_pcm_voices[i]) {
+		if (_pcm_voices[i].is_valid()) {
 			SiOPMWavePCMTable *pcm_table = Object::cast_to<SiOPMWavePCMTable>(_pcm_voices[i]->get_wave_data());
 			if (pcm_table) {
 				pcm_table->free();
 			}
 
-			_pcm_voices.write[i] = nullptr;
+			_pcm_voices.write[i] = Ref<SiMMLVoice>();
 		}
 	}
 

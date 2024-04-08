@@ -7,8 +7,7 @@
 #ifndef SIMML_VOICE_H
 #define SIMML_VOICE_H
 
-#include <godot_cpp/core/object.hpp>
-#include "sequencer/simml_ref_table.h"
+#include <godot_cpp/classes/ref_counted.hpp>
 
 using namespace godot;
 
@@ -16,10 +15,11 @@ class SiOPMChannelParams;
 class SiOPMWaveBase;
 class SiMMLEnvelopeTable;
 class SiMMLTrack;
+enum SiONModuleType : int;
 
 // Base voice data class.
-class SiMMLVoice : public Object {
-	GDCLASS(SiMMLVoice, Object)
+class SiMMLVoice : public RefCounted {
+	GDCLASS(SiMMLVoice, RefCounted)
 
 	// Set to true to update track params alongside channel params.
 	bool update_track_parameters = false;
@@ -67,7 +67,7 @@ class SiMMLVoice : public Object {
 
 protected:
 	String chip_type;
-	SiMMLRefTable::ModuleType module_type = SiMMLRefTable::MT_ALL;
+	SiONModuleType module_type = (SiONModuleType)5;
 	int channel_num = -1;
 	// PMS guitar tension.
 	int pms_tension = 8;
@@ -90,10 +90,10 @@ protected:
 	static void _bind_methods();
 
 public:
-	static SiMMLVoice *create_blank_pcm_voice(int p_channel_num);
+	static Ref<SiMMLVoice> create_blank_pcm_voice(int p_channel_num);
 
 	void set_chip_type(String p_type) { chip_type = p_type; };
-	void set_module_type(SiMMLRefTable::ModuleType p_module_type, int p_channel_num = 0, int p_tone_num = -1);
+	void set_module_type(SiONModuleType p_module_type, int p_channel_num = 0, int p_tone_num = -1);
 	void set_channel_num(int p_num) { channel_num = p_num; }
 	void set_tone_num(int p_num) { tone_num = p_num; }
 
@@ -131,7 +131,7 @@ public:
 	void update_track_voice(SiMMLTrack *p_track);
 
 	virtual void reset();
-	virtual void copy_from(SiMMLVoice *p_source);
+	virtual void copy_from(const Ref<SiMMLVoice> &p_source);
 
 	SiMMLVoice();
 	~SiMMLVoice() {}

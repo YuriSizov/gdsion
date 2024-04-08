@@ -24,7 +24,7 @@ SiOPMWavePCMData *SiONData::set_pcm_wave(int p_index, const Variant &p_data, dou
 	return nullptr;
 }
 
-void SiONData::set_pcm_voice(int p_index, SiONVoice *p_voice) {
+void SiONData::set_pcm_voice(int p_index, const Ref<SiONVoice> &p_voice) {
 	// Size is expected to be power of 2.
 	_pcm_voices.write[p_index & (_pcm_voices.size() - 1)] = p_voice;
 }

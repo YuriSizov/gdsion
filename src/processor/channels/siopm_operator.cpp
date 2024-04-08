@@ -186,7 +186,7 @@ void SiOPMOperator::set_pulse_generator_type(int p_type) {
 	_wave_fixed_bits = wave_table->get_fixed_bits();
 }
 
-void SiOPMOperator::set_pitch_table_type(int p_type) {
+void SiOPMOperator::set_pitch_table_type(SiONPitchTableType p_type) {
 	_pt_type = p_type;
 
 	_wave_phase_step_shift = (SiOPMRefTable::PHASE_BITS - _wave_fixed_bits) & _table->phase_step_shift_filter[p_type];
@@ -506,7 +506,7 @@ void SiOPMOperator::get_operator_params(SiOPMOperatorParams *r_params) {
 }
 
 void SiOPMOperator::set_wave_table(SiOPMWaveTable *p_wave_table) {
-	_pg_type = SiOPMRefTable::PG_USER_CUSTOM;
+	_pg_type = PG_USER_CUSTOM;
 	_pt_type = p_wave_table->get_default_pitch_table_type();
 
 	_wave_table = p_wave_table->get_wavelet();
@@ -515,8 +515,8 @@ void SiOPMOperator::set_wave_table(SiOPMWaveTable *p_wave_table) {
 
 void SiOPMOperator::set_pcm_data(SiOPMWavePCMData *p_pcm_data) {
 	if (p_pcm_data && !p_pcm_data->get_wavelet().is_empty()) {
-		_pg_type = SiOPMRefTable::PG_USER_PCM;
-		_pt_type = SiOPMRefTable::PT_PCM;
+		_pg_type = PG_USER_PCM;
+		_pt_type = PT_PCM;
 
 		_wave_table = p_pcm_data->get_wavelet();
 		_wave_fixed_bits = PCM_WAVE_FIXED_BITS;

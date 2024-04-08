@@ -8,7 +8,7 @@
 #define SIOPM_WAVE_BASE_H
 
 #include <godot_cpp/core/object.hpp>
-#include "sequencer/simml_ref_table.h"
+#include "sion_enums.h"
 
 using namespace godot;
 
@@ -19,15 +19,15 @@ using namespace godot;
 class SiOPMWaveBase : public Object {
 	GDCLASS(SiOPMWaveBase, Object)
 
-	SiMMLRefTable::ModuleType _module_type = SiMMLRefTable::MT_MAX;
+	SiONModuleType _module_type = MT_MAX;
 
 protected:
 	static void _bind_methods() {}
 
 public:
-	SiMMLRefTable::ModuleType get_module_type() const { return _module_type; }
+	SiONModuleType get_module_type() const { return _module_type; }
 
-	SiOPMWaveBase(SiMMLRefTable::ModuleType p_module_type = SiMMLRefTable::MT_MAX);
+	SiOPMWaveBase(SiONModuleType p_module_type = MT_MAX);
 	~SiOPMWaveBase() {}
 };
 

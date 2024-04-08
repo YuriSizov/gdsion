@@ -6,9 +6,9 @@
 
 #include "simml_simulator_fm_opn.h"
 
-#include "sequencer/simml_ref_table.h"
+#include "sion_enums.h"
 
 SiMMLSimulatorFMOPN::SiMMLSimulatorFMOPN() :
-		SiMMLSimulatorBaseFM(SiMMLRefTable::MT_FM_OPN, 1) {
+		SiMMLSimulatorBaseFM(MT_FM_OPN, 1) {
 	// Empty.
 }

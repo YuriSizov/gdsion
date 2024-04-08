@@ -6,9 +6,9 @@
 
 #include "simml_simulator_fm_ma3.h"
 
-#include "sequencer/simml_ref_table.h"
+#include "sion_enums.h"
 
 SiMMLSimulatorFMMA3::SiMMLSimulatorFMMA3() :
-		SiMMLSimulatorBaseFM(SiMMLRefTable::MT_FM_MA3, 1) {
+		SiMMLSimulatorBaseFM(MT_FM_MA3, 1) {
 	// Empty.
 }

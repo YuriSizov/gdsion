@@ -6,6 +6,7 @@
 
 #include "simml_simulator_base.h"
 
+#include "sion_enums.h"
 #include "processor/channels/siopm_channel_base.h"
 #include "processor/channels/siopm_channel_manager.h"
 #include "sequencer/base/mml_sequence.h"
@@ -87,7 +88,7 @@ MMLSequence *SiMMLSimulatorBase::select_tone(SiMMLTrack *p_track, int p_voice_in
 	return _select_single_wave_tone(p_track, p_voice_index);
 }
 
-SiMMLSimulatorBase::SiMMLSimulatorBase(SiMMLRefTable::ModuleType p_type, int p_channel_num, SiMMLSimulatorVoiceSet *p_default_voice_set, bool p_suitable_for_fm_voice) {
+SiMMLSimulatorBase::SiMMLSimulatorBase(SiONModuleType p_type, int p_channel_num, SiMMLSimulatorVoiceSet *p_default_voice_set, bool p_suitable_for_fm_voice) {
 	_type = p_type;
 	_is_suitable_for_fm_voice = p_suitable_for_fm_voice;
 	_channel_voice_set.resize_zeroed(p_channel_num);

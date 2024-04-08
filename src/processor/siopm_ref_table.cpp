@@ -62,12 +62,12 @@ void SiOPMRefTable::reset_all_user_tables() {
 	}
 
 	for (int i = 0; i < PCM_DATA_MAX; i++) {
-		if (_pcm_voices[i]) {
+		if (_pcm_voices[i].is_valid()) {
 			SiOPMWavePCMTable *pcm_table = Object::cast_to<SiOPMWavePCMTable>(_pcm_voices[i]->get_wave_data());
 			if (pcm_table) {
 				pcm_table->free();
 			}
-			_pcm_voices.write[i] = nullptr;
+			_pcm_voices.write[i] = Ref<SiMMLVoice>();
 		}
 	}
 
@@ -120,30 +120,32 @@ SiOPMWaveTable *SiOPMRefTable::get_wave_table(int p_index) {
 SiOPMWavePCMTable *SiOPMRefTable::get_pcm_data(int p_index) {
 	int table_index = p_index & (PCM_DATA_MAX - 1);
 
-	if (table_index < _stencil_pcm_voices.size() && _stencil_pcm_voices[table_index]) {
+	if (table_index < _stencil_pcm_voices.size() && _stencil_pcm_voices[table_index].is_valid()) {
 		return Object::cast_to<SiOPMWavePCMTable>(_stencil_pcm_voices[table_index]->get_wave_data());
 	}
 
-	if (table_index < _pcm_voices.size() && _pcm_voices[table_index]) {
+	if (table_index < _pcm_voices.size() && _pcm_voices[table_index].is_valid()) {
 		return Object::cast_to<SiOPMWavePCMTable>(_pcm_voices[table_index]->get_wave_data());
 	}
 
 	return nullptr;
 }
 
-SiMMLVoice *SiOPMRefTable::get_global_pcm_voice(int p_index) {
+Ref<SiMMLVoice> SiOPMRefTable::get_global_pcm_voice(int p_index) {
 	int index = p_index & (PCM_DATA_MAX - 1);
-	if (!_pcm_voices[index]) {
+	if (_pcm_voices[index].is_null()) {
 		_pcm_voices.write[index] = SiMMLVoice::create_blank_pcm_voice(index);
 	}
 
 	return _pcm_voices[index];
 }
 
-SiMMLVoice *SiOPMRefTable::set_global_pcm_voice(int p_index, SiMMLVoice *p_from_voice) {
+Ref<SiMMLVoice> SiOPMRefTable::set_global_pcm_voice(int p_index, const Ref<SiMMLVoice> &p_from_voice) {
 	int index = p_index & (PCM_DATA_MAX - 1);
-	if (!_pcm_voices[index]) {
-		_pcm_voices.write[index] = memnew(SiMMLVoice);
+	if (_pcm_voices[index].is_null()) {
+		Ref<SiMMLVoice> voice;
+		voice.instantiate();
+		_pcm_voices.write[index] = voice;
 	}
 
 	_pcm_voices[index]->copy_from(p_from_voice);

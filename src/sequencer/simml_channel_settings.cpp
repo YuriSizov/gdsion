@@ -80,8 +80,8 @@ MMLSequence *SiMMLChannelSettings::select_tone(SiMMLTrack *p_track, int p_voice_
 				voice_index = 0;
 			}
 
-			SiMMLVoice *voice = SiMMLRefTable::get_instance()->get_voice(voice_index);
-			if (!voice) {
+			Ref<SiMMLVoice> voice = SiMMLRefTable::get_instance()->get_voice(voice_index);
+			if (voice.is_null()) {
 				break;
 			}
 
@@ -115,19 +115,19 @@ int SiMMLChannelSettings::get_pg_type(int p_index) const {
 	return _pg_type_list[p_index];
 }
 
-void SiMMLChannelSettings::set_pg_type(int p_index, int p_value) {
+void SiMMLChannelSettings::set_pg_type(int p_index, int p_type) {
 	ERR_FAIL_INDEX(p_index, _pg_type_list.size());
-	_pg_type_list.write[p_index] = p_value;
+	_pg_type_list.write[p_index] = p_type;
 }
 
-int SiMMLChannelSettings::get_pt_type(int p_index) const {
-	ERR_FAIL_INDEX_V(p_index, _pt_type_list.size(), -1);
+SiONPitchTableType SiMMLChannelSettings::get_pt_type(int p_index) const {
+	ERR_FAIL_INDEX_V(p_index, _pt_type_list.size(), SiONPitchTableType::PT_OPM);
 	return _pt_type_list[p_index];
 }
 
-void SiMMLChannelSettings::set_pt_type(int p_index, int p_value) {
+void SiMMLChannelSettings::set_pt_type(int p_index, SiONPitchTableType p_type) {
 	ERR_FAIL_INDEX(p_index, _pt_type_list.size());
-	_pt_type_list.write[p_index] = p_value;
+	_pt_type_list.write[p_index] = p_type;
 }
 
 int SiMMLChannelSettings::get_voice_index(int p_index) const {

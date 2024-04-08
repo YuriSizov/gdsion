@@ -8,6 +8,7 @@
 #define SIOPM_OPERATOR_H
 
 #include <godot_cpp/templates/vector.hpp>
+#include "sion_enums.h"
 #include "templates/singly_linked_list.h"
 
 using namespace godot;
@@ -83,8 +84,8 @@ private:
 
 	// Pulse generator.
 
-	int _pg_type = 0;
-	int _pt_type = 0;
+	int _pg_type = SiONPulseGeneratorType::PG_SINE;
+	SiONPitchTableType _pt_type = SiONPitchTableType::PT_OPM;
 	Vector<int> _wave_table;
 	// Phase shift.
 	int _wave_fixed_bits = 0;
@@ -225,8 +226,8 @@ public:
 
 	int get_pulse_generator_type() const { return _pg_type; }
 	void set_pulse_generator_type(int p_type);
-	int get_pitch_table_type() const { return _pt_type; }
-	void set_pitch_table_type(int p_type);
+	SiONPitchTableType get_pitch_table_type() const { return _pt_type; }
+	void set_pitch_table_type(SiONPitchTableType p_type);
 
 	int get_wave_value(int p_index) const;
 	int get_wave_fixed_bits() const { return _wave_fixed_bits; }

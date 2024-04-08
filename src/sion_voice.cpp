@@ -10,6 +10,7 @@
 #include <godot_cpp/classes/reg_ex_match.hpp>
 #include <godot_cpp/core/memory.hpp>
 
+#include "sion_enums.h"
 #include "processor/siopm_channel_params.h"
 #include "processor/siopm_operator_params.h"
 #include "processor/siopm_ref_table.h"
@@ -18,7 +19,6 @@
 #include "processor/wave/siopm_wave_sampler_data.h"
 #include "processor/wave/siopm_wave_sampler_table.h"
 #include "processor/wave/siopm_wave_table.h"
-#include "sequencer/simml_ref_table.h"
 #include "utils/translator_util.h"
 
 const char *SiONVoice::CHIPTYPE_AUTO = "<autodetect>";
@@ -120,7 +120,8 @@ String SiONVoice::get_mml(int p_index, String p_chip_type, bool p_append_postfix
 	}
 
 	if (p_append_postfix) {
-		String postfix = TranslatorUtil::mml_voice_setting(this);
+		Ref<SiONVoice> this_voice = this; // TODO: Is there a better way to do this?
+		String postfix = TranslatorUtil::mml_voice_setting(this_voice);
 		if (!postfix.is_empty()) {
 			mml += "\n" + postfix;
 		}
@@ -183,7 +184,7 @@ int SiONVoice::set_by_mml(String p_mml) {
 }
 
 SiOPMWaveTable *SiONVoice::set_wave_table(Vector<double> p_data) {
-	module_type = SiMMLRefTable::MT_CUSTOM;
+	module_type = MT_CUSTOM;
 
 	Vector<int> table;
 	for (int i = 0; i < p_data.size(); i++) {
@@ -196,7 +197,7 @@ SiOPMWaveTable *SiONVoice::set_wave_table(Vector<double> p_data) {
 }
 
 SiOPMWavePCMData *SiONVoice::set_pcm_voice(const Variant &p_data, int p_sampling_note, int p_src_channel_count, int p_channel_count) {
-	module_type = SiMMLRefTable::MT_PCM;
+	module_type = MT_PCM;
 
 	wave_data = memnew(SiOPMWavePCMData(p_data, p_sampling_note * 64, p_src_channel_count, p_channel_count));
 	return (SiOPMWavePCMData *)wave_data;
@@ -205,19 +206,19 @@ SiOPMWavePCMData *SiONVoice::set_pcm_voice(const Variant &p_data, int p_sampling
 SiOPMWaveSamplerData *SiONVoice::set_mp3_voice(Object *p_wave, bool p_ignore_note_off, int p_channel_count) {
 	// FIXME: This method originally only supports Flash Sound objects. It needs to either be removed or adapted.
 
-	module_type = SiMMLRefTable::MT_SAMPLE;
+	module_type = MT_SAMPLE;
 
 	wave_data = memnew(SiOPMWaveSamplerData(Variant(p_wave), p_ignore_note_off, 0, 2, p_channel_count));
 	return (SiOPMWaveSamplerData *)wave_data;
 }
 
 SiOPMWavePCMData *SiONVoice::set_pcm_wave(int p_index, const Variant &p_data, int p_sampling_note, int p_key_range_from, int p_key_range_to, int p_src_channel_count, int p_channel_count) {
-	if (module_type != SiMMLRefTable::MT_PCM || channel_num != p_index) {
+	if (module_type != MT_PCM || channel_num != p_index) {
 		// FIXME: This is probably a leak.
 		wave_data = nullptr;
 	}
 
-	module_type = SiMMLRefTable::MT_PCM;
+	module_type = MT_PCM;
 	channel_num = p_index;
 
 	SiOPMWavePCMTable *pcm_table = Object::cast_to<SiOPMWavePCMTable>(wave_data);
@@ -232,7 +233,7 @@ SiOPMWavePCMData *SiONVoice::set_pcm_wave(int p_index, const Variant &p_data, in
 }
 
 SiOPMWaveSamplerData *SiONVoice::set_sampler_wave(int p_index, const Variant &p_data, bool p_ignore_note_off, int p_pan, int p_src_channel_count, int p_channel_count) {
-	module_type = SiMMLRefTable::MT_SAMPLE;
+	module_type = MT_SAMPLE;
 
 	SiOPMWaveSamplerTable *sampler_table = Object::cast_to<SiOPMWaveSamplerTable>(wave_data);
 	if (!sampler_table) {
@@ -245,12 +246,12 @@ SiOPMWaveSamplerData *SiONVoice::set_sampler_wave(int p_index, const Variant &p_
 }
 
 void SiONVoice::set_sampler_table(SiOPMWaveSamplerTable *p_table) {
-	module_type = SiMMLRefTable::MT_SAMPLE;
+	module_type = MT_SAMPLE;
 	wave_data = p_table;
 }
 
 void SiONVoice::set_pms_guitar(int p_attack_rate, int p_decay_rate, int p_total_level, int p_fixed_pitch, int p_wave_shape, int p_tension) {
-	module_type = SiMMLRefTable::MT_KS;
+	module_type = MT_KS;
 	channel_num = 1;
 
 	Vector<int> param_args = { 1, 0, 0, p_wave_shape, p_attack_rate, p_decay_rate, 0, 63, 15, p_total_level, 0, 0, 1, 0, 0, 0, 0, p_fixed_pitch };
@@ -320,8 +321,9 @@ void SiONVoice::set_pitch_modulation(int p_depth, int p_end_depth, int p_delay, 
 	pitch_modulation_term = p_term;
 }
 
-SiONVoice *SiONVoice::clone() {
-	SiONVoice *new_voice = memnew(SiONVoice);
+Ref<SiONVoice> SiONVoice::clone() {
+	Ref<SiONVoice> new_voice;
+	new_voice.instantiate();
 	new_voice->copy_from(this);
 	new_voice->_name = _name;
 
@@ -335,14 +337,14 @@ void SiONVoice::reset() {
 	set_update_track_parameters(true);
 }
 
-SiONVoice *SiONVoice::create(SiMMLRefTable::ModuleType p_module_type, int p_channel_num, int p_attack_rate, int p_release_rate, int p_pitch_shift, int p_connection_type, int p_wave_shape2, int p_pitch_shift2) {
+Ref<SiONVoice> SiONVoice::create(SiONModuleType p_module_type, int p_channel_num, int p_attack_rate, int p_release_rate, int p_pitch_shift, int p_connection_type, int p_wave_shape2, int p_pitch_shift2) {
 	return memnew(SiONVoice(p_module_type, p_channel_num, p_attack_rate, p_release_rate, p_pitch_shift, p_connection_type, p_wave_shape2, p_pitch_shift2));
 }
 
 void SiONVoice::_bind_methods() {
 	// Factory.
 
-	ClassDB::bind_static_method("SiONVoice", D_METHOD("create", "module_type", "channel_num", "attack_rate", "release_rate", "pitch_shift", "connection_type", "wave_shape2", "pitch_shift2"), &SiONVoice::create, DEFVAL(SiMMLRefTable::MT_ALL), DEFVAL(0), DEFVAL(63), DEFVAL(63), DEFVAL(0), DEFVAL(-1), DEFVAL(0), DEFVAL(0));
+	ClassDB::bind_static_method("SiONVoice", D_METHOD("create", "module_type", "channel_num", "attack_rate", "release_rate", "pitch_shift", "connection_type", "wave_shape2", "pitch_shift2"), &SiONVoice::create, DEFVAL(MT_ALL), DEFVAL(0), DEFVAL(63), DEFVAL(63), DEFVAL(0), DEFVAL(-1), DEFVAL(0), DEFVAL(0));
 
 	// Public API.
 
@@ -355,7 +357,7 @@ void SiONVoice::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_pitch_modulation", "depth", "end_depth", "delay", "term"), &SiONVoice::set_pitch_modulation, DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(0));
 }
 
-SiONVoice::SiONVoice(SiMMLRefTable::ModuleType p_module_type, int p_channel_num, int p_attack_rate, int p_release_rate, int p_pitch_shift, int p_connection_type, int p_wave_shape2, int p_pitch_shift2) :
+SiONVoice::SiONVoice(SiONModuleType p_module_type, int p_channel_num, int p_attack_rate, int p_release_rate, int p_pitch_shift, int p_connection_type, int p_wave_shape2, int p_pitch_shift2) :
 		SiMMLVoice() {
 	set_update_track_parameters(true);
 

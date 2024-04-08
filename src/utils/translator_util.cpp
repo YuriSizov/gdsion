@@ -132,7 +132,7 @@ void TranslatorUtil::_set_opl_params_by_array(SiOPMChannelParams *r_params, Vect
 	for (int op_index = 0; op_index < r_params->operator_count; op_index++) {
 		SiOPMOperatorParams *op_params = r_params->operator_params[op_index];
 
-		op_params->set_pulse_generator_type(SiOPMRefTable::PG_MA3_WAVE + (p_data[data_index++] & 31));      // 1
+		op_params->set_pulse_generator_type(PG_MA3_WAVE + (p_data[data_index++] & 31));      // 1
 		op_params->attack_rate                                      = (p_data[data_index++] << 2) & 63;  // 2
 		op_params->decay_rate                                       = (p_data[data_index++] << 2) & 63;  // 3
 		op_params->release_rate                                     = (p_data[data_index++] << 2) & 63;  // 4
@@ -244,8 +244,8 @@ void TranslatorUtil::_set_opx_params_by_array(SiOPMChannelParams *r_params, Vect
 		SiOPMOperatorParams *op_params = r_params->operator_params[op_index];
 
 		int i = p_data[data_index++];
-		int i1 = SiOPMRefTable::PG_MA3_WAVE + (i & 7);
-		int i2 = SiOPMRefTable::PG_CUSTOM + (i - 7);
+		int i1 = PG_MA3_WAVE + (i & 7);
+		int i2 = PG_CUSTOM + (i - 7);
 		op_params->set_pulse_generator_type((i < 7) ? i1 : i2);                        // 1
 		op_params->attack_rate               = (p_data[data_index++] << 1) & 63;       // 2
 		op_params->decay_rate                = (p_data[data_index++] << 1) & 63;       // 3
@@ -283,7 +283,7 @@ void TranslatorUtil::_set_ma3_params_by_array(SiOPMChannelParams *r_params, Vect
 		SiOPMOperatorParams *op_params = r_params->operator_params[op_index];
 
 		int n = p_data[data_index++] & 31;
-		op_params->set_pulse_generator_type(SiOPMRefTable::PG_MA3_WAVE + n);                   // 1
+		op_params->set_pulse_generator_type(PG_MA3_WAVE + n);                   // 1
 		op_params->attack_rate                       = (p_data[data_index++] << 2) & 63;    // 2
 		op_params->decay_rate                        = (p_data[data_index++] << 2) & 63;    // 3
 		op_params->sustain_rate                      = (p_data[data_index++] << 2) & 63;    // 4
@@ -408,7 +408,7 @@ int TranslatorUtil::_get_algorithm_index(int p_operator_count, int p_algorithm, 
 }
 
 int TranslatorUtil::_get_ma3_from_pg_type(int p_pulse_generator_type, const String &p_command) {
-	int wave_shape = p_pulse_generator_type - SiOPMRefTable::PG_MA3_WAVE;
+	int wave_shape = p_pulse_generator_type - PG_MA3_WAVE;
 	if (wave_shape >= 0 && wave_shape <= 31) {
 		return wave_shape;
 	}
@@ -737,11 +737,11 @@ String TranslatorUtil::mml_al_params(SiOPMChannelParams *p_params, String p_sepa
 	return "";
 }
 
-void TranslatorUtil::parse_voice_setting(SiMMLVoice *p_voice, String p_mml, Vector<SiMMLEnvelopeTable *> p_envelopes) {
+void TranslatorUtil::parse_voice_setting(const Ref<SiMMLVoice> &p_voice, String p_mml, Vector<SiMMLEnvelopeTable *> p_envelopes) {
 	// FIXME: NOT IMPLEMENTED
 }
 
-String TranslatorUtil::mml_voice_setting(const SiMMLVoice *p_voice) {
+String TranslatorUtil::mml_voice_setting(const Ref<SiMMLVoice> &p_voice) {
 	// FIXME: NOT IMPLEMENTED
 	return "";
 }
@@ -902,7 +902,7 @@ bool TranslatorUtil::parse_pcm_wave(SiOPMWavePCMTable *p_table, String p_mml, Ha
 	return false;
 }
 
-bool TranslatorUtil::parse_pcm_voice(SiMMLVoice *p_voice, String p_mml, String p_postfix, Vector<SiMMLEnvelopeTable *> p_envelopes) {
+bool TranslatorUtil::parse_pcm_voice(const Ref<SiMMLVoice> &p_voice, String p_mml, String p_postfix, Vector<SiMMLEnvelopeTable *> p_envelopes) {
 	// FIXME: NOT IMPLEMENTED
 	return false;
 }

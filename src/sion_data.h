@@ -26,7 +26,7 @@ protected:
 
 public:
 	SiOPMWavePCMData *set_pcm_wave(int p_index, const Variant &p_data, double p_sampling_note = 69, int p_key_range_from = 0, int p_key_range_to = 127, int p_src_channel_count = 2, int p_channel_count = 0);
-	void set_pcm_voice(int p_index, SiONVoice *p_voice);
+	void set_pcm_voice(int p_index, const Ref<SiONVoice> &p_voice);
 
 	SiOPMWaveSamplerData *set_sampler_wave(int p_index, const Variant &p_data, bool p_ignore_note_off = false, int p_pan = 0, int p_src_channel_count = 2, int p_channel_count = 0);
 	void set_sampler_table(int p_bank, SiOPMWaveSamplerTable *p_table);

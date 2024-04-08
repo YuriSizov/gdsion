@@ -6,10 +6,9 @@
 
 #include "simml_simulator_noise.h"
 
-#include "processor/siopm_ref_table.h"
-#include "sequencer/simml_ref_table.h"
+#include "sion_enums.h"
 
 SiMMLSimulatorNoise::SiMMLSimulatorNoise() :
-		SiMMLSimulatorBase(SiMMLRefTable::MT_NOISE, 1, memnew(SiMMLSimulatorVoiceSet(16, SiOPMRefTable::PG_NOISE_WHITE))) {
+		SiMMLSimulatorBase(MT_NOISE, 1, memnew(SiMMLSimulatorVoiceSet(16, PG_NOISE_WHITE))) {
 	// Empty.
 }

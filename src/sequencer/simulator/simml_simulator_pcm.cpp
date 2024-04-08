@@ -6,11 +6,10 @@
 
 #include "simml_simulator_pcm.h"
 
+#include "sion_enums.h"
 #include "processor/channels/siopm_channel_manager.h"
-#include "processor/siopm_ref_table.h"
-#include "sequencer/simml_ref_table.h"
 
 SiMMLSimulatorPCM::SiMMLSimulatorPCM() :
-		SiMMLSimulatorBase(SiMMLRefTable::MT_PCM, 1, memnew(SiMMLSimulatorVoiceSet(SiOPMChannelManager::CT_CHANNEL_PCM, 1, SiOPMRefTable::PG_PCM)), false) {
+		SiMMLSimulatorBase(MT_PCM, 1, memnew(SiMMLSimulatorVoiceSet(SiOPMChannelManager::CT_CHANNEL_PCM, 1, PG_PCM)), false) {
 	// Empty.
 }

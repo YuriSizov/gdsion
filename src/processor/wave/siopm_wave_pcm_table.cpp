@@ -6,8 +6,8 @@
 
 #include "siopm_wave_pcm_table.h"
 
+#include "sion_enums.h"
 #include "processor/siopm_ref_table.h"
-#include "sequencer/simml_ref_table.h"
 
 SiOPMWavePCMData *SiOPMWavePCMTable::get_note_data(int p_note) const {
 	ERR_FAIL_INDEX_V_MSG(p_note, _note_data_map.size(), nullptr, vformat("SiOPMWavePCMData: Trying to access note data for a note that doesn't exist (%d).", p_note));
@@ -117,7 +117,7 @@ void SiOPMWavePCMTable::clear(SiOPMWavePCMData *p_pcm_data) {
 }
 
 SiOPMWavePCMTable::SiOPMWavePCMTable() :
-		SiOPMWaveBase(SiMMLRefTable::MT_PCM) {
+		SiOPMWaveBase(MT_PCM) {
 	_note_data_map.resize_zeroed(SiOPMRefTable::NOTE_TABLE_SIZE);
 	_note_volume_map.resize_zeroed(SiOPMRefTable::NOTE_TABLE_SIZE);
 	_note_pan_map.resize_zeroed(SiOPMRefTable::NOTE_TABLE_SIZE);

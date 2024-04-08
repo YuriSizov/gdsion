@@ -10,6 +10,7 @@
 #include <godot_cpp/classes/reg_ex_match.hpp>
 #include <godot_cpp/core/error_macros.hpp>
 #include <godot_cpp/variant/variant.hpp>
+#include "sion_enums.h"
 #include "processor/channels/siopm_channel_base.h"
 #include "processor/siopm_channel_params.h"
 #include "processor/siopm_module.h"
@@ -634,7 +635,7 @@ bool SiMMLSequencer::_try_set_pcm_wave(int p_index, String p_mml) {
 		return false;
 	}
 
-	SiMMLVoice *voice = Object::cast_to<SiMMLData>(mml_data)->get_pcm_voice(p_index);
+	Ref<SiMMLVoice> voice = Object::cast_to<SiMMLData>(mml_data)->get_pcm_voice(p_index);
 	SiOPMWavePCMTable *table = Object::cast_to<SiOPMWavePCMTable>(voice->get_wave_data());
 	if (!table) {
 		return false;
@@ -648,8 +649,8 @@ bool SiMMLSequencer::_try_set_pcm_voice(int p_index, String p_mml, String p_post
 		return false;
 	}
 
-	SiMMLVoice *voice = Object::cast_to<SiMMLData>(mml_data)->get_pcm_voice(p_index);
-	if (!voice) {
+	Ref<SiMMLVoice> voice = Object::cast_to<SiMMLData>(mml_data)->get_pcm_voice(p_index);
+	if (voice.is_null()) {
 		return false;
 	}
 
@@ -1337,10 +1338,10 @@ MMLEvent *SiMMLSequencer::_on_mml_ring_modulation(MMLEvent *p_event) {
 
 MMLEvent *SiMMLSequencer::_on_mml_module_type(MMLEvent *p_event) {
 	GET_EV_PARAMS(2);
-	BIND_EV_PARAM_RANGE(type, 0, 0, SiMMLRefTable::MT_MAX, SiMMLRefTable::MT_ALL);
+	BIND_EV_PARAM_RANGE(type, 0, 0, MT_MAX, MT_ALL);
 	BIND_EV_PARAM(channel_num, 1, INT32_MIN);
 
-	_current_track->set_channel_module_type((SiMMLRefTable::ModuleType)type, channel_num);
+	_current_track->set_channel_module_type((SiONModuleType)type, channel_num);
 	return next_event->next;
 }
 
@@ -1649,7 +1650,7 @@ void SiMMLSequencer::_reset_initial_operator_params() {
 	op_params->set_initial_phase(0);
 	op_params->set_fixed_pitch(0);
 	op_params->set_frequency_modulation_level(5);
-	op_params->set_pulse_generator_type(SiOPMRefTable::PG_SQUARE);
+	op_params->set_pulse_generator_type(PG_SQUARE);
 }
 
 void SiMMLSequencer::_reset_parser_settings() {

@@ -7,73 +7,44 @@
 #ifndef SIMML_REF_TABLE_H
 #define SIMML_REF_TABLE_H
 
-#include <godot_cpp/core/binder_common.hpp>
 #include <godot_cpp/core/object.hpp>
 #include <godot_cpp/templates/hash_map.hpp>
 #include <godot_cpp/templates/list.hpp>
 #include <godot_cpp/templates/vector.hpp>
+#include "sequencer/simml_voice.h"
 
 using namespace godot;
 
 class SiMMLChannelSettings;
 class SiMMLEnvelopeTable;
 class SiMMLSimulatorBase;
-class SiMMLVoice;
+enum SiONModuleType : int;
 
 // Reference data object for the sequencer and related operations.
-class SiMMLRefTable : public Object {
-	GDCLASS(SiMMLRefTable, Object)
+class SiMMLRefTable {
 
 	static SiMMLRefTable *_instance;
 
 	Vector<SiMMLEnvelopeTable *> _master_envelopes;
-	Vector<SiMMLVoice *> _master_voices;
+	Vector<Ref<SiMMLVoice>> _master_voices;
 	Vector<SiMMLEnvelopeTable *> _stencil_envelopes;
-	Vector<SiMMLVoice *> _stencil_voices;
+	Vector<Ref<SiMMLVoice>> _stencil_voices;
 
 	void _fill_tss_log_table(String (&r_table)[256], int p_start, int p_step, int p_v0, int p_v255);
 
 	template <size_t S>
-	Vector<SiMMLVoice *> _setup_ym2413_default_voices(uint32_t (&p_register_map)[S]);
-	void _dump_ym2413_register(SiMMLVoice *p_voice, uint32_t p_u0, uint32_t p_u1);
-
-protected:
-	static void _bind_methods();
+	Vector<Ref<SiMMLVoice>> _setup_ym2413_default_voices(uint32_t (&p_register_map)[S]);
+	void _dump_ym2413_register(const Ref<SiMMLVoice> &p_voice, uint32_t p_u0, uint32_t p_u1);
 
 public:
-	enum ModuleType {
-		MT_PSG     = 0,  // PSG(DCSG)
-		MT_APU     = 1,  // FC pAPU
-		MT_NOISE   = 2,  // noise wave
-		MT_MA3     = 3,  // MA3 wave form
-		MT_CUSTOM  = 4,  // SCC / custom wave table
-		MT_ALL     = 5,  // all pgTypes
-		MT_FM      = 6,  // FM sound module
-		MT_PCM     = 7,  // PCM
-		MT_PULSE   = 8,  // pulse wave
-		MT_RAMP    = 9,  // ramp wave
-		MT_SAMPLE  = 10, // sampler
-		MT_KS      = 11, // karplus strong
-		MT_GB      = 12, // gameboy
-		MT_VRC6    = 13, // vrc6
-		MT_SID     = 14, // sid
-		MT_FM_OPM  = 15, // YM2151
-		MT_FM_OPN  = 16, // YM2203
-		MT_FM_OPNA = 17, // YM2608
-		MT_FM_OPLL = 18, // YM2413
-		MT_FM_OPL3 = 19, // YM3812
-		MT_FM_MA3  = 20, // YMU762
-		MT_MAX     = 21
-	};
-
 	static const int ENVELOPE_TABLE_MAX = 512;
 	static const int VOICE_MAX = 256;
 
 	// All reference properties are made public to simplify code.
 	// These are not expected to be written to externally. But that might happen.
 
-	HashMap<ModuleType, SiMMLChannelSettings *> channel_settings_map;
-	HashMap<ModuleType, SiMMLSimulatorBase *> channel_simulator_map;
+	HashMap<SiONModuleType, SiMMLChannelSettings *> channel_settings_map;
+	HashMap<SiONModuleType, SiMMLSimulatorBase *> channel_simulator_map;
 
 	// Mapping from tsscp @s command to OPM attack rate.
 	String tss_scmd_to_attack_rate[256];
@@ -103,11 +74,11 @@ public:
 		0x04212800, 0xdff8fff8, 0x23220000, 0xd8f8f8f8, 0x25180000, 0xf8daf855
 	};
 	// Preset voice set of OPLL
-	Vector<SiMMLVoice *> preset_voice_ym2413;
+	Vector<Ref<SiMMLVoice>> preset_voice_ym2413;
 	// Preset voice set of VRC7
-	Vector<SiMMLVoice *> preset_voice_vrc7;
+	Vector<Ref<SiMMLVoice>> preset_voice_vrc7;
 	// Preset voice set of VRC7/OPLL drum
-	Vector<SiMMLVoice *> preset_voice_vrc7_drums;
+	Vector<Ref<SiMMLVoice>> preset_voice_vrc7_drums;
 
 	// Algorithm table for OPM/OPN.
 	int algorithm_opm[4][16] = {
@@ -150,22 +121,20 @@ public:
 
 	void reset_all_user_tables();
 	void register_master_envelope_table(int p_index, SiMMLEnvelopeTable *p_table);
-	void register_master_voice(int p_index, SiMMLVoice *p_voice);
+	void register_master_voice(int p_index, const Ref<SiMMLVoice> &p_voice);
 
 	void set_stencil_envelopes(Vector<SiMMLEnvelopeTable *> p_tables) { _stencil_envelopes = p_tables; }
-	void set_stencil_voices(Vector<SiMMLVoice *> p_tables) { _stencil_voices = p_tables; }
+	void set_stencil_voices(Vector<Ref<SiMMLVoice>> p_tables) { _stencil_voices = p_tables; }
 
 	SiMMLEnvelopeTable *get_envelope_table(int p_index);
-	SiMMLVoice *get_voice(int p_index);
+	Ref<SiMMLVoice> get_voice(int p_index);
 
-	int get_pulse_generator_type(ModuleType p_module_type, int p_channel_num, int p_tone_num = -1);
-	bool is_suitable_for_fm_voice(ModuleType p_module_type);
+	int get_pulse_generator_type(SiONModuleType p_module_type, int p_channel_num, int p_tone_num = -1);
+	bool is_suitable_for_fm_voice(SiONModuleType p_module_type);
 
 	//
 
 	SiMMLRefTable();
 };
-
-VARIANT_ENUM_CAST(SiMMLRefTable::ModuleType);
 
 #endif // SIMML_REF_TABLE_H

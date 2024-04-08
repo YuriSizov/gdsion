@@ -6,11 +6,10 @@
 
 #include "simml_simulator_sid.h"
 
-#include "processor/siopm_ref_table.h"
-#include "sequencer/simml_ref_table.h"
+#include "sion_enums.h"
 
 SiMMLSimulatorSID::SiMMLSimulatorSID() :
-		SiMMLSimulatorBase(SiMMLRefTable::MT_SID, 3, memnew(SiMMLSimulatorVoiceSet(11))) {
+		SiMMLSimulatorBase(MT_SID, 3, memnew(SiMMLSimulatorVoiceSet(11))) {
 
 	// Note that the original code configures this simulator to 3 channels, but sets 4.
 	// The code seems to be copied and pasted from APU/GB, which are almost identical,
@@ -26,11 +25,11 @@ SiMMLSimulatorSID::SiMMLSimulatorSID() :
 	// Default voice set.
 
 	for (int i = 0; i < 8; i++) {
-		_default_voice_set->set_voice(i, memnew(SiMMLSimulatorVoice(SiOPMRefTable::PG_PULSE + i, SiOPMRefTable::PT_PSG)));
+		_default_voice_set->set_voice(i, memnew(SiMMLSimulatorVoice(PG_PULSE + i, PT_PSG)));
 	}
-	_default_voice_set->set_voice(8, memnew(SiMMLSimulatorVoice(SiOPMRefTable::PG_TRIANGLE, SiOPMRefTable::PT_PSG)));
-	_default_voice_set->set_voice(9, memnew(SiMMLSimulatorVoice(SiOPMRefTable::PG_SAW_UP, SiOPMRefTable::PT_PSG)));
-	_default_voice_set->set_voice(10, memnew(SiMMLSimulatorVoice(SiOPMRefTable::PG_NOISE_PULSE, SiOPMRefTable::PT_OPM_NOISE)));
+	_default_voice_set->set_voice(8, memnew(SiMMLSimulatorVoice(PG_TRIANGLE, PT_PSG)));
+	_default_voice_set->set_voice(9, memnew(SiMMLSimulatorVoice(PG_SAW_UP, PT_PSG)));
+	_default_voice_set->set_voice(10, memnew(SiMMLSimulatorVoice(PG_NOISE_PULSE, PT_OPM_NOISE)));
 	_default_voice_set->set_init_voice_index(1);
 
 	// Multi-channel voice sets.
@@ -41,7 +40,7 @@ SiMMLSimulatorSID::SiMMLSimulatorSID() :
 
 	tone_voice_set = memnew(SiMMLSimulatorVoiceSet(8));
 	for (int i = 0; i < 8; i++) {
-		tone_voice_set->set_voice(i, memnew(SiMMLSimulatorVoice(SiOPMRefTable::PG_PULSE + i * 2, SiOPMRefTable::PT_PSG)));
+		tone_voice_set->set_voice(i, memnew(SiMMLSimulatorVoice(PG_PULSE + i * 2, PT_PSG)));
 	}
 	tone_voice_set->set_init_voice_index(4);
 
@@ -51,7 +50,7 @@ SiMMLSimulatorSID::SiMMLSimulatorSID() :
 	// Channel 3.
 
 	tone_voice_set = memnew(SiMMLSimulatorVoiceSet(1));
-	tone_voice_set->set_voice(0, memnew(SiMMLSimulatorVoice(SiOPMRefTable::PG_CUSTOM, SiOPMRefTable::PT_PSG)));
+	tone_voice_set->set_voice(0, memnew(SiMMLSimulatorVoice(PG_CUSTOM, PT_PSG)));
 	tone_voice_set->set_init_voice_index(0);
 
 	_channel_voice_set.write[2] = tone_voice_set;

@@ -10,6 +10,7 @@
 #include <godot_cpp/core/math.hpp>
 #include <godot_cpp/core/object.hpp>
 
+#include "sion_enums.h"
 #include "processor/channels/siopm_channel_base.h"
 #include "processor/siopm_channel_params.h"
 #include "processor/siopm_operator_params.h"
@@ -24,7 +25,7 @@
 using namespace godot;
 
 bool SiMMLVoice::is_fm_voice() const {
-	return module_type == SiMMLRefTable::MT_FM;
+	return module_type == MT_FM;
 }
 
 bool SiMMLVoice::is_pcm_voice() const {
@@ -43,7 +44,7 @@ bool SiMMLVoice::is_suitable_for_fm_voice() const {
 	return update_track_parameters || (SiMMLRefTable::get_instance()->is_suitable_for_fm_voice(module_type) && wave_data == nullptr);
 }
 
-void SiMMLVoice::set_module_type(SiMMLRefTable::ModuleType p_module_type, int p_channel_num, int p_tone_num) {
+void SiMMLVoice::set_module_type(SiONModuleType p_module_type, int p_channel_num, int p_tone_num) {
 	module_type = p_module_type;
 	channel_num = p_channel_num;
 	tone_num = p_tone_num;
@@ -60,12 +61,12 @@ void SiMMLVoice::set_module_type(SiMMLRefTable::ModuleType p_module_type, int p_
 
 void SiMMLVoice::update_track_voice(SiMMLTrack *p_track) {
 	switch (module_type) {
-		case SiMMLRefTable::MT_FM: { // Registered FM voice (%6)
-			p_track->set_channel_module_type(SiMMLRefTable::MT_FM, channel_num);
+		case MT_FM: { // Registered FM voice (%6)
+			p_track->set_channel_module_type(MT_FM, channel_num);
 		} break;
 
-		case SiMMLRefTable::MT_KS: { // PMS Guitar (%11)
-			p_track->set_channel_module_type(SiMMLRefTable::MT_KS, 1);
+		case MT_KS: { // PMS Guitar (%11)
+			p_track->set_channel_module_type(MT_KS, 1);
 			p_track->get_channel()->set_channel_params(channel_params, false);
 			p_track->get_channel()->set_all_release_rate(pms_tension);
 			if (is_pcm_voice()) {
@@ -118,9 +119,10 @@ void SiMMLVoice::update_track_voice(SiMMLTrack *p_track) {
 	}
 }
 
-SiMMLVoice *SiMMLVoice::create_blank_pcm_voice(int p_channel_num) {
-	SiMMLVoice *instance = memnew(SiMMLVoice);
-	instance->module_type = SiMMLRefTable::MT_PCM;
+Ref<SiMMLVoice> SiMMLVoice::create_blank_pcm_voice(int p_channel_num) {
+	Ref<SiMMLVoice> instance;
+	instance.instantiate();
+	instance->module_type = MT_PCM;
 	instance->channel_num = p_channel_num;
 
 	SiOPMWavePCMTable *pcm_table = memnew(SiOPMWavePCMTable);
@@ -135,7 +137,7 @@ void SiMMLVoice::reset() {
 	update_track_parameters = false;
 	update_volumes = false;
 
-	module_type = SiMMLRefTable::MT_ALL;
+	module_type = MT_ALL;
 	channel_num = -1;
 	tone_num = -1;
 	preferable_note = -1;
@@ -192,7 +194,7 @@ void SiMMLVoice::reset() {
 	note_off_note_envelope_step = 1;
 }
 
-void SiMMLVoice::copy_from(SiMMLVoice *p_source) {
+void SiMMLVoice::copy_from(const Ref<SiMMLVoice> &p_source) {
 	chip_type = p_source->chip_type;
 
 	update_track_parameters = p_source->update_track_parameters;

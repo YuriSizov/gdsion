@@ -29,8 +29,8 @@ protected:
 	Vector<SiOPMWaveTable *> _wave_tables;
 	Vector<SiOPMWaveSamplerTable *> _sampler_tables;
 
-	Vector<SiMMLVoice *> _fm_voices;
-	Vector<SiMMLVoice *> _pcm_voices;
+	Vector<Ref<SiMMLVoice>> _fm_voices;
+	Vector<Ref<SiMMLVoice>> _pcm_voices;
 
 public:
 	void register_all();
@@ -48,9 +48,9 @@ public:
 
 	// Voices.
 
-	void set_voice(int p_index, SiMMLVoice *p_voice);
+	void set_voice(int p_index, const Ref<SiMMLVoice> &p_voice);
 	SiOPMChannelParams *get_channel_params(int p_index);
-	SiMMLVoice *get_pcm_voice(int p_index);
+	Ref<SiMMLVoice> get_pcm_voice(int p_index);
 
 	//
 

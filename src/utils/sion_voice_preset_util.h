@@ -24,10 +24,10 @@ class SiOPMWaveTable;
 class SiONVoicePresetUtil : public Object {
 	GDCLASS(SiONVoicePresetUtil, Object)
 
-	HashMap<String, SiONVoice *> _voice_map;
+	HashMap<String, Ref<SiONVoice>> _voice_map;
 
-	List<SiONVoice *> _current_category;
-	HashMap<String, List<SiONVoice *>> _category_map;
+	List<Ref<SiONVoice>> _current_category;
+	HashMap<String, List<Ref<SiONVoice>>> _category_map;
 
 	List<SiOPMWaveTable *> _wave_tables;
 	List<String> _wave_table_hexes;
@@ -48,7 +48,7 @@ class SiONVoicePresetUtil : public Object {
 	void _create_single_drum_voice(const String &p_key, const String &p_name, int p_wave_shape, int p_attack_rate, int p_decay_rate, int p_sustain_rate, int p_release_rate, int p_sustain_level, int p_total_level, int p_release_sweep = 0, double p_fine_multiple = 1);
 
 	void _begin_category(const String &p_key);
-	void _register_voice(const String &p_key, SiONVoice *p_voice);
+	void _register_voice(const String &p_key, const Ref<SiONVoice> &p_voice);
 	void _register_wave_table(const String &p_hex, Vector<int> p_wavelet);
 
 protected:
@@ -67,7 +67,7 @@ public:
 	};
 
 	void generate_voices(uint32_t p_flags = GeneratorFlags::INCLUDE_ALL);
-	SiONVoice *get_voice_preset(const String &p_key) const;
+	Ref<SiONVoice> get_voice_preset(const String &p_key) const;
 
 	SiONVoicePresetUtil(uint32_t p_flags = GeneratorFlags::INCLUDE_ALL);
 	~SiONVoicePresetUtil() {}

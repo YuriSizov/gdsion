@@ -6,8 +6,8 @@
 
 #include "siopm_wave_sampler_table.h"
 
+#include "sion_enums.h"
 #include "processor/siopm_ref_table.h"
-#include "sequencer/simml_ref_table.h"
 
 SiOPMWaveSamplerData *SiOPMWaveSamplerTable::get_sample(int p_sample_number) const {
 	if (_stencil && _stencil->_table[p_sample_number]) {
@@ -47,7 +47,7 @@ void SiOPMWaveSamplerTable::clear(SiOPMWaveSamplerData *p_sample) {
 }
 
 SiOPMWaveSamplerTable::SiOPMWaveSamplerTable() :
-		SiOPMWaveBase(SiMMLRefTable::MT_SAMPLE) {
+		SiOPMWaveBase(MT_SAMPLE) {
 	_table.resize_zeroed(SiOPMRefTable::SAMPLER_DATA_MAX);
 	clear();
 }

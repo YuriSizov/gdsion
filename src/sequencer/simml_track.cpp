@@ -7,6 +7,7 @@
 #include "simml_track.h"
 
 #include <godot_cpp/core/class_db.hpp>
+#include "sion_enums.h"
 #include "processor/channels/siopm_channel_base.h"
 #include "processor/siopm_ref_table.h"
 #include "processor/wave/siopm_wave_sampler_table.h"
@@ -132,7 +133,7 @@ void SiMMLTrack::set_note_immediately(int p_note, int p_sample_length, bool p_sl
 
 // Channel properties.
 
-void SiMMLTrack::set_channel_module_type(SiMMLRefTable::ModuleType p_type, int p_channel_num, int p_tone_num) {
+void SiMMLTrack::set_channel_module_type(SiONModuleType p_type, int p_channel_num, int p_tone_num) {
 	_channel_settings = _table->channel_settings_map[p_type];
 
 	_voice_index = _channel_settings->initialize_tone(this, p_channel_num, _channel->get_buffer_index());
@@ -495,10 +496,10 @@ int SiMMLTrack::prepare_buffer(int p_buffer_length) {
 		SiOPMRefTable::get_instance()->sampler_tables[0]->set_stencil(nullptr);
 
 		SiOPMRefTable::get_instance()->set_stencil_custom_wave_tables(Vector<SiOPMWaveTable *>());
-		SiOPMRefTable::get_instance()->set_stencil_pcm_voices(Vector<SiMMLVoice *>());
+		SiOPMRefTable::get_instance()->set_stencil_pcm_voices(Vector<Ref<SiMMLVoice>>());
 
 		_table->set_stencil_envelopes(Vector<SiMMLEnvelopeTable *>());
-		_table->set_stencil_voices(Vector<SiMMLVoice *>());
+		_table->set_stencil_voices(Vector<Ref<SiMMLVoice>>());
 	}
 
 	// No delay.
@@ -881,8 +882,8 @@ void SiMMLTrack::change_note_length(int p_length) {
 
 void SiMMLTrack::reset(int p_buffer_index) {
 	// Channel module settings.
-	_channel_settings = _table->channel_settings_map[SiMMLRefTable::MT_PSG];
-	_simulator = _table->channel_simulator_map[SiMMLRefTable::MT_PSG];
+	_channel_settings = _table->channel_settings_map[MT_PSG];
+	_simulator = _table->channel_simulator_map[MT_PSG];
 	_channel_number = 0;
 
 	// Initialize channel.

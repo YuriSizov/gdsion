@@ -60,7 +60,6 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_abstract_class<SiOPMChannelBase>();
 	ClassDB::register_abstract_class<SiOPMChannelFM>();
 	ClassDB::register_abstract_class<SiOPMChannelParams>();
-	ClassDB::register_abstract_class<SiOPMRefTable>();
 	ClassDB::register_abstract_class<SiOPMWaveBase>();
 	ClassDB::register_abstract_class<SiOPMWavePCMData>();
 	ClassDB::register_abstract_class<SiOPMWavePCMTable>();
@@ -74,7 +73,6 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_abstract_class<MMLSequencer>();
 	ClassDB::register_abstract_class<MMLSystemCommand>();
 	ClassDB::register_abstract_class<SiMMLData>();
-	ClassDB::register_abstract_class<SiMMLRefTable>();
 	ClassDB::register_abstract_class<SiMMLSequencer>();
 	ClassDB::register_abstract_class<SiMMLTrack>();
 	ClassDB::register_abstract_class<SiMMLVoice>();

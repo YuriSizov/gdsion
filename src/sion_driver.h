@@ -14,6 +14,7 @@
 #include <godot_cpp/templates/hash_map.hpp>
 #include <godot_cpp/templates/list.hpp>
 #include <godot_cpp/templates/vector.hpp>
+#include "sion_voice.h"
 #include "events/sion_event.h"
 #include "events/sion_track_event.h"
 #include "sequencer/base/mml_data.h"
@@ -31,7 +32,6 @@ class SiMMLSequencer;
 class SiMMLTrack;
 class SiONData;
 class SiONDataConverterSMF;
-class SiONVoice;
 class SiOPMModule;
 class SiOPMWaveTable;
 class SiOPMWavePCMData;
@@ -93,7 +93,7 @@ private:
 	Object *_background_sound = nullptr;
 	double _background_loop_point = -1; // sec
 
-	SiONVoice *_background_voice = nullptr;
+	Ref<SiONVoice> _background_voice;
 	SiOPMWaveSamplerData *_background_sample = nullptr;
 	SiMMLTrack *_background_track = nullptr;
 	SiMMLTrack *_background_fade_out_track = nullptr;
@@ -286,10 +286,10 @@ public:
 	SiOPMWaveTable *set_wave_table(int p_index, Vector<double> p_table);
 	SiOPMWavePCMData *set_pcm_wave(int p_index, const Variant &p_data, double p_sampling_note = 69, int p_key_range_from = 0, int p_key_range_to = 127, int p_src_channel_count = 2, int p_channel_count = 0);
 	SiOPMWaveSamplerData *set_sampler_wave(int p_index, const Variant &p_data, bool p_ignore_note_off = false, int p_pan = 0, int p_src_channel_count = 2, int p_channel_count = 0);
-	void set_pcm_voice(int p_index, SiONVoice *p_voice);
+	void set_pcm_voice(int p_index, const Ref<SiONVoice> &p_voice);
 	void set_sampler_table(int p_bank, SiOPMWaveSamplerTable *p_table);
 	void set_envelope_table(int p_index, Vector<int> p_table, int p_loop_point = -1);
-	void set_voice(int p_index, SiONVoice *p_voice);
+	void set_voice(int p_index, const Ref<SiONVoice> &p_voice);
 	void clear_all_user_tables();
 
 	SiMMLTrack *create_user_controllable_track(int p_track_id = 0);
@@ -374,9 +374,9 @@ public:
 	void resume();
 
 	SiMMLTrack *play_sound(int p_sample_number, double p_length = 0, double p_delay = 0, double p_quant = 0, int p_track_id = 0, bool p_disposable = true);
-	SiMMLTrack *note_on(int p_note, SiONVoice *p_voice = nullptr, double p_length = 0, double p_delay = 0, double p_quant = 0, int p_track_id = 0, bool p_disposable = true);
+	SiMMLTrack *note_on(int p_note, const Ref<SiONVoice> &p_voice = Ref<SiONVoice>(), double p_length = 0, double p_delay = 0, double p_quant = 0, int p_track_id = 0, bool p_disposable = true);
 	TypedArray<SiMMLTrack> note_off(int p_note, int p_track_id = 0, double p_delay = 0, double p_quant = 0, bool p_stop_immediately = false);
-	TypedArray<SiMMLTrack> sequence_on(SiONData *p_data, SiONVoice *p_voice = nullptr, double p_length = 0, double p_delay = 0, double p_quant = 1, int p_track_id = 0, bool p_disposable = true);
+	TypedArray<SiMMLTrack> sequence_on(SiONData *p_data, const Ref<SiONVoice> &p_voice = Ref<SiONVoice>(), double p_length = 0, double p_delay = 0, double p_quant = 1, int p_track_id = 0, bool p_disposable = true);
 	TypedArray<SiMMLTrack> sequence_off(int p_track_id, double p_delay = 0, double p_quant = 1, bool p_stop_with_reset = false);
 
 	void fade_in(double p_time);

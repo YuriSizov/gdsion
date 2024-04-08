@@ -9,7 +9,6 @@
 
 #include <godot_cpp/core/object.hpp>
 #include <godot_cpp/templates/vector.hpp>
-#include "sequencer/simml_ref_table.h"
 #include "sequencer/simml_voice.h"
 
 using namespace godot;
@@ -18,6 +17,7 @@ class SiOPMWaveTable;
 class SiOPMWavePCMData;
 class SiOPMWaveSamplerData;
 class SiOPMWaveSamplerTable;
+enum SiONModuleType : int;
 
 // Provides all of voice setting parameters of SiON.
 class SiONVoice : public SiMMLVoice {
@@ -40,7 +40,7 @@ public:
 	static const char *CHIPTYPE_ANALOG_LIKE;
 
 	// NOTE: Godot doesn't support exposing constructors to the API, so we make do with a static factory method. Hopefully this can be fixed at some point.
-	static SiONVoice *create(SiMMLRefTable::ModuleType p_module_type = SiMMLRefTable::MT_ALL, int p_channel_num = 0, int p_attack_rate = 63, int p_release_rate = 63, int p_pitch_shift = 0, int p_connection_type = -1, int p_wave_shape2 = 0, int p_pitch_shift2 = 0);
+	static Ref<SiONVoice> create(SiONModuleType p_module_type = (SiONModuleType)5, int p_channel_num = 0, int p_attack_rate = 63, int p_release_rate = 63, int p_pitch_shift = 0, int p_connection_type = -1, int p_wave_shape2 = 0, int p_pitch_shift2 = 0);
 
 	//
 
@@ -84,10 +84,10 @@ public:
 	void set_amplitude_modulation(int p_depth = 0, int p_end_depth = 0, int p_delay = 0, int p_term = 0);
 	void set_pitch_modulation(int p_depth = 0, int p_end_depth = 0, int p_delay = 0, int p_term = 0);
 
-	SiONVoice *clone();
+	Ref<SiONVoice> clone();
 	virtual void reset() override;
 
-	SiONVoice(SiMMLRefTable::ModuleType p_module_type = SiMMLRefTable::MT_ALL, int p_channel_num = 0, int p_attack_rate = 63, int p_release_rate = 63, int p_pitch_shift = 0, int p_connection_type = -1, int p_wave_shape2 = 0, int p_pitch_shift2 = 0);
+	SiONVoice(SiONModuleType p_module_type = (SiONModuleType)5, int p_channel_num = 0, int p_attack_rate = 63, int p_release_rate = 63, int p_pitch_shift = 0, int p_connection_type = -1, int p_wave_shape2 = 0, int p_pitch_shift2 = 0);
 	~SiONVoice() {}
 };
 

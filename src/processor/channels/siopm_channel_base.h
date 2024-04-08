@@ -10,6 +10,7 @@
 #include <godot_cpp/core/object.hpp>
 #include <godot_cpp/templates/vector.hpp>
 #include <godot_cpp/variant/callable.hpp>
+#include "sion_enums.h"
 #include "processor/channels/siopm_channel_manager.h"
 #include "processor/siopm_ref_table.h"
 #include "templates/singly_linked_list.h"
@@ -148,7 +149,7 @@ public:
 	virtual void set_algorithm(int p_operator_count, int p_algorithm) {}
 	virtual void set_feedback(int p_level, int p_connection) {}
 	virtual void set_parameters(Vector<int> p_params) {}
-	virtual void set_types(int p_pg_type, int p_pt_type) {}
+	virtual void set_types(int p_pg_type, SiONPitchTableType p_pt_type) {}
 	virtual void set_all_attack_rate(int p_value) {}
 	virtual void set_all_release_rate(int p_value) {}
 

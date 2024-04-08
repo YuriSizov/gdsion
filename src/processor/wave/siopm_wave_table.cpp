@@ -7,14 +7,14 @@
 #include "siopm_wave_table.h"
 
 #include <godot_cpp/core/memory.hpp>
+#include "sion_enums.h"
 #include "processor/siopm_ref_table.h"
-#include "sequencer/simml_ref_table.h"
 
 using namespace godot;
 
 List<SiOPMWaveTable *> SiOPMWaveTable::_free_list;
 
-SiOPMWaveTable *SiOPMWaveTable::alloc(Vector<int> p_wavelet, int p_default_pt_type) {
+SiOPMWaveTable *SiOPMWaveTable::alloc(Vector<int> p_wavelet, SiONPitchTableType p_default_pt_type) {
 	SiOPMWaveTable *instance = nullptr;
 	if (!_free_list.is_empty()) {
 		instance = _free_list.back()->get();
@@ -27,7 +27,7 @@ SiOPMWaveTable *SiOPMWaveTable::alloc(Vector<int> p_wavelet, int p_default_pt_ty
 	return instance;
 }
 
-void SiOPMWaveTable::initialize(Vector<int> p_wavelet, int p_default_pitch_table_type) {
+void SiOPMWaveTable::initialize(Vector<int> p_wavelet, SiONPitchTableType p_default_pitch_table_type) {
 	_wavelet = p_wavelet;
 	_default_pitch_table_type = p_default_pitch_table_type;
 
@@ -54,6 +54,6 @@ void SiOPMWaveTable::free() {
 }
 
 SiOPMWaveTable::SiOPMWaveTable() :
-		SiOPMWaveBase(SiMMLRefTable::MT_CUSTOM) {
+		SiOPMWaveBase(MT_CUSTOM) {
 	// Empty.
 }

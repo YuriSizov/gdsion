@@ -10,6 +10,7 @@
 #include <godot_cpp/variant/packed_vector2_array.hpp>
 
 #include "sion_data.h"
+#include "sion_enums.h"
 #include "sion_voice.h"
 #include "effector/si_effector_module.h"
 #include "events/sion_event.h"
@@ -77,7 +78,7 @@ SiOPMWaveTable *SiONDriver::set_wave_table(int p_index, Vector<double> p_table) 
 }
 
 SiOPMWavePCMData *SiONDriver::set_pcm_wave(int p_index, const Variant &p_data, double p_sampling_note, int p_key_range_from, int p_key_range_to, int p_src_channel_count, int p_channel_count) {
-	SiMMLVoice *pcm_voice = SiOPMRefTable::get_instance()->get_global_pcm_voice(p_index & (SiOPMRefTable::PCM_DATA_MAX - 1));
+	Ref<SiMMLVoice> pcm_voice = SiOPMRefTable::get_instance()->get_global_pcm_voice(p_index & (SiOPMRefTable::PCM_DATA_MAX - 1));
 	SiOPMWavePCMTable *pcm_table = Object::cast_to<SiOPMWavePCMTable>(pcm_voice->get_wave_data());
 	SiOPMWavePCMData *pcm_data = memnew(SiOPMWavePCMData(p_data, (int)(p_sampling_note * 64), p_src_channel_count, p_channel_count));
 
@@ -89,7 +90,7 @@ SiOPMWaveSamplerData *SiONDriver::set_sampler_wave(int p_index, const Variant &p
 	return SiOPMRefTable::get_instance()->register_sampler_data(p_index, p_data, p_ignore_note_off, p_pan, p_src_channel_count, p_channel_count);
 }
 
-void SiONDriver::set_pcm_voice(int p_index, SiONVoice *p_voice) {
+void SiONDriver::set_pcm_voice(int p_index, const Ref<SiONVoice> &p_voice) {
 	SiOPMRefTable::get_instance()->set_global_pcm_voice(p_index & (SiOPMRefTable::PCM_DATA_MAX - 1), p_voice);
 }
 
@@ -101,7 +102,7 @@ void SiONDriver::set_envelope_table(int p_index, Vector<int> p_table, int p_loop
 	SiMMLRefTable::get_instance()->register_master_envelope_table(p_index, memnew(SiMMLEnvelopeTable(p_table, p_loop_point)));
 }
 
-void SiONDriver::set_voice(int p_index, SiONVoice *p_voice) {
+void SiONDriver::set_voice(int p_index, const Ref<SiONVoice> &p_voice) {
 	ERR_FAIL_COND_MSG(!p_voice->is_suitable_for_fm_voice(), "SiONDriver: Cannot register a voice that is not suitable to be an FM voice.");
 
 	SiMMLRefTable::get_instance()->register_master_voice(p_index, p_voice);
@@ -663,14 +664,14 @@ SiMMLTrack *SiONDriver::play_sound(int p_sample_number, double p_length, double 
 	}
 
 	if (track) {
-		track->set_channel_module_type(SiMMLRefTable::MT_SAMPLE, 0);
+		track->set_channel_module_type(MT_SAMPLE, 0);
 		track->key_on(p_sample_number, p_length * sequencer->get_parser_settings()->resolution * 0.0625, delay_samples);
 	}
 
 	return track;
 }
 
-SiMMLTrack *SiONDriver::note_on(int p_note, SiONVoice *p_voice, double p_length, double p_delay, double p_quant, int p_track_id, bool p_disposable) {
+SiMMLTrack *SiONDriver::note_on(int p_note, const Ref<SiONVoice> &p_voice, double p_length, double p_delay, double p_quant, int p_track_id, bool p_disposable) {
 	ERR_FAIL_COND_V_MSG(!_is_streaming, nullptr, "SiONDriver: Driver is not streaming, you must call SiONDriver.play() first.");
 
 	int internal_track_id = (p_track_id & SiMMLTrack::TRACK_ID_FILTER) | SiMMLTrack::DRIVER_NOTE;
@@ -700,7 +701,7 @@ SiMMLTrack *SiONDriver::note_on(int p_note, SiONVoice *p_voice, double p_length,
 	}
 
 	if (track) {
-		if (p_voice) {
+		if (p_voice.is_valid()) {
 			p_voice->update_track_voice(track);
 		}
 		track->key_on(p_note, p_length * sequencer->get_parser_settings()->resolution * 0.0625, delay_samples);
@@ -734,7 +735,7 @@ TypedArray<SiMMLTrack> SiONDriver::note_off(int p_note, int p_track_id, double p
 	return tracks;
 }
 
-TypedArray<SiMMLTrack> SiONDriver::sequence_on(SiONData *p_data, SiONVoice *p_voice, double p_length, double p_delay, double p_quant, int p_track_id, bool p_disposable) {
+TypedArray<SiMMLTrack> SiONDriver::sequence_on(SiONData *p_data, const Ref<SiONVoice> &p_voice, double p_length, double p_delay, double p_quant, int p_track_id, bool p_disposable) {
 	int internal_track_id = (p_track_id & SiMMLTrack::TRACK_ID_FILTER) | SiMMLTrack::DRIVER_SEQUENCE;
 	double delay_samples = sequencer->calculate_sample_delay(0, p_delay, p_quant);
 	int length_samples = sequencer->calculate_sample_length(p_length);
@@ -746,7 +747,7 @@ TypedArray<SiMMLTrack> SiONDriver::sequence_on(SiONData *p_data, SiONVoice *p_vo
 		if (sequence->is_active()) {
 			SiMMLTrack *track =	sequencer->create_controllable_track(internal_track_id, p_disposable);
 			track->sequence_on(sequence, length_samples, delay_samples);
-			if (p_voice) {
+			if (p_voice.is_valid()) {
 				p_voice->update_track_voice(track);
 			}
 			tracks.push_back(track);
@@ -1205,6 +1206,70 @@ void SiONDriver::_bind_methods() {
 	ADD_SIGNAL(MethodInfo(SiONTrackEvent::STREAMING_BEAT, PropertyInfo(Variant::OBJECT, "event")));
 	ADD_SIGNAL(MethodInfo(SiONTrackEvent::BPM_CHANGED, PropertyInfo(Variant::OBJECT, "event")));
 	ADD_SIGNAL(MethodInfo(SiONTrackEvent::USER_DEFINED, PropertyInfo(Variant::OBJECT, "event")));
+
+	//
+
+	BIND_ENUM_CONSTANT(MT_PSG);
+	BIND_ENUM_CONSTANT(MT_APU);
+	BIND_ENUM_CONSTANT(MT_NOISE);
+	BIND_ENUM_CONSTANT(MT_MA3);
+	BIND_ENUM_CONSTANT(MT_CUSTOM);
+	BIND_ENUM_CONSTANT(MT_ALL);
+	BIND_ENUM_CONSTANT(MT_FM);
+	BIND_ENUM_CONSTANT(MT_PCM);
+	BIND_ENUM_CONSTANT(MT_PULSE);
+	BIND_ENUM_CONSTANT(MT_RAMP);
+	BIND_ENUM_CONSTANT(MT_SAMPLE);
+	BIND_ENUM_CONSTANT(MT_KS);
+	BIND_ENUM_CONSTANT(MT_GB);
+	BIND_ENUM_CONSTANT(MT_VRC6);
+	BIND_ENUM_CONSTANT(MT_SID);
+	BIND_ENUM_CONSTANT(MT_FM_OPM);
+	BIND_ENUM_CONSTANT(MT_FM_OPN);
+	BIND_ENUM_CONSTANT(MT_FM_OPNA);
+	BIND_ENUM_CONSTANT(MT_FM_OPLL);
+	BIND_ENUM_CONSTANT(MT_FM_OPL3);
+	BIND_ENUM_CONSTANT(MT_FM_MA3);
+	BIND_ENUM_CONSTANT(MT_MAX);
+
+	BIND_ENUM_CONSTANT(PT_OPM);
+	BIND_ENUM_CONSTANT(PT_PCM);
+	BIND_ENUM_CONSTANT(PT_PSG);
+	BIND_ENUM_CONSTANT(PT_OPM_NOISE);
+	BIND_ENUM_CONSTANT(PT_PSG_NOISE);
+	BIND_ENUM_CONSTANT(PT_APU_NOISE);
+	BIND_ENUM_CONSTANT(PT_GB_NOISE);
+	BIND_ENUM_CONSTANT(PT_MAX);
+
+	BIND_ENUM_CONSTANT(PG_SINE);
+	BIND_ENUM_CONSTANT(PG_SAW_UP);
+	BIND_ENUM_CONSTANT(PG_SAW_DOWN);
+	BIND_ENUM_CONSTANT(PG_TRIANGLE_FC);
+	BIND_ENUM_CONSTANT(PG_TRIANGLE);
+	BIND_ENUM_CONSTANT(PG_SQUARE);
+	BIND_ENUM_CONSTANT(PG_NOISE);
+	BIND_ENUM_CONSTANT(PG_KNMBSMM);
+	BIND_ENUM_CONSTANT(PG_SYNC_LOW);
+	BIND_ENUM_CONSTANT(PG_SYNC_HIGH);
+	BIND_ENUM_CONSTANT(PG_OFFSET);
+	BIND_ENUM_CONSTANT(PG_SAW_VC6);
+	BIND_ENUM_CONSTANT(PG_NOISE_WHITE);
+	BIND_ENUM_CONSTANT(PG_NOISE_PULSE);
+	BIND_ENUM_CONSTANT(PG_NOISE_SHORT);
+	BIND_ENUM_CONSTANT(PG_NOISE_HIPAS);
+	BIND_ENUM_CONSTANT(PG_NOISE_PINK);
+	BIND_ENUM_CONSTANT(PG_NOISE_GB_SHORT);
+	BIND_ENUM_CONSTANT(PG_PC_NZ_16BIT);
+	BIND_ENUM_CONSTANT(PG_PC_NZ_SHORT);
+	BIND_ENUM_CONSTANT(PG_PC_NZ_OPM);
+	BIND_ENUM_CONSTANT(PG_MA3_WAVE);
+	BIND_ENUM_CONSTANT(PG_PULSE);
+	BIND_ENUM_CONSTANT(PG_PULSE_SPIKE);
+	BIND_ENUM_CONSTANT(PG_RAMP);
+	BIND_ENUM_CONSTANT(PG_CUSTOM);
+	BIND_ENUM_CONSTANT(PG_PCM);
+	BIND_ENUM_CONSTANT(PG_USER_CUSTOM);
+	BIND_ENUM_CONSTANT(PG_USER_PCM);
 }
 
 SiONDriver::SiONDriver(int p_buffer_length, int p_channel_count, int p_sample_rate, int p_bitrate) {
@@ -1242,7 +1307,8 @@ SiONDriver::SiONDriver(int p_buffer_length, int p_channel_count, int p_sample_ra
 
 	// Background sound.
 	{
-		_background_voice = memnew(SiONVoice(SiMMLRefTable::MT_SAMPLE));
+		Ref<SiONVoice> voice = memnew(SiONVoice(MT_SAMPLE));
+		_background_voice = voice;
 		_background_voice->set_update_volumes(true);
 		_background_fader = memnew(FaderUtil);
 		_background_fader->set_callback(Callable(this, "_fade_background_callback"));

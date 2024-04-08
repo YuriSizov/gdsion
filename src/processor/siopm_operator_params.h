@@ -8,6 +8,7 @@
 #define SIOPM_OPERATOR_PARAMS_H
 
 #include <godot_cpp/variant/string.hpp>
+#include "sion_enums.h"
 
 using namespace godot;
 
@@ -18,9 +19,9 @@ class SiOPMOperatorParams {
 	friend class TranslatorUtil;
 
 	// Pulse generator type [0,511]
-	int pulse_generator_type = 0;
+	int pulse_generator_type = SiONPulseGeneratorType::PG_SINE;
 	// Pitch table type [0,7]
-	int pitch_table_type = 0;
+	SiONPitchTableType pitch_table_type = SiONPitchTableType::PT_OPM;
 
 	// Attack rate [0,63]
 	int attack_rate = 0;
@@ -62,8 +63,8 @@ class SiOPMOperatorParams {
 public:
 	int get_pulse_generator_type() const { return pulse_generator_type; }
 	void set_pulse_generator_type(int p_type);
-	int get_pitch_table_type() const { return pitch_table_type; }
-	void set_pitch_table_type(int p_type) { pitch_table_type = p_type; }
+	SiONPitchTableType get_pitch_table_type() const { return pitch_table_type; }
+	void set_pitch_table_type(SiONPitchTableType p_type) { pitch_table_type = p_type; }
 
 	int get_attack_rate() const { return attack_rate; }
 	void set_attack_rate(int p_value) { attack_rate = p_value; }

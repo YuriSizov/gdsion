@@ -7,8 +7,8 @@
 #include "siopm_wave_pcm_data.h"
 
 #include <godot_cpp/core/math.hpp>
+#include "sion_enums.h"
 #include "processor/siopm_ref_table.h"
-#include "sequencer/simml_ref_table.h"
 #include "utils/transformer_util.h"
 
 using namespace godot;
@@ -147,7 +147,7 @@ void SiOPMWavePCMData::loop_tail_samples(int p_sample_count, int p_tail_margin, 
 //
 
 SiOPMWavePCMData::SiOPMWavePCMData(const Variant &p_data, int p_sampling_pitch, int p_src_channel_count, int p_channel_count) :
-		SiOPMWaveBase(SiMMLRefTable::MT_PCM) {
+		SiOPMWaveBase(MT_PCM) {
 	if (!p_data) {
 		return;
 	}
