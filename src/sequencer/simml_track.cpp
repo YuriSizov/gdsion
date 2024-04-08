@@ -8,7 +8,7 @@
 
 #include <godot_cpp/core/class_db.hpp>
 #include "processor/channels/siopm_channel_base.h"
-#include "processor/siopm_table.h"
+#include "processor/siopm_ref_table.h"
 #include "processor/wave/siopm_wave_sampler_table.h"
 #include "processor/wave/siopm_wave_table.h"
 #include "sequencer/base/mml_executor.h"
@@ -16,7 +16,7 @@
 #include "sequencer/simml_channel_settings.h"
 #include "sequencer/simml_data.h"
 #include "sequencer/simml_envelope_table.h"
-#include "sequencer/simml_table.h"
+#include "sequencer/simml_ref_table.h"
 #include "sequencer/simml_voice.h"
 
 SinglyLinkedList<int> *SiMMLTrack::_envelope_zero_table = nullptr;
@@ -72,18 +72,18 @@ bool SiMMLTrack::is_finished() const {
 }
 
 void SiMMLTrack::set_velocity_mode(int p_mode) {
-	_velocity_mode = (p_mode >= 0 && p_mode < SiOPMTable::VM_MAX) ? p_mode : SiOPMTable::VM_LINEAR;
+	_velocity_mode = (p_mode >= 0 && p_mode < SiOPMRefTable::VM_MAX) ? p_mode : SiOPMRefTable::VM_LINEAR;
 
-	int (&velocity_table)[SiOPMTable::TL_TABLE_SIZE] = SiOPMTable::get_instance()->eg_total_level_tables[_velocity_mode];
-	int (&expression_table)[SiOPMTable::TL_TABLE_SIZE] = SiOPMTable::get_instance()->eg_total_level_tables[_expression_mode];
+	int (&velocity_table)[SiOPMRefTable::TL_TABLE_SIZE] = SiOPMRefTable::get_instance()->eg_total_level_tables[_velocity_mode];
+	int (&expression_table)[SiOPMRefTable::TL_TABLE_SIZE] = SiOPMRefTable::get_instance()->eg_total_level_tables[_expression_mode];
 	_channel->set_volume_tables(velocity_table, expression_table);
 }
 
 void SiMMLTrack::set_expression_mode(int p_mode) {
-	_expression_mode = (p_mode >= 0 && p_mode < SiOPMTable::VM_MAX) ? p_mode : SiOPMTable::VM_LINEAR;
+	_expression_mode = (p_mode >= 0 && p_mode < SiOPMRefTable::VM_MAX) ? p_mode : SiOPMRefTable::VM_LINEAR;
 
-	int (&velocity_table)[SiOPMTable::TL_TABLE_SIZE] = SiOPMTable::get_instance()->eg_total_level_tables[_velocity_mode];
-	int (&expression_table)[SiOPMTable::TL_TABLE_SIZE] = SiOPMTable::get_instance()->eg_total_level_tables[_expression_mode];
+	int (&velocity_table)[SiOPMRefTable::TL_TABLE_SIZE] = SiOPMRefTable::get_instance()->eg_total_level_tables[_velocity_mode];
+	int (&expression_table)[SiOPMRefTable::TL_TABLE_SIZE] = SiOPMRefTable::get_instance()->eg_total_level_tables[_expression_mode];
 	_channel->set_volume_tables(velocity_table, expression_table);
 }
 
@@ -132,7 +132,7 @@ void SiMMLTrack::set_note_immediately(int p_note, int p_sample_length, bool p_sl
 
 // Channel properties.
 
-void SiMMLTrack::set_channel_module_type(SiMMLTable::ModuleType p_type, int p_channel_num, int p_tone_num) {
+void SiMMLTrack::set_channel_module_type(SiMMLRefTable::ModuleType p_type, int p_channel_num, int p_tone_num) {
 	_channel_settings = _table->channel_settings_map[p_type];
 
 	_voice_index = _channel_settings->initialize_tone(this, p_channel_num, _channel->get_buffer_index());
@@ -247,7 +247,7 @@ void SiMMLTrack::set_portament(int p_frame) {
 }
 
 void SiMMLTrack::set_envelope_fps(int p_fps) {
-	_envelope_interval = SiOPMTable::get_instance()->sampling_rate / p_fps;
+	_envelope_interval = SiOPMRefTable::get_instance()->sampling_rate / p_fps;
 }
 
 void SiMMLTrack::set_release_sweep(int p_sweep) {
@@ -492,10 +492,10 @@ int SiMMLTrack::prepare_buffer(int p_buffer_length) {
 	if (_mml_data) {
 		_mml_data->register_all();
 	} else {
-		SiOPMTable::get_instance()->sampler_tables[0]->set_stencil(nullptr);
+		SiOPMRefTable::get_instance()->sampler_tables[0]->set_stencil(nullptr);
 
-		SiOPMTable::get_instance()->set_stencil_custom_wave_tables(Vector<SiOPMWaveTable *>());
-		SiOPMTable::get_instance()->set_stencil_pcm_voices(Vector<SiMMLVoice *>());
+		SiOPMRefTable::get_instance()->set_stencil_custom_wave_tables(Vector<SiOPMWaveTable *>());
+		SiOPMRefTable::get_instance()->set_stencil_pcm_voices(Vector<SiMMLVoice *>());
 
 		_table->set_stencil_envelopes(Vector<SiMMLEnvelopeTable *>());
 		_table->set_stencil_voices(Vector<SiMMLVoice *>());
@@ -881,8 +881,8 @@ void SiMMLTrack::change_note_length(int p_length) {
 
 void SiMMLTrack::reset(int p_buffer_index) {
 	// Channel module settings.
-	_channel_settings = _table->channel_settings_map[SiMMLTable::MT_PSG];
-	_simulator = _table->channel_simulator_map[SiMMLTable::MT_PSG];
+	_channel_settings = _table->channel_settings_map[SiMMLRefTable::MT_PSG];
+	_simulator = _table->channel_simulator_map[SiMMLRefTable::MT_PSG];
 	_channel_number = 0;
 
 	// Initialize channel.
@@ -893,8 +893,8 @@ void SiMMLTrack::reset(int p_buffer_index) {
 		_expression_mode = _mml_data->get_default_expression_mode();
 	} else {
 		_velocity_shift = 4;
-		_velocity_mode = SiOPMTable::VM_LINEAR;
-		_expression_mode = SiOPMTable::VM_LINEAR;
+		_velocity_mode = SiOPMRefTable::VM_LINEAR;
+		_expression_mode = SiOPMRefTable::VM_LINEAR;
 	}
 
 	_velocity = 256;
@@ -905,8 +905,8 @@ void SiMMLTrack::reset(int p_buffer_index) {
 	_channel = nullptr;
 	_voice_index = _channel_settings->initialize_tone(this, INT32_MIN, p_buffer_index); // This sets the channel.
 
-	int (&velocity_table)[SiOPMTable::TL_TABLE_SIZE] = SiOPMTable::get_instance()->eg_total_level_tables[_velocity_mode];
-	int (&expression_table)[SiOPMTable::TL_TABLE_SIZE] = SiOPMTable::get_instance()->eg_total_level_tables[_expression_mode];
+	int (&velocity_table)[SiOPMRefTable::TL_TABLE_SIZE] = SiOPMRefTable::get_instance()->eg_total_level_tables[_velocity_mode];
+	int (&expression_table)[SiOPMRefTable::TL_TABLE_SIZE] = SiOPMRefTable::get_instance()->eg_total_level_tables[_expression_mode];
 	_channel->set_volume_tables(velocity_table, expression_table);
 
 	// Initialize parameters.
@@ -1010,7 +1010,7 @@ SiMMLTrack::SiMMLTrack() {
 		_envelope_zero_table = SinglyLinkedList<int>::alloc_ring(1);
 	}
 
-	_table = SiMMLTable::get_instance();
+	_table = SiMMLRefTable::get_instance();
 	_executor = memnew(MMLExecutor);
 
 	_setting_envelope_exp.resize_zeroed(2);

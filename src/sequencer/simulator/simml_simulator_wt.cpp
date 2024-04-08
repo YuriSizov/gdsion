@@ -6,10 +6,10 @@
 
 #include "simml_simulator_wt.h"
 
-#include "processor/siopm_table.h"
-#include "sequencer/simml_table.h"
+#include "processor/siopm_ref_table.h"
+#include "sequencer/simml_ref_table.h"
 
 SiMMLSimulatorWT::SiMMLSimulatorWT() :
-		SiMMLSimulatorBase(SiMMLTable::MT_CUSTOM, 1, memnew(SiMMLSimulatorVoiceSet(256, SiOPMTable::PG_CUSTOM))) {
+		SiMMLSimulatorBase(SiMMLRefTable::MT_CUSTOM, 1, memnew(SiMMLSimulatorVoiceSet(256, SiOPMRefTable::PG_CUSTOM))) {
 	// Empty.
 }

@@ -15,7 +15,7 @@ using namespace godot;
 
 class MMLExecutorConnector;
 class MMLSequenceGroup;
-class SiMMLTable;
+class SiMMLRefTable;
 class SiMMLTrack;
 class SiOPMChannelParams;
 class SiOPMModule;
@@ -29,7 +29,7 @@ class SiMMLSequencer : public MMLSequencer {
 	static const int MACRO_SIZE = 26;
 	static const int DEFAULT_MAX_TRACK_COUNT = 128;
 
-	SiMMLTable *_table = nullptr;
+	SiMMLRefTable *_table = nullptr;
 	SiOPMModule *_module = nullptr;
 	MMLExecutorConnector *_connector = nullptr;
 

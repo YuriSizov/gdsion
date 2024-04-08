@@ -4,14 +4,15 @@
 /* Provided under MIT                              */
 /***************************************************/
 
-#include "simml_table.h"
+#include "simml_ref_table.h"
 
+#include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/core/memory.hpp>
 #include "sion_voice.h"
 #include "processor/channels/siopm_channel_manager.h"
 #include "processor/siopm_channel_params.h"
 #include "processor/siopm_operator_params.h"
-#include "processor/siopm_table.h"
+#include "processor/siopm_ref_table.h"
 #include "sequencer/simml_channel_settings.h"
 #include "sequencer/simml_envelope_table.h"
 #include "sequencer/simulator/simml_simulator_base.h"
@@ -41,20 +42,20 @@
 
 using namespace godot;
 
-SiMMLTable *SiMMLTable::_instance = nullptr;
+SiMMLRefTable *SiMMLRefTable::_instance = nullptr;
 
-void SiMMLTable::initialize() {
+void SiMMLRefTable::initialize() {
 	if (_instance) {
 		return;
 	}
 
 	// Sets the instance internally.
-	memnew(SiMMLTable);
+	memnew(SiMMLRefTable);
 }
 
 //
 
-void SiMMLTable::reset_all_user_tables() {
+void SiMMLRefTable::reset_all_user_tables() {
 	for (int i = 0; i < ENVELOPE_TABLE_MAX; i++) {
 		if (_master_envelopes[i]) {
 			_master_envelopes[i]->free();
@@ -68,17 +69,17 @@ void SiMMLTable::reset_all_user_tables() {
 	}
 }
 
-void SiMMLTable::register_master_envelope_table(int p_index, SiMMLEnvelopeTable *p_table) {
+void SiMMLRefTable::register_master_envelope_table(int p_index, SiMMLEnvelopeTable *p_table) {
 	ERR_FAIL_INDEX(p_index, ENVELOPE_TABLE_MAX);
 	_master_envelopes.write[p_index] = p_table;
 }
 
-void SiMMLTable::register_master_voice(int p_index, SiMMLVoice *p_voice) {
+void SiMMLRefTable::register_master_voice(int p_index, SiMMLVoice *p_voice) {
 	ERR_FAIL_INDEX(p_index, VOICE_MAX);
 	_master_voices.write[p_index] = p_voice;
 }
 
-SiMMLEnvelopeTable *SiMMLTable::get_envelope_table(int p_index) {
+SiMMLEnvelopeTable *SiMMLRefTable::get_envelope_table(int p_index) {
 	ERR_FAIL_INDEX_V(p_index, ENVELOPE_TABLE_MAX, nullptr);
 
 	if (p_index < _stencil_envelopes.size() && _stencil_envelopes[p_index]) {
@@ -87,7 +88,7 @@ SiMMLEnvelopeTable *SiMMLTable::get_envelope_table(int p_index) {
 	return _master_envelopes[p_index];
 }
 
-SiMMLVoice *SiMMLTable::get_voice(int p_index) {
+SiMMLVoice *SiMMLRefTable::get_voice(int p_index) {
 	ERR_FAIL_INDEX_V(p_index, VOICE_MAX, nullptr);
 
 	if (p_index < _stencil_voices.size() && _stencil_voices[p_index]) {
@@ -96,7 +97,7 @@ SiMMLVoice *SiMMLTable::get_voice(int p_index) {
 	return _master_voices[p_index];
 }
 
-int SiMMLTable::get_pulse_generator_type(ModuleType p_module_type, int p_channel_num, int p_tone_num) {
+int SiMMLRefTable::get_pulse_generator_type(ModuleType p_module_type, int p_channel_num, int p_tone_num) {
 	SiMMLChannelSettings *channel_settings = channel_settings_map[p_module_type];
 	ERR_FAIL_COND_V(!channel_settings, -1);
 
@@ -119,7 +120,7 @@ int SiMMLTable::get_pulse_generator_type(ModuleType p_module_type, int p_channel
 	return pg_type_list[tone_num];
 }
 
-bool SiMMLTable::is_suitable_for_fm_voice(ModuleType p_module_type) {
+bool SiMMLRefTable::is_suitable_for_fm_voice(ModuleType p_module_type) {
 	SiMMLChannelSettings *channel_settings = channel_settings_map[p_module_type];
 	ERR_FAIL_COND_V(!channel_settings, false);
 
@@ -128,7 +129,7 @@ bool SiMMLTable::is_suitable_for_fm_voice(ModuleType p_module_type) {
 
 //
 
-void SiMMLTable::_fill_tss_log_table(String (&r_table)[256], int p_start, int p_step, int p_v0, int p_v255) {
+void SiMMLRefTable::_fill_tss_log_table(String (&r_table)[256], int p_start, int p_step, int p_v0, int p_v255) {
 	int value = p_start << 16;
 	int step = p_step << 16;
 
@@ -147,7 +148,7 @@ void SiMMLTable::_fill_tss_log_table(String (&r_table)[256], int p_start, int p_
 }
 
 template <size_t S>
-Vector<SiMMLVoice *> SiMMLTable::_setup_ym2413_default_voices(uint32_t (&p_register_map)[S]) {
+Vector<SiMMLVoice *> SiMMLRefTable::_setup_ym2413_default_voices(uint32_t (&p_register_map)[S]) {
 	Vector<SiMMLVoice *> voices;
 	voices.resize_zeroed(S >> 1);
 
@@ -160,12 +161,12 @@ Vector<SiMMLVoice *> SiMMLTable::_setup_ym2413_default_voices(uint32_t (&p_regis
 	return voices;
 }
 
-void SiMMLTable::_dump_ym2413_register(SiMMLVoice *p_voice, uint32_t p_u0, uint32_t p_u1) {
+void SiMMLRefTable::_dump_ym2413_register(SiMMLVoice *p_voice, uint32_t p_u0, uint32_t p_u1) {
 	SiOPMChannelParams *channel_params = p_voice->get_channel_params();
 	SiOPMOperatorParams *op_params0 = channel_params->get_operator_params(0);
 	SiOPMOperatorParams *op_params1 = channel_params->get_operator_params(1);
 
-	p_voice->set_module_type(SiMMLTable::MT_FM);
+	p_voice->set_module_type(SiMMLRefTable::MT_FM);
 	p_voice->set_channel_num(0);
 	p_voice->set_tone_num(-1);
 	p_voice->set_chip_type(SiONVoice::CHIPTYPE_OPL);
@@ -189,8 +190,8 @@ void SiMMLTable::_dump_ym2413_register(SiMMLVoice *p_voice, uint32_t p_u0, uint3
 
 	channel_params->set_feedback((p_u0 >> 0) & 7);
 
-	op_params0->set_pulse_generator_type(SiOPMTable::PG_MA3_WAVE + ((p_u0 >> 3)&1));
-	op_params1->set_pulse_generator_type(SiOPMTable::PG_MA3_WAVE + ((p_u0 >> 4)&1));
+	op_params0->set_pulse_generator_type(SiOPMRefTable::PG_MA3_WAVE + ((p_u0 >> 3)&1));
+	op_params1->set_pulse_generator_type(SiOPMRefTable::PG_MA3_WAVE + ((p_u0 >> 4)&1));
 
 	op_params0->set_attack_rate(((p_u1 >> 28) & 15) << 2);
 	op_params1->set_attack_rate(((p_u1 >> 20) & 15) << 2);
@@ -206,39 +207,66 @@ void SiMMLTable::_dump_ym2413_register(SiMMLVoice *p_voice, uint32_t p_u0, uint3
 	op_params1->set_total_level(0);
 }
 
-SiMMLTable::SiMMLTable() {
+//
+
+void SiMMLRefTable::_bind_methods() {
+	BIND_ENUM_CONSTANT(MT_PSG);
+	BIND_ENUM_CONSTANT(MT_APU);
+	BIND_ENUM_CONSTANT(MT_NOISE);
+	BIND_ENUM_CONSTANT(MT_MA3);
+	BIND_ENUM_CONSTANT(MT_CUSTOM);
+	BIND_ENUM_CONSTANT(MT_ALL);
+	BIND_ENUM_CONSTANT(MT_FM);
+	BIND_ENUM_CONSTANT(MT_PCM);
+	BIND_ENUM_CONSTANT(MT_PULSE);
+	BIND_ENUM_CONSTANT(MT_RAMP);
+	BIND_ENUM_CONSTANT(MT_SAMPLE);
+	BIND_ENUM_CONSTANT(MT_KS);
+	BIND_ENUM_CONSTANT(MT_GB);
+	BIND_ENUM_CONSTANT(MT_VRC6);
+	BIND_ENUM_CONSTANT(MT_SID);
+	BIND_ENUM_CONSTANT(MT_FM_OPM);
+	BIND_ENUM_CONSTANT(MT_FM_OPN);
+	BIND_ENUM_CONSTANT(MT_FM_OPNA);
+	BIND_ENUM_CONSTANT(MT_FM_OPLL);
+	BIND_ENUM_CONSTANT(MT_FM_OPL3);
+	BIND_ENUM_CONSTANT(MT_FM_MA3);
+	BIND_ENUM_CONSTANT(MT_MAX);
+}
+
+SiMMLRefTable::SiMMLRefTable() {
 	if (!_instance) {
 		_instance = this; // Do this early so it can be self-referenced.
 	}
 
 	// Channel module settings map.
 	{
-		channel_settings_map[MT_PSG]    = memnew(SiMMLChannelSettings(MT_PSG,    SiOPMTable::PG_SQUARE,      3,   1, 4));   // PSG
-		channel_settings_map[MT_APU]    = memnew(SiMMLChannelSettings(MT_APU,    SiOPMTable::PG_PULSE,       11,  2, 4));   // FC pAPU
-		channel_settings_map[MT_NOISE]  = memnew(SiMMLChannelSettings(MT_NOISE,  SiOPMTable::PG_NOISE_WHITE, 16,  1, 16));  // noise
-		channel_settings_map[MT_MA3]    = memnew(SiMMLChannelSettings(MT_MA3,    SiOPMTable::PG_MA3_WAVE,    32,  1, 32));  // MA3
-		channel_settings_map[MT_CUSTOM] = memnew(SiMMLChannelSettings(MT_CUSTOM, SiOPMTable::PG_CUSTOM,      256, 1, 256)); // SCC / custom wave table
-		channel_settings_map[MT_ALL]    = memnew(SiMMLChannelSettings(MT_ALL,    SiOPMTable::PG_SINE,        512, 1, 512)); // all pgTypes
-		channel_settings_map[MT_FM]     = memnew(SiMMLChannelSettings(MT_FM,     SiOPMTable::PG_SINE,        1,   1, 1));   // FM sound module
-		channel_settings_map[MT_PCM]    = memnew(SiMMLChannelSettings(MT_PCM,    SiOPMTable::PG_PCM,         128, 1, 128)); // PCM
-		channel_settings_map[MT_PULSE]  = memnew(SiMMLChannelSettings(MT_PULSE,  SiOPMTable::PG_PULSE,       32,  1, 32));  // pulse
-		channel_settings_map[MT_RAMP]   = memnew(SiMMLChannelSettings(MT_RAMP,   SiOPMTable::PG_RAMP,        128, 1, 128)); // ramp
-		channel_settings_map[MT_SAMPLE] = memnew(SiMMLChannelSettings(MT_SAMPLE, 0,                          4,   1, 4));   // sampler. this is based on SiOPMChannelSampler
-		channel_settings_map[MT_KS]     = memnew(SiMMLChannelSettings(MT_KS,     0,                          3,   1, 3));   // karplus strong (0-2 to choose seed generator algrithm)
-		channel_settings_map[MT_GB]     = memnew(SiMMLChannelSettings(MT_GB,     SiOPMTable::PG_PULSE,       11,  2, 4));   // Gameboy
-		channel_settings_map[MT_VRC6]   = memnew(SiMMLChannelSettings(MT_VRC6,   SiOPMTable::PG_PULSE,       9,   1, 3));   // VRC6
-		channel_settings_map[MT_SID]    = memnew(SiMMLChannelSettings(MT_SID,    SiOPMTable::PG_PULSE,       12,  1, 3));   // SID
+		channel_settings_map[MT_PSG]    = memnew(SiMMLChannelSettings(MT_PSG,    SiOPMRefTable::PG_SQUARE,      3,   1, 4));   // PSG
+		channel_settings_map[MT_APU]    = memnew(SiMMLChannelSettings(MT_APU,    SiOPMRefTable::PG_PULSE,       11,  2, 4));   // FC pAPU
+		channel_settings_map[MT_NOISE]  = memnew(SiMMLChannelSettings(MT_NOISE,  SiOPMRefTable::PG_NOISE_WHITE, 16,  1, 16));  // noise
+		channel_settings_map[MT_MA3]    = memnew(SiMMLChannelSettings(MT_MA3,    SiOPMRefTable::PG_MA3_WAVE,    32,  1, 32));  // MA3
+		channel_settings_map[MT_CUSTOM] = memnew(SiMMLChannelSettings(MT_CUSTOM, SiOPMRefTable::PG_CUSTOM,      256, 1, 256)); // SCC / custom wave table
+		channel_settings_map[MT_ALL]    = memnew(SiMMLChannelSettings(MT_ALL,    SiOPMRefTable::PG_SINE,        512, 1, 512)); // all pgTypes
+		channel_settings_map[MT_FM]     = memnew(SiMMLChannelSettings(MT_FM,     SiOPMRefTable::PG_SINE,        1,   1, 1));   // FM sound module
+		channel_settings_map[MT_PCM]    = memnew(SiMMLChannelSettings(MT_PCM,    SiOPMRefTable::PG_PCM,         128, 1, 128)); // PCM
+		channel_settings_map[MT_PULSE]  = memnew(SiMMLChannelSettings(MT_PULSE,  SiOPMRefTable::PG_PULSE,       32,  1, 32));  // pulse
+		channel_settings_map[MT_RAMP]   = memnew(SiMMLChannelSettings(MT_RAMP,   SiOPMRefTable::PG_RAMP,        128, 1, 128)); // ramp
+		channel_settings_map[MT_SAMPLE] = memnew(SiMMLChannelSettings(MT_SAMPLE, SiOPMRefTable::PG_SINE,        4,   1, 4));   // sampler. this is based on SiOPMChannelSampler
+		channel_settings_map[MT_KS]     = memnew(SiMMLChannelSettings(MT_KS,     SiOPMRefTable::PG_SINE,        3,   1, 3));   // karplus strong (0-2 to choose seed generator algrithm)
+		channel_settings_map[MT_GB]     = memnew(SiMMLChannelSettings(MT_GB,     SiOPMRefTable::PG_PULSE,       11,  2, 4));   // Gameboy
+		channel_settings_map[MT_VRC6]   = memnew(SiMMLChannelSettings(MT_VRC6,   SiOPMRefTable::PG_PULSE,       9,   1, 3));   // VRC6
+		channel_settings_map[MT_SID]    = memnew(SiMMLChannelSettings(MT_SID,    SiOPMRefTable::PG_PULSE,       12,  1, 3));   // SID
 
 		// PSG settings.
 		{
 			SiMMLChannelSettings *cs = channel_settings_map[MT_PSG];
-			cs->set_pg_type(0, SiOPMTable::PG_SQUARE);
-			cs->set_pg_type(1, SiOPMTable::PG_NOISE_PULSE);
-			cs->set_pg_type(2, SiOPMTable::PG_PC_NZ_16BIT);
+			cs->set_pg_type(0, SiOPMRefTable::PG_SQUARE);
+			cs->set_pg_type(1, SiOPMRefTable::PG_NOISE_PULSE);
+			cs->set_pg_type(2, SiOPMRefTable::PG_PC_NZ_16BIT);
 
-			cs->set_pt_type(0, SiOPMTable::PT_PSG);
-			cs->set_pt_type(1, SiOPMTable::PT_PSG_NOISE);
-			cs->set_pt_type(2, SiOPMTable::PT_PSG);
+			cs->set_pt_type(0, SiOPMRefTable::PT_PSG);
+			cs->set_pt_type(1, SiOPMRefTable::PT_PSG_NOISE);
+			cs->set_pt_type(2, SiOPMRefTable::PT_PSG);
 
 			cs->set_voice_index(0, 0);
 			cs->set_voice_index(1, 0);
@@ -249,15 +277,15 @@ SiMMLTable::SiMMLTable() {
 		// APU settings.
 		{
 			SiMMLChannelSettings *cs = channel_settings_map[MT_APU];
-			cs->set_pg_type(8, SiOPMTable::PG_TRIANGLE_FC);
-			cs->set_pg_type(9, SiOPMTable::PG_NOISE_PULSE);
-			cs->set_pg_type(10, SiOPMTable::PG_NOISE_SHORT);
+			cs->set_pg_type(8, SiOPMRefTable::PG_TRIANGLE_FC);
+			cs->set_pg_type(9, SiOPMRefTable::PG_NOISE_PULSE);
+			cs->set_pg_type(10, SiOPMRefTable::PG_NOISE_SHORT);
 
 			for (int i = 0; i < 9;  i++) {
-				cs->set_pt_type(i, SiOPMTable::PT_PSG);
+				cs->set_pt_type(i, SiOPMRefTable::PT_PSG);
 			}
 			for (int i = 9; i < 11; i++) {
-				cs->set_pt_type(i, SiOPMTable::PT_APU_NOISE);
+				cs->set_pt_type(i, SiOPMRefTable::PT_APU_NOISE);
 			}
 
 			cs->set_initial_voice_index(1);
@@ -270,15 +298,15 @@ SiMMLTable::SiMMLTable() {
 		// GB settings.
 		{
 			SiMMLChannelSettings *cs = channel_settings_map[MT_GB];
-			cs->set_pg_type(8, SiOPMTable::PG_CUSTOM);
-			cs->set_pg_type(9, SiOPMTable::PG_NOISE_PULSE);
-			cs->set_pg_type(10, SiOPMTable::PG_NOISE_GB_SHORT);
+			cs->set_pg_type(8, SiOPMRefTable::PG_CUSTOM);
+			cs->set_pg_type(9, SiOPMRefTable::PG_NOISE_PULSE);
+			cs->set_pg_type(10, SiOPMRefTable::PG_NOISE_GB_SHORT);
 
 			for (int i = 0; i < 9;  i++) {
-				cs->set_pt_type(i, SiOPMTable::PT_PSG);
+				cs->set_pt_type(i, SiOPMRefTable::PT_PSG);
 			}
 			for (int i = 9; i < 11; i++) {
-				cs->set_pt_type(i, SiOPMTable::PT_GB_NOISE);
+				cs->set_pt_type(i, SiOPMRefTable::PT_GB_NOISE);
 			}
 
 			cs->set_initial_voice_index(1);
@@ -291,8 +319,8 @@ SiMMLTable::SiMMLTable() {
 		// VRC6 settings.
 		{
 			SiMMLChannelSettings *cs = channel_settings_map[MT_VRC6];
-			cs->set_pg_type(8, SiOPMTable::PG_SAW_VC6);
-			cs->set_pt_type(8, SiOPMTable::PT_PSG);
+			cs->set_pg_type(8, SiOPMRefTable::PG_SAW_VC6);
+			cs->set_pt_type(8, SiOPMRefTable::PT_PSG);
 
 			cs->set_initial_voice_index(1);
 			cs->set_voice_index(0, 7);
@@ -303,15 +331,15 @@ SiMMLTable::SiMMLTable() {
 		// SID settings.
 		{
 			SiMMLChannelSettings *cs = channel_settings_map[MT_SID];
-			cs->set_pg_type(8, SiOPMTable::PG_TRIANGLE);
-			cs->set_pg_type(9, SiOPMTable::PG_SAW_UP);
-			cs->set_pg_type(10, SiOPMTable::PG_SAW_VC6);
-			cs->set_pg_type(11, SiOPMTable::PG_NOISE_PULSE);
+			cs->set_pg_type(8, SiOPMRefTable::PG_TRIANGLE);
+			cs->set_pg_type(9, SiOPMRefTable::PG_SAW_UP);
+			cs->set_pg_type(10, SiOPMRefTable::PG_SAW_VC6);
+			cs->set_pg_type(11, SiOPMRefTable::PG_NOISE_PULSE);
 
 			for (int i = 0; i < 11;  i++) {
-				cs->set_pt_type(i, SiOPMTable::PT_PSG);
+				cs->set_pt_type(i, SiOPMRefTable::PT_PSG);
 			}
-			cs->set_pt_type(11, SiOPMTable::PT_OPM_NOISE);
+			cs->set_pt_type(11, SiOPMRefTable::PT_OPM_NOISE);
 
 			cs->set_initial_voice_index(1);
 			cs->set_voice_index(0, 7);

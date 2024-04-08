@@ -7,7 +7,7 @@
 #include "sion_data.h"
 
 #include "sion_voice.h"
-#include "processor/siopm_table.h"
+#include "processor/siopm_ref_table.h"
 #include "processor/wave/siopm_wave_pcm_data.h"
 #include "processor/wave/siopm_wave_pcm_table.h"
 #include "processor/wave/siopm_wave_sampler_data.h"
@@ -30,9 +30,9 @@ void SiONData::set_pcm_voice(int p_index, SiONVoice *p_voice) {
 }
 
 SiOPMWaveSamplerData *SiONData::set_sampler_wave(int p_index, const Variant &p_data, bool p_ignore_note_off, int p_pan, int p_src_channel_count, int p_channel_count) {
-	int bank = (p_index >> SiOPMTable::NOTE_BITS) & (SiOPMTable::SAMPLER_TABLE_MAX - 1);
+	int bank = (p_index >> SiOPMRefTable::NOTE_BITS) & (SiOPMRefTable::SAMPLER_TABLE_MAX - 1);
 	SiOPMWaveSamplerData *sampler_data = memnew(SiOPMWaveSamplerData(p_data, p_ignore_note_off, p_pan, p_src_channel_count, p_channel_count));
-	_sampler_tables[bank]->set_sample(sampler_data, p_index & (SiOPMTable::NOTE_TABLE_SIZE - 1));
+	_sampler_tables[bank]->set_sample(sampler_data, p_index & (SiOPMRefTable::NOTE_TABLE_SIZE - 1));
 	return sampler_data;
 }
 

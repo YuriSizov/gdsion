@@ -6,7 +6,7 @@
 
 #include "simml_simulator_voice_set.h"
 
-#include "processor/siopm_table.h"
+#include "processor/siopm_ref_table.h"
 #include "processor/wave/siopm_wave_table.h"
 #include "sequencer/simml_channel_settings.h"
 
@@ -42,7 +42,7 @@ SiMMLSimulatorVoiceSet::SiMMLSimulatorVoiceSet(int p_length, int p_offset, int p
 	}
 
 	for (int i = 0; i < p_length; i++) {
-		int pt_type = SiOPMTable::get_instance()->get_wave_table(i + p_offset)->get_default_pitch_table_type();
+		int pt_type = SiOPMRefTable::get_instance()->get_wave_table(i + p_offset)->get_default_pitch_table_type();
 		_voices.write[i] = memnew(SiMMLSimulatorVoice(i + p_offset, pt_type, channel_type));
 	}
 }

@@ -8,7 +8,7 @@
 #define SIMML_VOICE_H
 
 #include <godot_cpp/core/object.hpp>
-#include "sequencer/simml_table.h"
+#include "sequencer/simml_ref_table.h"
 
 using namespace godot;
 
@@ -67,7 +67,7 @@ class SiMMLVoice : public Object {
 
 protected:
 	String chip_type;
-	SiMMLTable::ModuleType module_type = SiMMLTable::MT_ALL;
+	SiMMLRefTable::ModuleType module_type = SiMMLRefTable::MT_ALL;
 	int channel_num = -1;
 	// PMS guitar tension.
 	int pms_tension = 8;
@@ -93,7 +93,7 @@ public:
 	static SiMMLVoice *create_blank_pcm_voice(int p_channel_num);
 
 	void set_chip_type(String p_type) { chip_type = p_type; };
-	void set_module_type(SiMMLTable::ModuleType p_module_type, int p_channel_num = 0, int p_tone_num = -1);
+	void set_module_type(SiMMLRefTable::ModuleType p_module_type, int p_channel_num = 0, int p_tone_num = -1);
 	void set_channel_num(int p_num) { channel_num = p_num; }
 	void set_tone_num(int p_num) { tone_num = p_num; }
 
@@ -130,8 +130,8 @@ public:
 
 	void update_track_voice(SiMMLTrack *p_track);
 
-	virtual void initialize();
-	void copy_from(SiMMLVoice *p_source);
+	virtual void reset();
+	virtual void copy_from(SiMMLVoice *p_source);
 
 	SiMMLVoice();
 	~SiMMLVoice() {}

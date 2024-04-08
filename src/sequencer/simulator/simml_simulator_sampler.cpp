@@ -7,9 +7,9 @@
 #include "simml_simulator_sampler.h"
 
 #include "processor/channels/siopm_channel_manager.h"
-#include "sequencer/simml_table.h"
+#include "sequencer/simml_ref_table.h"
 
 SiMMLSimulatorSampler::SiMMLSimulatorSampler() :
-		SiMMLSimulatorBase(SiMMLTable::MT_SAMPLE, 1, memnew(SiMMLSimulatorVoiceSet(SiOPMChannelManager::CT_CHANNEL_SAMPLER, 1, 0)), false) {
+		SiMMLSimulatorBase(SiMMLRefTable::MT_SAMPLE, 1, memnew(SiMMLSimulatorVoiceSet(SiOPMChannelManager::CT_CHANNEL_SAMPLER, 1, 0)), false) {
 	// Empty.
 }

@@ -7,8 +7,8 @@
 #include "siopm_wave_pcm_data.h"
 
 #include <godot_cpp/core/math.hpp>
-#include "processor/siopm_table.h"
-#include "sequencer/simml_table.h"
+#include "processor/siopm_ref_table.h"
+#include "sequencer/simml_ref_table.h"
 #include "utils/transformer_util.h"
 
 using namespace godot;
@@ -34,7 +34,7 @@ int SiOPMWavePCMData::get_initial_sample_index(double p_phase) const {
 //
 
 int SiOPMWavePCMData::_seek_head_silence() {
-	int threshold = SiOPMTable::LOG_TABLE_BOTTOM - SiOPMTable::LOG_TABLE_RESOLUTION * 14; // 1/128
+	int threshold = SiOPMRefTable::LOG_TABLE_BOTTOM - SiOPMRefTable::LOG_TABLE_RESOLUTION * 14; // 1/128
 
 	int i = 0;
 	for (; i < _wavelet.size(); i++) {
@@ -47,7 +47,7 @@ int SiOPMWavePCMData::_seek_head_silence() {
 }
 
 int SiOPMWavePCMData::_seek_end_gap() {
-	int threshold = SiOPMTable::LOG_TABLE_BOTTOM - SiOPMTable::LOG_TABLE_RESOLUTION * 2; // 1/4096
+	int threshold = SiOPMRefTable::LOG_TABLE_BOTTOM - SiOPMRefTable::LOG_TABLE_RESOLUTION * 2; // 1/4096
 
 	int i = _wavelet.size() - 1;
 	for (; i > 0; i--) {
@@ -128,9 +128,9 @@ void SiOPMWavePCMData::loop_tail_samples(int p_sample_count, int p_tail_margin, 
 		}
 
 		int offset = _loop_point << (_channel_count - 1);
-		int envelope_top = (-SiOPMTable::ENV_TOP) << 3;
-		int (&log_table)[SiOPMTable::LOG_TABLE_SIZE * 3] = SiOPMTable::get_instance()->log_table;
-		double i2n = 1.0 / (1 << SiOPMTable::LOG_VOLUME_BITS);
+		int envelope_top = (-SiOPMRefTable::ENV_TOP) << 3;
+		int (&log_table)[SiOPMRefTable::LOG_TABLE_SIZE * 3] = SiOPMRefTable::get_instance()->log_table;
+		double i2n = 1.0 / (1 << SiOPMRefTable::LOG_VOLUME_BITS);
 
 		for (int i = 0; i < max_idx; i++) {
 			int idx0 = offset + i;
@@ -139,7 +139,7 @@ void SiOPMWavePCMData::loop_tail_samples(int p_sample_count, int p_tail_margin, 
 			int val1 = _wavelet[idx1] + envelope_top;
 
 			int j = max_idx - 1 - i;
-			_wavelet.write[idx0] = SiOPMTable::calculate_log_table_index((log_table[val0] * _sin_table[j] + log_table[val1] * _sin_table[i]) * i2n);
+			_wavelet.write[idx0] = SiOPMRefTable::calculate_log_table_index((log_table[val0] * _sin_table[j] + log_table[val1] * _sin_table[i]) * i2n);
 		}
 	}
 }
@@ -147,7 +147,7 @@ void SiOPMWavePCMData::loop_tail_samples(int p_sample_count, int p_tail_margin, 
 //
 
 SiOPMWavePCMData::SiOPMWavePCMData(const Variant &p_data, int p_sampling_pitch, int p_src_channel_count, int p_channel_count) :
-		SiOPMWaveBase(SiMMLTable::MT_PCM) {
+		SiOPMWaveBase(SiMMLRefTable::MT_PCM) {
 	if (!p_data) {
 		return;
 	}

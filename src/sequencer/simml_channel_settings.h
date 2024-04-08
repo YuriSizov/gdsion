@@ -14,7 +14,7 @@ using namespace godot;
 
 class MMLSequence;
 class SiMMLTrack;
-class SiOPMTable;
+class SiOPMRefTable;
 
 class SiMMLChannelSettings {
 
@@ -26,7 +26,7 @@ public:
 	};
 
 private:
-	SiOPMTable *_table = nullptr;
+	SiOPMRefTable *_table = nullptr;
 
 	int _type = 0;
 	SelectToneType _select_tone_type = SELECT_TONE_NORMAL;
@@ -71,7 +71,7 @@ public:
 
 	//
 
-	SiMMLChannelSettings(int p_type, int p_offset, int p_length, int p_step, int p_channel_count);
+	SiMMLChannelSettings(int p_module_type, int p_pg_type, int p_length, int p_step, int p_channel_count);
 };
 
 #endif // SIMML_CHANNEL_SETTINGS_H

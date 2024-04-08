@@ -6,9 +6,9 @@
 
 #include "simml_simulator_fm_opl3.h"
 
-#include "sequencer/simml_table.h"
+#include "sequencer/simml_ref_table.h"
 
 SiMMLSimulatorFMOPL3::SiMMLSimulatorFMOPL3() :
-		SiMMLSimulatorBaseFM(SiMMLTable::MT_FM_OPL3, 1) {
+		SiMMLSimulatorBaseFM(SiMMLRefTable::MT_FM_OPL3, 1) {
 	// Empty.
 }

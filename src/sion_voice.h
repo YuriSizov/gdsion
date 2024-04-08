@@ -9,7 +9,7 @@
 
 #include <godot_cpp/core/object.hpp>
 #include <godot_cpp/templates/vector.hpp>
-#include "sequencer/simml_table.h"
+#include "sequencer/simml_ref_table.h"
 #include "sequencer/simml_voice.h"
 
 using namespace godot;
@@ -38,6 +38,11 @@ public:
 	static const char *CHIPTYPE_MA3;
 	static const char *CHIPTYPE_PMS_GUITAR;
 	static const char *CHIPTYPE_ANALOG_LIKE;
+
+	// NOTE: Godot doesn't support exposing constructors to the API, so we make do with a static factory method. Hopefully this can be fixed at some point.
+	static SiONVoice *create(SiMMLRefTable::ModuleType p_module_type = SiMMLRefTable::MT_ALL, int p_channel_num = 0, int p_attack_rate = 63, int p_release_rate = 63, int p_pitch_shift = 0, int p_connection_type = -1, int p_wave_shape2 = 0, int p_pitch_shift2 = 0);
+
+	//
 
 	String get_name() const { return _name; }
 	void set_name(const String &p_name) { _name = p_name; }
@@ -80,9 +85,9 @@ public:
 	void set_pitch_modulation(int p_depth = 0, int p_end_depth = 0, int p_delay = 0, int p_term = 0);
 
 	SiONVoice *clone();
-	virtual void initialize() override;
+	virtual void reset() override;
 
-	SiONVoice(SiMMLTable::ModuleType p_module_type = SiMMLTable::MT_ALL, int p_channel_num = 0, int p_attack_rate = 63, int p_release_rate = 63, int p_pitch_shift = 0, int p_connection_type = -1, int p_wave_shape2 = 0, int p_pitch_shift2 = 0);
+	SiONVoice(SiMMLRefTable::ModuleType p_module_type = SiMMLRefTable::MT_ALL, int p_channel_num = 0, int p_attack_rate = 63, int p_release_rate = 63, int p_pitch_shift = 0, int p_connection_type = -1, int p_wave_shape2 = 0, int p_pitch_shift2 = 0);
 	~SiONVoice() {}
 };
 

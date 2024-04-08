@@ -6,19 +6,19 @@
 
 #include "simml_simulator_gb.h"
 
-#include "processor/siopm_table.h"
-#include "sequencer/simml_table.h"
+#include "processor/siopm_ref_table.h"
+#include "sequencer/simml_ref_table.h"
 
 SiMMLSimulatorGB::SiMMLSimulatorGB() :
-		SiMMLSimulatorBase(SiMMLTable::MT_GB, 4, memnew(SiMMLSimulatorVoiceSet(11))) {
+		SiMMLSimulatorBase(SiMMLRefTable::MT_GB, 4, memnew(SiMMLSimulatorVoiceSet(11))) {
 	// Default voice set.
 
 	for (int i = 0; i < 8; i++) {
-		_default_voice_set->set_voice(i, memnew(SiMMLSimulatorVoice(SiOPMTable::PG_PULSE + i * 2, SiOPMTable::PT_PSG)));
+		_default_voice_set->set_voice(i, memnew(SiMMLSimulatorVoice(SiOPMRefTable::PG_PULSE + i * 2, SiOPMRefTable::PT_PSG)));
 	}
-	_default_voice_set->set_voice(8, memnew(SiMMLSimulatorVoice(SiOPMTable::PG_CUSTOM, SiOPMTable::PT_PSG)));
-	_default_voice_set->set_voice(9, memnew(SiMMLSimulatorVoice(SiOPMTable::PG_NOISE_PULSE, SiOPMTable::PT_GB_NOISE)));
-	_default_voice_set->set_voice(10, memnew(SiMMLSimulatorVoice(SiOPMTable::PG_NOISE_GB_SHORT, SiOPMTable::PT_GB_NOISE)));
+	_default_voice_set->set_voice(8, memnew(SiMMLSimulatorVoice(SiOPMRefTable::PG_CUSTOM, SiOPMRefTable::PT_PSG)));
+	_default_voice_set->set_voice(9, memnew(SiMMLSimulatorVoice(SiOPMRefTable::PG_NOISE_PULSE, SiOPMRefTable::PT_GB_NOISE)));
+	_default_voice_set->set_voice(10, memnew(SiMMLSimulatorVoice(SiOPMRefTable::PG_NOISE_GB_SHORT, SiOPMRefTable::PT_GB_NOISE)));
 	_default_voice_set->set_init_voice_index(1);
 
 	// Multi-channel voice sets.
@@ -29,7 +29,7 @@ SiMMLSimulatorGB::SiMMLSimulatorGB() :
 
 	tone_voice_set = memnew(SiMMLSimulatorVoiceSet(8));
 	for (int i = 0; i < 8; i++) {
-		tone_voice_set->set_voice(i, memnew(SiMMLSimulatorVoice(SiOPMTable::PG_PULSE + i * 2, SiOPMTable::PT_PSG)));
+		tone_voice_set->set_voice(i, memnew(SiMMLSimulatorVoice(SiOPMRefTable::PG_PULSE + i * 2, SiOPMRefTable::PT_PSG)));
 	}
 	tone_voice_set->set_init_voice_index(4);
 
@@ -39,7 +39,7 @@ SiMMLSimulatorGB::SiMMLSimulatorGB() :
 	// Channel 3.
 
 	tone_voice_set = memnew(SiMMLSimulatorVoiceSet(1));
-	tone_voice_set->set_voice(0, memnew(SiMMLSimulatorVoice(SiOPMTable::PG_CUSTOM, SiOPMTable::PT_PSG)));
+	tone_voice_set->set_voice(0, memnew(SiMMLSimulatorVoice(SiOPMRefTable::PG_CUSTOM, SiOPMRefTable::PT_PSG)));
 	tone_voice_set->set_init_voice_index(0);
 
 	_channel_voice_set.write[2] = tone_voice_set;
@@ -47,8 +47,8 @@ SiMMLSimulatorGB::SiMMLSimulatorGB() :
 	// Channel 4.
 
 	tone_voice_set = memnew(SiMMLSimulatorVoiceSet(2));
-	tone_voice_set->set_voice(0, memnew(SiMMLSimulatorVoice(SiOPMTable::PG_NOISE_PULSE, SiOPMTable::PT_GB_NOISE)));
-	tone_voice_set->set_voice(1, memnew(SiMMLSimulatorVoice(SiOPMTable::PG_NOISE_GB_SHORT, SiOPMTable::PT_GB_NOISE)));
+	tone_voice_set->set_voice(0, memnew(SiMMLSimulatorVoice(SiOPMRefTable::PG_NOISE_PULSE, SiOPMRefTable::PT_GB_NOISE)));
+	tone_voice_set->set_voice(1, memnew(SiMMLSimulatorVoice(SiOPMRefTable::PG_NOISE_GB_SHORT, SiOPMRefTable::PT_GB_NOISE)));
 	tone_voice_set->set_init_voice_index(0);
 
 	_channel_voice_set.write[3] = tone_voice_set;

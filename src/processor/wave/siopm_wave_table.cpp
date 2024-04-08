@@ -7,8 +7,8 @@
 #include "siopm_wave_table.h"
 
 #include <godot_cpp/core/memory.hpp>
-#include "processor/siopm_table.h"
-#include "sequencer/simml_table.h"
+#include "processor/siopm_ref_table.h"
+#include "sequencer/simml_ref_table.h"
 
 using namespace godot;
 
@@ -35,7 +35,7 @@ void SiOPMWaveTable::initialize(Vector<int> p_wavelet, int p_default_pitch_table
 	for (int len = _wavelet.size() >> 1; len != 0; len >>= 1) {
 		bits++;
 	}
-	_fixed_bits = SiOPMTable::PHASE_BITS - bits;
+	_fixed_bits = SiOPMRefTable::PHASE_BITS - bits;
 }
 
 void SiOPMWaveTable::copy_from(SiOPMWaveTable *p_source) {
@@ -54,6 +54,6 @@ void SiOPMWaveTable::free() {
 }
 
 SiOPMWaveTable::SiOPMWaveTable() :
-		SiOPMWaveBase(SiMMLTable::MT_CUSTOM) {
+		SiOPMWaveBase(SiMMLRefTable::MT_CUSTOM) {
 	// Empty.
 }

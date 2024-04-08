@@ -12,7 +12,7 @@
 #include "utils/godot_util.h"
 
 #define COPY_TL_TABLE(m_target, m_source)                     \
-	for (int _i = 0; _i < SiOPMTable::TL_TABLE_SIZE; _i++) {  \
+	for (int _i = 0; _i < SiOPMRefTable::TL_TABLE_SIZE; _i++) {  \
 		m_target[_i] = m_source[_i];                          \
 	}
 
@@ -89,11 +89,11 @@ double SiOPMChannelBase::get_stream_send(int p_stream_num) {
 // LFO control.
 
 void SiOPMChannelBase::initialize_lfo(int p_waveform, Vector<int> p_custom_wave_table) {
-	if (p_waveform == -1 && p_custom_wave_table.size() == SiOPMTable::LFO_TABLE_SIZE) {
+	if (p_waveform == -1 && p_custom_wave_table.size() == SiOPMRefTable::LFO_TABLE_SIZE) {
 		_lfo_wave_shape = -1;
 		_lfo_wave_table = p_custom_wave_table;
 	} else {
-		_lfo_wave_shape = (p_waveform >= 0 && p_waveform <= SiOPMTable::LFO_WAVE_MAX) ? p_waveform : SiOPMTable::LFO_WAVE_TRIANGLE;
+		_lfo_wave_shape = (p_waveform >= 0 && p_waveform <= SiOPMRefTable::LFO_WAVE_MAX) ? p_waveform : SiOPMRefTable::LFO_WAVE_TRIANGLE;
 		_lfo_wave_table = make_vector<int>(_table->lfo_wave_tables[_lfo_wave_shape]);
 	}
 
@@ -106,7 +106,7 @@ void SiOPMChannelBase::initialize_lfo(int p_waveform, Vector<int> p_custom_wave_
 void SiOPMChannelBase::set_lfo_cycle_time(double p_ms) {
 	_lfo_timer = 0;
 	// 0.17294117647058824 = 44100/(1000*255)
-	_lfo_timer_step = ((int)(SiOPMTable::LFO_TIMER_INITIAL/(p_ms * 0.17294117647058824))) << _table->sample_rate_pitch_shift;
+	_lfo_timer_step = ((int)(SiOPMRefTable::LFO_TIMER_INITIAL/(p_ms * 0.17294117647058824))) << _table->sample_rate_pitch_shift;
 	_lfo_timer_step_buffer = _lfo_timer_step;
 }
 
@@ -150,7 +150,7 @@ void SiOPMChannelBase::set_input(int p_level, int p_pipe_index) {
 }
 
 void SiOPMChannelBase::set_ring_modulation(int p_level, int p_pipe_index) {
-	_ringmod_level = p_level * 4.0 / (1 << SiOPMTable::LOG_VOLUME_BITS);
+	_ringmod_level = p_level * 4.0 / (1 << SiOPMRefTable::LOG_VOLUME_BITS);
 	_ring_pipe = p_level > 0 ? _chip->get_pipe(p_pipe_index & 3, _buffer_index) : nullptr;
 }
 
@@ -170,7 +170,7 @@ void SiOPMChannelBase::set_output(OutputMode p_output_mode, int p_pipe_index) {
 	_base_pipe = flag_add ? _out_pipe : _chip->get_zero_buffer();
 }
 
-void SiOPMChannelBase::set_volume_tables(int (&p_velocity_table)[SiOPMTable::TL_TABLE_SIZE], int (&p_expression_table)[SiOPMTable::TL_TABLE_SIZE]) {
+void SiOPMChannelBase::set_volume_tables(int (&p_velocity_table)[SiOPMRefTable::TL_TABLE_SIZE], int (&p_expression_table)[SiOPMRefTable::TL_TABLE_SIZE]) {
 	COPY_TL_TABLE(_velocity_table, p_velocity_table);
 	COPY_TL_TABLE(_expression_table, p_expression_table);
 }
@@ -430,8 +430,8 @@ void SiOPMChannelBase::initialize(SiOPMChannelBase *p_prev, int p_buffer_index) 
 		_pan = 64;
 		_has_effect_send = false;
 		_mute = false;
-		COPY_TL_TABLE(_velocity_table, _table->eg_total_level_tables[SiOPMTable::VM_LINEAR]);
-		COPY_TL_TABLE(_expression_table, _table->eg_total_level_tables[SiOPMTable::VM_LINEAR]);
+		COPY_TL_TABLE(_velocity_table, _table->eg_total_level_tables[SiOPMRefTable::VM_LINEAR]);
+		COPY_TL_TABLE(_expression_table, _table->eg_total_level_tables[SiOPMRefTable::VM_LINEAR]);
 	}
 
 	// Buffer index.
@@ -440,7 +440,7 @@ void SiOPMChannelBase::initialize(SiOPMChannelBase *p_prev, int p_buffer_index) 
 	_buffer_index = p_buffer_index;
 
 	// LFO.
-	initialize_lfo(SiOPMTable::LFO_WAVE_TRIANGLE);
+	initialize_lfo(SiOPMRefTable::LFO_WAVE_TRIANGLE);
 	set_lfo_cycle_time(333);
 	set_frequency_ratio(100);
 
@@ -470,7 +470,7 @@ void SiOPMChannelBase::_bind_methods() {
 }
 
 SiOPMChannelBase::SiOPMChannelBase(SiOPMModule *p_chip) {
-	_table = SiOPMTable::get_instance();
+	_table = SiOPMRefTable::get_instance();
 	_chip = p_chip;
 	_process_function = Callable(this, "_no_process");
 

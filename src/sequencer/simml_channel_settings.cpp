@@ -8,10 +8,10 @@
 
 #include "processor/channels/siopm_channel_base.h"
 #include "processor/siopm_channel_params.h"
-#include "processor/siopm_table.h"
+#include "processor/siopm_ref_table.h"
 #include "processor/wave/siopm_wave_table.h"
 #include "sequencer/base/mml_sequence.h"
-#include "sequencer/simml_table.h"
+#include "sequencer/simml_ref_table.h"
 #include "sequencer/simml_track.h"
 #include "sequencer/simml_voice.h"
 
@@ -76,11 +76,11 @@ MMLSequence *SiMMLChannelSettings::select_tone(SiMMLTrack *p_track, int p_voice_
 
 		case SELECT_TONE_FM: {
 			int voice_index = p_voice_index;
-			if (voice_index < 0 || voice_index >= SiMMLTable::VOICE_MAX) {
+			if (voice_index < 0 || voice_index >= SiMMLRefTable::VOICE_MAX) {
 				voice_index = 0;
 			}
 
-			SiMMLVoice *voice = SiMMLTable::get_instance()->get_voice(voice_index);
+			SiMMLVoice *voice = SiMMLRefTable::get_instance()->get_voice(voice_index);
 			if (!voice) {
 				break;
 			}
@@ -142,14 +142,14 @@ void SiMMLChannelSettings::set_voice_index(int p_index, int p_value) {
 
 //
 
-SiMMLChannelSettings::SiMMLChannelSettings(int p_type, int p_offset, int p_length, int p_step, int p_channel_count) {
-	_table = SiOPMTable::get_instance();
-	_type = p_type;
+SiMMLChannelSettings::SiMMLChannelSettings(int p_module_type, int p_pg_type, int p_length, int p_step, int p_channel_count) {
+	_table = SiOPMRefTable::get_instance();
+	_type = p_module_type;
 
 	_pg_type_list.resize_zeroed(p_length);
 	_pt_type_list.resize_zeroed(p_length);
 
-	int idx = p_offset;
+	int idx = p_pg_type;
 	for (int i = 0; i < p_length; i++) {
 		_pg_type_list.write[i] = idx;
 		_pt_type_list.write[i] = _table->get_wave_table(idx)->get_default_pitch_table_type();

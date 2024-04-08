@@ -18,13 +18,13 @@
 #include "processor/wave/siopm_wave_sampler_table.h"
 #include "processor/wave/siopm_wave_table.h"
 #include "sequencer/simml_envelope_table.h"
-#include "sequencer/simml_table.h"
+#include "sequencer/simml_ref_table.h"
 #include "sequencer/simml_track.h"
 
 using namespace godot;
 
 bool SiMMLVoice::is_fm_voice() const {
-	return module_type == SiMMLTable::MT_FM;
+	return module_type == SiMMLRefTable::MT_FM;
 }
 
 bool SiMMLVoice::is_pcm_voice() const {
@@ -40,18 +40,18 @@ bool SiMMLVoice::is_wave_table_voice() const {
 }
 
 bool SiMMLVoice::is_suitable_for_fm_voice() const {
-	return update_track_parameters || (SiMMLTable::get_instance()->is_suitable_for_fm_voice(module_type) && wave_data == nullptr);
+	return update_track_parameters || (SiMMLRefTable::get_instance()->is_suitable_for_fm_voice(module_type) && wave_data == nullptr);
 }
 
-void SiMMLVoice::set_module_type(SiMMLTable::ModuleType p_module_type, int p_channel_num, int p_tone_num) {
+void SiMMLVoice::set_module_type(SiMMLRefTable::ModuleType p_module_type, int p_channel_num, int p_tone_num) {
 	module_type = p_module_type;
 	channel_num = p_channel_num;
 	tone_num = p_tone_num;
 
 	int pg_type = -1;
 	// TODO: This is needed because this method can be indirectly called by Godot editor's docgen. But this smells...
-	if (SiMMLTable::get_instance()) {
-		pg_type = SiMMLTable::get_instance()->get_pulse_generator_type(module_type, channel_num, tone_num);
+	if (SiMMLRefTable::get_instance()) {
+		pg_type = SiMMLRefTable::get_instance()->get_pulse_generator_type(module_type, channel_num, tone_num);
 	}
 	if (pg_type != -1) {
 		channel_params->get_operator_params(0)->set_pulse_generator_type(pg_type);
@@ -60,12 +60,12 @@ void SiMMLVoice::set_module_type(SiMMLTable::ModuleType p_module_type, int p_cha
 
 void SiMMLVoice::update_track_voice(SiMMLTrack *p_track) {
 	switch (module_type) {
-		case SiMMLTable::MT_FM: { // Registered FM voice (%6)
-			p_track->set_channel_module_type(SiMMLTable::MT_FM, channel_num);
+		case SiMMLRefTable::MT_FM: { // Registered FM voice (%6)
+			p_track->set_channel_module_type(SiMMLRefTable::MT_FM, channel_num);
 		} break;
 
-		case SiMMLTable::MT_KS: { // PMS Guitar (%11)
-			p_track->set_channel_module_type(SiMMLTable::MT_KS, 1);
+		case SiMMLRefTable::MT_KS: { // PMS Guitar (%11)
+			p_track->set_channel_module_type(SiMMLRefTable::MT_KS, 1);
 			p_track->get_channel()->set_channel_params(channel_params, false);
 			p_track->get_channel()->set_all_release_rate(pms_tension);
 			if (is_pcm_voice()) {
@@ -120,7 +120,7 @@ void SiMMLVoice::update_track_voice(SiMMLTrack *p_track) {
 
 SiMMLVoice *SiMMLVoice::create_blank_pcm_voice(int p_channel_num) {
 	SiMMLVoice *instance = memnew(SiMMLVoice);
-	instance->module_type = SiMMLTable::MT_PCM;
+	instance->module_type = SiMMLRefTable::MT_PCM;
 	instance->channel_num = p_channel_num;
 
 	SiOPMWavePCMTable *pcm_table = memnew(SiOPMWavePCMTable);
@@ -129,13 +129,13 @@ SiMMLVoice *SiMMLVoice::create_blank_pcm_voice(int p_channel_num) {
 	return instance;
 }
 
-void SiMMLVoice::initialize() {
+void SiMMLVoice::reset() {
 	chip_type = "";
 
 	update_track_parameters = false;
 	update_volumes = false;
 
-	module_type = SiMMLTable::MT_ALL;
+	module_type = SiMMLRefTable::MT_ALL;
 	channel_num = -1;
 	tone_num = -1;
 	preferable_note = -1;
@@ -292,5 +292,5 @@ void SiMMLVoice::_bind_methods() {
 
 SiMMLVoice::SiMMLVoice() {
 	channel_params = memnew(SiOPMChannelParams);
-	initialize();
+	reset();
 }

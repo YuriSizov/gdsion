@@ -9,7 +9,7 @@
 #include <godot_cpp/core/class_db.hpp>
 #include "processor/siopm_module.h"
 #include "processor/siopm_operator_params.h"
-#include "processor/siopm_table.h"
+#include "processor/siopm_ref_table.h"
 #include "sequencer/base/mml_sequence.h"
 
 using namespace godot;
@@ -34,11 +34,11 @@ void SiOPMChannelParams::set_master_volume(int p_index, double p_value) {
 }
 
 int SiOPMChannelParams::get_lfo_frame() const {
-	return (int)(SiOPMTable::LFO_TIMER_INITIAL * 0.346938775510204 / lfo_frequency_step);
+	return (int)(SiOPMRefTable::LFO_TIMER_INITIAL * 0.346938775510204 / lfo_frequency_step);
 }
 
 void SiOPMChannelParams::set_lfo_frame(int p_fps) {
-	lfo_frequency_step = (int)(SiOPMTable::LFO_TIMER_INITIAL/(p_fps * 2.882352941176471));
+	lfo_frequency_step = (int)(SiOPMRefTable::LFO_TIMER_INITIAL/(p_fps * 2.882352941176471));
 }
 
 void SiOPMChannelParams::set_by_opm_register(int p_channel, int p_address, int p_data) {
@@ -46,14 +46,14 @@ void SiOPMChannelParams::set_by_opm_register(int p_channel, int p_address, int p
 		switch (p_address) {
 			case 15: { // NOIZE:7 FREQ:4-0 for channel#7
 				if (p_channel == 7 && (p_data & 128)) {
-					operator_params[3]->pulse_generator_type = SiOPMTable::PG_NOISE_PULSE;
-					operator_params[3]->pitch_table_type = SiOPMTable::PT_OPM_NOISE;
+					operator_params[3]->pulse_generator_type = SiOPMRefTable::PG_NOISE_PULSE;
+					operator_params[3]->pitch_table_type = SiOPMRefTable::PT_OPM_NOISE;
 					operator_params[3]->fixed_pitch = ((p_data & 31) << 6) + 2048;
 				}
 			} break;
 
 			case 24: { // LFO FREQ:7-0 for all 8 channels
-				lfo_frequency_step = SiOPMTable::get_instance()->lfo_timer_steps[p_data];
+				lfo_frequency_step = SiOPMRefTable::get_instance()->lfo_timer_steps[p_data];
 			} break;
 
 			case 25: { // A(0)/P(1):7 DEPTH:6-0 for all 8 channels
@@ -134,7 +134,7 @@ String SiOPMChannelParams::to_string() const {
 	FORMAT_VALUE("freq.ratio", envelope_frequency_ratio);
 	FORMAT_VALUE("alg", algorithm);
 	FORMAT_VALUE_PAIR("fb ", feedback,  "fbc", feedback_connection);
-	FORMAT_VALUE_PAIR("lws", lfo_wave_shape, "lfq", SiOPMTable::LFO_TIMER_INITIAL * 0.005782313 / lfo_frequency_step);
+	FORMAT_VALUE_PAIR("lws", lfo_wave_shape, "lfq", SiOPMRefTable::LFO_TIMER_INITIAL * 0.005782313 / lfo_frequency_step);
 	FORMAT_VALUE_PAIR("amd", amplitude_modulation_depth, "pmd", pitch_modulation_depth);
 	FORMAT_VALUE_PAIR("vol", master_volumes[0],  "pan", pan - 64);
 	FORMAT_VALUE("filter type", filter_type);
@@ -160,7 +160,7 @@ void SiOPMChannelParams::initialize() {
 	feedback = 0;
 	feedback_connection = 0;
 
-	lfo_wave_shape = SiOPMTable::LFO_WAVE_TRIANGLE;
+	lfo_wave_shape = SiOPMRefTable::LFO_WAVE_TRIANGLE;
 	lfo_frequency_step = 12126; // 12126 = 30 frames / 100 fratio
 
 	amplitude_modulation_depth = 0;

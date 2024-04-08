@@ -11,7 +11,7 @@
 #include <godot_cpp/variant/callable.hpp>
 #include <godot_cpp/templates/vector.hpp>
 #include "sequencer/base/beats_per_minute.h"
-#include "sequencer/simml_table.h"
+#include "sequencer/simml_ref_table.h"
 #include "templates/singly_linked_list.h"
 
 using namespace godot;
@@ -70,7 +70,7 @@ private:
 	SiMMLSimulatorBase *_simulator = nullptr;
 
 	SiMMLData *_mml_data = nullptr;
-	SiMMLTable *_table = nullptr;
+	SiMMLRefTable *_table = nullptr;
 
 	// This value is specified by user and contains the track starter.
 	int _internal_track_id = 0;
@@ -292,7 +292,7 @@ public:
 
 	// Channel properties.
 
-	void set_channel_module_type(SiMMLTable::ModuleType p_type, int p_channel_num = INT32_MIN, int p_tone_num = INT32_MIN);
+	void set_channel_module_type(SiMMLRefTable::ModuleType p_type, int p_channel_num = INT32_MIN, int p_tone_num = INT32_MIN);
 
 	void reset_volume_offset();
 

@@ -6,7 +6,7 @@
 
 #include "siopm_stream.h"
 
-#include "processor/siopm_table.h"
+#include "processor/siopm_ref_table.h"
 
 void SiOPMStream::resize(int p_length) {
 	buffer.resize_zeroed(p_length);
@@ -39,11 +39,11 @@ void SiOPMStream::quantize(int p_bitrate) {
 }
 
 void SiOPMStream::write(SinglyLinkedList<int> *p_data, int p_start, int p_length, double p_volume, int p_pan) {
-	double volume = p_volume * SiOPMTable::get_instance()->i2n;
+	double volume = p_volume * SiOPMRefTable::get_instance()->i2n;
 	int buffer_size = (p_start + p_length) << 1;
 
 	if (channels == 2) { // stereo
-		double (&pan_table)[129] = SiOPMTable::get_instance()->pan_table;
+		double (&pan_table)[129] = SiOPMRefTable::get_instance()->pan_table;
 		double volume_left = pan_table[128 - p_pan] * volume;
 		double volume_right = pan_table[p_pan] * volume;
 
@@ -70,11 +70,11 @@ void SiOPMStream::write(SinglyLinkedList<int> *p_data, int p_start, int p_length
 }
 
 void SiOPMStream::write_stereo(SinglyLinkedList<int> *p_left, SinglyLinkedList<int> *p_right, int p_start, int p_length, double p_volume, int p_pan) {
-	double volume = p_volume * SiOPMTable::get_instance()->i2n;
+	double volume = p_volume * SiOPMRefTable::get_instance()->i2n;
 	int buffer_size = (p_start + p_length) << 1;
 
 	if (channels == 2) { // stereo
-		double (&pan_table)[129] = SiOPMTable::get_instance()->pan_table;
+		double (&pan_table)[129] = SiOPMRefTable::get_instance()->pan_table;
 		double volume_left = pan_table[128 - p_pan] * p_volume;
 		double volume_right = pan_table[p_pan] * p_volume;
 
@@ -112,7 +112,7 @@ void SiOPMStream::write_from_vector(Vector<double> p_data, int p_start_data, int
 	double volume = p_volume;
 
 	if (channels == 2) {
-		double (&pan_table)[129] = SiOPMTable::get_instance()->pan_table;
+		double (&pan_table)[129] = SiOPMRefTable::get_instance()->pan_table;
 
 		if (p_sample_channel_count == 2) { // stereo data to stereo buffer
 			double volume_left = pan_table[128 - p_pan] * volume;

@@ -8,7 +8,7 @@
 #define SIMML_SIMULATOR_BASE_H
 
 #include <godot_cpp/templates/vector.hpp>
-#include "sequencer/simml_table.h"
+#include "sequencer/simml_ref_table.h"
 #include "sequencer/simulator/simml_simulator_voice_set.h"
 
 using namespace godot;
@@ -20,7 +20,7 @@ class SiMMLTrack;
 class SiMMLSimulatorBase {
 
 protected:
-	SiMMLTable::ModuleType _type = SiMMLTable::MT_MAX;
+	SiMMLRefTable::ModuleType _type = SiMMLRefTable::MT_MAX;
 
 	// Tables converting from MML voice number to SiOPM pgType for each channel, if the table is different for each channel.
 	Vector<SiMMLSimulatorVoiceSet *> _channel_voice_set;
@@ -37,7 +37,7 @@ public:
 	virtual int initialize_tone(SiMMLTrack *p_track, int p_channel_num, int p_buffer_index);
 	virtual MMLSequence *select_tone(SiMMLTrack *p_track, int p_voice_index);
 
-	SiMMLSimulatorBase(SiMMLTable::ModuleType p_type, int p_channel_num, SiMMLSimulatorVoiceSet *p_default_voice_set, bool p_suitable_for_fm_voice = true);
+	SiMMLSimulatorBase(SiMMLRefTable::ModuleType p_type, int p_channel_num, SiMMLSimulatorVoiceSet *p_default_voice_set, bool p_suitable_for_fm_voice = true);
 };
 
 #endif // SIMML_SIMULATOR_BASE_H

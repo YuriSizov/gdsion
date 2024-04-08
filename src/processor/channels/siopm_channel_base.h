@@ -11,7 +11,7 @@
 #include <godot_cpp/templates/vector.hpp>
 #include <godot_cpp/variant/callable.hpp>
 #include "processor/channels/siopm_channel_manager.h"
-#include "processor/siopm_table.h"
+#include "processor/siopm_ref_table.h"
 #include "templates/singly_linked_list.h"
 
 using namespace godot;
@@ -68,7 +68,7 @@ protected:
 
 	//
 
-	SiOPMTable *_table = nullptr;
+	SiOPMRefTable *_table = nullptr;
 	SiOPMModule *_chip = nullptr;
 
 	Callable _process_function;
@@ -97,8 +97,8 @@ protected:
 	int _pan = 64;
 	bool _has_effect_send = false;
 	bool _mute = false;
-	int _velocity_table[SiOPMTable::TL_TABLE_SIZE];
-	int _expression_table[SiOPMTable::TL_TABLE_SIZE];
+	int _velocity_table[SiOPMRefTable::TL_TABLE_SIZE];
+	int _expression_table[SiOPMRefTable::TL_TABLE_SIZE];
 
 	// Low pass filter.
 
@@ -209,7 +209,7 @@ public:
 	virtual void set_input(int p_level, int p_pipe_index);
 	virtual void set_ring_modulation(int p_level, int p_pipe_index);
 	virtual void set_output(OutputMode p_output_mode, int p_pipe_index);
-	virtual void set_volume_tables(int (&p_velocity_table)[SiOPMTable::TL_TABLE_SIZE], int (&p_expression_table)[SiOPMTable::TL_TABLE_SIZE]);
+	virtual void set_volume_tables(int (&p_velocity_table)[SiOPMRefTable::TL_TABLE_SIZE], int (&p_expression_table)[SiOPMRefTable::TL_TABLE_SIZE]);
 
 	// Processing.
 

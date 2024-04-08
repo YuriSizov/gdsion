@@ -6,10 +6,10 @@
 
 #include "simml_simulator_siopm.h"
 
-#include "processor/siopm_table.h"
-#include "sequencer/simml_table.h"
+#include "processor/siopm_ref_table.h"
+#include "sequencer/simml_ref_table.h"
 
 SiMMLSimulatorSiOPM::SiMMLSimulatorSiOPM() :
-		SiMMLSimulatorBase(SiMMLTable::MT_ALL, 1, memnew(SiMMLSimulatorVoiceSet(512, SiOPMTable::PG_SINE))) {
+		SiMMLSimulatorBase(SiMMLRefTable::MT_ALL, 1, memnew(SiMMLSimulatorVoiceSet(512, SiOPMRefTable::PG_SINE))) {
 	// Empty.
 }

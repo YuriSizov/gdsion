@@ -9,7 +9,7 @@
 #include <godot_cpp/classes/random_number_generator.hpp>
 #include "processor/siopm_module.h"
 #include "processor/siopm_operator_params.h"
-#include "processor/siopm_table.h"
+#include "processor/siopm_ref_table.h"
 #include "processor/wave/siopm_wave_pcm_data.h"
 #include "processor/wave/siopm_wave_table.h"
 #include "utils/godot_util.h"
@@ -50,12 +50,12 @@ void SiOPMOperator::set_sustain_level(int p_value) {
 }
 
 void SiOPMOperator::_update_total_level() {
-	_eg_total_level = ((_total_level + (_key_code >> _eg_key_scale_level_rshift)) << SiOPMTable::ENV_LSHIFT) + _eg_tl_offset + _mute;
+	_eg_total_level = ((_total_level + (_key_code >> _eg_key_scale_level_rshift)) << SiOPMRefTable::ENV_LSHIFT) + _eg_tl_offset + _mute;
 
-	if (_eg_total_level > SiOPMTable::ENV_BOTTOM) {
-		_eg_total_level = SiOPMTable::ENV_BOTTOM;
+	if (_eg_total_level > SiOPMRefTable::ENV_BOTTOM) {
+		_eg_total_level = SiOPMRefTable::ENV_BOTTOM;
 	}
-	_eg_total_level -= SiOPMTable::ENV_TOP; // Table index + 192.
+	_eg_total_level -= SiOPMRefTable::ENV_TOP; // Table index + 192.
 
 	update_eg_output();
 }
@@ -147,7 +147,7 @@ bool SiOPMOperator::is_mute() const {
 }
 
 void SiOPMOperator::set_mute(bool p_mute) {
-	_mute = p_mute ? SiOPMTable::ENV_BOTTOM : 0;
+	_mute = p_mute ? SiOPMRefTable::ENV_BOTTOM : 0;
 	_update_total_level();
 }
 
@@ -179,7 +179,7 @@ void SiOPMOperator::_update_phase_step(int p_step) {
 }
 
 void SiOPMOperator::set_pulse_generator_type(int p_type) {
-	_pg_type = p_type & SiOPMTable::PG_FILTER;
+	_pg_type = p_type & SiOPMRefTable::PG_FILTER;
 
 	SiOPMWaveTable *wave_table = _table->get_wave_table(_pg_type);
 	_wave_table = wave_table->get_wavelet();
@@ -189,7 +189,7 @@ void SiOPMOperator::set_pulse_generator_type(int p_type) {
 void SiOPMOperator::set_pitch_table_type(int p_type) {
 	_pt_type = p_type;
 
-	_wave_phase_step_shift = (SiOPMTable::PHASE_BITS - _wave_fixed_bits) & _table->phase_step_shift_filter[p_type];
+	_wave_phase_step_shift = (SiOPMRefTable::PHASE_BITS - _wave_fixed_bits) & _table->phase_step_shift_filter[p_type];
 	_pitch_table = _table->pitch_table[p_type];
 	_pitch_table_filter = _pitch_table.size() - 1;
 }
@@ -240,7 +240,7 @@ void SiOPMOperator::set_fine_multiple(int p_value) {
 
 int SiOPMOperator::get_key_on_phase() const {
 	if (_key_on_phase >= 0) {
-		return _key_on_phase >> (SiOPMTable::PHASE_BITS - 8);
+		return _key_on_phase >> (SiOPMRefTable::PHASE_BITS - 8);
 	} else {
 		return (_key_on_phase == -1) ? -1 : 255;
 	}
@@ -252,7 +252,7 @@ void SiOPMOperator::set_key_on_phase(int p_phase) {
 	} else if (p_phase == -1) {
 		_key_on_phase = -1;
 	} else {
-		_key_on_phase = (p_phase & 255) << (SiOPMTable::PHASE_BITS - 8);
+		_key_on_phase = (p_phase & 255) << (SiOPMRefTable::PHASE_BITS - 8);
 	}
 }
 
@@ -298,7 +298,7 @@ void SiOPMOperator::_shift_eg_state(EGState p_state) {
 
 			if (_attack_rate + _eg_key_scale_rate < 62) {
 				if (_envelope_reset_on_attack) {
-					_eg_level = SiOPMTable::ENV_BOTTOM;
+					_eg_level = SiOPMRefTable::ENV_BOTTOM;
 				}
 				_eg_state = EG_ATTACK;
 				_eg_level_table = make_vector<int>(_table->eg_level_tables[0]);
@@ -319,8 +319,8 @@ void SiOPMOperator::_shift_eg_state(EGState p_state) {
 					_eg_level = 0;
 
 					_eg_state_shift_level = _eg_sustain_level >> 2;
-					if (_eg_state_shift_level > SiOPMTable::ENV_BOTTOM_SSGEC) {
-						_eg_state_shift_level = SiOPMTable::ENV_BOTTOM_SSGEC;
+					if (_eg_state_shift_level > SiOPMRefTable::ENV_BOTTOM_SSGEC) {
+						_eg_state_shift_level = SiOPMRefTable::ENV_BOTTOM_SSGEC;
 					}
 
 					int level_index = _table->eg_ssg_table_index[_ssg_type_envelope_control - 8][_eg_ssgec_attack_rate][_eg_ssgec_state];
@@ -344,13 +344,13 @@ void SiOPMOperator::_shift_eg_state(EGState p_state) {
 
 			if (_ssg_type_envelope_control != 0) {
 				_eg_level = _eg_sustain_level >> 2;
-				_eg_state_shift_level = SiOPMTable::ENV_BOTTOM_SSGEC;
+				_eg_state_shift_level = SiOPMRefTable::ENV_BOTTOM_SSGEC;
 
 				int level_index = _table->eg_ssg_table_index[_ssg_type_envelope_control - 8][_eg_ssgec_attack_rate][_eg_ssgec_state];
 				_eg_level_table = make_vector<int>(_table->eg_level_tables[level_index]);
 			} else {
 				_eg_level = _eg_sustain_level;
-				_eg_state_shift_level = SiOPMTable::ENV_BOTTOM;
+				_eg_state_shift_level = SiOPMRefTable::ENV_BOTTOM;
 				_eg_level_table = make_vector<int>(_table->eg_level_tables[0]);
 			}
 
@@ -360,9 +360,9 @@ void SiOPMOperator::_shift_eg_state(EGState p_state) {
 		} break;
 
 		case EG_RELEASE: {
-			if (_eg_level < SiOPMTable::ENV_BOTTOM) {
+			if (_eg_level < SiOPMRefTable::ENV_BOTTOM) {
 				_eg_state = EG_RELEASE;
-				_eg_state_shift_level = SiOPMTable::ENV_BOTTOM;
+				_eg_state_shift_level = SiOPMRefTable::ENV_BOTTOM;
 				_eg_level_table = make_vector<int>(_table->eg_level_tables[_ssg_type_envelope_control != 0 ? 1 : 0]);
 
 				int index = _release_rate + _eg_key_scale_rate;
@@ -376,8 +376,8 @@ void SiOPMOperator::_shift_eg_state(EGState p_state) {
 		case EG_OFF:
 		default: {
 			_eg_state = EG_OFF;
-			_eg_level = SiOPMTable::ENV_BOTTOM;
-			_eg_state_shift_level = SiOPMTable::ENV_BOTTOM + 1;
+			_eg_level = SiOPMRefTable::ENV_BOTTOM;
+			_eg_state_shift_level = SiOPMRefTable::ENV_BOTTOM + 1;
 			_eg_level_table = make_vector<int>(_table->eg_level_tables[0]);
 
 			_eg_increment_table = make_vector<int>(_table->eg_increment_tables[17]); // 17 = all zero
@@ -461,7 +461,7 @@ void SiOPMOperator::set_operator_params(SiOPMOperatorParams *p_params) {
 	_dt1 = p_params->get_detune1() & 7;
 	_pitch_index_shift = p_params->get_detune();
 
-	_mute = p_params->is_mute() ? SiOPMTable::ENV_BOTTOM : 0;
+	_mute = p_params->is_mute() ? SiOPMRefTable::ENV_BOTTOM : 0;
 	_ssg_type_envelope_control = p_params->get_ssg_type_envelope_control();
 	_envelope_reset_on_attack = p_params->is_envelope_reset_on_attack();
 
@@ -506,7 +506,7 @@ void SiOPMOperator::get_operator_params(SiOPMOperatorParams *r_params) {
 }
 
 void SiOPMOperator::set_wave_table(SiOPMWaveTable *p_wave_table) {
-	_pg_type = SiOPMTable::PG_USER_CUSTOM;
+	_pg_type = SiOPMRefTable::PG_USER_CUSTOM;
 	_pt_type = p_wave_table->get_default_pitch_table_type();
 
 	_wave_table = p_wave_table->get_wavelet();
@@ -515,8 +515,8 @@ void SiOPMOperator::set_wave_table(SiOPMWaveTable *p_wave_table) {
 
 void SiOPMOperator::set_pcm_data(SiOPMWavePCMData *p_pcm_data) {
 	if (p_pcm_data && !p_pcm_data->get_wavelet().is_empty()) {
-		_pg_type = SiOPMTable::PG_USER_PCM;
-		_pt_type = SiOPMTable::PT_PCM;
+		_pg_type = SiOPMRefTable::PG_USER_PCM;
+		_pt_type = SiOPMRefTable::PT_PCM;
 
 		_wave_table = p_pcm_data->get_wavelet();
 		_wave_fixed_bits = PCM_WAVE_FIXED_BITS;
@@ -541,7 +541,7 @@ void SiOPMOperator::note_on() {
 		Ref<RandomNumberGenerator> rng;
 		rng.instantiate();
 
-		_phase = int(rng->randi_range(0, SiOPMTable::PHASE_MAX));
+		_phase = int(rng->randi_range(0, SiOPMRefTable::PHASE_MAX));
 	}
 
 	_eg_ssgec_state = -1;
@@ -606,7 +606,7 @@ void SiOPMOperator::initialize() {
 void SiOPMOperator::reset() {
 	_shift_eg_state(EG_OFF);
 	update_eg_output();
-	_eg_timer = SiOPMTable::ENV_TIMER_INITIAL;
+	_eg_timer = SiOPMRefTable::ENV_TIMER_INITIAL;
 	_eg_counter = 0;
 	_eg_ssgec_state = 0;
 
@@ -614,7 +614,7 @@ void SiOPMOperator::reset() {
 }
 
 SiOPMOperator::SiOPMOperator(SiOPMModule *p_chip) {
-	_table = SiOPMTable::get_instance();
+	_table = SiOPMRefTable::get_instance();
 	_chip = p_chip;
 
 	_feed_pipe = SinglyLinkedList<int>::alloc_ring(1);

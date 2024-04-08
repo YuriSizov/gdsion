@@ -7,7 +7,7 @@
 #ifndef SIMML_SIMULATOR_BASE_FM_H
 #define SIMML_SIMULATOR_BASE_FM_H
 
-#include "sequencer/simml_table.h"
+#include "sequencer/simml_ref_table.h"
 #include "sequencer/simulator/simml_simulator_base.h"
 
 class SiMMLTrack;
@@ -21,7 +21,7 @@ protected:
 public:
 	virtual MMLSequence *select_tone(SiMMLTrack *p_track, int p_voice_index) override;
 
-	SiMMLSimulatorBaseFM(SiMMLTable::ModuleType p_type, int p_channel_num);
+	SiMMLSimulatorBaseFM(SiMMLRefTable::ModuleType p_type, int p_channel_num);
 };
 
 #endif // SIMML_SIMULATOR_BASE_FM_H

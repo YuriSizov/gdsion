@@ -6,10 +6,10 @@
 
 #include "simml_simulator_ks.h"
 
-#include "processor/siopm_table.h"
-#include "sequencer/simml_table.h"
+#include "processor/siopm_ref_table.h"
+#include "sequencer/simml_ref_table.h"
 
 SiMMLSimulatorKS::SiMMLSimulatorKS() :
-		SiMMLSimulatorBase(SiMMLTable::MT_KS, 1, memnew(SiMMLSimulatorVoiceSet(512, SiOPMTable::PG_SINE)), false) {
+		SiMMLSimulatorBase(SiMMLRefTable::MT_KS, 1, memnew(SiMMLSimulatorVoiceSet(512, SiOPMRefTable::PG_SINE)), false) {
 	// Empty.
 }

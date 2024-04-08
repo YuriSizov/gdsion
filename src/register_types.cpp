@@ -19,7 +19,7 @@
 #include "processor/channels/siopm_channel_base.h"
 #include "processor/channels/siopm_channel_fm.h"
 #include "processor/siopm_channel_params.h"
-#include "processor/siopm_table.h"
+#include "processor/siopm_ref_table.h"
 #include "processor/wave/siopm_wave_base.h"
 #include "processor/wave/siopm_wave_pcm_data.h"
 #include "processor/wave/siopm_wave_pcm_table.h"
@@ -32,8 +32,8 @@
 #include "sequencer/base/mml_sequencer.h"
 #include "sequencer/base/mml_system_command.h"
 #include "sequencer/simml_data.h"
+#include "sequencer/simml_ref_table.h"
 #include "sequencer/simml_sequencer.h"
-#include "sequencer/simml_table.h"
 #include "sequencer/simml_track.h"
 #include "sequencer/simml_voice.h"
 #include "utils/sion_voice_preset_util.h"
@@ -60,6 +60,7 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_abstract_class<SiOPMChannelBase>();
 	ClassDB::register_abstract_class<SiOPMChannelFM>();
 	ClassDB::register_abstract_class<SiOPMChannelParams>();
+	ClassDB::register_abstract_class<SiOPMRefTable>();
 	ClassDB::register_abstract_class<SiOPMWaveBase>();
 	ClassDB::register_abstract_class<SiOPMWavePCMData>();
 	ClassDB::register_abstract_class<SiOPMWavePCMTable>();
@@ -73,6 +74,7 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_abstract_class<MMLSequencer>();
 	ClassDB::register_abstract_class<MMLSystemCommand>();
 	ClassDB::register_abstract_class<SiMMLData>();
+	ClassDB::register_abstract_class<SiMMLRefTable>();
 	ClassDB::register_abstract_class<SiMMLSequencer>();
 	ClassDB::register_abstract_class<SiMMLTrack>();
 	ClassDB::register_abstract_class<SiMMLVoice>();
@@ -90,8 +92,8 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 
 	MMLParser::initialize();
 	MMLSequencer::initialize();
-	SiOPMTable::initialize();
-	SiMMLTable::initialize();
+	SiOPMRefTable::initialize();
+	SiMMLRefTable::initialize();
 }
 
 void uninitialize_sion_module(ModuleInitializationLevel p_level) {

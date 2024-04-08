@@ -4,9 +4,11 @@
 /* Provided under MIT                              */
 /***************************************************/
 
-#ifndef SIMML_TABLE_H
-#define SIMML_TABLE_H
+#ifndef SIMML_REF_TABLE_H
+#define SIMML_REF_TABLE_H
 
+#include <godot_cpp/core/binder_common.hpp>
+#include <godot_cpp/core/object.hpp>
 #include <godot_cpp/templates/hash_map.hpp>
 #include <godot_cpp/templates/list.hpp>
 #include <godot_cpp/templates/vector.hpp>
@@ -18,9 +20,11 @@ class SiMMLEnvelopeTable;
 class SiMMLSimulatorBase;
 class SiMMLVoice;
 
-class SiMMLTable {
+// Reference data object for the sequencer and related operations.
+class SiMMLRefTable : public Object {
+	GDCLASS(SiMMLRefTable, Object)
 
-	static SiMMLTable *_instance;
+	static SiMMLRefTable *_instance;
 
 	Vector<SiMMLEnvelopeTable *> _master_envelopes;
 	Vector<SiMMLVoice *> _master_voices;
@@ -32,6 +36,9 @@ class SiMMLTable {
 	template <size_t S>
 	Vector<SiMMLVoice *> _setup_ym2413_default_voices(uint32_t (&p_register_map)[S]);
 	void _dump_ym2413_register(SiMMLVoice *p_voice, uint32_t p_u0, uint32_t p_u1);
+
+protected:
+	static void _bind_methods();
 
 public:
 	enum ModuleType {
@@ -135,7 +142,7 @@ public:
 
 	//
 
-	static SiMMLTable *get_instance() { return _instance; }
+	static SiMMLRefTable *get_instance() { return _instance; }
 	static void initialize();
 	static void finalize() {}
 
@@ -156,7 +163,9 @@ public:
 
 	//
 
-	SiMMLTable();
+	SiMMLRefTable();
 };
 
-#endif // SIMML_TABLE_H
+VARIANT_ENUM_CAST(SiMMLRefTable::ModuleType);
+
+#endif // SIMML_REF_TABLE_H

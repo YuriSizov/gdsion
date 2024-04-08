@@ -23,6 +23,9 @@ int SiOPMModule::get_channel_count() const {
 }
 
 SinglyLinkedList<int> *SiOPMModule::get_pipe(int p_pipe_num, int p_index) {
+	ERR_FAIL_INDEX_V(p_pipe_num, _pipe_buffer_pager.size(), nullptr);
+	ERR_FAIL_INDEX_V(p_index, _pipe_buffer_pager[p_pipe_num].size(), nullptr);
+
 	return _pipe_buffer_pager[p_pipe_num][p_index];
 }
 

@@ -14,7 +14,7 @@
 #include "processor/siopm_channel_params.h"
 #include "processor/siopm_module.h"
 #include "processor/siopm_operator_params.h"
-#include "processor/siopm_table.h"
+#include "processor/siopm_ref_table.h"
 #include "processor/wave/siopm_wave_base.h"
 #include "processor/wave/siopm_wave_pcm_table.h"
 #include "sequencer/base/mml_executor.h"
@@ -26,7 +26,7 @@
 #include "sequencer/base/mml_system_command.h"
 #include "sequencer/simml_data.h"
 #include "sequencer/simml_envelope_table.h"
-#include "sequencer/simml_table.h"
+#include "sequencer/simml_ref_table.h"
 #include "sequencer/simml_track.h"
 #include "sequencer/simml_voice.h"
 #include "utils/translator_util.h"
@@ -590,7 +590,7 @@ void SiMMLSequencer::_parse_vmode_command(String p_mml) {
 
 		if (res->get_string(1) == "%v") {
 			int mode = res->get_string(2).to_int();
-			mml_data->set_default_velocity_mode((mode >= 0 && mode < SiOPMTable::VM_MAX) ? mode : 0);
+			mml_data->set_default_velocity_mode((mode >= 0 && mode < SiOPMRefTable::VM_MAX) ? mode : 0);
 
 			int shift = 4;
 			if (!res->get_string(4).is_empty()) {
@@ -600,37 +600,37 @@ void SiMMLSequencer::_parse_vmode_command(String p_mml) {
 
 		} else if (res->get_string(1) == "%x") {
 			int mode = res->get_string(2).to_int();
-			mml_data->set_default_expression_mode((mode >= 0 && mode < SiOPMTable::VM_MAX) ? mode : 0);
+			mml_data->set_default_expression_mode((mode >= 0 && mode < SiOPMRefTable::VM_MAX) ? mode : 0);
 
 		} else if (res->get_string(1) == "n88" || res->get_string(1) == "mdx") {
-			mml_data->set_default_velocity_mode(SiOPMTable::VM_DR32DB);
-			mml_data->set_default_expression_mode(SiOPMTable::VM_DR48DB);
+			mml_data->set_default_velocity_mode(SiOPMRefTable::VM_DR32DB);
+			mml_data->set_default_expression_mode(SiOPMRefTable::VM_DR48DB);
 
 		} else if (res->get_string(1) == "psg") {
-			mml_data->set_default_velocity_mode(SiOPMTable::VM_DR48DB);
-			mml_data->set_default_expression_mode(SiOPMTable::VM_DR48DB);
+			mml_data->set_default_velocity_mode(SiOPMRefTable::VM_DR48DB);
+			mml_data->set_default_expression_mode(SiOPMRefTable::VM_DR48DB);
 
 		} else { // mck/tss
-			mml_data->set_default_velocity_mode(SiOPMTable::VM_LINEAR);
-			mml_data->set_default_expression_mode(SiOPMTable::VM_LINEAR);
+			mml_data->set_default_velocity_mode(SiOPMRefTable::VM_LINEAR);
+			mml_data->set_default_expression_mode(SiOPMRefTable::VM_LINEAR);
 		}
 	}
 }
 
 bool SiMMLSequencer::_try_set_sampler_wave(int p_index, String p_mml) {
-	if (SiOPMTable::get_instance()->sound_reference.is_empty()) {
+	if (SiOPMRefTable::get_instance()->sound_reference.is_empty()) {
 		return false;
 	}
 
-	int bank = (p_index >> SiOPMTable::NOTE_BITS) & (SiOPMTable::SAMPLER_TABLE_MAX - 1);
-	int index = p_index & (SiOPMTable::NOTE_TABLE_SIZE - 1);
+	int bank = (p_index >> SiOPMRefTable::NOTE_BITS) & (SiOPMRefTable::SAMPLER_TABLE_MAX - 1);
+	int index = p_index & (SiOPMRefTable::NOTE_TABLE_SIZE - 1);
 
 	SiOPMWaveSamplerTable *table = Object::cast_to<SiMMLData>(mml_data)->get_sampler_table(bank);
-	return TranslatorUtil::parse_sampler_wave(table, index, p_mml, SiOPMTable::get_instance()->sound_reference);
+	return TranslatorUtil::parse_sampler_wave(table, index, p_mml, SiOPMRefTable::get_instance()->sound_reference);
 }
 
 bool SiMMLSequencer::_try_set_pcm_wave(int p_index, String p_mml) {
-	if (SiOPMTable::get_instance()->sound_reference.is_empty()) {
+	if (SiOPMRefTable::get_instance()->sound_reference.is_empty()) {
 		return false;
 	}
 
@@ -640,11 +640,11 @@ bool SiMMLSequencer::_try_set_pcm_wave(int p_index, String p_mml) {
 		return false;
 	}
 
-	return TranslatorUtil::parse_pcm_wave(table, p_mml, SiOPMTable::get_instance()->sound_reference);
+	return TranslatorUtil::parse_pcm_wave(table, p_mml, SiOPMRefTable::get_instance()->sound_reference);
 }
 
 bool SiMMLSequencer::_try_set_pcm_voice(int p_index, String p_mml, String p_postfix) {
-	if (SiOPMTable::get_instance()->sound_reference.is_empty()) {
+	if (SiOPMRefTable::get_instance()->sound_reference.is_empty()) {
 		return false;
 	}
 
@@ -1165,7 +1165,7 @@ MMLEvent *SiMMLSequencer::_on_mml_filter_mode(MMLEvent *p_event) {
 MMLEvent *SiMMLSequencer::_on_mml_lf_oscillator(MMLEvent *p_event) {
 	GET_EV_PARAMS(2);
 	BIND_EV_PARAM(cycle_time, 0, 20); // One third of a second.
-	BIND_EV_PARAM(waveform, 1, SiOPMTable::LFO_WAVE_TRIANGLE);
+	BIND_EV_PARAM(waveform, 1, SiOPMRefTable::LFO_WAVE_TRIANGLE);
 
 	cycle_time *= 1000/60; // Convert to ms.
 
@@ -1176,7 +1176,7 @@ MMLEvent *SiMMLSequencer::_on_mml_lf_oscillator(MMLEvent *p_event) {
 			ev_table->to_vector(256, &table_vector, 0, 255);
 			_current_track->get_channel()->initialize_lfo(-1, table_vector);
 		} else {
-			_current_track->get_channel()->initialize_lfo(SiOPMTable::LFO_WAVE_TRIANGLE);
+			_current_track->get_channel()->initialize_lfo(SiOPMRefTable::LFO_WAVE_TRIANGLE);
 		}
 	} else {
 		_current_track->get_channel()->initialize_lfo(waveform);
@@ -1337,10 +1337,10 @@ MMLEvent *SiMMLSequencer::_on_mml_ring_modulation(MMLEvent *p_event) {
 
 MMLEvent *SiMMLSequencer::_on_mml_module_type(MMLEvent *p_event) {
 	GET_EV_PARAMS(2);
-	BIND_EV_PARAM_RANGE(type, 0, 0, SiMMLTable::MT_MAX, SiMMLTable::MT_ALL);
+	BIND_EV_PARAM_RANGE(type, 0, 0, SiMMLRefTable::MT_MAX, SiMMLRefTable::MT_ALL);
 	BIND_EV_PARAM(channel_num, 1, INT32_MIN);
 
-	_current_track->set_channel_module_type((SiMMLTable::ModuleType)type, channel_num);
+	_current_track->set_channel_module_type((SiMMLRefTable::ModuleType)type, channel_num);
 	return next_event->next;
 }
 
@@ -1649,7 +1649,7 @@ void SiMMLSequencer::_reset_initial_operator_params() {
 	op_params->set_initial_phase(0);
 	op_params->set_fixed_pitch(0);
 	op_params->set_frequency_modulation_level(5);
-	op_params->set_pulse_generator_type(SiOPMTable::PG_SQUARE);
+	op_params->set_pulse_generator_type(SiOPMRefTable::PG_SQUARE);
 }
 
 void SiMMLSequencer::_reset_parser_settings() {
@@ -1730,7 +1730,7 @@ void SiMMLSequencer::_bind_methods() {
 
 SiMMLSequencer::SiMMLSequencer(SiOPMModule *p_module) :
 		MMLSequencer() {
-	_table = SiMMLTable::get_instance();
+	_table = SiMMLRefTable::get_instance();
 	_module = p_module;
 	_connector = memnew(MMLExecutorConnector);
 

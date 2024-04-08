@@ -12,8 +12,8 @@
 #include <godot_cpp/templates/vector.hpp>
 #include "processor/siopm_channel_params.h"
 #include "processor/siopm_operator_params.h"
-#include "processor/siopm_table.h"
-#include "sequencer/simml_table.h"
+#include "processor/siopm_ref_table.h"
+#include "sequencer/simml_ref_table.h"
 #include "utils/godot_util.h"
 
 // Channel params.
@@ -119,7 +119,7 @@ void TranslatorUtil::_set_opl_params_by_array(SiOPMChannelParams *r_params, Vect
 		return;
 	}
 
-	int algorithm = _get_params_algorithm(SiMMLTable::get_instance()->algorithm_opl, r_params->operator_count, p_data[0], "#OPL@");
+	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opl, r_params->operator_count, p_data[0], "#OPL@");
 	if (algorithm == -1) {
 		return;
 	}
@@ -132,7 +132,7 @@ void TranslatorUtil::_set_opl_params_by_array(SiOPMChannelParams *r_params, Vect
 	for (int op_index = 0; op_index < r_params->operator_count; op_index++) {
 		SiOPMOperatorParams *op_params = r_params->operator_params[op_index];
 
-		op_params->set_pulse_generator_type(SiOPMTable::PG_MA3_WAVE + (p_data[data_index++] & 31));      // 1
+		op_params->set_pulse_generator_type(SiOPMRefTable::PG_MA3_WAVE + (p_data[data_index++] & 31));      // 1
 		op_params->attack_rate                                      = (p_data[data_index++] << 2) & 63;  // 2
 		op_params->decay_rate                                       = (p_data[data_index++] << 2) & 63;  // 3
 		op_params->release_rate                                     = (p_data[data_index++] << 2) & 63;  // 4
@@ -159,7 +159,7 @@ void TranslatorUtil::_set_opm_params_by_array(SiOPMChannelParams *r_params, Vect
 		return;
 	}
 
-	int algorithm = _get_params_algorithm(SiMMLTable::get_instance()->algorithm_opm, r_params->operator_count, p_data[0], "#OPM@");
+	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opm, r_params->operator_count, p_data[0], "#OPM@");
 	if (algorithm == -1) {
 		return;
 	}
@@ -182,7 +182,7 @@ void TranslatorUtil::_set_opm_params_by_array(SiOPMChannelParams *r_params, Vect
 		op_params->detune1                    = p_data[data_index++] & 7;              // 9
 
 		int n = p_data[data_index++] & 3;
-		op_params->detune = SiOPMTable::get_instance()->dt2_table[n];                  // 10
+		op_params->detune = SiOPMRefTable::get_instance()->dt2_table[n];                  // 10
 		op_params->amplitude_modulation_shift = p_data[data_index++] & 3;              // 11
 	}
 }
@@ -196,7 +196,7 @@ void TranslatorUtil::_set_opn_params_by_array(SiOPMChannelParams *r_params, Vect
 	}
 
 	// Note: OPM and OPN share the algo list.
-	int algorithm = _get_params_algorithm(SiMMLTable::get_instance()->algorithm_opm, r_params->operator_count, p_data[0], "#OPN@");
+	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opm, r_params->operator_count, p_data[0], "#OPN@");
 	if (algorithm == -1) {
 		return;
 	}
@@ -230,7 +230,7 @@ void TranslatorUtil::_set_opx_params_by_array(SiOPMChannelParams *r_params, Vect
 		return;
 	}
 
-	int algorithm = _get_params_algorithm(SiMMLTable::get_instance()->algorithm_opx, r_params->operator_count, p_data[0], "#OPX@");
+	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opx, r_params->operator_count, p_data[0], "#OPX@");
 	if (algorithm == -1) {
 		return;
 	}
@@ -244,8 +244,8 @@ void TranslatorUtil::_set_opx_params_by_array(SiOPMChannelParams *r_params, Vect
 		SiOPMOperatorParams *op_params = r_params->operator_params[op_index];
 
 		int i = p_data[data_index++];
-		int i1 = SiOPMTable::PG_MA3_WAVE + (i & 7);
-		int i2 = SiOPMTable::PG_CUSTOM + (i - 7);
+		int i1 = SiOPMRefTable::PG_MA3_WAVE + (i & 7);
+		int i2 = SiOPMRefTable::PG_CUSTOM + (i - 7);
 		op_params->set_pulse_generator_type((i < 7) ? i1 : i2);                        // 1
 		op_params->attack_rate               = (p_data[data_index++] << 1) & 63;       // 2
 		op_params->decay_rate                = (p_data[data_index++] << 1) & 63;       // 3
@@ -269,7 +269,7 @@ void TranslatorUtil::_set_ma3_params_by_array(SiOPMChannelParams *r_params, Vect
 		return;
 	}
 
-	int algorithm = _get_params_algorithm(SiMMLTable::get_instance()->algorithm_ma3, r_params->operator_count, p_data[0], "#MA@");
+	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_ma3, r_params->operator_count, p_data[0], "#MA@");
 	if (algorithm == -1) {
 		return;
 	}
@@ -283,7 +283,7 @@ void TranslatorUtil::_set_ma3_params_by_array(SiOPMChannelParams *r_params, Vect
 		SiOPMOperatorParams *op_params = r_params->operator_params[op_index];
 
 		int n = p_data[data_index++] & 31;
-		op_params->set_pulse_generator_type(SiOPMTable::PG_MA3_WAVE + n);                   // 1
+		op_params->set_pulse_generator_type(SiOPMRefTable::PG_MA3_WAVE + n);                   // 1
 		op_params->attack_rate                       = (p_data[data_index++] << 2) & 63;    // 2
 		op_params->decay_rate                        = (p_data[data_index++] << 2) & 63;    // 3
 		op_params->sustain_rate                      = (p_data[data_index++] << 2) & 63;    // 4
@@ -316,7 +316,7 @@ void TranslatorUtil::_set_al_params_by_array(SiOPMChannelParams *r_params, Vecto
 	op_params1->set_pulse_generator_type(p_data[2]);
 
 	int balance = CLAMP(p_data[3], -64, 64);
-	int (&tl_table)[129] = SiOPMTable::get_instance()->eg_linear_to_total_level_table;
+	int (&tl_table)[129] = SiOPMRefTable::get_instance()->eg_linear_to_total_level_table;
 	op_params0->total_level = tl_table[64 - balance];
 	op_params1->total_level = tl_table[balance + 64];
 
@@ -408,7 +408,7 @@ int TranslatorUtil::_get_algorithm_index(int p_operator_count, int p_algorithm, 
 }
 
 int TranslatorUtil::_get_ma3_from_pg_type(int p_pulse_generator_type, const String &p_command) {
-	int wave_shape = p_pulse_generator_type - SiOPMTable::PG_MA3_WAVE;
+	int wave_shape = p_pulse_generator_type - SiOPMRefTable::PG_MA3_WAVE;
 	if (wave_shape >= 0 && wave_shape <= 31) {
 		return wave_shape;
 	}
@@ -447,7 +447,7 @@ int TranslatorUtil::_balance_total_levels(int p_level0, int p_level1) {
 		return 64;
 	}
 
-	int (&tl_table)[129] = SiOPMTable::get_instance()->eg_linear_to_total_level_table;
+	int (&tl_table)[129] = SiOPMRefTable::get_instance()->eg_linear_to_total_level_table;
 	for (int i = 1; i < 128; i++) {
 		if (p_level0 >= tl_table[i]) {
 			return i - 64;
@@ -493,7 +493,7 @@ Vector<int> TranslatorUtil::get_opl_params(SiOPMChannelParams *p_params) {
 		return Vector<int>();
 	}
 
-	int alg_index = _get_algorithm_index(p_params->operator_count, p_params->algorithm, SiMMLTable::get_instance()->algorithm_opl, "#OPL@");
+	int alg_index = _get_algorithm_index(p_params->operator_count, p_params->algorithm, SiMMLRefTable::get_instance()->algorithm_opl, "#OPL@");
 	if (alg_index == -1) {
 		return Vector<int>();
 	}
@@ -534,7 +534,7 @@ Vector<int> TranslatorUtil::get_opm_params(SiOPMChannelParams *p_params) {
 		return Vector<int>();
 	}
 
-	int alg_index = _get_algorithm_index(p_params->operator_count, p_params->algorithm, SiMMLTable::get_instance()->algorithm_opm, "#OPM@");
+	int alg_index = _get_algorithm_index(p_params->operator_count, p_params->algorithm, SiMMLRefTable::get_instance()->algorithm_opm, "#OPM@");
 	if (alg_index == -1) {
 		return Vector<int>();
 	}
@@ -570,7 +570,7 @@ Vector<int> TranslatorUtil::get_opn_params(SiOPMChannelParams *p_params) {
 	}
 
 	// Note: OPM and OPN share the algo list.
-	int alg_index = _get_algorithm_index(p_params->operator_count, p_params->algorithm, SiMMLTable::get_instance()->algorithm_opm, "#OPN@");
+	int alg_index = _get_algorithm_index(p_params->operator_count, p_params->algorithm, SiMMLRefTable::get_instance()->algorithm_opm, "#OPN@");
 	if (alg_index == -1) {
 		return Vector<int>();
 	}
@@ -602,7 +602,7 @@ Vector<int> TranslatorUtil::get_opx_params(SiOPMChannelParams *p_params) {
 		return Vector<int>();
 	}
 
-	int alg_index = _get_algorithm_index(p_params->operator_count, p_params->algorithm, SiMMLTable::get_instance()->algorithm_opx, "#OPX@");
+	int alg_index = _get_algorithm_index(p_params->operator_count, p_params->algorithm, SiMMLRefTable::get_instance()->algorithm_opx, "#OPX@");
 	if (alg_index == -1) {
 		return Vector<int>();
 	}
@@ -641,7 +641,7 @@ Vector<int> TranslatorUtil::get_ma3_params(SiOPMChannelParams *p_params) {
 		return Vector<int>();
 	}
 
-	int alg_index = _get_algorithm_index(p_params->operator_count, p_params->algorithm, SiMMLTable::get_instance()->algorithm_ma3, "#MA@");
+	int alg_index = _get_algorithm_index(p_params->operator_count, p_params->algorithm, SiMMLRefTable::get_instance()->algorithm_ma3, "#MA@");
 	if (alg_index == -1) {
 		return Vector<int>();
 	}

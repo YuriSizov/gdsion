@@ -7,7 +7,7 @@
 #include "siopm_wave_sampler_data.h"
 
 #include <godot_cpp/core/error_macros.hpp>
-#include "sequencer/simml_table.h"
+#include "sequencer/simml_ref_table.h"
 #include "templates/singly_linked_list.h"
 #include "utils/transformer_util.h"
 
@@ -151,7 +151,7 @@ void SiOPMWaveSamplerData::slice(int p_start_point, int p_end_point, int p_loop_
 //
 
 SiOPMWaveSamplerData::SiOPMWaveSamplerData(const Variant &p_data, int p_ignore_note_off, int p_pan, int p_src_channel_count, int p_channel_count) :
-		SiOPMWaveBase(SiMMLTable::MT_SAMPLE) {
+		SiOPMWaveBase(SiMMLRefTable::MT_SAMPLE) {
 	if (!p_data) {
 		return;
 	}

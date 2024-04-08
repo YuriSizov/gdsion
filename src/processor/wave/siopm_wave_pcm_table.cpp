@@ -6,8 +6,8 @@
 
 #include "siopm_wave_pcm_table.h"
 
-#include "processor/siopm_table.h"
-#include "sequencer/simml_table.h"
+#include "processor/siopm_ref_table.h"
+#include "sequencer/simml_ref_table.h"
 
 SiOPMWavePCMData *SiOPMWavePCMTable::get_note_data(int p_note) const {
 	ERR_FAIL_INDEX_V_MSG(p_note, _note_data_map.size(), nullptr, vformat("SiOPMWavePCMData: Trying to access note data for a note that doesn't exist (%d).", p_note));
@@ -26,13 +26,13 @@ int SiOPMWavePCMTable::get_note_pan(int p_note) const {
 
 void SiOPMWavePCMTable::set_sample(SiOPMWavePCMData *p_pcm_data, int p_key_range_from, int p_key_range_to) {
 	int key_from = MAX(0, p_key_range_from);
-	int key_to = MIN(SiOPMTable::NOTE_TABLE_SIZE - 1, p_key_range_to);
+	int key_to = MIN(SiOPMRefTable::NOTE_TABLE_SIZE - 1, p_key_range_to);
 
 	if (key_to == -1) {
 		key_to = key_from;
 	}
 
-	ERR_FAIL_COND_MSG(key_from > (SiOPMTable::NOTE_TABLE_SIZE - 1), vformat("SiOPMWavePCMTable: Invalid sample key range, left boundary cannot be greater than %d but %d was given.", (SiOPMTable::NOTE_TABLE_SIZE - 1), key_from));
+	ERR_FAIL_COND_MSG(key_from > (SiOPMRefTable::NOTE_TABLE_SIZE - 1), vformat("SiOPMWavePCMTable: Invalid sample key range, left boundary cannot be greater than %d but %d was given.", (SiOPMRefTable::NOTE_TABLE_SIZE - 1), key_from));
 	ERR_FAIL_COND_MSG(key_to < 0, vformat("SiOPMWavePCMTable: Invalid sample key range, right boundary cannot be less than 0 (except -1) but %d was given.", key_to));
 	ERR_FAIL_COND_MSG(key_to < key_from, vformat("SiOPMWavePCMTable: Invalid sample key range, left boundary cannot be greater than right boundary (%d > %d).", key_from, key_to));
 
@@ -59,7 +59,7 @@ void SiOPMWavePCMTable::set_key_scale_volume(int p_center_note, double p_key_ran
 			_note_volume_map.write[i] = value;
 			value += delta_value;
 		}
-		for (; i < SiOPMTable::NOTE_TABLE_SIZE; i++) {
+		for (; i < SiOPMRefTable::NOTE_TABLE_SIZE; i++) {
 			_note_volume_map.write[i] = 1;
 		}
 	} else {
@@ -75,7 +75,7 @@ void SiOPMWavePCMTable::set_key_scale_volume(int p_center_note, double p_key_ran
 		}
 
 		value = 1 + volume_range;
-		for (; i < SiOPMTable::NOTE_TABLE_SIZE; i++) {
+		for (; i < SiOPMRefTable::NOTE_TABLE_SIZE; i++) {
 			_note_volume_map.write[i] = value;
 		}
 	}
@@ -97,19 +97,19 @@ void SiOPMWavePCMTable::set_key_scale_pan(int p_center_note, double p_key_range,
 	}
 
 	value = p_pan_width * 0.5;
-	for (; i < SiOPMTable::NOTE_TABLE_SIZE; i++) {
+	for (; i < SiOPMRefTable::NOTE_TABLE_SIZE; i++) {
 		_note_pan_map.write[i] = value;
 	}
 }
 
 void SiOPMWavePCMTable::free() {
-	for (int i = 0; i < SiOPMTable::NOTE_TABLE_SIZE; i++) {
+	for (int i = 0; i < SiOPMRefTable::NOTE_TABLE_SIZE; i++) {
 		_note_data_map.write[i] = nullptr;
 	}
 }
 
 void SiOPMWavePCMTable::clear(SiOPMWavePCMData *p_pcm_data) {
-	for (int i = 0; i < SiOPMTable::NOTE_TABLE_SIZE; i++) {
+	for (int i = 0; i < SiOPMRefTable::NOTE_TABLE_SIZE; i++) {
 		_note_data_map.write[i] = p_pcm_data;
 		_note_volume_map.write[i] = 1;
 		_note_pan_map.write[i] = 0;
@@ -117,10 +117,10 @@ void SiOPMWavePCMTable::clear(SiOPMWavePCMData *p_pcm_data) {
 }
 
 SiOPMWavePCMTable::SiOPMWavePCMTable() :
-		SiOPMWaveBase(SiMMLTable::MT_PCM) {
-	_note_data_map.resize_zeroed(SiOPMTable::NOTE_TABLE_SIZE);
-	_note_volume_map.resize_zeroed(SiOPMTable::NOTE_TABLE_SIZE);
-	_note_pan_map.resize_zeroed(SiOPMTable::NOTE_TABLE_SIZE);
+		SiOPMWaveBase(SiMMLRefTable::MT_PCM) {
+	_note_data_map.resize_zeroed(SiOPMRefTable::NOTE_TABLE_SIZE);
+	_note_volume_map.resize_zeroed(SiOPMRefTable::NOTE_TABLE_SIZE);
+	_note_pan_map.resize_zeroed(SiOPMRefTable::NOTE_TABLE_SIZE);
 
 	clear();
 }

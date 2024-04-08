@@ -4,9 +4,10 @@
 /* Provided under MIT                              */
 /***************************************************/
 
-#ifndef SIOPM_TABLE_H
-#define SIOPM_TABLE_H
+#ifndef SIOPM_REF_TABLE_H
+#define SIOPM_REF_TABLE_H
 
+#include <godot_cpp/core/object.hpp>
 #include <godot_cpp/templates/hash_map.hpp>
 #include <godot_cpp/templates/vector.hpp>
 #include <godot_cpp/variant/variant.hpp>
@@ -19,9 +20,11 @@ class SiOPMWaveSamplerData;
 class SiOPMWaveSamplerTable;
 class SiOPMWaveTable;
 
-class SiOPMTable {
+// Reference data object for the processor and related operations.
+class SiOPMRefTable : public Object {
+	GDCLASS(SiOPMRefTable, Object)
 
-	static SiOPMTable *_instance;
+	static SiOPMRefTable *_instance;
 
 	// Wave samples.
 
@@ -45,8 +48,11 @@ class SiOPMTable {
 	void _create_lfo_tables();
 	void _create_filter_tables();
 
+protected:
+	static void _bind_methods() {}
+
 public:
-	static SiOPMTable *get_instance() { return _instance; }
+	static SiOPMRefTable *get_instance() { return _instance; }
 	static void initialize();
 	static void finalize() {}
 
@@ -322,8 +328,9 @@ public:
 
 	//
 
-	SiOPMTable(int p_fm_clock, double p_psg_clock, int p_sampling_rate);
-	~SiOPMTable() {}
+	// TODO: Define parameters as constants?
+	SiOPMRefTable(int p_fm_clock = 3580000, double p_psg_clock = 1789772.5, int p_sampling_rate = 44100);
+	~SiOPMRefTable() {}
 };
 
-#endif // SIOPM_TABLE_H
+#endif // SIOPM_REF_TABLE_H

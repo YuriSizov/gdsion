@@ -6,12 +6,12 @@
 
 #include "siopm_operator_params.h"
 
-#include "processor/siopm_table.h"
+#include "processor/siopm_ref_table.h"
 #include "processor/wave/siopm_wave_table.h"
 
 void SiOPMOperatorParams::set_pulse_generator_type(int p_type) {
 	pulse_generator_type = p_type & 511;
-	pitch_table_type = SiOPMTable::get_instance()->get_wave_table(pulse_generator_type)->get_default_pitch_table_type();
+	pitch_table_type = SiOPMRefTable::get_instance()->get_wave_table(pulse_generator_type)->get_default_pitch_table_type();
 }
 
 int SiOPMOperatorParams::get_multiple() const {
@@ -54,8 +54,8 @@ String SiOPMOperatorParams::to_string() const {
 }
 
 void SiOPMOperatorParams::initialize() {
-	pulse_generator_type = SiOPMTable::PG_SINE;
-	pitch_table_type = SiOPMTable::PT_OPM;
+	pulse_generator_type = SiOPMRefTable::PG_SINE;
+	pitch_table_type = SiOPMRefTable::PT_OPM;
 
 	attack_rate = 63;
 	decay_rate = 0;

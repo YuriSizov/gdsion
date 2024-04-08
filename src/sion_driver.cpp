@@ -17,7 +17,7 @@
 #include "processor/channels/siopm_channel_base.h"
 #include "processor/siopm_channel_params.h"
 #include "processor/siopm_module.h"
-#include "processor/siopm_table.h"
+#include "processor/siopm_ref_table.h"
 #include "processor/wave/siopm_wave_pcm_data.h"
 #include "processor/wave/siopm_wave_pcm_table.h"
 #include "processor/wave/siopm_wave_sampler_data.h"
@@ -30,8 +30,8 @@
 #include "sequencer/base/mml_sequence_group.h"
 #include "sequencer/base/mml_sequencer.h"
 #include "sequencer/simml_envelope_table.h"
+#include "sequencer/simml_ref_table.h"
 #include "sequencer/simml_sequencer.h"
-#include "sequencer/simml_table.h"
 #include "sequencer/simml_track.h"
 #include "utils/fader_util.h"
 #include "utils/transformer_util.h"
@@ -72,12 +72,12 @@ SiOPMWaveTable *SiONDriver::set_wave_table(int p_index, Vector<double> p_table) 
 	wave_data.resize_zeroed(1 << bits);
 
 	SiOPMWaveTable *wave_table = SiOPMWaveTable::alloc(wave_data);
-	SiOPMTable::get_instance()->register_wave_table(p_index, wave_table);
+	SiOPMRefTable::get_instance()->register_wave_table(p_index, wave_table);
 	return wave_table;
 }
 
 SiOPMWavePCMData *SiONDriver::set_pcm_wave(int p_index, const Variant &p_data, double p_sampling_note, int p_key_range_from, int p_key_range_to, int p_src_channel_count, int p_channel_count) {
-	SiMMLVoice *pcm_voice = SiOPMTable::get_instance()->get_global_pcm_voice(p_index & (SiOPMTable::PCM_DATA_MAX - 1));
+	SiMMLVoice *pcm_voice = SiOPMRefTable::get_instance()->get_global_pcm_voice(p_index & (SiOPMRefTable::PCM_DATA_MAX - 1));
 	SiOPMWavePCMTable *pcm_table = Object::cast_to<SiOPMWavePCMTable>(pcm_voice->get_wave_data());
 	SiOPMWavePCMData *pcm_data = memnew(SiOPMWavePCMData(p_data, (int)(p_sampling_note * 64), p_src_channel_count, p_channel_count));
 
@@ -86,30 +86,30 @@ SiOPMWavePCMData *SiONDriver::set_pcm_wave(int p_index, const Variant &p_data, d
 }
 
 SiOPMWaveSamplerData *SiONDriver::set_sampler_wave(int p_index, const Variant &p_data, bool p_ignore_note_off, int p_pan, int p_src_channel_count, int p_channel_count) {
-	return SiOPMTable::get_instance()->register_sampler_data(p_index, p_data, p_ignore_note_off, p_pan, p_src_channel_count, p_channel_count);
+	return SiOPMRefTable::get_instance()->register_sampler_data(p_index, p_data, p_ignore_note_off, p_pan, p_src_channel_count, p_channel_count);
 }
 
 void SiONDriver::set_pcm_voice(int p_index, SiONVoice *p_voice) {
-	SiOPMTable::get_instance()->set_global_pcm_voice(p_index & (SiOPMTable::PCM_DATA_MAX - 1), p_voice);
+	SiOPMRefTable::get_instance()->set_global_pcm_voice(p_index & (SiOPMRefTable::PCM_DATA_MAX - 1), p_voice);
 }
 
 void SiONDriver::set_sampler_table(int p_bank, SiOPMWaveSamplerTable *p_table) {
-	SiOPMTable::get_instance()->sampler_tables.write[p_bank & (SiOPMTable::SAMPLER_TABLE_MAX - 1)] = p_table;
+	SiOPMRefTable::get_instance()->sampler_tables.write[p_bank & (SiOPMRefTable::SAMPLER_TABLE_MAX - 1)] = p_table;
 }
 
 void SiONDriver::set_envelope_table(int p_index, Vector<int> p_table, int p_loop_point) {
-	SiMMLTable::get_instance()->register_master_envelope_table(p_index, memnew(SiMMLEnvelopeTable(p_table, p_loop_point)));
+	SiMMLRefTable::get_instance()->register_master_envelope_table(p_index, memnew(SiMMLEnvelopeTable(p_table, p_loop_point)));
 }
 
 void SiONDriver::set_voice(int p_index, SiONVoice *p_voice) {
 	ERR_FAIL_COND_MSG(!p_voice->is_suitable_for_fm_voice(), "SiONDriver: Cannot register a voice that is not suitable to be an FM voice.");
 
-	SiMMLTable::get_instance()->register_master_voice(p_index, p_voice);
+	SiMMLRefTable::get_instance()->register_master_voice(p_index, p_voice);
 }
 
 void SiONDriver::clear_all_user_tables() {
-	SiOPMTable::get_instance()->reset_all_user_tables();
-	SiMMLTable::get_instance()->reset_all_user_tables();
+	SiOPMRefTable::get_instance()->reset_all_user_tables();
+	SiMMLRefTable::get_instance()->reset_all_user_tables();
 }
 
 SiMMLTrack *SiONDriver::create_user_controllable_track(int p_track_id) {
@@ -634,6 +634,8 @@ void SiONDriver::resume() {
 }
 
 SiMMLTrack *SiONDriver::play_sound(int p_sample_number, double p_length, double p_delay, double p_quant, int p_track_id, bool p_disposable) {
+	ERR_FAIL_COND_V_MSG(!_is_streaming, nullptr, "SiONDriver: Driver is not streaming, you must call SiONDriver.play() first.");
+
 	int internal_track_id = (p_track_id & SiMMLTrack::TRACK_ID_FILTER) | SiMMLTrack::DRIVER_NOTE;
 	double delay_samples = sequencer->calculate_sample_delay(0, p_delay, p_quant);
 
@@ -661,7 +663,7 @@ SiMMLTrack *SiONDriver::play_sound(int p_sample_number, double p_length, double 
 	}
 
 	if (track) {
-		track->set_channel_module_type(SiMMLTable::MT_SAMPLE, 0);
+		track->set_channel_module_type(SiMMLRefTable::MT_SAMPLE, 0);
 		track->key_on(p_sample_number, p_length * sequencer->get_parser_settings()->resolution * 0.0625, delay_samples);
 	}
 
@@ -669,6 +671,8 @@ SiMMLTrack *SiONDriver::play_sound(int p_sample_number, double p_length, double 
 }
 
 SiMMLTrack *SiONDriver::note_on(int p_note, SiONVoice *p_voice, double p_length, double p_delay, double p_quant, int p_track_id, bool p_disposable) {
+	ERR_FAIL_COND_V_MSG(!_is_streaming, nullptr, "SiONDriver: Driver is not streaming, you must call SiONDriver.play() first.");
+
 	int internal_track_id = (p_track_id & SiMMLTrack::TRACK_ID_FILTER) | SiMMLTrack::DRIVER_NOTE;
 	double delay_samples = sequencer->calculate_sample_delay(0, p_delay, p_quant);
 
@@ -706,6 +710,8 @@ SiMMLTrack *SiONDriver::note_on(int p_note, SiONVoice *p_voice, double p_length,
 }
 
 TypedArray<SiMMLTrack> SiONDriver::note_off(int p_note, int p_track_id, double p_delay, double p_quant, bool p_stop_immediately) {
+	ERR_FAIL_COND_V_MSG(!_is_streaming, nullptr, "SiONDriver: Driver is not streaming, you must call SiONDriver.play() first.");
+
 	int internal_track_id = (p_track_id & SiMMLTrack::TRACK_ID_FILTER) | SiMMLTrack::DRIVER_NOTE;
 	double delay_samples = sequencer->calculate_sample_delay(0, p_delay, p_quant);
 
@@ -1236,7 +1242,7 @@ SiONDriver::SiONDriver(int p_buffer_length, int p_channel_count, int p_sample_ra
 
 	// Background sound.
 	{
-		_background_voice = memnew(SiONVoice(SiMMLTable::MT_SAMPLE));
+		_background_voice = memnew(SiONVoice(SiMMLRefTable::MT_SAMPLE));
 		_background_voice->set_update_volumes(true);
 		_background_fader = memnew(FaderUtil);
 		_background_fader->set_callback(Callable(this, "_fade_background_callback"));

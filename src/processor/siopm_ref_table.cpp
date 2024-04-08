@@ -4,7 +4,7 @@
 /* Provided under MIT                              */
 /***************************************************/
 
-#include "processor/siopm_table.h"
+#include "processor/siopm_ref_table.h"
 
 #include <godot_cpp/core/memory.hpp>
 #include <godot_cpp/classes/random_number_generator.hpp>
@@ -16,25 +16,24 @@
 
 using namespace godot;
 
-SiOPMTable *SiOPMTable::_instance = nullptr;
+SiOPMRefTable *SiOPMRefTable::_instance = nullptr;
 
-const double SiOPMTable::NOISE_WAVE_OUTPUT  = 1;
-const double SiOPMTable::SQUARE_WAVE_OUTPUT = 1;
-const double SiOPMTable::OUTPUT_MAX         = 0.5;
+const double SiOPMRefTable::NOISE_WAVE_OUTPUT  = 1;
+const double SiOPMRefTable::SQUARE_WAVE_OUTPUT = 1;
+const double SiOPMRefTable::OUTPUT_MAX         = 0.5;
 
-void SiOPMTable::initialize() {
+void SiOPMRefTable::initialize() {
 	if (_instance) {
 		return;
 	}
 
 	// Sets the instance internally.
-	// TODO: Define parameters as constants?
-	memnew(SiOPMTable(3580000, 1789772.5, 44100));
+	memnew(SiOPMRefTable());
 }
 
 //
 
-int SiOPMTable::calculate_log_table_index(double p_number) {
+int SiOPMRefTable::calculate_log_table_index(double p_number) {
 	// Original code suggests that the incoming number must be between -1 and 1, but this isn't true in practice.
 	// ERR_FAIL_COND_V(p_number < -1 || p_number > 1, LOG_TABLE_BOTTOM);
 
@@ -50,7 +49,7 @@ int SiOPMTable::calculate_log_table_index(double p_number) {
 
 //
 
-void SiOPMTable::reset_all_user_tables() {
+void SiOPMRefTable::reset_all_user_tables() {
 	// FIXME: As original code suggests, and is true everywhere else in the project,
 	// this leaks because we do not properly dispose of allocated memory. Original
 	// implementation relies on GC, which is not a thing for us.
@@ -76,7 +75,7 @@ void SiOPMTable::reset_all_user_tables() {
 	_stencil_pcm_voices.clear();
 }
 
-void SiOPMTable::register_wave_table(int p_index, SiOPMWaveTable *p_table) {
+void SiOPMRefTable::register_wave_table(int p_index, SiOPMWaveTable *p_table) {
 	int index = p_index & (WAVE_TABLE_MAX - 1);
 	_custom_wave_tables.write[index] = p_table;
 
@@ -87,7 +86,7 @@ void SiOPMTable::register_wave_table(int p_index, SiOPMWaveTable *p_table) {
 	}
 }
 
-SiOPMWaveSamplerData *SiOPMTable::register_sampler_data(int p_index, const Variant &p_data, bool p_ignore_note_off, int p_pan, int p_src_channel_count, int p_channel_count) {
+SiOPMWaveSamplerData *SiOPMRefTable::register_sampler_data(int p_index, const Variant &p_data, bool p_ignore_note_off, int p_pan, int p_src_channel_count, int p_channel_count) {
 	SiOPMWaveSamplerData *sampler_data = memnew(SiOPMWaveSamplerData(p_data, p_ignore_note_off, p_pan, p_src_channel_count, p_channel_count));
 
 	int bank = (p_index >> NOTE_BITS) & (SAMPLER_TABLE_MAX - 1);
@@ -96,7 +95,7 @@ SiOPMWaveSamplerData *SiOPMTable::register_sampler_data(int p_index, const Varia
 	return sampler_data;
 }
 
-SiOPMWaveTable *SiOPMTable::get_wave_table(int p_index) {
+SiOPMWaveTable *SiOPMRefTable::get_wave_table(int p_index) {
 	if (p_index < PG_CUSTOM) {
 		ERR_FAIL_INDEX_V(p_index, wave_tables.size(), no_wave_table);
 		return wave_tables[p_index];
@@ -118,7 +117,7 @@ SiOPMWaveTable *SiOPMTable::get_wave_table(int p_index) {
 	return no_wave_table;
 }
 
-SiOPMWavePCMTable *SiOPMTable::get_pcm_data(int p_index) {
+SiOPMWavePCMTable *SiOPMRefTable::get_pcm_data(int p_index) {
 	int table_index = p_index & (PCM_DATA_MAX - 1);
 
 	if (table_index < _stencil_pcm_voices.size() && _stencil_pcm_voices[table_index]) {
@@ -132,7 +131,7 @@ SiOPMWavePCMTable *SiOPMTable::get_pcm_data(int p_index) {
 	return nullptr;
 }
 
-SiMMLVoice *SiOPMTable::get_global_pcm_voice(int p_index) {
+SiMMLVoice *SiOPMRefTable::get_global_pcm_voice(int p_index) {
 	int index = p_index & (PCM_DATA_MAX - 1);
 	if (!_pcm_voices[index]) {
 		_pcm_voices.write[index] = SiMMLVoice::create_blank_pcm_voice(index);
@@ -141,7 +140,7 @@ SiMMLVoice *SiOPMTable::get_global_pcm_voice(int p_index) {
 	return _pcm_voices[index];
 }
 
-SiMMLVoice *SiOPMTable::set_global_pcm_voice(int p_index, SiMMLVoice *p_from_voice) {
+SiMMLVoice *SiOPMRefTable::set_global_pcm_voice(int p_index, SiMMLVoice *p_from_voice) {
 	int index = p_index & (PCM_DATA_MAX - 1);
 	if (!_pcm_voices[index]) {
 		_pcm_voices.write[index] = memnew(SiMMLVoice);
@@ -153,8 +152,8 @@ SiMMLVoice *SiOPMTable::set_global_pcm_voice(int p_index, SiMMLVoice *p_from_voi
 
 //
 
-void SiOPMTable::_set_constants(int p_fm_clock, double p_psg_clock, int p_sampling_rate) {
-	ERR_FAIL_COND_MSG((p_sampling_rate != 44100 && p_sampling_rate != 22050), vformat("SiOPMTable: Invalid sampling rate '%d', only 44100 and 22050 are allowed.", p_sampling_rate));
+void SiOPMRefTable::_set_constants(int p_fm_clock, double p_psg_clock, int p_sampling_rate) {
+	ERR_FAIL_COND_MSG((p_sampling_rate != 44100 && p_sampling_rate != 22050), vformat("SiOPMRefTable: Invalid sampling rate '%d', only 44100 and 22050 are allowed.", p_sampling_rate));
 
 	fm_clock = p_fm_clock;
 	psg_clock = p_psg_clock;
@@ -163,7 +162,7 @@ void SiOPMTable::_set_constants(int p_fm_clock, double p_psg_clock, int p_sampli
 	clock_ratio = ((fm_clock / 64) << CLOCK_RATIO_BITS) / sampling_rate;
 }
 
-void SiOPMTable::_create_eg_tables() {
+void SiOPMRefTable::_create_eg_tables() {
 	// Table selector & timer steps for rates.
 	{
 		int i = 0;
@@ -268,7 +267,7 @@ void SiOPMTable::_create_eg_tables() {
 	}
 }
 
-void SiOPMTable::_create_pg_tables() {
+void SiOPMRefTable::_create_pg_tables() {
 	// MIDI Note Number -> Key Code table
 	for (int i = 0; i < NOTE_TABLE_SIZE; i++) {
 		int j = i - (i >> 2);
@@ -552,7 +551,7 @@ void SiOPMTable::_create_pg_tables() {
 	}
 }
 
-void SiOPMTable::_create_wave_samples() {
+void SiOPMRefTable::_create_wave_samples() {
 	// Prepare tables.
 	{
 		int table_size = calculate_log_table_index(1);
@@ -1110,7 +1109,7 @@ void SiOPMTable::_create_wave_samples() {
 	}
 }
 
-void SiOPMTable::_expand_ma3_waves(int p_index) {
+void SiOPMRefTable::_expand_ma3_waves(int p_index) {
 	int wave_index = PG_MA3_WAVE + p_index;
 	Vector<int> basic_waveform = wave_tables[wave_index]->get_wavelet();
 
@@ -1179,7 +1178,7 @@ void SiOPMTable::_expand_ma3_waves(int p_index) {
 	}
 }
 
-void SiOPMTable::_create_lfo_tables() {
+void SiOPMRefTable::_create_lfo_tables() {
 	// Timer steps.
 	// This calculation is hybrid between fmgen and x68sound.dll, and extend as 20bit fixed dicimal.
 	for (int i = 0; i < LFO_TABLE_SIZE; i++) {
@@ -1231,7 +1230,7 @@ void SiOPMTable::_create_lfo_tables() {
 	}
 }
 
-void SiOPMTable::_create_filter_tables() {
+void SiOPMRefTable::_create_filter_tables() {
 	for (int i = 0; i < 128; i++) {
 		filter_cutoff_table[i] = i * i * 0.00006103515625; // 0.00006103515625 = 1/(128*128)
 		filter_feedback_table[i] = 1.0 + 1.0 / (1.0 - filter_cutoff_table[i]); // ???
@@ -1250,7 +1249,7 @@ void SiOPMTable::_create_filter_tables() {
 	}
 }
 
-SiOPMTable::SiOPMTable(int p_fm_clock, double p_psg_clock, int p_sampling_rate) {
+SiOPMRefTable::SiOPMRefTable(int p_fm_clock, double p_psg_clock, int p_sampling_rate) {
 	if (!_instance) {
 		_instance = this; // Do this early so it can be self-referenced.
 	}

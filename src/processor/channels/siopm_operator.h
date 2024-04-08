@@ -14,14 +14,14 @@ using namespace godot;
 
 class SiOPMModule;
 class SiOPMOperatorParams;
-class SiOPMTable;
+class SiOPMRefTable;
 class SiOPMWavePCMData;
 class SiOPMWaveTable;
 
 // This operator implementation is based on the OPM emulation of MAME,
 // and it's extended as follows:
 // 1) You can set the phase offset of the pulse generator;
-// 2) You can select the wave form from wave tables (see SiOPMTable);
+// 2) You can select the wave form from wave tables (see SiOPMRefTable);
 // 3) You can set the key scale level;
 // 4) You can fix the pitch;
 // 5) You can set SGG envelope control in OPNA.
@@ -41,7 +41,7 @@ public:
 private:
 	static const int _eg_next_state_table[2][EG_MAX];
 
-	SiOPMTable *_table = nullptr;
+	SiOPMRefTable *_table = nullptr;
 	SiOPMModule *_chip = nullptr;
 
 	// FM module parameters.
@@ -73,7 +73,7 @@ private:
 	// Key code = oct << 4 + note [0,127].
 	int _key_code = 0;
 
-	// Mute [0 / SiOPMTable::ENV_BOTTOM].
+	// Mute [0 / SiOPMRefTable::ENV_BOTTOM].
 	int _mute = 0;
 	int _ssg_type_envelope_control = 0;
 	bool _envelope_reset_on_attack = false;
@@ -119,7 +119,7 @@ private:
 	int _eg_timer_step = 0;
 	// Counter rounded on 8.
 	int _eg_counter = 0;
-	// Internal sustain level [0, SiOPMTable::ENV_BOTTOM].
+	// Internal sustain level [0, SiOPMRefTable::ENV_BOTTOM].
 	int _eg_sustain_level = 0;
 	// Internal total level [0,1024] = ((tl + f(kc, ksl)) << 3) + _eg_tl_offset + 192.
 	int _eg_total_level = 0;
