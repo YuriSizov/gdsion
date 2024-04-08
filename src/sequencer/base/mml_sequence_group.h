@@ -8,10 +8,10 @@
 #define MML_SEQUENCE_GROUP_H
 
 #include <godot_cpp/templates/list.hpp>
+#include "sequencer/base/mml_data.h"
 
 using namespace godot;
 
-class MMLData;
 class MMLEvent;
 class MMLSequence;
 
@@ -21,7 +21,7 @@ class MMLSequenceGroup {
 	static List<MMLSequence *> _free_list;
 
 	// Owner data.
-	MMLData *_owner = nullptr;
+	Ref<MMLData> _owner;
 
 	// Terminator.
 	List<MMLSequence *> _sequences;
@@ -42,7 +42,7 @@ public:
 	void alloc(MMLEvent *p_head_event);
 	void free();
 
-	MMLSequenceGroup(MMLData *p_owner);
+	MMLSequenceGroup(const Ref<MMLData> &p_owner);
 	~MMLSequenceGroup() {}
 };
 

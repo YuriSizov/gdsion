@@ -44,8 +44,8 @@ int SiMMLTrack::get_track_type_id() const {
 	return _internal_track_id & TRACK_TYPE_FILTER;
 }
 
-BeatsPerMinute *SiMMLTrack::get_bpm_settings() const {
-	if (_mml_data && (_internal_track_id & TRACK_TYPE_FILTER) != MML_TRACK) {
+Ref<BeatsPerMinute> SiMMLTrack::get_bpm_settings() const {
+	if (_mml_data.is_valid() && (_internal_track_id & TRACK_TYPE_FILTER) != MML_TRACK) {
 		return _mml_data->get_bpm_settings();
 	}
 	return nullptr;
@@ -490,7 +490,7 @@ void SiMMLTrack::_disable_envelope_mode(int p_note_on) {
 }
 
 int SiMMLTrack::prepare_buffer(int p_buffer_length) {
-	if (_mml_data) {
+	if (_mml_data.is_valid()) {
 		_mml_data->register_all();
 	} else {
 		SiOPMRefTable::get_instance()->sampler_tables[0]->set_stencil(nullptr);
@@ -839,9 +839,9 @@ void SiMMLTrack::sequence_on(MMLSequence *p_sequence, int p_sample_length, int p
 	_track_start_delay = p_sample_delay;
 	_track_stop_delay = p_sample_length;
 
-	_mml_data = nullptr;
+	_mml_data = Ref<SiMMLData>();
 	if (p_sequence) {
-		_mml_data = Object::cast_to<SiMMLData>(p_sequence->get_owner());
+		_mml_data = p_sequence->get_owner();
 	}
 
 	_executor->initialize(p_sequence);
@@ -888,7 +888,7 @@ void SiMMLTrack::reset(int p_buffer_index) {
 
 	// Initialize channel.
 
-	if (_mml_data) {
+	if (_mml_data.is_valid()) {
 		_velocity_shift = _mml_data->get_default_velocity_shift();
 		_velocity_mode = _mml_data->get_default_velocity_mode();
 		_expression_mode = _mml_data->get_default_expression_mode();
@@ -992,9 +992,9 @@ void SiMMLTrack::initialize(MMLSequence *p_sequence, int p_fps, int p_internal_t
 	_event_trigger_type_on = EventTriggerType::NO_EVENTS;
 	_event_trigger_type_off = EventTriggerType::NO_EVENTS;
 
-	_mml_data = nullptr;
+	_mml_data = Ref<SiMMLData>();
 	if (p_sequence) {
-		_mml_data = Object::cast_to<SiMMLData>(p_sequence->get_owner());
+		_mml_data = p_sequence->get_owner();
 	}
 
 	_executor->initialize(p_sequence);

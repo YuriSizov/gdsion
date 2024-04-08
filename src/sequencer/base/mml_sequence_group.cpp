@@ -99,7 +99,7 @@ void MMLSequenceGroup::free() {
 	_term->free();
 }
 
-MMLSequenceGroup::MMLSequenceGroup(MMLData *p_owner) {
+MMLSequenceGroup::MMLSequenceGroup(const Ref<MMLData> &p_owner) {
 	_owner = p_owner;
 	_term = memnew(MMLSequence(true));
 }

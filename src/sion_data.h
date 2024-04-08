@@ -22,7 +22,7 @@ class SiONData : public SiMMLData {
 	GDCLASS(SiONData, SiMMLData)
 
 protected:
-	static void _bind_methods() {};
+	static void _bind_methods() {}
 
 public:
 	SiOPMWavePCMData *set_pcm_wave(int p_index, const Variant &p_data, double p_sampling_note = 69, int p_key_range_from = 0, int p_key_range_to = 127, int p_src_channel_count = 2, int p_channel_count = 0);

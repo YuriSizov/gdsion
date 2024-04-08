@@ -26,14 +26,17 @@ bool MMLData::has_repeat_all() {
 }
 
 double MMLData::get_bpm() const {
-	return _initial_bpm ? _initial_bpm->get_bpm() : 0.0;
+	return _initial_bpm.is_valid() ? _initial_bpm->get_bpm() : 0.0;
 }
 
 void MMLData::set_bpm(double p_value) {
 	if (p_value > 0) {
-		_initial_bpm = memnew(BeatsPerMinute(p_value, 44100));
+		Ref<BeatsPerMinute> bpm = memnew(BeatsPerMinute(p_value, 44100));
+		_initial_bpm = bpm;
 	} else {
-		_initial_bpm = nullptr;
+		Ref<BeatsPerMinute> bpm;
+		bpm.instantiate();
+		_initial_bpm = bpm;
 	}
 }
 
@@ -79,7 +82,9 @@ void MMLData::clear() {
 	_default_velocity_mode = 0;
 	_default_expression_mode = 0;
 
-	_initial_bpm = nullptr;
+	Ref<BeatsPerMinute> bpm;
+	bpm.instantiate();
+	_initial_bpm = bpm;
 	_system_commands.clear();
 
 	// Reset.

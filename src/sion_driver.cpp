@@ -43,14 +43,16 @@ const char *SiONDriver::VERSION = "0.7.0.0"; // Original code is versioned 0.6.6
 SiONDriver *SiONDriver::_mutex = nullptr;
 bool SiONDriver::_allow_multiple_drivers = false;
 
-SiONDriver::SiONDriverJob::SiONDriverJob(String p_mml, Vector<double> p_buffer, SiONData *p_data, int p_channel_count, bool p_reset_effector) {
+SiONDriver::SiONDriverJob::SiONDriverJob(String p_mml, Vector<double> p_buffer, const Ref<SiONData> &p_data, int p_channel_count, bool p_reset_effector) {
 	mml = p_mml;
 	buffer = p_buffer;
 
-	if (p_data) {
+	if (p_data.is_valid()) {
 		data = p_data;
 	} else {
-		data = memnew(SiONData);
+		Ref<SiONData> new_data;
+		new_data.instantiate();
+		data = new_data;
 	}
 
 	channel_count = p_channel_count;
@@ -341,12 +343,14 @@ bool SiONDriver::_parse_system_command(const List<Ref<MMLSystemCommand>> &p_syst
 	return effect_set;
 }
 
-void SiONDriver::_prepare_compile(String p_mml, SiONData *p_data) {
-	if (p_data) {
+void SiONDriver::_prepare_compile(String p_mml, const Ref<SiONData> &p_data) {
+	if (p_data.is_valid()) {
 		p_data->clear();
 		_data = p_data;
 	} else {
-		_data = memnew(SiONData);
+		Ref<SiONData> new_data;
+		new_data.instantiate();
+		_data = new_data;
 	}
 
 	_mml_string = p_mml;
@@ -491,7 +495,7 @@ void SiONDriver::_streaming() {
 	_in_streaming_process = false;
 }
 
-SiONData *SiONDriver::compile(String p_mml, SiONData *p_data) {
+Ref<SiONData> SiONDriver::compile(String p_mml, const Ref<SiONData> &p_data) {
 	stop();
 
 	int start_time = Time::get_singleton()->get_ticks_msec();
@@ -504,8 +508,8 @@ SiONData *SiONDriver::compile(String p_mml, SiONData *p_data) {
 	return _data;
 }
 
-int SiONDriver::queue_compile(String p_mml, SiONData *p_data) {
-	if (p_mml.is_empty() || !p_data) {
+int SiONDriver::queue_compile(String p_mml, const Ref<SiONData> &p_data) {
+	if (p_mml.is_empty() || p_data.is_null()) {
 		return _job_queue.size();
 	}
 
@@ -537,7 +541,7 @@ int SiONDriver::queue_render(const Variant &p_data, Vector<double> p_render_buff
 	Variant::Type data_type = p_data.get_type();
 	switch (data_type) {
 		case Variant::STRING: {
-			SiONData *sion_data = memnew(SiONData);
+			Ref<SiONData> sion_data = memnew(SiONData);
 			String mml_string = p_data;
 
 			// Queue compilation first.
@@ -549,8 +553,8 @@ int SiONDriver::queue_render(const Variant &p_data, Vector<double> p_render_buff
 		} break;
 
 		case Variant::OBJECT: {
-			SiONData *sion_data = Object::cast_to<SiONData>(p_data);
-			if (sion_data) {
+			Ref<SiONData> sion_data = p_data;
+			if (sion_data.is_valid()) {
 				_job_queue.push_back(memnew(SiONDriverJob(String(), p_render_buffer, sion_data, p_render_buffer_channel_count, p_reset_effector)));
 
 				return _job_queue.size();
@@ -735,7 +739,7 @@ TypedArray<SiMMLTrack> SiONDriver::note_off(int p_note, int p_track_id, double p
 	return tracks;
 }
 
-TypedArray<SiMMLTrack> SiONDriver::sequence_on(SiONData *p_data, const Ref<SiONVoice> &p_voice, double p_length, double p_delay, double p_quant, int p_track_id, bool p_disposable) {
+TypedArray<SiMMLTrack> SiONDriver::sequence_on(const Ref<SiONData> &p_data, const Ref<SiONVoice> &p_voice, double p_length, double p_delay, double p_quant, int p_track_id, bool p_disposable) {
 	int internal_track_id = (p_track_id & SiMMLTrack::TRACK_ID_FILTER) | SiMMLTrack::DRIVER_SEQUENCE;
 	double delay_samples = sequencer->calculate_sample_delay(0, p_delay, p_quant);
 	int length_samples = sequencer->calculate_sample_length(p_length);
@@ -824,17 +828,13 @@ void SiONDriver::_prepare_process(const Variant &p_data, bool p_reset_effector) 
 		} break;
 
 		case Variant::STRING: { // MML string.
-			if (!_temp_data) {
-				_temp_data = memnew(SiONData);
-			}
-
 			String mml_string = p_data;
 			_data = compile(mml_string, _temp_data);
 		} break;
 
 		case Variant::OBJECT: {
-			SiONData *sion_data = Object::cast_to<SiONData>(p_data);
-			if (sion_data) {
+			Ref<SiONData> sion_data = p_data;
+			if (sion_data.is_valid()) {
 				_data = sion_data;
 				break;
 			}
@@ -861,7 +861,7 @@ void SiONDriver::_prepare_process(const Variant &p_data, bool p_reset_effector) 
 	}
 
 	sequencer->prepare_process(_data, _sample_rate, _buffer_length); // Set sequencer tracks (should be called after module::reset()).
-	if (_data) {
+	if (_data.is_valid()) {
 		_parse_system_command(_data->get_system_commands());         // Parse #EFFECT command (should be called after effector::reset()).
 	}
 
@@ -871,7 +871,7 @@ void SiONDriver::_prepare_process(const Variant &p_data, bool p_reset_effector) 
 	//
 
 	// Set position if we don't start from the top.
-	if (_data && _start_position > 0) {
+	if (_data.is_valid() && _start_position > 0) {
 		sequencer->process_dummy(_start_position * _sample_rate * 0.001);
 	}
 
@@ -972,7 +972,7 @@ void SiONDriver::_process_frame_immediate() {
 }
 
 bool SiONDriver::_prepare_next_job() {
-	_data = nullptr;
+	_data = Ref<SiONData>();
 	_mml_string = "";
 
 	_current_job_type = JobType::NO_JOB;
@@ -997,7 +997,7 @@ bool SiONDriver::_prepare_next_job() {
 }
 
 void SiONDriver::_cancel_all_jobs() {
-	_data = nullptr;
+	_data = Ref<SiONData>();
 	_mml_string = "";
 
 	_current_job_type = JobType::NO_JOB;

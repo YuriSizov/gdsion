@@ -171,7 +171,7 @@ class SiMMLSequencer : public MMLSequencer {
 	Callable _callback_tempo_changed;
 	Callable _callback_timer;
 	Callable _callback_beat;
-	// The function signature is bool (SiMMLData *, const Variant &). Return false to append the command to SiONData.system_commands.
+	// The function signature is bool (const Ref<SiMMLData> &, const Variant &). Return false to append the command to SiONData.system_commands.
 	Callable _callback_parse_system_command;
 
 	//
@@ -218,8 +218,8 @@ public:
 	bool is_dummy_process() const { return _dummy_process; }
 	void process_dummy(int p_sample_count);
 
-	virtual bool prepare_compile(MMLData *p_data, String p_mml) override;
-	virtual void prepare_process(MMLData *p_data, int p_sample_rate, int p_buffer_length) override;
+	virtual bool prepare_compile(const Ref<MMLData> &p_data, String p_mml) override;
+	virtual void prepare_process(const Ref<MMLData> &p_data, int p_sample_rate, int p_buffer_length) override;
 	virtual void process() override;
 
 	// Current writing position in the streaming buffer, always less than length of the buffer.

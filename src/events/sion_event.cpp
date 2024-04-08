@@ -22,7 +22,7 @@ const char *SiONEvent::FADING = "fading";
 const char *SiONEvent::FADE_IN_COMPLETED = "fade_in_completed";
 const char *SiONEvent::FADE_OUT_COMPLETED = "fade_out_completed";
 
-SiONData *SiONEvent::get_data() const {
+Ref<SiONData> SiONEvent::get_data() const {
 	ERR_FAIL_NULL_V(_driver, nullptr);
 	return _driver->get_data();
 }

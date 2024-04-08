@@ -11,9 +11,9 @@
 #include <godot_cpp/variant/callable.hpp>
 #include <godot_cpp/variant/string.hpp>
 #include "sequencer/base/mml_event.h"
+#include "sequencer/base/mml_data.h"
 
 class BeatsPerMinute;
-class MMLData;
 class MMLExecutor;
 class MMLParserSettings;
 class MMLSequence;
@@ -97,9 +97,9 @@ protected:
 
 	MMLExecutor *_global_executor = nullptr;
 	MMLExecutor *_current_executor = nullptr;
-	MMLData *mml_data = nullptr;
-	BeatsPerMinute *_adjustible_bpm = nullptr;
-	BeatsPerMinute *_bpm = nullptr;
+	Ref<MMLData> mml_data;
+	Ref<BeatsPerMinute> _adjustible_bpm;
+	Ref<BeatsPerMinute> _bpm;
 
 	int _global_buffer_index = 0;
 	double _global_beat_16th = 0;
@@ -140,10 +140,10 @@ public:
 	// Compilation and processing.
 
 	// Returns false if compilation is not needed.
-	virtual bool prepare_compile(MMLData *p_data, String p_mml);
+	virtual bool prepare_compile(const Ref<MMLData> &p_data, String p_mml);
 	// Returns compilation progress [0-1].
 	virtual double compile(int p_interval = 1000);
-	virtual void prepare_process(MMLData *p_data, int p_sample_rate, int p_buffer_length);
+	virtual void prepare_process(const Ref<MMLData> &p_data, int p_sample_rate, int p_buffer_length);
 	virtual void process() {}
 
 	// Must be called between prepare_process() and process().

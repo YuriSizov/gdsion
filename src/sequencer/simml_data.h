@@ -23,7 +23,7 @@ class SiMMLData : public MMLData {
 	GDCLASS(SiMMLData, MMLData)
 
 protected:
-	static void _bind_methods() {};
+	static void _bind_methods() {}
 
 	Vector<SiMMLEnvelopeTable *> _envelope_tables;
 	Vector<SiOPMWaveTable *> _wave_tables;

@@ -74,7 +74,7 @@ public:
 	String get_event_type() const { return _event_type; }
 
 	SiONDriver *get_driver() const { return _driver; }
-	SiONData *get_data() const;
+	Ref<SiONData> get_data() const;
 	PackedVector2Array get_stream_buffer() const { return _stream_buffer; }
 
 	//

@@ -75,8 +75,8 @@ private:
 
 	// Data.
 
-	SiONData *_data = nullptr;
-	SiONData *_temp_data = nullptr;
+	Ref<SiONData> _data;
+	Ref<SiONData> _temp_data;
 	// MML string from previous compilation.
 	String _mml_string;
 
@@ -144,7 +144,7 @@ private:
 
 	bool _parse_system_command(const List<Ref<MMLSystemCommand>> &p_system_commands);
 
-	void _prepare_compile(String p_mml, SiONData *p_data);
+	void _prepare_compile(String p_mml, const Ref<SiONData> &p_data);
 	void _prepare_render(const Variant &p_data, Vector<double> p_render_buffer, int p_render_buffer_channel_count, bool p_reset_effector);
 	bool _rendering();
 	void _streaming();
@@ -187,11 +187,11 @@ private:
 	struct SiONDriverJob {
 		String mml;
 		Vector<double> buffer;
-		SiONData *data = nullptr;
+		Ref<SiONData> data;
 		int channel_count = 0;
 		bool reset_effector = false;
 
-		SiONDriverJob(String p_mml, Vector<double> p_buffer, SiONData *p_data, int p_channel_count, bool p_reset_effector);
+		SiONDriverJob(String p_mml, Vector<double> p_buffer, const Ref<SiONData> &p_data, int p_channel_count, bool p_reset_effector);
 		~SiONDriverJob() {}
 	};
 
@@ -281,7 +281,7 @@ public:
 
 	// Compiling only.
 	String get_mml_string() const { return _mml_string; }
-	SiONData *get_data() const { return _data; }
+	Ref<SiONData> get_data() const { return _data; }
 
 	SiOPMWaveTable *set_wave_table(int p_index, Vector<double> p_table);
 	SiOPMWavePCMData *set_pcm_wave(int p_index, const Variant &p_data, double p_sampling_note = 69, int p_key_range_from = 0, int p_key_range_to = 127, int p_src_channel_count = 2, int p_channel_count = 0);
@@ -359,8 +359,8 @@ public:
 	void set_stream_event_enabled(bool p_enabled) { _stream_event_enabled = p_enabled; }
 	void set_fading_event_enabled(bool p_enabled) { _fading_event_enabled = p_enabled; }
 
-	SiONData *compile(String p_mml, SiONData *p_data = nullptr);
-	int queue_compile(String p_mml, SiONData *p_data);
+	Ref<SiONData> compile(String p_mml, const Ref<SiONData> &p_data = Ref<SiONData>());
+	int queue_compile(String p_mml, const Ref<SiONData> &p_data);
 
 	Vector<double> render(const Variant &p_data, Vector<double> p_render_buffer = Vector<double>(), int p_render_buffer_channel_count = 2, bool p_reset_effector = true);
 	int queue_render(const Variant &p_data, Vector<double> p_render_buffer, int p_render_buffer_channel_count = 2, bool p_reset_effector = false);
@@ -376,7 +376,7 @@ public:
 	SiMMLTrack *play_sound(int p_sample_number, double p_length = 0, double p_delay = 0, double p_quant = 0, int p_track_id = 0, bool p_disposable = true);
 	SiMMLTrack *note_on(int p_note, const Ref<SiONVoice> &p_voice = Ref<SiONVoice>(), double p_length = 0, double p_delay = 0, double p_quant = 0, int p_track_id = 0, bool p_disposable = true);
 	TypedArray<SiMMLTrack> note_off(int p_note, int p_track_id = 0, double p_delay = 0, double p_quant = 0, bool p_stop_immediately = false);
-	TypedArray<SiMMLTrack> sequence_on(SiONData *p_data, const Ref<SiONVoice> &p_voice = Ref<SiONVoice>(), double p_length = 0, double p_delay = 0, double p_quant = 1, int p_track_id = 0, bool p_disposable = true);
+	TypedArray<SiMMLTrack> sequence_on(const Ref<SiONData> &p_data, const Ref<SiONVoice> &p_voice = Ref<SiONVoice>(), double p_length = 0, double p_delay = 0, double p_quant = 1, int p_track_id = 0, bool p_disposable = true);
 	TypedArray<SiMMLTrack> sequence_off(int p_track_id, double p_delay = 0, double p_quant = 1, bool p_stop_with_reset = false);
 
 	void fade_in(double p_time);

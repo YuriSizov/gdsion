@@ -9,16 +9,16 @@
 
 #include <godot_cpp/templates/list.hpp>
 #include <godot_cpp/variant/callable.hpp>
+#include "sequencer/base/mml_data.h"
 
 using namespace godot;
 
-class MMLData;
 class MMLEvent;
 
 // Sequence of 1 sound channel. MMLData > MMLSequenceGroup > MMLSequence > MMLEvent (">" means "has a").
 class MMLSequence {
 
-	MMLData *_owner = nullptr;
+	Ref<MMLData> _owner;
 
 	// Chain of sequences.
 
@@ -48,8 +48,8 @@ class MMLSequence {
 	void _update_mml_length();
 
 public:
-	MMLData *get_owner() const { return _owner; }
-	void set_owner(MMLData *p_owner) { _owner = p_owner; }
+	Ref<MMLData> get_owner() const { return _owner; }
+	void set_owner(const Ref<MMLData> &p_owner) { _owner = p_owner; }
 
 	// Chain of sequences.
 

@@ -187,7 +187,7 @@ MMLEvent *MMLSequencer::_default_on_sequence_tail(MMLEvent *p_event) {
 }
 
 MMLEvent *MMLSequencer::_default_on_tempo(MMLEvent *p_event) {
-	double bpm = mml_data ? mml_data->get_bpm_from_tcommand(p_event->data) : p_event->data;
+	double bpm = mml_data.is_valid() ? mml_data->get_bpm_from_tcommand(p_event->data) : p_event->data;
 	set_bpm(bpm);
 	return p_event->next;
 }
@@ -350,14 +350,14 @@ void MMLSequencer::_extract_global_sequence() {
 	}
 
 	if (initial_bpm > 0) {
-		BeatsPerMinute *bpm_obj = memnew(BeatsPerMinute(initial_bpm, 44100, _parser_settings->resolution));
+		Ref<BeatsPerMinute> bpm_obj = memnew(BeatsPerMinute(initial_bpm, 44100, _parser_settings->resolution));
 		mml_data->set_bpm_settings(bpm_obj);
 	}
 }
 
-bool MMLSequencer::prepare_compile(MMLData *p_data, String p_mml) {
+bool MMLSequencer::prepare_compile(const Ref<MMLData> &p_data, String p_mml) {
 	mml_data = p_data;
-	if (!mml_data) {
+	if (mml_data.is_null()) {
 		return false;
 	}
 
@@ -368,7 +368,7 @@ bool MMLSequencer::prepare_compile(MMLData *p_data, String p_mml) {
 
 	String mml_string = _on_before_compile(p_mml);
 	if (mml_string.is_empty()) {
-		mml_data = nullptr;
+		mml_data = Ref<MMLData>();
 		return false;
 	}
 
@@ -377,7 +377,7 @@ bool MMLSequencer::prepare_compile(MMLData *p_data, String p_mml) {
 }
 
 double MMLSequencer::compile(int p_interval) {
-	if (!mml_data) {
+	if (mml_data.is_null()) {
 		return 1;
 	}
 
@@ -396,14 +396,14 @@ double MMLSequencer::compile(int p_interval) {
 	return 1;
 }
 
-void MMLSequencer::prepare_process(MMLData *p_data, int p_sample_rate, int p_buffer_length) {
+void MMLSequencer::prepare_process(const Ref<MMLData> &p_data, int p_sample_rate, int p_buffer_length) {
 	ERR_FAIL_COND_MSG((p_sample_rate != 22050 && p_sample_rate != 44100), "MMLSequencer: Sampling rate can only be 22050 or 44100.");
 
 	mml_data = p_data;
 	_sample_rate = p_sample_rate;
 	_buffer_length = p_buffer_length;
 
-	if (mml_data && mml_data->get_bpm() > 0) {
+	if (mml_data.is_valid() && mml_data->get_bpm() > 0) {
 		_adjustible_bpm->update(mml_data->get_bpm(), p_sample_rate);
 		_global_executor->initialize(mml_data->get_global_sequence());
 	} else {
@@ -584,8 +584,9 @@ MMLSequencer::MMLSequencer() {
 	_set_mml_event_listener(MMLEvent::INTERNAL_CALL, Callable(this, "_default_on_internal_call"), false);
 	_set_mml_event_listener(MMLEvent::TABLE_EVENT,   Callable(this, "_no_process"),               true);
 
-	_adjustible_bpm = memnew(BeatsPerMinute(120, 44100));
-	_bpm = _adjustible_bpm;
+	Ref<BeatsPerMinute> base_bpm = memnew(BeatsPerMinute(120, 44100));
+	_adjustible_bpm = base_bpm;
+	_bpm = base_bpm;
 
 	_global_executor = memnew(MMLExecutor);
 	MMLParser::get_instance()->get_command_letters(&_event_command_letter_map);

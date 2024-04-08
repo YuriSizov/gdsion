@@ -12,6 +12,7 @@
 #include <godot_cpp/templates/vector.hpp>
 #include "sion_enums.h"
 #include "sequencer/base/beats_per_minute.h"
+#include "sequencer/simml_data.h"
 #include "sequencer/simml_ref_table.h"
 #include "templates/singly_linked_list.h"
 
@@ -20,7 +21,6 @@ using namespace godot;
 class MMLExecutor;
 class MMLSequence;
 class SiMMLChannelSettings;
-class SiMMLData;
 class SiMMLEnvelopeTable;
 class SiMMLSimulatorBase;
 class SiOPMChannelBase;
@@ -70,7 +70,7 @@ private:
 	SiMMLChannelSettings *_channel_settings = nullptr;
 	SiMMLSimulatorBase *_simulator = nullptr;
 
-	SiMMLData *_mml_data = nullptr;
+	Ref<SiMMLData> _mml_data;
 	SiMMLRefTable *_table = nullptr;
 
 	// This value is specified by user and contains the track starter.
@@ -230,8 +230,8 @@ public:
 	int get_track_type_id() const;
 
 	// This value only is available in the track playing an MML sequence.
-	SiMMLData *get_mml_data() const { return _mml_data; }
-	BeatsPerMinute *get_bpm_settings() const;
+	Ref<SiMMLData> get_mml_data() const { return _mml_data; }
+	Ref<BeatsPerMinute> get_bpm_settings() const;
 
 	// Channel number, set by 2nd argument of % command. Usually same as voice index / program number (except for APU).
 	int get_channel_number() const { return _channel_number; }

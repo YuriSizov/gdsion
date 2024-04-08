@@ -7,19 +7,19 @@
 #ifndef MML_DATA_H
 #define MML_DATA_H
 
-#include <godot_cpp/core/object.hpp>
+#include <godot_cpp/classes/ref_counted.hpp>
 #include <godot_cpp/templates/list.hpp>
+#include "sequencer/base/beats_per_minute.h"
 #include "sequencer/base/mml_system_command.h"
 
 using namespace godot;
 
-class BeatsPerMinute;
 class MMLEvent;
 class MMLSequence;
 class MMLSequenceGroup;
 
-class MMLData : public Object {
-	GDCLASS(MMLData, Object)
+class MMLData : public RefCounted {
+	GDCLASS(MMLData, RefCounted)
 
 public:
 	// Controls what tcommand argument is.
@@ -44,12 +44,12 @@ private:
 	int _default_velocity_mode = 0;
 	int _default_expression_mode = 0;
 
-	BeatsPerMinute *_initial_bpm = nullptr;
+	Ref<BeatsPerMinute> _initial_bpm;
 	// System commands that cannot be parsed by the system.
 	List<Ref<MMLSystemCommand>> _system_commands;
 
 protected:
-	static void _bind_methods() {};
+	static void _bind_methods() {}
 
 public:
 	MMLSequenceGroup *get_sequence_group() const { return _sequence_group; }
@@ -79,8 +79,8 @@ public:
 	// Setting this to 0 makes data dependent on the driver's BPM.
 	void set_bpm(double p_value);
 
-	BeatsPerMinute *get_bpm_settings() const { return _initial_bpm; }
-	void set_bpm_settings(BeatsPerMinute *p_settings) { _initial_bpm = p_settings; }
+	Ref<BeatsPerMinute> get_bpm_settings() const { return _initial_bpm; }
+	void set_bpm_settings(const Ref<BeatsPerMinute> &p_settings) { _initial_bpm = p_settings; }
 
 	double get_bpm_from_tcommand(int p_param);
 

@@ -349,7 +349,8 @@ void SiMMLSequencer::_on_table_parse(MMLEvent *p_prev, String p_table) {
 	env_table->parse_mml(data, postfix);
 	ERR_FAIL_COND_MSG(!env_table->head, vformat("SiMMLSequencer: Invalid table parameter '%s' in the {..} command.", data));
 
-	Object::cast_to<SiMMLData>(mml_data)->set_envelope_table(_internal_table_index, env_table);
+	Ref<SiMMLData> simml_data = mml_data;
+	simml_data->set_envelope_table(_internal_table_index, env_table);
 
 	p_prev->data = _internal_table_index;
 	_internal_table_index--;
@@ -357,7 +358,7 @@ void SiMMLSequencer::_on_table_parse(MMLEvent *p_prev, String p_table) {
 
 void SiMMLSequencer::_on_tempo_changed(double p_tempo_ratio) {
 	for (SiMMLTrack *track : _tracks) {
-		if (!track->get_bpm_settings()) {
+		if (track->get_bpm_settings().is_null()) {
 			track->get_executor()->on_tempo_changed(p_tempo_ratio);
 		}
 	}
@@ -387,19 +388,19 @@ void SiMMLSequencer::process_dummy(int p_sample_count) {
 	_register_process_events();
 }
 
-bool SiMMLSequencer::prepare_compile(MMLData *p_data, String p_mml) {
+bool SiMMLSequencer::prepare_compile(const Ref<MMLData> &p_data, String p_mml) {
 	_free_all_tracks();
 	return MMLSequencer::prepare_compile(p_data, p_mml);
 }
 
-void SiMMLSequencer::prepare_process(MMLData *p_data, int p_sample_rate, int p_buffer_length) {
+void SiMMLSequencer::prepare_process(const Ref<MMLData> &p_data, int p_sample_rate, int p_buffer_length) {
 	_free_all_tracks();
 	_processed_sample_count = 0;
 	_bpm_change_enabled = true;
 
 	MMLSequencer::prepare_process(p_data, p_sample_rate, p_buffer_length);
 
-	if (mml_data) {
+	if (mml_data.is_valid()) {
 		MMLSequence *sequence = mml_data->get_sequence_group()->get_head_sequence();
 		int index = 0;
 
@@ -447,7 +448,7 @@ void SiMMLSequencer::process() {
 			_current_track = track;
 			int length = track->prepare_buffer(buffering_length);
 			_bpm = track->get_bpm_settings();
-			if (!_bpm) {
+			if (_bpm.is_null()) {
 				_bpm = _adjustible_bpm;
 			}
 
@@ -626,7 +627,8 @@ bool SiMMLSequencer::_try_set_sampler_wave(int p_index, String p_mml) {
 	int bank = (p_index >> SiOPMRefTable::NOTE_BITS) & (SiOPMRefTable::SAMPLER_TABLE_MAX - 1);
 	int index = p_index & (SiOPMRefTable::NOTE_TABLE_SIZE - 1);
 
-	SiOPMWaveSamplerTable *table = Object::cast_to<SiMMLData>(mml_data)->get_sampler_table(bank);
+	Ref<SiMMLData> simml_data = mml_data;
+	SiOPMWaveSamplerTable *table = simml_data->get_sampler_table(bank);
 	return TranslatorUtil::parse_sampler_wave(table, index, p_mml, SiOPMRefTable::get_instance()->sound_reference);
 }
 
@@ -635,7 +637,8 @@ bool SiMMLSequencer::_try_set_pcm_wave(int p_index, String p_mml) {
 		return false;
 	}
 
-	Ref<SiMMLVoice> voice = Object::cast_to<SiMMLData>(mml_data)->get_pcm_voice(p_index);
+	Ref<SiMMLData> simml_data = mml_data;
+	Ref<SiMMLVoice> voice = simml_data->get_pcm_voice(p_index);
 	SiOPMWavePCMTable *table = Object::cast_to<SiOPMWavePCMTable>(voice->get_wave_data());
 	if (!table) {
 		return false;
@@ -649,13 +652,13 @@ bool SiMMLSequencer::_try_set_pcm_voice(int p_index, String p_mml, String p_post
 		return false;
 	}
 
-	Ref<SiMMLVoice> voice = Object::cast_to<SiMMLData>(mml_data)->get_pcm_voice(p_index);
+	Ref<SiMMLData> simml_data = mml_data;
+	Ref<SiMMLVoice> voice = simml_data->get_pcm_voice(p_index);
 	if (voice.is_null()) {
 		return false;
 	}
 
-	SiMMLData *data = Object::cast_to<SiMMLData>(mml_data);
-	return TranslatorUtil::parse_pcm_voice(voice, p_mml, p_postfix, data->get_envelope_tables());
+	return TranslatorUtil::parse_pcm_voice(voice, p_mml, p_postfix, simml_data->get_envelope_tables());
 }
 
 void SiMMLSequencer::_try_process_command_callback(String p_command, int p_number, String p_content, String p_postfix) {
@@ -667,7 +670,8 @@ void SiMMLSequencer::_try_process_command_callback(String p_command, int p_numbe
 	command_obj->postfix = p_postfix;
 
 	if (_callback_parse_system_command.is_valid()) {
-		bool parsed = _callback_parse_system_command.call(Object::cast_to<SiMMLData>(mml_data), command_obj);
+		Ref<SiMMLData> simml_data = mml_data;
+		bool parsed = _callback_parse_system_command.call(simml_data, command_obj);
 		if (parsed) {
 			return;
 		}
@@ -689,11 +693,12 @@ bool SiMMLSequencer::_parse_system_command_before(String p_command, String p_par
 
 	// Tone settings.
 
-#define PARSE_TONE_PARAMS(m_func)                                                                  \
-	SiOPMChannelParams *params = Object::cast_to<SiMMLData>(mml_data)->get_channel_params(number); \
-	m_func(params, content);                                                                       \
-	if (!postfix.is_empty()) {                                                                     \
-		_parse_command_init_sequence(params, postfix);                                             \
+#define PARSE_TONE_PARAMS(m_func)                                         \
+	Ref<SiMMLData> simml_data = mml_data;                                 \
+	SiOPMChannelParams *params = simml_data->get_channel_params(number);  \
+	m_func(params, content);                                              \
+	if (!postfix.is_empty()) {                                            \
+		_parse_command_init_sequence(params, postfix);                    \
 	}
 
 	if (p_command == "#@") {
@@ -791,19 +796,22 @@ bool SiMMLSequencer::_parse_system_command_before(String p_command, String p_par
 		env_table->parse_mml(content, postfix);
 		ERR_FAIL_COND_V_MSG(!env_table->head, true, vformat("SiMMLSequencer: Invalid parameter '%s' for command '%s'.", content, p_command));
 
-		Object::cast_to<SiMMLData>(mml_data)->set_envelope_table(number, env_table);
+		Ref<SiMMLData> simml_data = mml_data;
+		simml_data->set_envelope_table(number, env_table);
 		return true;
 	}
 	if (p_command == "#WAV") {
 		ERR_FAIL_COND_V_MSG((number < 0 || number > 255), true, vformat("SiMMLSequencer: Parameter '%d' for command '%s' is outside of valid range (%d : %d).", number, p_command, 0, 255));
 
-		Object::cast_to<SiMMLData>(mml_data)->set_wave_table(number, TranslatorUtil::parse_wav(content, postfix));
+		Ref<SiMMLData> simml_data = mml_data;
+		simml_data->set_wave_table(number, TranslatorUtil::parse_wav(content, postfix));
 		return true;
 	}
 	if (p_command == "#WAVB") {
 		ERR_FAIL_COND_V_MSG((number < 0 || number > 255), true, vformat("SiMMLSequencer: Parameter '%d' for command '%s' is outside of valid range (%d : %d).", number, p_command, 0, 255));
 
-		Object::cast_to<SiMMLData>(mml_data)->set_wave_table(number, TranslatorUtil::parse_wavb(has_content ? content : postfix));
+		Ref<SiMMLData> simml_data = mml_data;
+		simml_data->set_wave_table(number, TranslatorUtil::parse_wavb(has_content ? content : postfix));
 		return true;
 	}
 

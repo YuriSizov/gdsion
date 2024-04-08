@@ -7,8 +7,13 @@
 #ifndef BEATS_PER_MINUTE_H
 #define BEATS_PER_MINUTE_H
 
+#include <godot_cpp/classes/ref_counted.hpp>
+
+using namespace godot;
+
 // Abstraction to calculate BPM-releated numbers automatically.
-class BeatsPerMinute {
+class BeatsPerMinute : public RefCounted {
+	GDCLASS(BeatsPerMinute, RefCounted)
 
 	double _bpm = 0;
 	int _sample_rate = 0;
@@ -22,6 +27,9 @@ class BeatsPerMinute {
 	// Sample per 16th beat
 	double _sample_per_beat_16th = 0;
 
+protected:
+	static void _bind_methods() {}
+
 public:
 	double get_bpm() const { return _bpm; }
 	int get_sample_rate() const { return _sample_rate; }
@@ -33,7 +41,7 @@ public:
 
 	bool update(double p_bpm, int p_sample_rate);
 
-	BeatsPerMinute(double p_bpm, int p_sample_rate, int p_resolution = 1920);
+	BeatsPerMinute(double p_bpm = 120, int p_sample_rate = 44100, int p_resolution = 1920);
 	~BeatsPerMinute() {}
 };
 
