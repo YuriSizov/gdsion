@@ -59,8 +59,13 @@ func _update_instrument() -> void:
 	_active_instrument.type = voice_data.type
 	_active_instrument.category = voice_data.category
 	_active_instrument.name = voice_data.name
-	_active_instrument.voice = Controller.voice_manager.get_voice_preset(voice_data.preset)
 	_active_instrument.palette = voice_data.palette
+
+	if _active_instrument.type == 0: # Drumkits don't use presets.
+		_active_instrument.voice = Controller.voice_manager.get_voice_preset(voice_data.preset)
+	else:
+		_active_instrument.voice = null
+
 	_active_instrument.update_filter()
 
 
