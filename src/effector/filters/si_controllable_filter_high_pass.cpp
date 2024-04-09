@@ -29,6 +29,6 @@ void SiControllableFilterHighPass::_process_lfo(Vector<double> *r_buffer, int p_
 
 SiControllableFilterHighPass::SiControllableFilterHighPass(double p_cutoff, double p_resonance) :
 		SiControllableFilterBase() {
-	initialize();
+	reset();
 	set_params_manually(p_cutoff, p_resonance);
 }

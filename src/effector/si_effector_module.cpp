@@ -7,63 +7,96 @@
 #include "si_effector_module.h"
 
 #include <godot_cpp/core/memory.hpp>
-#include "effector/si_effect_base.h"
 #include "effector/si_effect_stream.h"
 #include "processor/siopm_module.h"
 #include "processor/siopm_stream.h"
 #include "templates/type_constraints.h"
 
-HashMap<String, SiEffectorModule::EffectCollection<SiEffectBase>> SiEffectorModule::_effect_instances;
+#include "effector/effects/si_effect_autopan.h"
+#include "effector/effects/si_effect_compressor.h"
+#include "effector/effects/si_effect_distortion.h"
+#include "effector/effects/si_effect_downsampler.h"
+#include "effector/effects/si_effect_equalizer.h"
+#include "effector/filters/si_controllable_filter_high_pass.h"
+#include "effector/filters/si_controllable_filter_low_pass.h"
+
+HashMap<String, List<Ref<SiEffectBase>>> SiEffectorModule::_effect_instances;
+
+// Effects.
 
 template <class T>
-T *SiEffectorModule::EffectCollection<T>::get_instance() {
-	SiEffectBase *effect = nullptr;
+void SiEffectorModule::register_effector(const String &p_name) {
+	derived_from<T, SiEffectBase>(); // Compile-time check: Only accept SiEffectBase derivatives.
+
+	// We don't actually use the type here, as that would make it incompatible with the collection.
+	_effect_instances[p_name] = List<Ref<SiEffectBase>>();
+}
+
+Ref<SiEffectBase> SiEffectorModule::get_effector_instance(const String &p_name) {
+	ERR_FAIL_COND_V_MSG(!_effect_instances.has(p_name), Ref<SiEffectBase>(), vformat("SiEffectorModule: Effect called '%s' does not exist.", p_name));
+
+	List<Ref<SiEffectBase>> instances = _effect_instances[p_name];
 
 	// Check if we have free instances to reuse first.
-	for (int i = 0; i < _instances.size(); i++) {
-		if (_instances[i]->is_free()) {
-			effect = _instances[i];
+	for (int i = 0; i < instances.size(); i++) {
+		if (instances[i]->is_free()) {
+			Ref<SiEffectBase> effect = instances[i];
 
 			effect->set_free(false);
-			effect->initialize();
+			effect->reset();
 			return effect;
 		}
 	}
 
 	// Failing above we allocate a new one.
-	effect = memnew(T);
-	_instances.push_back(effect);
+	// FIXME: Maybe there is a better way to do it, but templates, the most obvious choice, didn't prove to be helpful.
+
+#define CREATE_EFFECTOR(m_type, m_name)                                 \
+	if (p_name == m_name) {                                             \
+		Ref<SiEffectBase> effect = create_effector_instance<m_type>();  \
+		instances.push_back(effect);                                    \
+		return effect;                                                  \
+	}
+
+	CREATE_EFFECTOR(SiEffectAutopan, "autopan");
+	CREATE_EFFECTOR(SiEffectCompressor, "comp");
+	CREATE_EFFECTOR(SiEffectDistortion, "dist");
+	CREATE_EFFECTOR(SiEffectDownsampler, "ds");
+	CREATE_EFFECTOR(SiEffectEqualizer, "eq");
+	// CREATE_EFFECTOR(SiEffectSpeakerSimulator, "speaker");
+	// CREATE_EFFECTOR(SiEffectStereoChorus, "chorus");
+	// CREATE_EFFECTOR(SiEffectStereoDelay, "delay");
+	// CREATE_EFFECTOR(SiEffectStereoExpander, "stereo");
+	// CREATE_EFFECTOR(SiEffectStereoReverb, "reverb");
+	// CREATE_EFFECTOR(SiEffectWaveShaper, "ws");
+
+	// CREATE_EFFECTOR(SiFilterAllPass, "af");
+	// CREATE_EFFECTOR(SiFilterBandPass, "bf");
+	// CREATE_EFFECTOR(SiFilterHighBoost, "hb");
+	// CREATE_EFFECTOR(SiFilterHighPass, "hf");
+	// CREATE_EFFECTOR(SiFilterLowBoost, "lb");
+	// CREATE_EFFECTOR(SiFilterLowPass, "lf");
+	// CREATE_EFFECTOR(SiFilterNotch, "nf");
+	// CREATE_EFFECTOR(SiFilterPeak, "pf");
+	// CREATE_EFFECTOR(SiFilterVowel, "vowel");
+
+	CREATE_EFFECTOR(SiControllableFilterHighPass, "nhf");
+	CREATE_EFFECTOR(SiControllableFilterLowPass, "nlf");
+
+#undef CREATE_EFFECTOR
+
+	// This should only be possible if custom effectors are registered outside of the class.
+	return Ref<SiEffectBase>();
+}
+
+template <class T>
+Ref<T> SiEffectorModule::create_effector_instance() {
+	Ref<T> effect;
+	effect.instantiate();
 
 	effect->set_free(false);
-	effect->initialize();
+	effect->reset();
 	return effect;
-}
-
-template <class T>
-SiEffectorModule::EffectCollection<T>::EffectCollection() {
-	derived_from<T, SiEffectBase>(); // Compile-time check: Only accept SiEffectBase derivatives.
-}
-
-template <class T>
-SiEffectorModule::EffectCollection<T>::~EffectCollection() {
-	while (!_instances.is_empty()) {
-		T *effect = _instances.back()->get();
-		_instances.pop_back();
-		memdelete(effect);
-	}
-}
-
-// Effects.
-
-template <class T>
-void SiEffectorModule::register_effector(String p_name) {
-	_effect_instances[p_name] = memnew(EffectCollection<T>);
-}
-
-SiEffectBase *SiEffectorModule::get_effector_instance(String p_name) {
-	ERR_FAIL_COND_V_MSG(!_effect_instances.has(p_name), nullptr, vformat("SiEffectorModule: Effect called '%s' does not exist.", p_name));
-
-	return _effect_instances[p_name].get_instance();
 }
 
 // Slots and connections.
@@ -92,14 +125,14 @@ SiEffectStream *SiEffectorModule::_alloc_stream(int p_depth) {
 	return effect;
 }
 
-List<SiEffectBase *> SiEffectorModule::get_slot_effect_list(int p_slot) const {
+List<Ref<SiEffectBase>> SiEffectorModule::get_slot_effect_list(int p_slot) const {
 	if (!_global_effects[p_slot]) {
-		return List<SiEffectBase *>();
+		return List<Ref<SiEffectBase>>();
 	}
 	return _global_effects[p_slot]->get_chain();
 }
 
-void SiEffectorModule::set_slot_effect_list(int p_slot, List<SiEffectBase *> p_effects) {
+void SiEffectorModule::set_slot_effect_list(int p_slot, List<Ref<SiEffectBase>> p_effects) {
 	SiEffectStream *effect = _get_global_effector(p_slot);
 	effect->set_chain(p_effects);
 	effect->prepare_process();
@@ -117,13 +150,13 @@ void SiEffectorModule::clear_slot(int p_slot) {
 	}
 }
 
-void SiEffectorModule::connect_effector(int p_slot, SiEffectBase *p_effector) {
+void SiEffectorModule::connect_effector(int p_slot, const Ref<SiEffectBase> &p_effector) {
 	SiEffectStream *effect = _get_global_effector(p_slot);
 	effect->get_chain().push_back(p_effector);
 	p_effector->prepare_process();
 }
 
-SiEffectStream *SiEffectorModule::create_local_effect(int p_depth, List<SiEffectBase *> p_effects) {
+SiEffectStream *SiEffectorModule::create_local_effect(int p_depth, List<Ref<SiEffectBase>> p_effects) {
 	SiEffectStream *effect = _alloc_stream(p_depth);
 	effect->set_chain(p_effects);
 	effect->prepare_process();
@@ -235,7 +268,7 @@ void SiEffectorModule::reset() {
 
 //
 
-// This function is called from SiONDriver::play() with the 2nd argument set to true.
+// This function is called from SiONDriver::play() when its 2nd argument is set to true.
 // If you want to connect effectors by code, you have to call this first, then call connect(),
 // and then SiONDriver::play() with the 2nd argument set to false.
 void SiEffectorModule::initialize() {
@@ -265,31 +298,31 @@ SiEffectorModule::SiEffectorModule(SiOPMModule *p_module) {
 	_global_effects.resize_zeroed(SiOPMModule::STREAM_SEND_SIZE);
 	_global_effects.write[0] = _master_effect;
 
-	// Register default effectors.
+	// Register default effect instances.
 	// FIXME: Implement all effects and filters.
 
-	// register_effector<SiEffectWaveShaper>("ws");
-	// register_effector<SiEffectEqualiser>("eq");
-	// register_effector<SiEffectStereoDelay>("delay");
-	// register_effector<SiEffectStereoReverb>("reverb");
-	// register_effector<SiEffectStereoChorus>("chorus");
-	// register_effector<SiEffectAutoPan>("autopan");
-	// register_effector<SiEffectDownSampler>("ds");
+	register_effector<SiEffectAutopan>("autopan");
+	register_effector<SiEffectCompressor>("comp");
+	register_effector<SiEffectDistortion>("dist");
+	register_effector<SiEffectDownsampler>("ds");
+	register_effector<SiEffectEqualizer>("eq");
 	// register_effector<SiEffectSpeakerSimulator>("speaker");
-	// register_effector<SiEffectCompressor>("comp");
-	// register_effector<SiEffectDistortion>("dist");
+	// register_effector<SiEffectStereoChorus>("chorus");
+	// register_effector<SiEffectStereoDelay>("delay");
 	// register_effector<SiEffectStereoExpander>("stereo");
-	// register_effector<SiFilterVowel>("vowel");
+	// register_effector<SiEffectStereoReverb>("reverb");
+	// register_effector<SiEffectWaveShaper>("ws");
 
-	// register_effector<SiFilterLowPass>("lf");
-	// register_effector<SiFilterHighPass>("hf");
+	// register_effector<SiFilterAllPass>("af");
 	// register_effector<SiFilterBandPass>("bf");
+	// register_effector<SiFilterHighBoost>("hb");
+	// register_effector<SiFilterHighPass>("hf");
+	// register_effector<SiFilterLowBoost>("lb");
+	// register_effector<SiFilterLowPass>("lf");
 	// register_effector<SiFilterNotch>("nf");
 	// register_effector<SiFilterPeak>("pf");
-	// register_effector<SiFilterAllPass>("af");
-	// register_effector<SiFilterLowBoost>("lb");
-	// register_effector<SiFilterHighBoost>("hb");
+	// register_effector<SiFilterVowel>("vowel");
 
-	// register_effector<SiCtrlFilterLowPass>("nlf");
-	// register_effector<SiCtrlFilterHighPass>("nhf");
+	register_effector<SiControllableFilterHighPass>("nhf");
+	register_effector<SiControllableFilterLowPass>("nlf");
 }

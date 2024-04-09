@@ -12,6 +12,7 @@
 #include "templates/singly_linked_list.h"
 
 class SiControllableFilterBase : public SiEffectBase {
+	GDCLASS(SiControllableFilterBase, SiEffectBase)
 
 	static SinglyLinkedList<int> *_increment_envelope_table;
 	static SinglyLinkedList<int> *_decrement_envelope_table;
@@ -25,6 +26,8 @@ class SiControllableFilterBase : public SiEffectBase {
 	virtual void _process_lfo(Vector<double> *r_buffer, int p_start_index, int p_length) {}
 
 protected:
+	static void _bind_methods() {}
+
 	double _p0_right = 0;
 	double _p1_right = 0;
 	double _p0_left = 0;
@@ -49,8 +52,7 @@ public:
 	virtual int process(int p_channels, Vector<double> *r_buffer, int p_start_index, int p_length) override;
 
 	virtual void set_by_mml(Vector<double> p_args) override;
-
-	virtual void initialize() override;
+	virtual void reset() override;
 
 	SiControllableFilterBase();
 	~SiControllableFilterBase() {}

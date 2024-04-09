@@ -7,15 +7,30 @@
 #ifndef SI_EFFECT_BASE_H
 #define SI_EFFECT_BASE_H
 
+#include <godot_cpp/classes/ref_counted.hpp>
 #include <godot_cpp/templates/vector.hpp>
 
 using namespace godot;
 
-// Base class for all effects. Doesn't implement any behavior by default, extending
-// classes must be used.
-class SiEffectBase {
+// Base class for all effects. Doesn't implement any behavior by default.
+// Extending classes must be used instead.
+class SiEffectBase : public RefCounted {
+	GDCLASS(SiEffectBase, RefCounted)
 
 	bool _is_free = true;
+
+protected:
+	static void _bind_methods() {}
+
+	// Helper for set_by_mml implementations.
+	_FORCE_INLINE_ double _get_mml_arg(Vector<double> p_args, int p_index, double p_default) const {
+		if (p_index < 0 || p_index >= p_args.size()) {
+			return p_default;
+		}
+
+		const double value = p_args[p_index];
+		return Math::is_nan(value) ? p_default : value;
+	}
 
 public:
 	bool is_free() const { return _is_free; }
@@ -32,8 +47,7 @@ public:
 	virtual int process(int p_channels, Vector<double> *r_buffer, int p_start_index, int p_length) { return p_channels; }
 
 	virtual void set_by_mml(Vector<double> p_args) {}
-
-	virtual void initialize() {}
+	virtual void reset() {}
 
 	SiEffectBase() {}
 };

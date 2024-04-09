@@ -8,7 +8,6 @@
 
 #include <godot_cpp/classes/reg_ex.hpp>
 #include <godot_cpp/classes/reg_ex_match.hpp>
-#include "effector/si_effect_base.h"
 #include "effector/si_effector_module.h"
 #include "processor/siopm_module.h"
 #include "processor/siopm_stream.h"
@@ -121,8 +120,8 @@ void SiEffectStream::_connect_effect(String p_cmd, Vector<double> p_args, int p_
 		return;
 	}
 
-	SiEffectBase *effect = SiEffectorModule::get_effector_instance(p_cmd);
-	if (effect) {
+	Ref<SiEffectBase> effect = SiEffectorModule::get_effector_instance(p_cmd);
+	if (effect.is_valid()) {
 		effect->set_by_mml(p_args);
 		_chain.push_back(effect);
 	}
@@ -244,7 +243,7 @@ void SiEffectStream::reset() {
 }
 
 void SiEffectStream::free() {
-	for (SiEffectBase *effect : _chain) {
+	for (Ref<SiEffectBase> effect : _chain) {
 		effect->set_free(true);
 	}
 	_chain.clear();

@@ -6,7 +6,7 @@
 
 #include "si_effect_composite.h"
 
-void SiEffectComposite::set_slot_effects(int p_slot, Vector<SiEffectBase *> p_effects) {
+void SiEffectComposite::set_slot_effects(int p_slot, Vector<Ref<SiEffectBase>> p_effects) {
 	ERR_FAIL_INDEX(p_slot, 8);
 
 	_slots[p_slot].effects = p_effects;
@@ -21,7 +21,7 @@ void SiEffectComposite::set_slot_levels(int p_slot, double p_send_level, double 
 
 int SiEffectComposite::prepare_process() {
 	for (int i = 0; i < 8; i++) {
-		for (SiEffectBase *effect : _slots[i].effects) {
+		for (Ref<SiEffectBase> effect : _slots[i].effects) {
 			effect->prepare_process();
 		}
 	}
@@ -54,7 +54,7 @@ int SiEffectComposite::process(int p_channels, Vector<double> *r_buffer, int p_s
 		}
 
 		int channel_num = p_channels;
-		for (SiEffectBase *effect : _slots[i].effects) {
+		for (Ref<SiEffectBase> effect : _slots[i].effects) {
 			channel_num = effect->process(channel_num, &_slots[i].buffer, p_start_index, p_length);
 		}
 
@@ -65,7 +65,7 @@ int SiEffectComposite::process(int p_channels, Vector<double> *r_buffer, int p_s
 
 	int out_channels = p_channels;
 	if (!_slots[0].effects.is_empty()) {
-		for (SiEffectBase *effect : _slots[0].effects) {
+		for (Ref<SiEffectBase> effect : _slots[0].effects) {
 			out_channels = effect->process(out_channels, r_buffer, p_start_index, p_length);
 		}
 
@@ -79,7 +79,7 @@ int SiEffectComposite::process(int p_channels, Vector<double> *r_buffer, int p_s
 	return out_channels;
 }
 
-void SiEffectComposite::initialize() {
+void SiEffectComposite::reset() {
 	for (int i = 0; i < 8; i++) {
 		_slots[i].effects.clear();
 		_slots[i].buffer.clear();

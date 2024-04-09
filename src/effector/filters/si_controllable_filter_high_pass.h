@@ -13,8 +13,12 @@
 using namespace godot;
 
 class SiControllableFilterHighPass : public SiControllableFilterBase {
+	GDCLASS(SiControllableFilterHighPass, SiControllableFilterBase)
 
 	virtual void _process_lfo(Vector<double> *r_buffer, int p_start_index, int p_length) override;
+
+protected:
+	static void _bind_methods() {}
 
 public:
 	SiControllableFilterHighPass(double p_cutoff = 1, double p_resonance = 0);

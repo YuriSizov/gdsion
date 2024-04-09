@@ -103,18 +103,19 @@ int SiControllableFilterBase::process(int p_channels, Vector<double> *r_buffer, 
 }
 
 void SiControllableFilterBase::set_by_mml(Vector<double> p_args) {
-	int cutoff    = (!Math::is_nan(p_args[0]) ? p_args[0] : 255);
-	int resonance = (!Math::is_nan(p_args[1]) ? p_args[1] : 255);
-	double fps    = (!Math::is_nan(p_args[2]) ? p_args[2] : 20);
+	int cutoff    = _get_mml_arg(p_args, 0, 255);
+	int resonance = _get_mml_arg(p_args, 1, 255);
+	double fps    = _get_mml_arg(p_args, 2, 20);
 
 	set_params(cutoff, resonance, fps);
 }
 
-void SiControllableFilterBase::initialize() {
+void SiControllableFilterBase::reset() {
 	set_params();
 }
 
-SiControllableFilterBase::SiControllableFilterBase() {
+SiControllableFilterBase::SiControllableFilterBase() :
+		SiEffectBase() {
 	if (_increment_envelope_table == nullptr) {
 		_increment_envelope_table = SinglyLinkedList<int>::alloc_list(129);
 		_decrement_envelope_table = SinglyLinkedList<int>::alloc_list(129);

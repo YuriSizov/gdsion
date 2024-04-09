@@ -10,17 +10,17 @@
 #include <godot_cpp/templates/list.hpp>
 #include <godot_cpp/templates/vector.hpp>
 #include <godot_cpp/variant/string.hpp>
+#include "effector/si_effect_base.h"
 
 using namespace godot;
 
-class SiEffectBase;
 class SiOPMModule;
 class SiOPMStream;
 
 class SiEffectStream {
 
 	SiOPMModule *_module = nullptr;
-	List<SiEffectBase *> _chain;
+	List<Ref<SiEffectBase>> _chain;
 
 	SiOPMStream *_stream = nullptr;
 	// Deeper streams execute first.
@@ -35,8 +35,8 @@ class SiEffectStream {
 	void _set_volume(int p_slot, String p_cmd, Vector<double> p_args, int p_argc);
 
 public:
-	List<SiEffectBase *> get_chain() const { return _chain; }
-	void set_chain(List<SiEffectBase *> p_chain) { _chain = p_chain; }
+	List<Ref<SiEffectBase>> get_chain() const { return _chain; }
+	void set_chain(List<Ref<SiEffectBase>> p_chain) { _chain = p_chain; }
 	SiOPMStream *get_stream() const { return _stream; }
 
 	int get_depth() const { return _depth; }

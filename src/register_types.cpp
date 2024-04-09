@@ -14,6 +14,16 @@
 #include "sion_driver.h"
 #include "sion_voice.h"
 
+#include "effector/effects/si_effect_autopan.h"
+#include "effector/effects/si_effect_compressor.h"
+#include "effector/effects/si_effect_distortion.h"
+#include "effector/effects/si_effect_downsampler.h"
+#include "effector/effects/si_effect_equalizer.h"
+#include "effector/filters/si_controllable_filter_base.h"
+#include "effector/filters/si_controllable_filter_high_pass.h"
+#include "effector/filters/si_controllable_filter_low_pass.h"
+#include "effector/si_effect_base.h"
+#include "effector/si_effect_composite.h"
 #include "events/sion_event.h"
 #include "events/sion_track_event.h"
 #include "processor/channels/siopm_channel_base.h"
@@ -26,6 +36,7 @@
 #include "processor/wave/siopm_wave_sampler_data.h"
 #include "processor/wave/siopm_wave_sampler_table.h"
 #include "processor/wave/siopm_wave_table.h"
+#include "sequencer/base/beats_per_minute.h"
 #include "sequencer/base/mml_data.h"
 #include "sequencer/base/mml_event.h"
 #include "sequencer/base/mml_parser.h"
@@ -52,6 +63,19 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 	// Also, all of these classes must have a constructor that has no required
 	// arguments. Even if this is not a supported case for the class itself.
 
+	// Effector.
+	ClassDB::register_abstract_class<SiEffectBase>();
+
+	ClassDB::register_class<SiControllableFilterBase>();
+	ClassDB::register_class<SiControllableFilterHighPass>();
+	ClassDB::register_class<SiControllableFilterLowPass>();
+	ClassDB::register_class<SiEffectAutopan>();
+	ClassDB::register_class<SiEffectComposite>();
+	ClassDB::register_class<SiEffectCompressor>();
+	ClassDB::register_class<SiEffectDistortion>();
+	ClassDB::register_class<SiEffectDownsampler>();
+	ClassDB::register_class<SiEffectEqualizer>();
+
 	// Events.
 	ClassDB::register_abstract_class<SiONEvent>();
 	ClassDB::register_abstract_class<SiONTrackEvent>();
@@ -68,6 +92,7 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_abstract_class<SiOPMWaveTable>();
 
 	// Sequencer.
+	ClassDB::register_class<BeatsPerMinute>();
 	ClassDB::register_abstract_class<MMLData>();
 	ClassDB::register_abstract_class<MMLEvent>();
 	ClassDB::register_abstract_class<MMLSequencer>();
