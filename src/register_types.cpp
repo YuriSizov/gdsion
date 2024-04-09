@@ -19,6 +19,12 @@
 #include "effector/effects/si_effect_distortion.h"
 #include "effector/effects/si_effect_downsampler.h"
 #include "effector/effects/si_effect_equalizer.h"
+#include "effector/effects/si_effect_speaker_simulator.h"
+#include "effector/effects/si_effect_stereo_chorus.h"
+#include "effector/effects/si_effect_stereo_delay.h"
+#include "effector/effects/si_effect_stereo_expander.h"
+#include "effector/effects/si_effect_stereo_reverb.h"
+#include "effector/effects/si_effect_wave_shaper.h"
 #include "effector/filters/si_controllable_filter_base.h"
 #include "effector/filters/si_controllable_filter_high_pass.h"
 #include "effector/filters/si_controllable_filter_low_pass.h"
@@ -65,7 +71,6 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 
 	// Effector.
 	ClassDB::register_abstract_class<SiEffectBase>();
-
 	ClassDB::register_class<SiControllableFilterBase>();
 	ClassDB::register_class<SiControllableFilterHighPass>();
 	ClassDB::register_class<SiControllableFilterLowPass>();
@@ -75,6 +80,12 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<SiEffectDistortion>();
 	ClassDB::register_class<SiEffectDownsampler>();
 	ClassDB::register_class<SiEffectEqualizer>();
+	ClassDB::register_class<SiEffectSpeakerSimulator>();
+	ClassDB::register_class<SiEffectStereoChorus>();
+	ClassDB::register_class<SiEffectStereoDelay>();
+	ClassDB::register_class<SiEffectStereoExpander>();
+	ClassDB::register_class<SiEffectStereoReverb>();
+	ClassDB::register_class<SiEffectWaveShaper>();
 
 	// Events.
 	ClassDB::register_abstract_class<SiONEvent>();

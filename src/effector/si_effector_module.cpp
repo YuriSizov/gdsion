@@ -17,6 +17,12 @@
 #include "effector/effects/si_effect_distortion.h"
 #include "effector/effects/si_effect_downsampler.h"
 #include "effector/effects/si_effect_equalizer.h"
+#include "effector/effects/si_effect_speaker_simulator.h"
+#include "effector/effects/si_effect_stereo_chorus.h"
+#include "effector/effects/si_effect_stereo_delay.h"
+#include "effector/effects/si_effect_stereo_expander.h"
+#include "effector/effects/si_effect_stereo_reverb.h"
+#include "effector/effects/si_effect_wave_shaper.h"
 #include "effector/filters/si_controllable_filter_high_pass.h"
 #include "effector/filters/si_controllable_filter_low_pass.h"
 
@@ -63,12 +69,12 @@ Ref<SiEffectBase> SiEffectorModule::get_effector_instance(const String &p_name) 
 	CREATE_EFFECTOR(SiEffectDistortion, "dist");
 	CREATE_EFFECTOR(SiEffectDownsampler, "ds");
 	CREATE_EFFECTOR(SiEffectEqualizer, "eq");
-	// CREATE_EFFECTOR(SiEffectSpeakerSimulator, "speaker");
-	// CREATE_EFFECTOR(SiEffectStereoChorus, "chorus");
-	// CREATE_EFFECTOR(SiEffectStereoDelay, "delay");
-	// CREATE_EFFECTOR(SiEffectStereoExpander, "stereo");
-	// CREATE_EFFECTOR(SiEffectStereoReverb, "reverb");
-	// CREATE_EFFECTOR(SiEffectWaveShaper, "ws");
+	CREATE_EFFECTOR(SiEffectSpeakerSimulator, "speaker");
+	CREATE_EFFECTOR(SiEffectStereoChorus, "chorus");
+	CREATE_EFFECTOR(SiEffectStereoDelay, "delay");
+	CREATE_EFFECTOR(SiEffectStereoExpander, "stereo");
+	CREATE_EFFECTOR(SiEffectStereoReverb, "reverb");
+	CREATE_EFFECTOR(SiEffectWaveShaper, "ws");
 
 	// CREATE_EFFECTOR(SiFilterAllPass, "af");
 	// CREATE_EFFECTOR(SiFilterBandPass, "bf");
@@ -306,12 +312,12 @@ SiEffectorModule::SiEffectorModule(SiOPMModule *p_module) {
 	register_effector<SiEffectDistortion>("dist");
 	register_effector<SiEffectDownsampler>("ds");
 	register_effector<SiEffectEqualizer>("eq");
-	// register_effector<SiEffectSpeakerSimulator>("speaker");
-	// register_effector<SiEffectStereoChorus>("chorus");
-	// register_effector<SiEffectStereoDelay>("delay");
-	// register_effector<SiEffectStereoExpander>("stereo");
-	// register_effector<SiEffectStereoReverb>("reverb");
-	// register_effector<SiEffectWaveShaper>("ws");
+	register_effector<SiEffectSpeakerSimulator>("speaker");
+	register_effector<SiEffectStereoChorus>("chorus");
+	register_effector<SiEffectStereoDelay>("delay");
+	register_effector<SiEffectStereoExpander>("stereo");
+	register_effector<SiEffectStereoReverb>("reverb");
+	register_effector<SiEffectWaveShaper>("ws");
 
 	// register_effector<SiFilterAllPass>("af");
 	// register_effector<SiFilterBandPass>("bf");
