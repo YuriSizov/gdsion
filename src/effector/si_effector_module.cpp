@@ -25,6 +25,14 @@
 #include "effector/effects/si_effect_wave_shaper.h"
 #include "effector/filters/si_controllable_filter_high_pass.h"
 #include "effector/filters/si_controllable_filter_low_pass.h"
+#include "effector/filters/si_filter_all_pass.h"
+#include "effector/filters/si_filter_band_pass.h"
+#include "effector/filters/si_filter_high_boost.h"
+#include "effector/filters/si_filter_high_pass.h"
+#include "effector/filters/si_filter_low_boost.h"
+#include "effector/filters/si_filter_low_pass.h"
+#include "effector/filters/si_filter_notch.h"
+#include "effector/filters/si_filter_peak.h"
 
 HashMap<String, List<Ref<SiEffectBase>>> SiEffectorModule::_effect_instances;
 
@@ -76,14 +84,14 @@ Ref<SiEffectBase> SiEffectorModule::get_effector_instance(const String &p_name) 
 	CREATE_EFFECTOR(SiEffectStereoReverb, "reverb");
 	CREATE_EFFECTOR(SiEffectWaveShaper, "ws");
 
-	// CREATE_EFFECTOR(SiFilterAllPass, "af");
-	// CREATE_EFFECTOR(SiFilterBandPass, "bf");
-	// CREATE_EFFECTOR(SiFilterHighBoost, "hb");
-	// CREATE_EFFECTOR(SiFilterHighPass, "hf");
-	// CREATE_EFFECTOR(SiFilterLowBoost, "lb");
-	// CREATE_EFFECTOR(SiFilterLowPass, "lf");
-	// CREATE_EFFECTOR(SiFilterNotch, "nf");
-	// CREATE_EFFECTOR(SiFilterPeak, "pf");
+	CREATE_EFFECTOR(SiFilterAllPass, "af");
+	CREATE_EFFECTOR(SiFilterBandPass, "bf");
+	CREATE_EFFECTOR(SiFilterHighBoost, "hb");
+	CREATE_EFFECTOR(SiFilterHighPass, "hf");
+	CREATE_EFFECTOR(SiFilterLowBoost, "lb");
+	CREATE_EFFECTOR(SiFilterLowPass, "lf");
+	CREATE_EFFECTOR(SiFilterNotch, "nf");
+	CREATE_EFFECTOR(SiFilterPeak, "pf");
 	// CREATE_EFFECTOR(SiFilterVowel, "vowel");
 
 	CREATE_EFFECTOR(SiControllableFilterHighPass, "nhf");
@@ -319,14 +327,14 @@ SiEffectorModule::SiEffectorModule(SiOPMModule *p_module) {
 	register_effector<SiEffectStereoReverb>("reverb");
 	register_effector<SiEffectWaveShaper>("ws");
 
-	// register_effector<SiFilterAllPass>("af");
-	// register_effector<SiFilterBandPass>("bf");
-	// register_effector<SiFilterHighBoost>("hb");
-	// register_effector<SiFilterHighPass>("hf");
-	// register_effector<SiFilterLowBoost>("lb");
-	// register_effector<SiFilterLowPass>("lf");
-	// register_effector<SiFilterNotch>("nf");
-	// register_effector<SiFilterPeak>("pf");
+	register_effector<SiFilterAllPass>("af");
+	register_effector<SiFilterBandPass>("bf");
+	register_effector<SiFilterHighBoost>("hb");
+	register_effector<SiFilterHighPass>("hf");
+	register_effector<SiFilterLowBoost>("lb");
+	register_effector<SiFilterLowPass>("lf");
+	register_effector<SiFilterNotch>("nf");
+	register_effector<SiFilterPeak>("pf");
 	// register_effector<SiFilterVowel>("vowel");
 
 	register_effector<SiControllableFilterHighPass>("nhf");

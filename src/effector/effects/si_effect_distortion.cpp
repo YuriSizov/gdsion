@@ -21,8 +21,8 @@ void SiEffectDistortion::set_params(double p_pre_gain, double p_post_gain, doubl
 		double sin = Math::sin(omg);
 
 		double ang = 0.34657359027997264 * p_lpf_slope * omg / sin;
-		double alp = sin * (Math::exp(ang) - Math::exp(-ang)) * 0.5; // log(2)*0.5
-		double ia0 = 1 / (1 + alp);
+		double alp = sin * Math::sinh(ang); // log(2)*0.5
+		double ia0 = 1.0 / (1.0 + alp);
 
 		_a1 = -2 * cos * ia0;
 		_a2 = (1 - alp) * ia0;

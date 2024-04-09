@@ -28,6 +28,15 @@
 #include "effector/filters/si_controllable_filter_base.h"
 #include "effector/filters/si_controllable_filter_high_pass.h"
 #include "effector/filters/si_controllable_filter_low_pass.h"
+#include "effector/filters/si_filter_all_pass.h"
+#include "effector/filters/si_filter_band_pass.h"
+#include "effector/filters/si_filter_base.h"
+#include "effector/filters/si_filter_high_boost.h"
+#include "effector/filters/si_filter_high_pass.h"
+#include "effector/filters/si_filter_low_boost.h"
+#include "effector/filters/si_filter_low_pass.h"
+#include "effector/filters/si_filter_notch.h"
+#include "effector/filters/si_filter_peak.h"
 #include "effector/si_effect_base.h"
 #include "effector/si_effect_composite.h"
 #include "events/sion_event.h"
@@ -65,13 +74,14 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 	// Additional SiON API classes and prerequisites.
 
 	// NOTE: Not every class registered below is designed to be used publicly,
-	// but all classes extending Godot objects needs to be registered.
+	// but all classes extending Godot objects need to be registered.
 	// Also, all of these classes must have a constructor that has no required
 	// arguments. Even if this is not a supported case for the class itself.
 
 	// Effector.
+	ClassDB::register_abstract_class<SiControllableFilterBase>();
 	ClassDB::register_abstract_class<SiEffectBase>();
-	ClassDB::register_class<SiControllableFilterBase>();
+	ClassDB::register_abstract_class<SiFilterBase>();
 	ClassDB::register_class<SiControllableFilterHighPass>();
 	ClassDB::register_class<SiControllableFilterLowPass>();
 	ClassDB::register_class<SiEffectAutopan>();
@@ -86,6 +96,14 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<SiEffectStereoExpander>();
 	ClassDB::register_class<SiEffectStereoReverb>();
 	ClassDB::register_class<SiEffectWaveShaper>();
+	ClassDB::register_class<SiFilterAllPass>();
+	ClassDB::register_class<SiFilterBandPass>();
+	ClassDB::register_class<SiFilterHighBoost>();
+	ClassDB::register_class<SiFilterHighPass>();
+	ClassDB::register_class<SiFilterLowBoost>();
+	ClassDB::register_class<SiFilterLowPass>();
+	ClassDB::register_class<SiFilterNotch>();
+	ClassDB::register_class<SiFilterPeak>();
 
 	// Events.
 	ClassDB::register_abstract_class<SiONEvent>();
