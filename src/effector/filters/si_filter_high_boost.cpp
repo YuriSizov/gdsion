@@ -38,6 +38,10 @@ void SiFilterHighBoost::reset() {
 	set_params();
 }
 
+void SiFilterHighBoost::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_params", "frequency", "slope", "gain"), &SiFilterHighBoost::set_params, DEFVAL(5500), DEFVAL(1), DEFVAL(6));
+}
+
 SiFilterHighBoost::SiFilterHighBoost(double p_frequency, double p_slope, double p_gain) :
 		SiFilterBase() {
 	set_params(p_frequency, p_slope, p_gain);

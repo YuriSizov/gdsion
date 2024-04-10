@@ -68,6 +68,10 @@ void SiEffectStereoDelay::reset() {
 	set_params();
 }
 
+void SiEffectStereoDelay::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_params", "delay_time", "feedback", "is_cross", "wet"), &SiEffectStereoDelay::set_params, DEFVAL(250), DEFVAL(0.25), DEFVAL(false), DEFVAL(0.25));
+}
+
 SiEffectStereoDelay::SiEffectStereoDelay(double p_delay_time, double p_feedback, bool p_cross, double p_wet) :
 		SiEffectBase() {
 	_delay_buffer_left.resize_zeroed(1 << DELAY_BUFFER_BITS);

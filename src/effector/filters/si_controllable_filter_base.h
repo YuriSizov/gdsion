@@ -26,7 +26,7 @@ class SiControllableFilterBase : public SiEffectBase {
 	virtual void _process_lfo(Vector<double> *r_buffer, int p_start_index, int p_length) {}
 
 protected:
-	static void _bind_methods() {}
+	static void _bind_methods();
 
 	double _p0_right = 0;
 	double _p1_right = 0;

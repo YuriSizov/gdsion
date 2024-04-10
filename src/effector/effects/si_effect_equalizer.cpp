@@ -90,6 +90,10 @@ void SiEffectEqualizer::reset() {
 	set_params();
 }
 
+void SiEffectEqualizer::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_params", "low_gain", "mid_gain", "high_gain", "low_frequency", "high_frequency"), &SiEffectEqualizer::set_params, DEFVAL(1), DEFVAL(1), DEFVAL(1), DEFVAL(880), DEFVAL(5000));
+}
+
 SiEffectEqualizer::SiEffectEqualizer(double p_low_gain, double p_mid_gain, double p_high_gain, double p_low_frequency, double p_high_frequency) :
 		SiEffectBase() {
 	set_params(p_low_gain, p_mid_gain, p_high_gain, p_low_frequency, p_high_frequency);

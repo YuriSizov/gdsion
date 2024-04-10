@@ -21,7 +21,7 @@ class SiEffectDownsampler : public SiEffectBase {
 	void _process_stereo(Vector<double> *r_buffer, int p_start_index, int p_length);
 
 protected:
-	static void _bind_methods() {}
+	static void _bind_methods();
 
 public:
 	void set_params(int p_frequency_shift = 0, int p_bitrate = 16, int p_channel_count = 2);

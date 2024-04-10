@@ -30,7 +30,7 @@ class SiEffectDistortion : public SiEffectBase {
 	double _out2 = 0;
 
 protected:
-	static void _bind_methods() {}
+	static void _bind_methods();
 
 public:
 	void set_params(double p_pre_gain = -60, double p_post_gain = 18, double p_lpf_frequency = 2400, double p_lpf_slope = 1);

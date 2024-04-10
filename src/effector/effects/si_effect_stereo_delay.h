@@ -30,7 +30,7 @@ class SiEffectStereoDelay : public SiEffectBase {
 	void _process_channel(Vector<double> *r_buffer, int p_buffer_index, Vector<double> p_read_buffer, Vector<double> *r_write_buffer);
 
 protected:
-	static void _bind_methods() {}
+	static void _bind_methods();
 
 public:
 	void set_params(double p_delay_time = 250, double p_feedback = 0.25, bool p_cross = false, double p_wet = 0.25);

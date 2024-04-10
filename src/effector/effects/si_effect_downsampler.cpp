@@ -82,6 +82,10 @@ void SiEffectDownsampler::reset() {
 	set_params();
 }
 
+void SiEffectDownsampler::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_params", "frequency_shift", "bitrate", "channel_count"), &SiEffectDownsampler::set_params, DEFVAL(0), DEFVAL(16), DEFVAL(2));
+}
+
 SiEffectDownsampler::SiEffectDownsampler(int p_frequency_shift, int p_bitrate, int p_channel_count) :
 		SiEffectBase() {
 	set_params(p_frequency_shift, p_bitrate, p_channel_count);

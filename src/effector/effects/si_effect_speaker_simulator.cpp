@@ -55,6 +55,10 @@ void SiEffectSpeakerSimulator::reset() {
 	set_params();
 }
 
+void SiEffectSpeakerSimulator::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_params", "hardness"), &SiEffectSpeakerSimulator::set_params, DEFVAL(0.2));
+}
+
 SiEffectSpeakerSimulator::SiEffectSpeakerSimulator(double p_hardness) :
 		SiEffectBase() {
 	set_params(p_hardness);

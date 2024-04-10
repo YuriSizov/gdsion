@@ -75,6 +75,10 @@ void SiEffectStereoExpander::reset() {
 	set_params();
 }
 
+void SiEffectStereoExpander::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_params", "stereo_width", "rotation", "phase_invert"), &SiEffectStereoExpander::set_params, DEFVAL(1.4), DEFVAL(0), DEFVAL(false));
+}
+
 SiEffectStereoExpander::SiEffectStereoExpander(double p_stereo_width, double p_rotation, bool p_phase_invert) :
 		SiEffectBase() {
 	set_params(p_stereo_width, p_rotation, p_phase_invert);

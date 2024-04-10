@@ -37,7 +37,7 @@ class SiEffectStereoChorus : public SiEffectBase {
 	void _process_lfo(Vector<double> *r_buffer, int p_start_index, int p_length);
 
 protected:
-	static void _bind_methods() {}
+	static void _bind_methods();
 
 public:
 	void set_params(double p_delay_time = 20, double p_feedback = 0.2, double p_frequency = 4, double p_depth = 20, double p_wet = 0.5, bool p_invert_phase = true);

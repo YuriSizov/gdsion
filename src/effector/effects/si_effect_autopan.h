@@ -23,7 +23,7 @@ class SiEffectAutopan : public SiEffectBase {
 	void _process_lfo_stereo(Vector<double> *r_buffer, int p_start_index, int p_length);
 
 protected:
-	static void _bind_methods() {}
+	static void _bind_methods();
 
 public:
 	void set_params(double p_frequency = 1, double p_stereo_width = 1);

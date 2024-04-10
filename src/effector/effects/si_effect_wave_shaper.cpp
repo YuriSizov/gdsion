@@ -58,6 +58,10 @@ void SiEffectWaveShaper::reset() {
 	set_params();
 }
 
+void SiEffectWaveShaper::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_params", "distortion", "output_level"), &SiEffectWaveShaper::set_params, DEFVAL(0.5), DEFVAL(1.0));
+}
+
 SiEffectWaveShaper::SiEffectWaveShaper(double p_distortion, double p_output_level) :
 		SiEffectBase() {
 	set_params(p_distortion, p_output_level);

@@ -20,7 +20,7 @@ class SiEffectSpeakerSimulator : public SiEffectBase {
 	double _previous_right = 0;
 
 protected:
-	static void _bind_methods() {}
+	static void _bind_methods();
 
 public:
 	void set_params(double p_hardness = 0.2);

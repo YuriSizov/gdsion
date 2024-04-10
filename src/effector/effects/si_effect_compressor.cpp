@@ -81,6 +81,10 @@ void SiEffectCompressor::reset() {
 	set_params();
 }
 
+void SiEffectCompressor::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_params", "threshold", "window_time", "attack_time", "release_time", "max_gain", "mixing_level"), &SiEffectCompressor::set_params, DEFVAL(0.7), DEFVAL(50), DEFVAL(20), DEFVAL(20), DEFVAL(-6), DEFVAL(0.5));
+}
+
 SiEffectCompressor::SiEffectCompressor(double p_threshold, double p_window_time, double p_attack_time, double p_release_time, double p_max_gain, double p_mixing_level) :
 		SiEffectBase() {
 	set_params(p_threshold, p_window_time, p_attack_time, p_release_time, p_max_gain, p_mixing_level);

@@ -114,6 +114,11 @@ void SiControllableFilterBase::reset() {
 	set_params();
 }
 
+void SiControllableFilterBase::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_params", "cutoff", "resonance", "fps"), &SiControllableFilterBase::set_params, DEFVAL(255), DEFVAL(255), DEFVAL(20));
+	ClassDB::bind_method(D_METHOD("set_params_manually", "cutoff", "resonance"), &SiControllableFilterBase::set_params_manually);
+}
+
 SiControllableFilterBase::SiControllableFilterBase() :
 		SiEffectBase() {
 	if (_increment_envelope_table == nullptr) {

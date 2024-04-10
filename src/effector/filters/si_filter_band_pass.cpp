@@ -35,6 +35,10 @@ void SiFilterBandPass::reset() {
 	set_params();
 }
 
+void SiFilterBandPass::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_params", "frequency", "band"), &SiFilterBandPass::set_params, DEFVAL(3000), DEFVAL(1));
+}
+
 SiFilterBandPass::SiFilterBandPass(double p_frequency, double p_band) :
 		SiFilterBase() {
 	set_params(p_frequency, p_band);

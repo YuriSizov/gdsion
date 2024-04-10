@@ -35,6 +35,10 @@ void SiFilterNotch::reset() {
 	set_params();
 }
 
+void SiFilterNotch::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_params", "frequency", "band"), &SiFilterNotch::set_params, DEFVAL(3000), DEFVAL(1));
+}
+
 SiFilterNotch::SiFilterNotch(double p_frequency, double p_band) :
 		SiFilterBase() {
 	set_params(p_frequency, p_band);

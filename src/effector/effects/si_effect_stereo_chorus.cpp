@@ -123,6 +123,10 @@ void SiEffectStereoChorus::reset() {
 	set_params();
 }
 
+void SiEffectStereoChorus::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_params", "delay_time", "feedback", "frequency", "depth", "wet", "invert_phase"), &SiEffectStereoChorus::set_params, DEFVAL(20), DEFVAL(0.2), DEFVAL(4), DEFVAL(20), DEFVAL(0.5), DEFVAL(true));
+}
+
 SiEffectStereoChorus::SiEffectStereoChorus(double p_delay_time, double p_feedback, double p_frequency, double p_depth, double p_wet, bool p_invert_phase) :
 		SiEffectBase() {
 	_delay_buffer_left.resize_zeroed(1 << DELAY_BUFFER_BITS);

@@ -84,6 +84,10 @@ void SiEffectDistortion::reset() {
 	set_params();
 }
 
+void SiEffectDistortion::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_params", "pre_gain", "post_gain", "lpf_frequency", "lpf_slope"), &SiEffectDistortion::set_params, DEFVAL(-60),  DEFVAL(18),  DEFVAL(2400),  DEFVAL(1));
+}
+
 SiEffectDistortion::SiEffectDistortion(double p_pre_gain, double p_post_gain, double p_lpf_frequency, double p_lpf_slope) :
 		SiEffectBase() {
 	set_params(p_pre_gain, p_post_gain, p_lpf_frequency, p_lpf_slope);

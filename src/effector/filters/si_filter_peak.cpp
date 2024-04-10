@@ -39,6 +39,10 @@ void SiFilterPeak::reset() {
 	set_params();
 }
 
+void SiFilterPeak::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_params", "frequency", "band", "gain"), &SiFilterPeak::set_params, DEFVAL(3000), DEFVAL(1), DEFVAL(6));
+}
+
 SiFilterPeak::SiFilterPeak(double p_frequency, double p_band, double p_gain) :
 		SiFilterBase() {
 	set_params(p_frequency, p_band, p_gain);

@@ -24,8 +24,10 @@ class SiEffectComposite : public SiEffectBase {
 
 	SlottedEffect _slots[8];
 
+	void _set_slot_effects_bind(int p_slot, TypedArray<SiEffectBase> p_effects);
+
 protected:
-	static void _bind_methods() {}
+	static void _bind_methods();
 
 public:
 	void set_slot_effects(int p_slot, Vector<Ref<SiEffectBase>> p_effects);

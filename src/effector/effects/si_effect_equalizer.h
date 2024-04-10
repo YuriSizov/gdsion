@@ -61,7 +61,7 @@ class SiEffectEqualizer : public SiEffectBase {
 	void _process_stereo(Vector<double> *r_buffer, int p_start_index, int p_length);
 
 protected:
-	static void _bind_methods() {}
+	static void _bind_methods();
 
 public:
 	void set_params(double p_low_gain = 1, double p_mid_gain = 1, double p_high_gain = 1, double p_low_frequency = 880, double p_high_frequency = 5000);

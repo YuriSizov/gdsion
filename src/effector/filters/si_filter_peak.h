@@ -13,7 +13,7 @@ class SiFilterPeak : public SiFilterBase {
 	GDCLASS(SiFilterPeak, SiFilterBase)
 
 protected:
-	static void _bind_methods() {}
+	static void _bind_methods();
 
 public:
 	void set_params(double p_frequency = 3000, double p_band = 1, double p_gain = 6);

@@ -6,6 +6,16 @@
 
 #include "si_effect_composite.h"
 
+void SiEffectComposite::_set_slot_effects_bind(int p_slot, TypedArray<SiEffectBase> p_effects) {
+	Vector<Ref<SiEffectBase>> effects;
+
+	for (int i = 0; i < p_effects.size(); i++) {
+		effects.push_back(p_effects[i]);
+	}
+
+	set_slot_effects(p_slot, effects);
+}
+
 void SiEffectComposite::set_slot_effects(int p_slot, Vector<Ref<SiEffectBase>> p_effects) {
 	ERR_FAIL_INDEX(p_slot, 8);
 
@@ -86,4 +96,9 @@ void SiEffectComposite::reset() {
 		_slots[i].send_level = 1;
 		_slots[i].mix_level = 1;
 	}
+}
+
+void SiEffectComposite::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_slot_effects", "slot", "effects"), &SiEffectComposite::_set_slot_effects_bind);
+	ClassDB::bind_method(D_METHOD("set_slot_levels", "slot", "send_level", "mix_level"), &SiEffectComposite::set_slot_levels);
 }

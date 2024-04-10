@@ -13,7 +13,7 @@ class SiFilterLowBoost : public SiFilterBase {
 	GDCLASS(SiFilterLowBoost, SiFilterBase)
 
 protected:
-	static void _bind_methods() {}
+	static void _bind_methods();
 
 public:
 	void set_params(double p_frequency = 3000, double p_slope = 1, double p_gain = 6);

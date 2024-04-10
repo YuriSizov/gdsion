@@ -16,7 +16,7 @@ class SiEffectWaveShaper : public SiEffectBase {
 	double _output_level = 0;
 
 protected:
-	static void _bind_methods() {}
+	static void _bind_methods();
 
 public:
 	void set_params(double p_distortion = 0.5, double p_output_level = 1.0);

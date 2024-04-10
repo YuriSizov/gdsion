@@ -27,7 +27,7 @@ class SiEffectCompressor : public SiEffectBase {
 	double _gain = 0;
 
 protected:
-	static void _bind_methods() {}
+	static void _bind_methods();
 
 public:
 	void set_params(double p_threshold = 0.7, double p_window_time = 50, double p_attack_time = 20, double p_release_time = 20, double p_max_gain = -6, double p_mixing_level = 0.5);

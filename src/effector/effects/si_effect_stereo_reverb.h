@@ -33,7 +33,7 @@ class SiEffectStereoReverb : public SiEffectBase {
 	void _process_channel(Vector<double> *r_buffer, int p_buffer_index, Vector<double> *r_delay_buffer);
 
 protected:
-	static void _bind_methods() {}
+	static void _bind_methods();
 
 public:
 	void set_params(double p_delay1 = 0.7, double p_delay2 = 0.4, double p_feedback = 0.8, double p_wet = 0.3);
