@@ -49,8 +49,11 @@ public:
 	SiOPMStream *get_stream_slot(int p_slot) const { return stream_slot[p_slot]; }
 	void set_stream_slot(int p_slot, SiOPMStream *p_value) { stream_slot.write[p_slot] = p_value; }
 
-	int get_bitrate() const { return _bitrate; }
+	double get_pcm_volume() const { return pcm_volume; }
+	double get_sampler_volume() const { return sampler_volume; }
+
 	int get_buffer_length() const { return _buffer_length; }
+	int get_bitrate() const { return _bitrate; }
 
 	SinglyLinkedList<int> *get_pipe(int p_pipe_num, int p_index = 0);
 

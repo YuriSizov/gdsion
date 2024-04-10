@@ -218,10 +218,12 @@ public:
 	virtual void note_off();
 
 	virtual void reset_channel_buffer_status();
-	void buffer(int p_length);
-	void buffer_no_process(int p_length);
+	virtual void buffer(int p_length);
+	virtual void buffer_no_process(int p_length);
 
 	//
+
+	virtual String to_string() const { return "SiOPMChannelBase"; }
 
 	virtual void initialize(SiOPMChannelBase *p_prev, int p_buffer_index);
 	virtual void reset();

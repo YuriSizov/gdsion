@@ -166,7 +166,7 @@ public:
 
 	//
 
-	String to_string() const;
+	virtual String to_string() const override;
 
 	virtual void initialize(SiOPMChannelBase *p_prev, int p_buffer_index) override;
 	virtual void reset() override;
