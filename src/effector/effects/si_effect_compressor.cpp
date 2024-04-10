@@ -41,7 +41,7 @@ int SiEffectCompressor::process(int p_channels, Vector<double> *r_buffer, int p_
 	int start_index = p_start_index << 1;
 	int length = p_length << 1;
 
-	for (int i = p_start_index; i < (p_start_index + p_length); i += 2) {
+	for (int i = start_index; i < (start_index + length); i += 2) {
 		double value_left = (*r_buffer)[i];
 		double value_right = (*r_buffer)[i + 1];
 

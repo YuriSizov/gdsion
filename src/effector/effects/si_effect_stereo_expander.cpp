@@ -41,7 +41,7 @@ int SiEffectStereoExpander::process(int p_channels, Vector<double> *r_buffer, in
 	int length = p_length << 1;
 
 	if (_monoralize) {
-		for (int i = p_start_index; i < (p_start_index + p_length); i += 2) {
+		for (int i = start_index; i < (start_index + length); i += 2) {
 			double value = (*r_buffer)[i] + (*r_buffer)[i + 1];
 			value *= 0.7071067811865476;
 
@@ -52,7 +52,7 @@ int SiEffectStereoExpander::process(int p_channels, Vector<double> *r_buffer, in
 		return 1;
 	}
 
-	for (int i = p_start_index; i < (p_start_index + p_length); i += 2) {
+	for (int i = start_index; i < (start_index + length); i += 2) {
 		double value_left = (*r_buffer)[i];
 		double value_right = (*r_buffer)[i + 1];
 

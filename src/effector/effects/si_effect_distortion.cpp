@@ -50,7 +50,7 @@ int SiEffectDistortion::process(int p_channels, Vector<double> *r_buffer, int p_
 		_out2 = 0;
 	}
 
-	for (int i = p_start_index; i < (p_start_index + p_length); i += 2) {
+	for (int i = start_index; i < (start_index + length); i += 2) {
 		double value = CLAMP((*r_buffer)[i] * _pre_scale, -_limit, _limit);
 
 		double output = value;

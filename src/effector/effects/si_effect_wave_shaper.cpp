@@ -27,14 +27,14 @@ int SiEffectWaveShaper::process(int p_channels, Vector<double> *r_buffer, int p_
 	double coef = (1 + _coefficient) * _output_level;
 
 	if (p_channels == 2) {
-		for (int i = p_start_index; i < (p_start_index + p_length); i++) {
+		for (int i = start_index; i < (start_index + length); i++) {
 			double value = (*r_buffer)[i];
 			value = coef * value / (1 + _coefficient * ABS(value));
 
 			r_buffer->write[i] = value;
 		}
 	} else {
-		for (int i = p_start_index; i < (p_start_index + p_length); i += 2) {
+		for (int i = start_index; i < (start_index + length); i += 2) {
 			double value = (*r_buffer)[i];
 			value = coef * value / (1 + _coefficient * ABS(value));
 

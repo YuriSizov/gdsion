@@ -18,9 +18,6 @@ int SiEffectDownsampler::prepare_process() {
 }
 
 void SiEffectDownsampler::_process_mono(Vector<double> *r_buffer, int p_start_index, int p_length) {
-	int start_index = p_start_index << 1;
-	int length = p_length << 1;
-
 	int sample_size = 2 << _frequency_shift;
 	double bc0 = _bit_conv0 / sample_size;
 
@@ -39,9 +36,6 @@ void SiEffectDownsampler::_process_mono(Vector<double> *r_buffer, int p_start_in
 }
 
 void SiEffectDownsampler::_process_stereo(Vector<double> *r_buffer, int p_start_index, int p_length) {
-	int start_index = p_start_index << 1;
-	int length = p_length << 1;
-
 	int sample_size = 1 << _frequency_shift; // Counted in pairs.
 	double bc0 = _bit_conv0 / sample_size;
 
@@ -64,10 +58,13 @@ void SiEffectDownsampler::_process_stereo(Vector<double> *r_buffer, int p_start_
 }
 
 int SiEffectDownsampler::process(int p_channels, Vector<double> *r_buffer, int p_start_index, int p_length) {
+	int start_index = p_start_index << 1;
+	int length = p_length << 1;
+
 	if (_channel_count == 1) {
-		_process_mono(r_buffer, p_start_index, p_length);
+		_process_mono(r_buffer, start_index, length);
 	} else {
-		_process_stereo(r_buffer, p_start_index, p_length);
+		_process_stereo(r_buffer, start_index, length);
 	}
 
 	return _channel_count;

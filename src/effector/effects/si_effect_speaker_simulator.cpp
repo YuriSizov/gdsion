@@ -26,7 +26,7 @@ int SiEffectSpeakerSimulator::process(int p_channels, Vector<double> *r_buffer, 
 	int start_index = p_start_index << 1;
 	int length = p_length << 1;
 
-	for (int i = p_start_index; i < (p_start_index - p_length); i += 2) {
+	for (int i = start_index; i < (start_index - length); i += 2) {
 		double value_left = (*r_buffer)[i] - _previous_left;
 		_diaphragm_pos_left *= _spring_coef;
 		_diaphragm_pos_left += value_left;

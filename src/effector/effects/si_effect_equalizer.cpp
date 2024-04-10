@@ -45,9 +45,6 @@ double SiEffectEqualizer::_process_channel(PipeChannel p_channel, double p_value
 }
 
 void SiEffectEqualizer::_process_mono(Vector<double> *r_buffer, int p_start_index, int p_length) {
-	int start_index = p_start_index << 1;
-	int length = p_length << 1;
-
 	for (int i = p_start_index; i < (p_start_index + p_length); i += 2) {
 		double value = _process_channel(_left, (*r_buffer)[i]);
 
@@ -57,10 +54,6 @@ void SiEffectEqualizer::_process_mono(Vector<double> *r_buffer, int p_start_inde
 }
 
 void SiEffectEqualizer::_process_stereo(Vector<double> *r_buffer, int p_start_index, int p_length) {
-	int start_index = p_start_index << 1;
-	int length = p_length << 1;
-
-
 	for (int i = p_start_index; i < (p_start_index + p_length); i += 2) {
 		double value_left = _process_channel(_left, (*r_buffer)[i]);
 		r_buffer->write[i] = value_left;
@@ -75,9 +68,9 @@ int SiEffectEqualizer::process(int p_channels, Vector<double> *r_buffer, int p_s
 	int length = p_length << 1;
 
 	if (p_channels == 1) {
-		_process_mono(r_buffer, p_start_index, p_length);
+		_process_mono(r_buffer, start_index, length);
 	} else {
-		_process_stereo(r_buffer, p_start_index, p_length);
+		_process_stereo(r_buffer, start_index, length);
 	}
 
 	return p_channels;

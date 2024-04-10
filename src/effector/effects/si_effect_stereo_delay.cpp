@@ -44,7 +44,7 @@ int SiEffectStereoDelay::process(int p_channels, Vector<double> *r_buffer, int p
 	int start_index = p_start_index << 1;
 	int length = p_length << 1;
 
-	for (int i = p_start_index; i < (p_start_index + p_length); i += 2) {
+	for (int i = start_index; i < (start_index + length); i += 2) {
 		_process_channel(r_buffer, i,     (_cross ? _delay_buffer_right : _delay_buffer_left), &_delay_buffer_left);
 		_process_channel(r_buffer, i + 1, (_cross ? _delay_buffer_left : _delay_buffer_right), &_delay_buffer_right);
 

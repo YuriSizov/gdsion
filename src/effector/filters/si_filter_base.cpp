@@ -35,12 +35,12 @@ int SiFilterBase::process(int p_channels, Vector<double> *r_buffer, int p_start_
 	_right.check_threshold();
 
 	if (p_channels == 2) {
-		for (int i = p_start_index; i < (p_start_index + p_length); i += 2) {
+		for (int i = start_index; i < (start_index + length); i += 2) {
 			r_buffer->write[i] = _process_channel(_left, (*r_buffer)[i]);
 			r_buffer->write[i + 1] = _process_channel(_right, (*r_buffer)[i + 1]);
 		}
 	} else {
-		for (int i = p_start_index; i < (p_start_index + p_length); i += 2) {
+		for (int i = start_index; i < (start_index + length); i += 2) {
 			double value = _process_channel(_left, (*r_buffer)[i]);;
 
 			r_buffer->write[i] = value;
