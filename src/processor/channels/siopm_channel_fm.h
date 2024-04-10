@@ -43,10 +43,6 @@ class SiOPMChannelFM : public SiOPMChannelBase {
 	SiOPMOperator *_alloc_fm_operator();
 	void _free_fm_operator(SiOPMOperator *p_operator);
 
-	Vector<SiOPMOperator *> _operators;
-	SiOPMOperator *_active_operator = nullptr;
-	int _operator_count = 0;
-
 	int _algorithm = 0;
 
 	enum ProcessType {
@@ -70,14 +66,6 @@ class SiOPMChannelFM : public SiOPMChannelBase {
 	SinglyLinkedList<int> *_pipe0 = nullptr;
 	SinglyLinkedList<int> *_pipe1 = nullptr;
 
-	int _amplitude_modulation_depth = 0; // = chip.amd << (ams - 1)
-	int _amplitude_modulation_output_level = 0;
-	int _pitch_modulation_depth = 0; // = chip.pmd << (pms - 1)
-	int _pitch_modulation_output_level = 0;
-
-	int _eg_timer_initial = 0; // ENV_TIMER_INITIAL * freq_ratio
-	int _lfo_timer_initial = 0; // LFO_TIMER_INITIAL * freq_ratio
-
 	enum RegisterType {
 		REGISTER_OPM = 0,
 		REGISTER_2A03 = 1, // Not actually implemented.
@@ -96,7 +84,7 @@ class SiOPMChannelFM : public SiOPMChannelBase {
 
 	// LFO control.
 
-	void _set_lfo_state(bool p_enabled);
+	virtual void _set_lfo_state(bool p_enabled);
 	void _set_lfo_timer(int p_value);
 
 	// Processing.
@@ -116,6 +104,18 @@ class SiOPMChannelFM : public SiOPMChannelBase {
 
 protected:
 	static void _bind_methods();
+
+	Vector<SiOPMOperator *> _operators;
+	SiOPMOperator *_active_operator = nullptr;
+	int _operator_count = 0;
+
+	int _amplitude_modulation_depth = 0; // = chip.amd << (ams - 1)
+	int _amplitude_modulation_output_level = 0;
+	int _pitch_modulation_depth = 0; // = chip.pmd << (pms - 1)
+	int _pitch_modulation_output_level = 0;
+
+	int _eg_timer_initial = 0; // ENV_TIMER_INITIAL * freq_ratio
+	int _lfo_timer_initial = 0; // LFO_TIMER_INITIAL * freq_ratio
 
 public:
 	virtual void get_channel_params(SiOPMChannelParams *r_params) const override;
