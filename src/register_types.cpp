@@ -37,6 +37,7 @@
 #include "effector/filters/si_filter_low_pass.h"
 #include "effector/filters/si_filter_notch.h"
 #include "effector/filters/si_filter_peak.h"
+#include "effector/filters/si_filter_vowel.h"
 #include "effector/si_effect_base.h"
 #include "effector/si_effect_composite.h"
 #include "events/sion_event.h"
@@ -79,8 +80,8 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 	// arguments. Even if this is not a supported case for the class itself.
 
 	// Effector.
-	ClassDB::register_abstract_class<SiControllableFilterBase>();
 	ClassDB::register_abstract_class<SiEffectBase>();
+	ClassDB::register_abstract_class<SiControllableFilterBase>();
 	ClassDB::register_abstract_class<SiFilterBase>();
 	ClassDB::register_class<SiControllableFilterHighPass>();
 	ClassDB::register_class<SiControllableFilterLowPass>();
@@ -104,6 +105,7 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<SiFilterLowPass>();
 	ClassDB::register_class<SiFilterNotch>();
 	ClassDB::register_class<SiFilterPeak>();
+	ClassDB::register_class<SiFilterVowel>();
 
 	// Events.
 	ClassDB::register_abstract_class<SiONEvent>();

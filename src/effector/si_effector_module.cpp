@@ -33,6 +33,7 @@
 #include "effector/filters/si_filter_low_pass.h"
 #include "effector/filters/si_filter_notch.h"
 #include "effector/filters/si_filter_peak.h"
+#include "effector/filters/si_filter_vowel.h"
 
 HashMap<String, List<Ref<SiEffectBase>>> SiEffectorModule::_effect_instances;
 
@@ -92,7 +93,7 @@ Ref<SiEffectBase> SiEffectorModule::get_effector_instance(const String &p_name) 
 	CREATE_EFFECTOR(SiFilterLowPass, "lf");
 	CREATE_EFFECTOR(SiFilterNotch, "nf");
 	CREATE_EFFECTOR(SiFilterPeak, "pf");
-	// CREATE_EFFECTOR(SiFilterVowel, "vowel");
+	CREATE_EFFECTOR(SiFilterVowel, "vowel");
 
 	CREATE_EFFECTOR(SiControllableFilterHighPass, "nhf");
 	CREATE_EFFECTOR(SiControllableFilterLowPass, "nlf");
@@ -335,7 +336,7 @@ SiEffectorModule::SiEffectorModule(SiOPMModule *p_module) {
 	register_effector<SiFilterLowPass>("lf");
 	register_effector<SiFilterNotch>("nf");
 	register_effector<SiFilterPeak>("pf");
-	// register_effector<SiFilterVowel>("vowel");
+	register_effector<SiFilterVowel>("vowel");
 
 	register_effector<SiControllableFilterHighPass>("nhf");
 	register_effector<SiControllableFilterLowPass>("nlf");
