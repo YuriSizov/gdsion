@@ -13,6 +13,11 @@ env = SConscript("godot-cpp/SConstruct")
 
 outpath = "bin"
 
+# Copy the build results into the example project.
+# Declared early so it can be referenced for dependency management purposes.
+install_artifacts = env.Install("example/bin", Glob("bin/*"))
+Default(install_artifacts)
+
 
 def add_source_files(self, sources, files, allow_gen=False):
     # Convert string to list of absolute paths (including expanding wildcard)
@@ -32,11 +37,11 @@ def add_source_files(self, sources, files, allow_gen=False):
             if skip_gen_cpp and not allow_gen:
                 files = [f for f in files if not f.endswith(".gen.cpp")]
 
-    # Add each path as compiled Object following environment (self) configuration
+    # Add each path as compiled SharedObject following environment (self) configuration
     for path in files:
-        obj = self.Object(path)
+        obj = self.SharedObject(path)
         if obj in sources:
-            print('WARNING: Object "{}" already included in environment sources.'.format(obj))
+            print('WARNING: SharedObject "{}" already included in environment sources.'.format(obj))
             continue
         sources.append(obj)
 
@@ -60,8 +65,8 @@ def _register_library(name, path):
             source=env.library_sources,
         )
 
+    env.Depends(install_artifacts, library)
     Default(library)
-
 
 env.__class__.add_source_files = add_source_files
 Export("env")
