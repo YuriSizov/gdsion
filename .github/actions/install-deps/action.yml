@@ -25,5 +25,6 @@ runs:
 
     - name: Verify Emscripten (Web)
       if: ${{ env.SCONS_PLATFORM == 'web' }}
+      shell: bash
       run: |
         emcc -v

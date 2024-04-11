@@ -6,18 +6,21 @@ runs:
   steps:
       - name: Prepare the binaries (Linux)
         if: ${{ env.SCONS_PLATFORM == 'linux' }}
+        shell: bash
         run: |
           strip bin/libgdsion.linux.*
           chmod +x bin/libgdsion.linux.*
 
       - name: Prepare the binaries (macOS)
         if: ${{ env.SCONS_PLATFORM == 'macos' }}
+        shell: bash
         run: |
           strip bin/libgdsion.macos.*
           chmod +x bin/libgdsion.macos.*
 
       - name: Prepare the binaries (Windows)
         if: ${{ env.SCONS_PLATFORM == 'windows' }}
+        shell: powershell
         run: |
           Remove-Item bin/* -Include *.exp,*.lib,*.pdb -Force
 
