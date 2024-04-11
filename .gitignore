@@ -3,6 +3,7 @@
 bin/*
 !bin/*.gdextension
 example/bin/
+example/export/
 
 ### Godot project development ###
 

@@ -1,0 +1,98 @@
+name: Built Unstable (main branch)
+
+on:
+  push:
+    branches:
+      - 'main'
+
+# Make sure jobs cannot overlap.
+concurrency:
+  group: build-unstable-main
+  cancel-in-progress: true
+
+jobs:
+  build-linux:
+    name: Compile and publish Linux version
+    runs-on: ubuntu-latest
+    env:
+      SCONS_PLATFORM: linux
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        uses: ./.github/actions/install-deps
+
+      - name: Setup GCC problem matcher
+        uses: ammaraskar/gcc-problem-matcher@master
+
+      - name: Build GDSiON
+        uses: ./.github/actions/build-extension
+        with:
+          target: template_release
+
+      - name: Upload release
+        uses: ./.github/actions/upload-extension
+
+  build-macos:
+    name: Compile and publish macOS version
+    runs-on: macos-latest
+    env:
+      SCONS_PLATFORM: macos
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        uses: ./.github/actions/install-deps
+
+      - name: Build GDSiON
+        uses: ./.github/actions/build-extension
+        with:
+          target: template_release
+
+      - name: Upload release
+        uses: ./.github/actions/upload-extension
+
+  build-windows:
+    name: Compile and publish Windows version
+    runs-on: windows-latest
+    env:
+      SCONS_PLATFORM: windows
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        uses: ./.github/actions/install-deps
+
+      - name: Setup MSVC problem matcher
+        uses: ammaraskar/msvc-problem-matcher@master
+
+      - name: Build GDSiON
+        uses: ./.github/actions/build-extension
+        with:
+          target: template_release
+
+      - name: Upload release
+        uses: ./.github/actions/upload-extension
+
+  build-web:
+    name: Compile and publish Web version
+    runs-on: ubuntu-latest
+    env:
+      SCONS_PLATFORM: web
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        uses: ./.github/actions/install-deps
+
+      - name: Build GDSiON
+        uses: ./.github/actions/build-extension
+        with:
+          target: template_release
+
+      - name: Upload release
+        uses: ./.github/actions/upload-extension

@@ -1,0 +1,29 @@
+name: Install build dependencies
+description: Set up python, install the pip version of scons.
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python 3.x
+      uses: actions/setup-python@v5
+      with:
+        # Semantic version range syntax or exact version of a Python version
+        python-version: "3.x"
+
+    - name: Install scons
+      shell: bash
+      run: |
+        python -c "import sys; print(sys.version)"
+        python -m pip install scons==4.4.0
+        scons --version
+
+    - name: Install Emscripten (Web)
+      if: ${{ env.SCONS_PLATFORM == 'web' }}
+      uses: mymindstorm/setup-emsdk@v14
+      with:
+        version: 3.1.39
+
+    - name: Verify Emscripten (Web)
+      if: ${{ env.SCONS_PLATFORM == 'web' }}
+      run: |
+        emcc -v
