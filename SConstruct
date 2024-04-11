@@ -13,11 +13,6 @@ env = SConscript("godot-cpp/SConstruct")
 
 outpath = "bin"
 
-# Copy the build results into the example project.
-# Declared early so it can be referenced for dependency management purposes.
-install_artifacts = env.Install("example/bin", Glob("bin/*"))
-Default(install_artifacts)
-
 
 def add_source_files(self, sources, files, allow_gen=False):
     # Convert string to list of absolute paths (including expanding wildcard)
@@ -65,10 +60,16 @@ def _register_library(name, path):
             source=env.library_sources,
         )
 
-    env.Depends(install_artifacts, library)
     Default(library)
+    return library
 
 env.__class__.add_source_files = add_source_files
 Export("env")
 
-_register_library("libgdsion", "src")
+library_gdsion = _register_library("libgdsion", "src")
+
+# Copy the build results into the example project.
+install_artifacts = env.Install("example", "bin")
+Default(install_artifacts)
+
+env.Depends(install_artifacts, library_gdsion)
