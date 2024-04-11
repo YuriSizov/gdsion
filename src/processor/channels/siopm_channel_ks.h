@@ -13,7 +13,7 @@
 
 using namespace godot;
 
-enum SiONPitchTableType : int;
+enum SiONPitchTableType : unsigned int;
 class SiOPMModule;
 
 // Karplus-Strong algorithm with FM synth.

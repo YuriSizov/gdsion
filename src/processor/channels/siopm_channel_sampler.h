@@ -9,7 +9,7 @@
 
 #include "processor/channels/siopm_channel_base.h"
 
-enum SiONPitchTableType : int;
+enum SiONPitchTableType : unsigned int;
 class SiOPMChannelParams;
 class SiOPMModule;
 class SiOPMWaveBase;

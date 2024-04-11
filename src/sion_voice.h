@@ -17,7 +17,7 @@ class SiOPMWaveTable;
 class SiOPMWavePCMData;
 class SiOPMWaveSamplerData;
 class SiOPMWaveSamplerTable;
-enum SiONModuleType : int;
+enum SiONModuleType : unsigned int;
 
 // Provides all of voice setting parameters of SiON.
 class SiONVoice : public SiMMLVoice {

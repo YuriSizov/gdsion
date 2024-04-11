@@ -15,7 +15,7 @@ class SiOPMChannelParams;
 class SiOPMWaveBase;
 class SiMMLEnvelopeTable;
 class SiMMLTrack;
-enum SiONModuleType : int;
+enum SiONModuleType : unsigned int;
 
 // Base voice data class.
 class SiMMLVoice : public RefCounted {

@@ -9,7 +9,7 @@
 
 #include <godot_cpp/core/binder_common.hpp>
 
-enum SiONModuleType {
+enum SiONModuleType : unsigned int {
 	MT_PSG     = 0,  // PSG(DCSG)
 	MT_APU     = 1,  // FC pAPU
 	MT_NOISE   = 2,  // noise wave
@@ -34,7 +34,7 @@ enum SiONModuleType {
 	MT_MAX     = 21
 };
 
-enum SiONPitchTableType {
+enum SiONPitchTableType : unsigned int {
 	PT_OPM = 0,
 	PT_PCM = 1,
 	PT_PSG = 2,
@@ -45,7 +45,7 @@ enum SiONPitchTableType {
 	PT_MAX = 7
 };
 
-enum SiONPulseGeneratorType {
+enum SiONPulseGeneratorType : int {
 	PG_SINE				= 0,    // sine wave
 	PG_SAW_UP			= 1,    // upward saw wave
 	PG_SAW_DOWN			= 2,    // downward saw wave

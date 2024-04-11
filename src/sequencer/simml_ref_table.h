@@ -18,7 +18,7 @@ using namespace godot;
 class SiMMLChannelSettings;
 class SiMMLEnvelopeTable;
 class SiMMLSimulatorBase;
-enum SiONModuleType : int;
+enum SiONModuleType : unsigned int;
 
 // Reference data object for the sequencer and related operations.
 class SiMMLRefTable {

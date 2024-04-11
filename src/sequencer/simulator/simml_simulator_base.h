@@ -14,7 +14,7 @@ using namespace godot;
 
 class MMLSequence;
 class SiMMLTrack;
-enum SiONModuleType : int;
+enum SiONModuleType : unsigned int;
 
 // Base class of all module simulators which control SiMMLTrack (not SiOPMChannel) to simulate various modules.
 class SiMMLSimulatorBase {
