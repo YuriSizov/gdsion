@@ -120,7 +120,7 @@ String SiONVoice::get_mml(int p_index, String p_chip_type, bool p_append_postfix
 	}
 
 	if (p_append_postfix) {
-		Ref<SiONVoice> this_voice = this; // TODO: Is there a better way to do this?
+		Ref<SiONVoice> this_voice = const_cast<SiONVoice *>(this);
 		String postfix = TranslatorUtil::mml_voice_setting(this_voice);
 		if (!postfix.is_empty()) {
 			mml += "\n" + postfix;
