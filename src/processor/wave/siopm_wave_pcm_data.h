@@ -38,6 +38,7 @@ protected:
 public:
 	Vector<int> get_wavelet() const { return _wavelet; }
 	int get_channel_count() const { return _channel_count; }
+	int get_sampling_pitch() const { return _sampling_pitch; }
 
 	int get_sample_count() const;
 	int get_sampling_octave() const;

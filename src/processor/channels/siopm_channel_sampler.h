@@ -65,7 +65,7 @@ public:
 	virtual void initialize(SiOPMChannelBase *p_prev, int p_buffer_index) override;
 	virtual void reset() override;
 
-	SiOPMChannelSampler(SiOPMModule *p_chip);
+	SiOPMChannelSampler(SiOPMModule *p_chip = nullptr);
 };
 
 #endif // SIOPM_CHANNEL_SAMPLER_H

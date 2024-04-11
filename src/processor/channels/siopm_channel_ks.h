@@ -89,7 +89,7 @@ public:
 	virtual void initialize(SiOPMChannelBase *p_prev, int p_buffer_index) override;
 	virtual void reset() override;
 
-	SiOPMChannelKS(SiOPMModule *p_chip);
+	SiOPMChannelKS(SiOPMModule *p_chip = nullptr);
 };
 
 #endif // SIOPM_CHANNEL_KS_H

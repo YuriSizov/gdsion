@@ -44,6 +44,9 @@
 #include "events/sion_track_event.h"
 #include "processor/channels/siopm_channel_base.h"
 #include "processor/channels/siopm_channel_fm.h"
+#include "processor/channels/siopm_channel_ks.h"
+#include "processor/channels/siopm_channel_pcm.h"
+#include "processor/channels/siopm_channel_sampler.h"
 #include "processor/siopm_channel_params.h"
 #include "processor/siopm_ref_table.h"
 #include "processor/wave/siopm_wave_base.h"
@@ -114,6 +117,9 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 	// Processor.
 	ClassDB::register_abstract_class<SiOPMChannelBase>();
 	ClassDB::register_abstract_class<SiOPMChannelFM>();
+	ClassDB::register_abstract_class<SiOPMChannelKS>();
+	ClassDB::register_abstract_class<SiOPMChannelPCM>();
+	ClassDB::register_abstract_class<SiOPMChannelSampler>();
 	ClassDB::register_abstract_class<SiOPMChannelParams>();
 	ClassDB::register_abstract_class<SiOPMWaveBase>();
 	ClassDB::register_abstract_class<SiOPMWavePCMData>();

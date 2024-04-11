@@ -282,6 +282,7 @@ public:
 
 	// PCM wave.
 
+	int get_pcm_channel_num() const { return _pcm_channel_num; }
 	int get_pcm_start_point() const { return _pcm_start_point; }
 	int get_pcm_end_point() const { return _pcm_end_point; }
 	int get_pcm_loop_point() const { return _pcm_loop_point; }

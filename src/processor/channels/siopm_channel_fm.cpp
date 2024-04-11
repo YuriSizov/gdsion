@@ -167,7 +167,10 @@ void SiOPMChannelFM::set_params_by_value(int p_ar, int p_dr, int p_sr, int p_rr,
 	SET_OP_PARAM(set_detune,                     p_detune);
 	SET_OP_PARAM(set_amplitude_modulation_shift, p_ams);
 	SET_OP_PARAM(set_key_on_phase,               p_phase);
-	SET_OP_PARAM(set_fixed_pitch_index,          p_fix_note << 6);
+
+	if (p_fix_note != INT32_MIN) {
+		_active_operator->set_fixed_pitch_index(p_fix_note << 6);
+	}
 
 #undef SET_OP_PARAM
 }
@@ -724,7 +727,7 @@ void SiOPMChannelFM::initialize_lfo(int p_waveform, Vector<int> p_custom_wave_ta
 }
 
 void SiOPMChannelFM::set_amplitude_modulation(int p_depth) {
-	_amplitude_modulation_depth = p_depth<<2;
+	_amplitude_modulation_depth = p_depth << 2;
 	_amplitude_modulation_output_level = (_lfo_wave_table[_lfo_phase] * _amplitude_modulation_depth) >> 7 << 3;
 
 	_set_lfo_state(_pitch_modulation_depth != 0 || _amplitude_modulation_depth > 0);
@@ -802,8 +805,8 @@ void SiOPMChannelFM::_process_operator1_lfo_off(int p_length) {
 
 			int log_idx = ope0->get_wave_value(t);
 			log_idx += ope0->get_eg_output();
-
 			output = _table->log_table[log_idx];
+
 			ope0->get_feed_pipe()->value = output;
 		}
 
@@ -845,8 +848,8 @@ void SiOPMChannelFM::_process_operator1_lfo_on(int p_length) {
 
 			int log_idx = ope0->get_wave_value(t);
 			log_idx += ope0->get_eg_output() + (_amplitude_modulation_output_level >> ope0->get_amplitude_modulation_shift());
-
 			output = _table->log_table[log_idx];
+
 			ope0->get_feed_pipe()->value = output;
 		}
 
@@ -1164,7 +1167,7 @@ void SiOPMChannelFM::_process_pcm_lfo_off(int p_length) {
 					break;
 				} else {
 					t -= ope0->get_pcm_end_point() - ope0->get_pcm_loop_point();
-					int phase_diff = ((ope0->get_pcm_end_point() - ope0->get_pcm_loop_point()) << ope0->get_wave_fixed_bits());
+					int phase_diff = (ope0->get_pcm_end_point() - ope0->get_pcm_loop_point()) << ope0->get_wave_fixed_bits();
 					ope0->adjust_phase(-phase_diff);
 				}
 			}
