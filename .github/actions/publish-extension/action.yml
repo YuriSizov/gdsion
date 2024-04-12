@@ -12,6 +12,8 @@ runs:
 
     - name: Update the rolling release with the artifact
       shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: |
         echo "Artifact stored at ${{ steps.artifact-download-step.outputs.download-path }}"
         gh release upload v0.0.0 ${{ steps.artifact-download-step.outputs.download-path }} --clobber
