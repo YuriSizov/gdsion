@@ -15,7 +15,6 @@ runs:
         if: ${{ env.SCONS_PLATFORM == 'macos' }}
         shell: bash
         run: |
-          strip bin/libgdsion.macos.*
           chmod +x bin/libgdsion.macos.*
 
       - name: Prepare the binaries (Windows)
