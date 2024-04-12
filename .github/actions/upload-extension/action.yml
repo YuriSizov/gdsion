@@ -1,32 +1,31 @@
 name: Upload GDSiON release
-description: Strip and upload the build artifacts.
+description: Strip and upload build artifacts.
 
 runs:
   using: "composite"
   steps:
-      - name: Prepare the binaries (Linux)
-        if: ${{ env.SCONS_PLATFORM == 'linux' }}
-        shell: bash
-        run: |
-          strip bin/libgdsion.linux.*
-          chmod +x bin/libgdsion.linux.*
+    - name: Prepare the binaries (Linux)
+      if: ${{ env.SCONS_PLATFORM == 'linux' }}
+      shell: bash
+      run: |
+        strip bin/libgdsion.linux.*
+        chmod +x bin/libgdsion.linux.*
 
-      - name: Prepare the binaries (macOS)
-        if: ${{ env.SCONS_PLATFORM == 'macos' }}
-        shell: bash
-        run: |
-          chmod +x bin/libgdsion.macos.*
+    - name: Prepare the binaries (macOS)
+      if: ${{ env.SCONS_PLATFORM == 'macos' }}
+      shell: bash
+      run: |
+        chmod +x bin/libgdsion.macos.*
 
-      - name: Prepare the binaries (Windows)
-        if: ${{ env.SCONS_PLATFORM == 'windows' }}
-        shell: powershell
-        run: |
-          Remove-Item bin/* -Include *.exp,*.lib,*.pdb -Force
+    - name: Prepare the binaries (Windows)
+      if: ${{ env.SCONS_PLATFORM == 'windows' }}
+      shell: powershell
+      run: |
+        Remove-Item bin/* -Include *.exp,*.lib,*.pdb -Force
 
-      - name: Upload the binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: libgdsion-${{ env.SCONS_PLATFORM }}
-          path: "bin/*"
-          retention-days: 14
-
+    - name: Upload the binaries as an artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: libgdsion-${{ env.SCONS_PLATFORM }}
+        path: "bin/*"
+        retention-days: 14

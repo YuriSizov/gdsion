@@ -1,0 +1,18 @@
+name: Publish GDSiON release
+description: Download build artifacts and publish them.
+
+runs:
+  using: "composite"
+  steps:
+    - name: Download the artifact
+      id: artifact-download-step
+      uses: actions/download-artifact@v4
+      with:
+        name: libgdsion-${{ env.SCONS_PLATFORM }}
+
+    - name: Update the rolling release with the artifact
+      shell: bash
+      run: |
+        echo "Artifact stored at ${{ steps.artifact-download-step.outputs.download-path }}"
+        gh release upload v0.0.0 ${{ steps.artifact-download-step.outputs.download-path }} --clobber
+
