@@ -11,7 +11,7 @@ runs:
     - name: Download the artifact
       shell: bash
       run: |
-        wget --header "authorization: Bearer ${{ github.token }}" -O ${{ github.workspace }}/libgdsion-${{ env.SCONS_PLATFORM }}.zip ${{ inputs.artifact-url }}
+        wget --header "Authorization: token ${{ github.token }}" -O ${{ github.workspace }}/libgdsion-${{ env.SCONS_PLATFORM }}.zip ${{ inputs.artifact-url }}
 
     - name: Update the rolling release with the artifact
       shell: bash
