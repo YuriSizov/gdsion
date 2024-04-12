@@ -43,13 +43,10 @@ jobs:
           target: template_debug
 
       - name: Upload release
-        id: release-upload
         uses: ./.github/actions/upload-extension
 
       - name: Publish release
         uses: ./.github/actions/publish-extension
-        with:
-          artifact-url: ${{ steps.release-upload.outputs.artifact-url }}
 
   build-macos:
     name: Compile and publish macOS version
@@ -80,13 +77,10 @@ jobs:
           target: template_debug
 
       - name: Upload release
-        id: release-upload
         uses: ./.github/actions/upload-extension
 
       - name: Publish release
         uses: ./.github/actions/publish-extension
-        with:
-          artifact-url: ${{ steps.release-upload.outputs.artifact-url }}
 
   build-windows:
     name: Compile and publish Windows version
@@ -120,13 +114,10 @@ jobs:
           target: template_debug
 
       - name: Upload release
-        id: release-upload
         uses: ./.github/actions/upload-extension
 
       - name: Publish release
         uses: ./.github/actions/publish-extension
-        with:
-          artifact-url: ${{ steps.release-upload.outputs.artifact-url }}
 
   build-web:
     name: Compile and publish Web version
@@ -157,10 +148,7 @@ jobs:
           target: template_debug
 
       - name: Upload release
-        id: release-upload
         uses: ./.github/actions/upload-extension
 
       - name: Publish release
         uses: ./.github/actions/publish-extension
-        with:
-          artifact-url: ${{ steps.release-upload.outputs.artifact-url }}

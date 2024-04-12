@@ -1,23 +1,21 @@
 name: Publish GDSiON release
-description: Download build artifacts and publish them.
-
-inputs:
-  artifact-url:
-    description: The URL of the uploaded artifact.
+description: Archive build artifacts and publish them.
 
 runs:
   using: "composite"
   steps:
-    - name: Download the artifact
-      shell: bash
-      run: |
-        wget --header "Authorization: token ${{ github.token }}" -O ${{ github.workspace }}/libgdsion-${{ env.SCONS_PLATFORM }}.zip ${{ inputs.artifact-url }}
+    - name: Archive the artifact
+      uses: thedoctor0/zip-release@0.7.5
+      with:
+        type: zip
+        path: bin/
+        filename: libgdsion-${{ env.SCONS_PLATFORM }}.zip
 
     - name: Update the rolling release with the artifact
       shell: bash
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        echo "Artifact stored at ${{ github.workspace }}/libgdsion-${{ env.SCONS_PLATFORM }}.zip"
-        gh release upload v0.0.0 ${{ github.workspace }}/libgdsion-${{ env.SCONS_PLATFORM }}.zip --clobber
+        gh release upload latest-unstable libgdsion-${{ env.SCONS_PLATFORM }}.zip --clobber
+        gh release edit latest-unstable --target main
 
