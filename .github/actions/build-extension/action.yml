@@ -3,7 +3,7 @@ description: Build the exntesion with provided options.
 
 inputs:
   target:
-    description: The build configuration target (template_release, template_debug).
+    description: The build configuration target (editor, template_release, template_debug).
     default: "template_release"
   sconsflags:
     default: ""

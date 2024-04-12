@@ -1,0 +1,10 @@
+name: Set up cache
+description: Set up the buildsystem cache for faster consecutive builds.
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/cache@v4
+      with:
+        path: ${{ github.workspace }}/.scons-cache/
+        key: ${{ env.SCONS_PLATFORM }}-main

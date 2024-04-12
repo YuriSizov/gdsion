@@ -22,16 +22,25 @@ jobs:
         with:
           submodules: true
 
+      - name: Set up build cache
+        uses: ./.github/actions/setup-cache
+        continue-on-error: true
+
       - name: Install build dependencies
         uses: ./.github/actions/install-deps
 
       - name: Setup GCC problem matcher
         uses: ammaraskar/gcc-problem-matcher@master
 
-      - name: Build GDSiON
+      - name: Build GDSiON (release)
         uses: ./.github/actions/build-extension
         with:
           target: template_release
+
+      - name: Build GDSiON (debug)
+        uses: ./.github/actions/build-extension
+        with:
+          target: template_debug
 
       - name: Upload release
         uses: ./.github/actions/upload-extension
@@ -47,13 +56,22 @@ jobs:
         with:
           submodules: true
 
+      - name: Set up build cache
+        uses: ./.github/actions/setup-cache
+        continue-on-error: true
+
       - name: Install build dependencies
         uses: ./.github/actions/install-deps
 
-      - name: Build GDSiON
+      - name: Build GDSiON (release)
         uses: ./.github/actions/build-extension
         with:
           target: template_release
+
+      - name: Build GDSiON (debug)
+        uses: ./.github/actions/build-extension
+        with:
+          target: template_debug
 
       - name: Upload release
         uses: ./.github/actions/upload-extension
@@ -69,16 +87,25 @@ jobs:
         with:
           submodules: true
 
+      - name: Set up build cache
+        uses: ./.github/actions/setup-cache
+        continue-on-error: true
+
       - name: Install build dependencies
         uses: ./.github/actions/install-deps
 
       - name: Setup MSVC problem matcher
         uses: ammaraskar/msvc-problem-matcher@master
 
-      - name: Build GDSiON
+      - name: Build GDSiON (release)
         uses: ./.github/actions/build-extension
         with:
           target: template_release
+
+      - name: Build GDSiON (debug)
+        uses: ./.github/actions/build-extension
+        with:
+          target: template_debug
 
       - name: Upload release
         uses: ./.github/actions/upload-extension
@@ -94,13 +121,22 @@ jobs:
         with:
           submodules: true
 
+      - name: Set up build cache
+        uses: ./.github/actions/setup-cache
+        continue-on-error: true
+
       - name: Install build dependencies
         uses: ./.github/actions/install-deps
 
-      - name: Build GDSiON
+      - name: Build GDSiON (release)
         uses: ./.github/actions/build-extension
         with:
           target: template_release
+
+      - name: Build GDSiON (debug)
+        uses: ./.github/actions/build-extension
+        with:
+          target: template_debug
 
       - name: Upload release
         uses: ./.github/actions/upload-extension
