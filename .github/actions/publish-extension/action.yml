@@ -15,6 +15,6 @@ runs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        echo "Artifact stored at ${{ steps.artifact-download-step.outputs.download-path }}"
-        gh release upload v0.0.0 ${{ steps.artifact-download-step.outputs.download-path }} --clobber
+        echo "Artifact stored at ${{ steps.artifact-download-step.outputs.download-path }}/libgdsion-${{ env.SCONS_PLATFORM }}.zip"
+        gh release upload v0.0.0 ${{ steps.artifact-download-step.outputs.download-path }}/libgdsion-${{ env.SCONS_PLATFORM }}.zip --clobber
 
