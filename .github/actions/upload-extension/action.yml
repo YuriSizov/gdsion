@@ -1,6 +1,11 @@
 name: Upload GDSiON release
 description: Strip and upload build artifacts.
 
+outputs:
+  artifact-url:
+    description: The URL of the uploaded artifact.
+    value: ${{ steps.artifact-upload-step.outputs.artifact-url }}
+
 runs:
   using: "composite"
   steps:
@@ -24,6 +29,7 @@ runs:
         Remove-Item bin/* -Include *.exp,*.lib,*.pdb -Force
 
     - name: Upload the binaries as an artifact
+      id: artifact-upload-step
       uses: actions/upload-artifact@v4
       with:
         name: libgdsion-${{ env.SCONS_PLATFORM }}
