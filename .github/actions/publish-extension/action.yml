@@ -17,5 +17,3 @@ runs:
         GH_TOKEN: ${{ github.token }}
       run: |
         gh release upload latest-unstable libgdsion-${{ env.SCONS_PLATFORM }}.zip --clobber
-        gh release edit latest-unstable --target main
-
