@@ -4,13 +4,8 @@
 
 The name of the synthesizer should be pronounced like the word "_scion_".
 
-<div style="display:flex;gap:16px;justify-content:center;">
-
-[![patreon-link](https://img.shields.io/badge/Patreon-orange?label=support&color=%23F2614B)](https://patreon.com/YuriSizov)
-
-[![discord-link](https://img.shields.io/badge/Discord-purple?label=get%20in%20touch&color=%235865F2)](https://discord.gg/S657Y9KPF9)
-
-</div>
+[![patreon-link](https://img.shields.io/badge/Patreon-orange?label=support%20the%20project&color=%23F2614B&style=for-the-badge)](https://patreon.com/YuriSizov)
+[![discord-link](https://img.shields.io/badge/Discord-purple?label=get%20in%20touch&color=%235865F2&style=for-the-badge)](https://discord.gg/S657Y9KPF9)
 
 ## Download
 
