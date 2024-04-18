@@ -44,7 +44,7 @@ void SiMMLSequencer::set_effective_bpm(double p_value) {
 	set_default_bpm(p_value);
 
 	if (is_ready_to_process()) {
-		ERR_FAIL_COND_MSG(_bpm_change_enabled, "SiMMLSequencer: Cannot change BPM while rendering (SiONTrackEvent::NOTE_*_STREAM).");
+		ERR_FAIL_COND_MSG(!_bpm_change_enabled, "SiMMLSequencer: Cannot change BPM while rendering (SiONTrackEvent::NOTE_*_STREAM).");
 		set_bpm(p_value);
 	}
 }
