@@ -271,9 +271,7 @@ void SiOPMRefTable::_create_eg_tables() {
 
 void SiOPMRefTable::_create_pg_tables() {
 	// MIDI Note Number -> Key Code table
-	for (int i = 0; i < NOTE_TABLE_SIZE; i++) {
-		int j = i - (i >> 2);
-
+	for (int i = 0, j = 0; j < NOTE_TABLE_SIZE; i++, j = i - (i >> 2)) {
 		if (i < 16) {
 			note_number_to_key_code[j] = i;
 		} else if (i < KEY_CODE_TABLE_SIZE) {
