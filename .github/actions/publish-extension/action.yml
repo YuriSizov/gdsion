@@ -2,6 +2,8 @@ name: Publish GDSiON release
 description: Archive build artifacts and publish them.
 
 inputs:
+  directory:
+    default: "."
   path:
     default: "bin/"
   platform:
@@ -14,6 +16,7 @@ runs:
       uses: thedoctor0/zip-release@0.7.5
       with:
         type: zip
+        directory: ${{ inputs.directory }}
         path: ${{ inputs.path }}
         filename: libgdsion-${{ inputs.platform }}.zip
 
