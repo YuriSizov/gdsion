@@ -32,6 +32,6 @@ jobs:
       - name: Publish release
         uses: ./.github/actions/publish-extension
         with:
-          directory: artifacts/
-          path: bin/
+          directory: artifacts
+          path: bin
           platform: ${{ matrix.platform }}

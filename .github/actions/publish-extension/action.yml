@@ -5,7 +5,7 @@ inputs:
   directory:
     default: "."
   path:
-    default: "bin/"
+    default: "bin"
   platform:
     default: ""
 
@@ -25,4 +25,4 @@ runs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        gh release upload latest-unstable libgdsion-${{ inputs.platform }}.zip --clobber
+        gh release upload latest-unstable ${{ inputs.directory }}/libgdsion-${{ inputs.platform }}.zip --clobber
