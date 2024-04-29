@@ -32,5 +32,5 @@ jobs:
       - name: Publish release
         uses: ./.github/actions/publish-extension
         with:
-          path: ${{ steps.artifact-download-step.outputs.download-path }}/artifacts/
+          path: ${{ steps.artifact-download-step.outputs.download-path }}
           platform: ${{ matrix.platform }}
