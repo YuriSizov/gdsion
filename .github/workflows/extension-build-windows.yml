@@ -19,7 +19,7 @@ jobs:
     runs-on: windows-latest
     env:
       SCONS_PLATFORM: windows
-      ARCHIVE_SUFFIX: ".${{ matrix.arch }}"
+      SCONS_PLATFORM_SUFFIX: ".${{ matrix.arch }}"
 
     steps:
       - uses: actions/checkout@v4

@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SCONS_PLATFORM: android
-      ARCHIVE_SUFFIX: ".${{ matrix.arch }}"
+      SCONS_PLATFORM_SUFFIX: ".${{ matrix.arch }}"
 
     steps:
       - uses: actions/checkout@v4
