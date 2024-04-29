@@ -17,7 +17,21 @@ runs:
         python -m pip install scons==4.4.0
         scons --version
 
-    - name: Install Emscripten (Web)
+    - name: "Android: Install Java 17"
+      if: ${{ env.SCONS_PLATFORM == 'android' }}
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 17
+
+    - name: "Android: Install NDK"
+      uses: nttld/setup-ndk@v1
+      if: ${{ env.SCONS_PLATFORM == 'android' }}
+      with:
+        ndk-version: r23c
+        link-to-sdk: true
+
+    - name: "Web: Install Emscripten"
       if: ${{ env.SCONS_PLATFORM == 'web' }}
       uses: mymindstorm/setup-emsdk@v14
       with:
@@ -25,7 +39,7 @@ runs:
         actions-cache-folder: emsdk-cache
         cache-key: emsdk-${{ env.SCONS_PLATFORM }}-main
 
-    - name: Verify Emscripten (Web)
+    - name: "Web: Verify Emscripten"
       if: ${{ env.SCONS_PLATFORM == 'web' }}
       shell: bash
       run: |

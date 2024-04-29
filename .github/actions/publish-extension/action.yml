@@ -1,6 +1,12 @@
 name: Publish GDSiON release
 description: Archive build artifacts and publish them.
 
+inputs:
+  path:
+    default: "bin/"
+  platform:
+    default: ""
+
 runs:
   using: "composite"
   steps:
@@ -8,12 +14,12 @@ runs:
       uses: thedoctor0/zip-release@0.7.5
       with:
         type: zip
-        path: bin/
-        filename: libgdsion-${{ env.SCONS_PLATFORM }}.zip
+        path: ${{ inputs.path }}
+        filename: libgdsion-${{ inputs.platform }}.zip
 
     - name: Update the rolling release with the artifact
       shell: bash
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        gh release upload latest-unstable libgdsion-${{ env.SCONS_PLATFORM }}.zip --clobber
+        gh release upload latest-unstable libgdsion-${{ inputs.platform }}.zip --clobber

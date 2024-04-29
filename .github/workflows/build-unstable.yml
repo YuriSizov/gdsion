@@ -1,4 +1,4 @@
-name: Built Unstable (main branch)
+name: Build Unstable (main branch)
 
 on:
   push:
@@ -11,174 +11,37 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+
+# First, build the extension and upload the artifacts.
+
   build-linux:
     name: Compile and publish Linux version
-    runs-on: ubuntu-latest
-    env:
-      SCONS_PLATFORM: linux
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-
-      - name: Set up build cache
-        uses: ./.github/actions/setup-cache
-        continue-on-error: true
-
-      - name: Install build dependencies
-        uses: ./.github/actions/install-deps
-
-      - name: Setup GCC problem matcher
-        uses: ammaraskar/gcc-problem-matcher@master
-
-      - name: Build GDSiON (release)
-        uses: ./.github/actions/build-extension
-        with:
-          target: template_release
-
-      - name: Build GDSiON (debug)
-        uses: ./.github/actions/build-extension
-        with:
-          target: template_debug
-
-      - name: Upload release
-        uses: ./.github/actions/upload-extension
-
-      - name: Publish release
-        uses: ./.github/actions/publish-extension
+    uses: ./.github/workflows/extension/build-linux.yml
 
   build-macos:
     name: Compile and publish macOS version
-    runs-on: macos-latest
-    env:
-      SCONS_PLATFORM: macos
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-
-      - name: Set up build cache
-        uses: ./.github/actions/setup-cache
-        continue-on-error: true
-
-      - name: Install build dependencies
-        uses: ./.github/actions/install-deps
-
-      - name: Build GDSiON (release)
-        uses: ./.github/actions/build-extension
-        with:
-          target: template_release
-
-      - name: Build GDSiON (debug)
-        uses: ./.github/actions/build-extension
-        with:
-          target: template_debug
-
-      - name: Upload release
-        uses: ./.github/actions/upload-extension
-
-      - name: Publish release
-        uses: ./.github/actions/publish-extension
+    uses: ./.github/workflows/extension/build-macos.yml
 
   build-windows:
     name: Compile and publish Windows version
-    runs-on: windows-latest
-    env:
-      SCONS_PLATFORM: windows
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-
-      - name: Set up build cache
-        uses: ./.github/actions/setup-cache
-        continue-on-error: true
-
-      - name: Install build dependencies
-        uses: ./.github/actions/install-deps
-
-      - name: Setup MSVC problem matcher
-        uses: ammaraskar/msvc-problem-matcher@master
-
-      - name: Build GDSiON (release)
-        uses: ./.github/actions/build-extension
-        with:
-          target: template_release
-
-      - name: Build GDSiON (debug)
-        uses: ./.github/actions/build-extension
-        with:
-          target: template_debug
-
-      - name: Upload release
-        uses: ./.github/actions/upload-extension
-
-      - name: Publish release
-        uses: ./.github/actions/publish-extension
+    uses: ./.github/workflows/extension/build-windows.yml
 
   build-web:
     name: Compile and publish Web version
-    runs-on: ubuntu-latest
-    env:
-      SCONS_PLATFORM: web
+    uses: ./.github/workflows/extension/build-web.yml
 
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
+  build-android:
+    name: Compile and publish Android version
+    uses: ./.github/workflows/extension/build-android.yml
 
-      - name: Set up build cache
-        uses: ./.github/actions/setup-cache
-        continue-on-error: true
+# Then, use the artifacts to prepare the example project and publish the build.
 
-      - name: Install build dependencies
-        uses: ./.github/actions/install-deps
-
-      - name: Build GDSiON (release)
-        uses: ./.github/actions/build-extension
-        with:
-          target: template_release
-
-      - name: Build GDSiON (debug)
-        uses: ./.github/actions/build-extension
-        with:
-          target: template_debug
-
-      - name: Upload release
-        uses: ./.github/actions/upload-extension
-
-      - name: Publish release
-        uses: ./.github/actions/publish-extension
+  publish-all:
+    name: Package and publish the extension
+    needs: [ build-linux, build-macos, build-windows, build-web, build-android ]
+    uses: ./.github/workflows/extension/publish-all.yml
 
   build-example-project:
     name: Export and publish the example project
-    runs-on: ubuntu-latest
-    needs: [ build-linux, build-macos, build-windows, build-web ]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download GDSiON artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: example/bin
-          merge-multiple: true
-
-      - name: Archive the example project
-        uses: thedoctor0/zip-release@0.7.5
-        with:
-          type: zip
-          directory: example
-          filename: libgdsion-example-project.zip
-
-      - name: Update the rolling release with the example project
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release upload latest-unstable example/libgdsion-example-project.zip --clobber
-          gh release edit latest-unstable --target $(git log --format="%H" -n 1)
-
+    needs: [ build-linux, build-macos, build-windows, build-web, build-android ]
+    uses: ./.github/workflows/example/build-example-project.yml

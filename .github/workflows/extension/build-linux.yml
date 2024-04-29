@@ -1,0 +1,44 @@
+name: Build Extension - Linux
+
+on:
+  workflow_call:
+
+# Make sure jobs cannot overlap.
+concurrency:
+  group: build-unstable-main-linux
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Compile and upload Linux version
+    runs-on: ubuntu-latest
+    env:
+      SCONS_PLATFORM: linux
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up build cache
+        uses: ./.github/actions/setup-cache
+        continue-on-error: true
+
+      - name: Install build dependencies
+        uses: ./.github/actions/install-deps
+
+      - name: Setup GCC problem matcher
+        uses: ammaraskar/gcc-problem-matcher@master
+
+      - name: Build GDSiON (release)
+        uses: ./.github/actions/build-extension
+        with:
+          target: template_release
+
+      - name: Build GDSiON (debug)
+        uses: ./.github/actions/build-extension
+        with:
+          target: template_debug
+
+      - name: Upload release
+        uses: ./.github/actions/upload-extension

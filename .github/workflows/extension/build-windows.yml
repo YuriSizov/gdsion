@@ -1,0 +1,52 @@
+name: Build Extension - Windows
+
+on:
+  workflow_call:
+
+# Make sure jobs cannot overlap.
+concurrency:
+  group: build-unstable-main-windows
+  cancel-in-progress: true
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [ x86_32, x86_64 ]
+
+    name: Compile and upload Windows (${{ matrix.arch }}) version
+    runs-on: windows-latest
+    env:
+      SCONS_PLATFORM: windows
+      ARCHIVE_SUFFIX: ".${{ matrix.arch }}"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up build cache
+        uses: ./.github/actions/setup-cache
+        continue-on-error: true
+
+      - name: Install build dependencies
+        uses: ./.github/actions/install-deps
+
+      - name: Setup MSVC problem matcher
+        uses: ammaraskar/msvc-problem-matcher@master
+
+      - name: Build GDSiON (release, ${{ matrix.arch }})
+        uses: ./.github/actions/build-extension
+        with:
+          target: template_release
+          sconsflags: arch=${{ matrix.arch }}
+
+      - name: Build GDSiON (debug, ${{ matrix.arch }})
+        uses: ./.github/actions/build-extension
+        with:
+          target: template_debug
+          sconsflags: arch=${{ matrix.arch }}
+
+      - name: Upload release
+        uses: ./.github/actions/upload-extension
