@@ -17,6 +17,7 @@ The project is compatible with Godot 4.3. It is recommended to use at least the 
 * **[Download for macOS](https://github.com/YuriSizov/gdsion/releases/download/latest-unstable/libgdsion-macos.zip)**
 * **[Download for Windows](https://github.com/YuriSizov/gdsion/releases/download/latest-unstable/libgdsion-windows.zip)**
 * **[Download for Web](https://github.com/YuriSizov/gdsion/releases/download/latest-unstable/libgdsion-web.zip)** (experimental, isn't guaranteed to work)
+* **[Download for Android](https://github.com/YuriSizov/gdsion/releases/download/latest-unstable/libgdsion-android.zip)**
 
 _These archives contain both release and debug binaries._
 
