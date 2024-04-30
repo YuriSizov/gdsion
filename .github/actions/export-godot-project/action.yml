@@ -32,10 +32,9 @@ runs:
       shell: bash
       env:
         EXPORT_OUTPUT_PATH: export/${{ inputs.platform }}/${{ inputs.arch }}
-        MKDIR_FLAGS: ${{ inputs.platform != 'windows' && '-p' || '' }}
       run: |
         echo "Creating the export output folder..."
-        mkdir ${{ env.MKDIR_FLAGS }} "${{ inputs.project-path }}/${{ env.EXPORT_OUTPUT_PATH }}"
+        mkdir -p ${{ inputs.project-path }}/${{ env.EXPORT_OUTPUT_PATH }}
 
         echo "Exporting the project..."
         godot --headless --path ${{ inputs.project-path }} --export-release "${{ inputs.preset }}" ${{ env.EXPORT_OUTPUT_PATH }}/${{ inputs.output }}
