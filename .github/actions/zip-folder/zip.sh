@@ -1,8 +1,8 @@
-#! /bin/bash
+#!/bin/bash
 
 # Adapted from https://github.com/TheDoctor0/zip-release.
+# Create an archive or exit if the command fails.
 
-# Create archive or exit if the command fails
 set -eu
 printf "\n📦 Creating zip archive...\n"
 
