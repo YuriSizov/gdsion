@@ -15,7 +15,7 @@ inputs:
     default: "./example"
 
 outputs:
-  path:
+  export-path:
     value: ${{ steps.export-project-step.outputs.export-path }}
 
 runs:
@@ -35,7 +35,7 @@ runs:
         MKDIR_FLAGS: ${{ inputs.platform != 'windows' && '-p' || '' }}
       run: |
         echo "Creating the export output folder..."
-        mkdir ${{ env.MKDIR_FLAGS }} ${{ inputs.project-path }}/${{ env.EXPORT_OUTPUT_PATH }}
+        mkdir ${{ env.MKDIR_FLAGS }} "${{ inputs.project-path }}/${{ env.EXPORT_OUTPUT_PATH }}"
 
         echo "Exporting the project..."
         godot --headless --path ${{ inputs.project-path }} --export-release "${{ inputs.preset }}" ${{ env.EXPORT_OUTPUT_PATH }}/${{ inputs.output }}
