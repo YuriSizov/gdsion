@@ -24,11 +24,26 @@ jobs:
           merge-multiple: true
 
       - name: Archive example project sources
-        uses: thedoctor0/zip-release@0.7.5
+        uses: ./.github/actions/zip-folder
         with:
-          type: zip
           directory: example
           filename: example-project-source.zip
+
+      - name: Download example project artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: example/export
+          pattern: example-project-*
+
+      - name: Archive example project exports
+        uses: ./.github/actions/zip-folder
+        with:
+          directory: example/export
+          split: true
+
+      - name: Print folder contents
+        shell: bash
+        run: dir -la ./example/export
 
       - name: Update the rolling release with the example project
         shell: bash

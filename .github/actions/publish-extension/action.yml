@@ -13,9 +13,8 @@ runs:
   using: "composite"
   steps:
     - name: Archive the artifact
-      uses: thedoctor0/zip-release@0.7.5
+      uses: ./.github/actions/zip-folder
       with:
-        type: zip
         directory: ${{ inputs.directory }}
         path: ${{ inputs.path }}
         filename: libgdsion-${{ inputs.platform }}.zip
