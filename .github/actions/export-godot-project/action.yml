@@ -18,12 +18,22 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Import assets, scripts, extensions
+      shell: bash
+      continue-on-error: true
+      run: |
+        godot --headless --path ./example --editor --quit
+
     - name: Export project (${{ inputs.preset }})
       id: export-project-step
       shell: bash
       env:
         EXPORT_OUTPUT_PATH: ./example/export/${{ inputs.platform }}/${{ inputs.arch }}
+        MKDIR_FLAGS: ${{ inputs.platform != "windows" && "-p" || "" }}
       run: |
-        godot --headless --path ./example --editor --quit
+        echo "Creating the export output folder..."
+        mkdir ${{ env.MKDIR_FLAGS }} ${{ env.EXPORT_OUTPUT_PATH }}
+
+        echo "Exporting the project..."
         godot --headless --path ./example --export-release "${{ inputs.preset }}" ${{ env.EXPORT_OUTPUT_PATH }}/${{ inputs.output }}
         echo "export-path=${{ env.EXPORT_OUTPUT_PATH }}" >> "$GITHUB_OUTPUT"
