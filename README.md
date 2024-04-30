@@ -16,7 +16,7 @@ The project is compatible with Godot 4.3. It is recommended to use at least the 
 * **[Download for Linux](https://github.com/YuriSizov/gdsion/releases/download/latest-unstable/libgdsion-linux.zip)**
 * **[Download for macOS](https://github.com/YuriSizov/gdsion/releases/download/latest-unstable/libgdsion-macos.zip)**
 * **[Download for Windows](https://github.com/YuriSizov/gdsion/releases/download/latest-unstable/libgdsion-windows.zip)**
-* **[Download for Web](https://github.com/YuriSizov/gdsion/releases/download/latest-unstable/libgdsion-web.zip)** (experimental, isn't guaranteed to work)
+* **[Download for Web](https://github.com/YuriSizov/gdsion/releases/download/latest-unstable/libgdsion-web.zip)** (experimental, not guaranteed to work)
 * **[Download for Android](https://github.com/YuriSizov/gdsion/releases/download/latest-unstable/libgdsion-android.zip)**
 
 _These archives contain both release and debug binaries._
@@ -52,9 +52,15 @@ You can also play a melody by directly feeding the driver your notes, one by one
 
 **Check the example project for an interactive demo!**
 
-* **[Download the example project](https://github.com/YuriSizov/gdsion/releases/download/latest-unstable/libgdsion-example-project.zip)**
+* **[Download the example project source](https://github.com/YuriSizov/gdsion/releases/download/latest-unstable/example-project-source.zip)**
 
 _The example project archive contains GDSiON binaries for all platforms. May require you to open the project twice to import everything correctly._
+
+## Projects using GDSiON
+
+Another way to learn more about _GDSiON_'s capabilities is to try one of the projects below:
+
+* **[Bosca Ceoil Blue](https://github.com/YuriSizov/boscaceoil-blue)** — a beginner-friendly music making app.
 
 ## Building
 
