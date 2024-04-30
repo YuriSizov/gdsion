@@ -11,6 +11,9 @@ inputs:
   output:
     required: true
 
+  project-path:
+    default: "./example"
+
 outputs:
   path:
     value: ${{ steps.export-project-step.outputs.export-path }}
@@ -22,18 +25,18 @@ runs:
       shell: bash
       continue-on-error: true
       run: |
-        godot --headless --path ./example --editor --quit
+        godot --headless --path ${{ inputs.project-path }} --editor --quit
 
     - name: Export project (${{ inputs.preset }})
       id: export-project-step
       shell: bash
       env:
-        EXPORT_OUTPUT_PATH: ./example/export/${{ inputs.platform }}/${{ inputs.arch }}
+        EXPORT_OUTPUT_PATH: export/${{ inputs.platform }}/${{ inputs.arch }}
         MKDIR_FLAGS: ${{ inputs.platform != 'windows' && '-p' || '' }}
       run: |
         echo "Creating the export output folder..."
-        mkdir ${{ env.MKDIR_FLAGS }} ${{ env.EXPORT_OUTPUT_PATH }}
+        mkdir ${{ env.MKDIR_FLAGS }} ${{ inputs.project-path }}/${{ env.EXPORT_OUTPUT_PATH }}
 
         echo "Exporting the project..."
-        godot --headless --path ./example --export-release "${{ inputs.preset }}" ${{ env.EXPORT_OUTPUT_PATH }}/${{ inputs.output }}
-        echo "export-path=${{ env.EXPORT_OUTPUT_PATH }}" >> "$GITHUB_OUTPUT"
+        godot --headless --path ${{ inputs.project-path }} --export-release "${{ inputs.preset }}" ${{ env.EXPORT_OUTPUT_PATH }}/${{ inputs.output }}
+        echo "export-path=${{ inputs.project-path }}/${{ env.EXPORT_OUTPUT_PATH }}" >> "$GITHUB_OUTPUT"
