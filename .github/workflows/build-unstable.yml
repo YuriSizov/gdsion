@@ -15,23 +15,23 @@ jobs:
 # First, build the extension and upload the artifacts.
 
   build-linux:
-    name: Compile and publish Linux version
+    name: Compile and upload Linux version
     uses: ./.github/workflows/extension-build-linux.yml
 
   build-macos:
-    name: Compile and publish macOS version
+    name: Compile and upload macOS version
     uses: ./.github/workflows/extension-build-macos.yml
 
   build-windows:
-    name: Compile and publish Windows version
+    name: Compile and upload Windows version
     uses: ./.github/workflows/extension-build-windows.yml
 
   build-web:
-    name: Compile and publish Web version
+    name: Compile and upload Web version
     uses: ./.github/workflows/extension-build-web.yml
 
   build-android:
-    name: Compile and publish Android version
+    name: Compile and upload Android version
     uses: ./.github/workflows/extension-build-android.yml
 
 # Then, use the artifacts to prepare the example project and publish the build.
@@ -41,7 +41,12 @@ jobs:
     needs: [ build-linux, build-macos, build-windows, build-web, build-android ]
     uses: ./.github/workflows/extension-publish-all.yml
 
-  build-example-project:
-    name: Export and publish the example project
+  export-example-project:
+    name: Export the example project for target platforms
     needs: [ build-linux, build-macos, build-windows, build-web, build-android ]
-    uses: ./.github/workflows/example-build-project.yml
+    uses: ./.github/workflows/example-export-project.yml
+
+  publish-example-project:
+    name: Package and publish the example project
+    needs: [ export-example-project ]
+    uses: ./.github/workflows/example-publish-project.yml

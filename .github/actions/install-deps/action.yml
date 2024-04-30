@@ -1,41 +1,49 @@
 name: Install build dependencies
-description: Set up python, install the pip version of scons.
+description: Install Python and SCons, platform-specific dependencies.
+
+env:
+  PYTHON_VERSION: "3.x"
+  SCONS_VERSION: "4.4.0"
+  JAVA_DISTRIBUTION: "temurin"
+  JAVA_VERSION: "17"
+  ANDROID_NDK_VERSION: "r23c"
+  EMSCRIPTEN_VERSION: "3.1.39"
 
 runs:
   using: "composite"
   steps:
-    - name: Set up Python 3.x
+    - name: Install Python ${{ env.PYTHON_VERSION }}
       uses: actions/setup-python@v5
       with:
         # Semantic version range syntax or exact version of a Python version
-        python-version: "3.x"
+        python-version: ${{ env.PYTHON_VERSION }}
 
-    - name: Install scons
+    - name: Install SCons ${{ env.SCONS_VERSION }}
       shell: bash
       run: |
         python -c "import sys; print(sys.version)"
-        python -m pip install scons==4.4.0
+        python -m pip install scons==${{ env.SCONS_VERSION }}
         scons --version
 
-    - name: "Android: Install Java 17"
+    - name: "Android: Install Java ${{ env.JAVA_VERSION }}"
       if: ${{ env.SCONS_PLATFORM == 'android' }}
       uses: actions/setup-java@v4
       with:
-        distribution: temurin
-        java-version: 17
+        distribution: ${{ env.JAVA_DISTRIBUTION }}
+        java-version: ${{ env.JAVA_VERSION }}
 
-    - name: "Android: Install NDK"
+    - name: "Android: Install NDK ${{ env.ANDROID_NDK_VERSION }}"
       uses: nttld/setup-ndk@v1
       if: ${{ env.SCONS_PLATFORM == 'android' }}
       with:
-        ndk-version: r23c
+        ndk-version: ${{ env.ANDROID_NDK_VERSION }}
         link-to-sdk: true
 
-    - name: "Web: Install Emscripten"
+    - name: "Web: Install Emscripten ${{ env.EMSCRIPTEN_VERSION }}"
       if: ${{ env.SCONS_PLATFORM == 'web' }}
       uses: mymindstorm/setup-emsdk@v14
       with:
-        version: 3.1.39
+        version: ${{ env.EMSCRIPTEN_VERSION }}
         actions-cache-folder: emsdk-cache
         cache-key: emsdk-${{ env.SCONS_PLATFORM }}-main
 

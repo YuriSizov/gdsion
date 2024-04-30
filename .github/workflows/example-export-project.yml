@@ -1,0 +1,82 @@
+name: Export Example Project
+
+on:
+  workflow_call:
+
+# Make sure jobs cannot overlap.
+concurrency:
+  group: export-unstable-example-project
+  cancel-in-progress: true
+
+env:
+  GODOT_VERSION: "4.3.0-dev5"
+
+jobs:
+  export-publish:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux
+            arch: x86_64
+            preset: "Linux - x86_64"
+            output: "gdsion-example.x86_64"
+            runs-on: ubuntu-latest
+
+          - platform: macos
+            arch: universal
+            preset: "macOS - Universal"
+            output: "gdsion-example.zip"
+            runs-on: macos-latest
+
+          - platform: windows
+            arch: x86_64
+            preset: "Windows - x86_64"
+            output: "gdsion-example.exe"
+            runs-on: windows-latest
+
+          - platform: windows
+            arch: x86_32
+            preset: "Windows - x86_32"
+            output: "gdsion-example.exe"
+            runs-on: windows-latest
+
+    name: Export the example project (${{ matrix.preset }})
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Godot ${{ env.GODOT_VERSION }}
+        uses: chickensoft-games/setup-godot@v1
+        with:
+          version: ${{ env.GODOT_VERSION }}
+          use-dotnet: false
+          include-templates: true
+
+      - name: Verify Godot
+        shell: bash
+        run: |
+          godot --version
+
+      - name: Download GDSiON artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: example/bin
+          pattern: libgdsion-*
+          merge-multiple: true
+
+      - name: Export the example project
+        id: export-project-step
+        uses: ./.github/actions/export-godot-project
+        with:
+          platform: ${{ matrix.platform }}
+          arch: ${{ matrix.arch }}
+          preset: ${{ matrix.preset }}
+          output: ${{ matrix.output }}
+
+      - name: Upload the example project
+        uses: actions/upload-artifact@v4
+        with:
+          name: example-project-${{ matrix.platform }}-${{ matrix.arch }}
+          path: "${{ steps.export-project-step.outputs.export-path }}/*"
+          retention-days: 14

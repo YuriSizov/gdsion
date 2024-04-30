@@ -1,16 +1,16 @@
-name: Build Example Project
+name: Publish Example Project
 
 on:
   workflow_call:
 
 # Make sure jobs cannot overlap.
 concurrency:
-  group: build-unstable-example-project
+  group: publish-unstable-example-project
   cancel-in-progress: true
 
 jobs:
-  export-publish:
-    name: Export and publish the example project
+  publish:
+    name: Package and publish the example project
     runs-on: ubuntu-latest
 
     steps:
@@ -20,20 +20,21 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: example/bin
+          pattern: libgdsion-*
           merge-multiple: true
 
-      - name: Archive the example project
+      - name: Archive example project sources
         uses: thedoctor0/zip-release@0.7.5
         with:
           type: zip
           directory: example
-          filename: libgdsion-example-project.zip
+          filename: example-project-source.zip
 
       - name: Update the rolling release with the example project
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload latest-unstable example/libgdsion-example-project.zip --clobber
+          gh release upload latest-unstable example/example-project-source.zip --clobber
           gh release edit latest-unstable --target $(git log --format="%H" -n 1)
 
