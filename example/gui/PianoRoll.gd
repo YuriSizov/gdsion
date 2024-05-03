@@ -200,7 +200,7 @@ func _update_active_key(key: int) -> void:
 		return
 
 	_active_key = key
-	Controller.music_player.play_note(_active_key, 1)
+	Controller.music_player.play_note(_active_key, 4)
 	queue_redraw()
 
 func _clear_active_key() -> void:

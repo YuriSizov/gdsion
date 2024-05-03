@@ -669,7 +669,7 @@ SiMMLTrack *SiONDriver::play_sound(int p_sample_number, double p_length, double 
 
 	if (track) {
 		track->set_channel_module_type(MT_SAMPLE, 0);
-		track->key_on(p_sample_number, p_length * sequencer->get_parser_settings()->resolution * 0.0625, delay_samples);
+		track->key_on(p_sample_number, _convert_event_length(p_length), delay_samples);
 	}
 
 	return track;
@@ -708,7 +708,7 @@ SiMMLTrack *SiONDriver::note_on(int p_note, const Ref<SiONVoice> &p_voice, doubl
 		if (p_voice.is_valid()) {
 			p_voice->update_track_voice(track);
 		}
-		track->key_on(p_note, p_length * sequencer->get_parser_settings()->resolution * 0.0625, delay_samples);
+		track->key_on(p_note, _convert_event_length(p_length), delay_samples);
 	}
 
 	return track;
@@ -1039,6 +1039,15 @@ int SiONDriver::start_queue(int p_interval) {
 
 // Events.
 
+double SiONDriver::_convert_event_length(double p_length) const {
+	// Driver methods expect length in 1/16ths of a beat. The event length is in resolution units.
+	// Note: In the original implementation this was mistakenly interpreted as 1/16th of
+	// the sequencer's note resolution, which only translated to 1/4th of the beat.
+
+	double beat_resolution = (double)sequencer->get_parser_settings()->resolution / 4.0;
+	return p_length * beat_resolution * 0.0625;
+}
+
 void SiONDriver::_dispatch_event(const Ref<SiONEvent> &p_event) {
 	// This method exists as a proxy. Original implementation relied on native events, whereas we
 	// want to rely on signals. For simplicity's sake, we keep original event objects but strip any
@@ -1111,10 +1120,10 @@ void SiONDriver::_timer_callback() {
 	emit_signal(timer_interval);
 }
 
-void SiONDriver::set_timer_interval(double p_length_16th) {
-	_timer_interval_event->length = p_length_16th * sequencer->get_parser_settings()->resolution * 0.0625;
+void SiONDriver::set_timer_interval(double p_length) {
+	_timer_interval_event->length = _convert_event_length(p_length);
 
-	if (p_length_16th > 0) {
+	if (p_length > 0) {
 		sequencer->set_timer_callback(Callable(this, "_timer_callback"));
 	} else {
 		sequencer->set_timer_callback(Callable());

@@ -207,6 +207,8 @@ private:
 
 	// Events.
 
+	double _convert_event_length(double p_length) const;
+
 	void _dispatch_event(const Ref<SiONEvent> &p_event);
 
 	void _note_on_callback(SiMMLTrack *p_track);
@@ -395,7 +397,7 @@ public:
 
 	void set_beat_callback_interval(double p_length_16th = 1);
 	// Note: Original code takes a callback. Here you need to connect to the `timer_interval` signal.
-	void set_timer_interval(double p_length_16th = 1);
+	void set_timer_interval(double p_length = 1);
 
 	// MIDI.
 	// FIXME: Implement SMF/MIDI support.

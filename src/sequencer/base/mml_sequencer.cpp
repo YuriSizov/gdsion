@@ -462,9 +462,10 @@ bool MMLSequencer::check_global_sequence_end() {
 	if (prev_beat == 0) {
 		_on_beat(0, 0);
 	} else {
-		int floor_curr_beat = int(_global_beat_16th);
+		int floor_curr_beat = (int)_global_beat_16th;
 		while (floor_prev_beat < floor_curr_beat) {
 			floor_prev_beat++;
+
 			if ((floor_prev_beat & _on_beat_callback_filter) == 0) {
 				_on_beat((floor_prev_beat - prev_beat) * _bpm->get_sample_per_beat_16th(), floor_prev_beat);
 			}
