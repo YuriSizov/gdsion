@@ -8,10 +8,10 @@
 
 #include <godot_cpp/core/class_db.hpp>
 #include "sion_enums.h"
-#include "processor/channels/siopm_channel_base.h"
-#include "processor/siopm_ref_table.h"
-#include "processor/wave/siopm_wave_sampler_table.h"
-#include "processor/wave/siopm_wave_table.h"
+#include "chip/channels/siopm_channel_base.h"
+#include "chip/siopm_ref_table.h"
+#include "chip/wave/siopm_wave_sampler_table.h"
+#include "chip/wave/siopm_wave_table.h"
 #include "sequencer/base/mml_executor.h"
 #include "sequencer/base/mml_sequence.h"
 #include "sequencer/simml_channel_settings.h"

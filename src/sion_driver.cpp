@@ -12,17 +12,17 @@
 #include "sion_data.h"
 #include "sion_enums.h"
 #include "sion_voice.h"
-#include "effector/si_effector_module.h"
+#include "chip/channels/siopm_channel_base.h"
+#include "chip/siopm_channel_params.h"
+#include "chip/siopm_ref_table.h"
+#include "chip/siopm_sound_chip.h"
+#include "chip/wave/siopm_wave_pcm_data.h"
+#include "chip/wave/siopm_wave_pcm_table.h"
+#include "chip/wave/siopm_wave_sampler_data.h"
+#include "chip/wave/siopm_wave_table.h"
+#include "effector/si_effector.h"
 #include "events/sion_event.h"
 #include "events/sion_track_event.h"
-#include "processor/channels/siopm_channel_base.h"
-#include "processor/siopm_channel_params.h"
-#include "processor/siopm_module.h"
-#include "processor/siopm_ref_table.h"
-#include "processor/wave/siopm_wave_pcm_data.h"
-#include "processor/wave/siopm_wave_pcm_table.h"
-#include "processor/wave/siopm_wave_sampler_data.h"
-#include "processor/wave/siopm_wave_table.h"
 #include "sequencer/base/mml_event.h"
 #include "sequencer/base/mml_executor.h"
 #include "sequencer/base/mml_parser.h"
@@ -376,11 +376,11 @@ void SiONDriver::_prepare_render(const Variant &p_data, Vector<double> p_render_
 
 bool SiONDriver::_rendering() {
 	// Processing.
-	module->begin_process();
+	sound_chip->begin_process();
 	effector->begin_process();
 	sequencer->process();
 	effector->end_process();
-	module->end_process();
+	sound_chip->end_process();
 
 	bool finished = false;
 
@@ -399,7 +399,7 @@ bool SiONDriver::_rendering() {
 	}
 
 	// Copy the output.
-	Vector<double> output_buffer = module->get_output_buffer();
+	Vector<double> output_buffer = sound_chip->get_output_buffer();
 
 	if (_render_buffer_channel_count == 2) {
 		for (int i = 0, j = _render_buffer_index; i < rendering_length; i++, j++) {
@@ -449,11 +449,11 @@ void SiONDriver::_streaming() {
 	int start_time = Time::get_singleton()->get_ticks_msec();
 
 	// Processing.
-	module->begin_process();
+	sound_chip->begin_process();
 	effector->begin_process();
 	sequencer->process();
 	effector->end_process();
-	module->end_process();
+	sound_chip->end_process();
 
 	// Calculate an average processing time.
 	_performance_stats.streaming_time = start_time;
@@ -464,7 +464,7 @@ void SiONDriver::_streaming() {
 	_performance_stats.average_processing_time = _performance_stats.total_processing_time * _performance_stats.total_processing_time_ratio;
 
 	// Write samples.
-	Vector<double> output_buffer = module->get_output_buffer();
+	Vector<double> output_buffer = sound_chip->get_output_buffer();
 	for (int i = 0; i < output_buffer.size(); i += 2) {
 		stream_buffer.push_back(Vector2(output_buffer[i], output_buffer[i + 1]));
 	}
@@ -862,8 +862,8 @@ void SiONDriver::_prepare_process(const Variant &p_data, bool p_reset_effector) 
 
 	// Order of operations below is critical.
 
-	module->initialize(_channel_count, _bitrate, _buffer_length);    // Initialize DSP.
-	module->reset();                                                 // Reset all channels.
+	sound_chip->initialize(_channel_count, _bitrate, _buffer_length);    // Initialize DSP.
+	sound_chip->reset();                                                 // Reset all channels.
 
 	if (p_reset_effector) {                                          // Initialize or reset effectors.
 		effector->initialize();
@@ -871,7 +871,7 @@ void SiONDriver::_prepare_process(const Variant &p_data, bool p_reset_effector) 
 		effector->reset();
 	}
 
-	sequencer->prepare_process(_data, _sample_rate, _buffer_length); // Set sequencer tracks (should be called after module::reset()).
+	sequencer->prepare_process(_data, _sample_rate, _buffer_length); // Set sequencer tracks (should be called after sound_chip::reset()).
 	if (_data.is_valid()) {
 		_parse_system_command(_data->get_system_commands());         // Parse #EFFECT command (should be called after effector::reset()).
 	}
@@ -1304,9 +1304,9 @@ SiONDriver::SiONDriver(int p_buffer_length, int p_channel_count, int p_sample_ra
 	ERR_FAIL_COND_MSG((p_channel_count != 1 && p_channel_count != 2), "SiONDriver: Channel count can only be 1 (mono) or 2 (stereo).");
 	ERR_FAIL_COND_MSG((p_sample_rate != 44100), "SiONDriver: Sampling rate can only be 44100.");
 
-	module = memnew(SiOPMModule);
-	effector = memnew(SiEffectorModule(module));
-	sequencer = memnew(SiMMLSequencer(module));
+	sound_chip = memnew(SiOPMSoundChip);
+	effector = memnew(SiEffector(sound_chip));
+	sequencer = memnew(SiMMLSequencer(sound_chip));
 	sequencer->set_note_on_callback(Callable(this, "_note_on_callback"));
 	sequencer->set_note_off_callback(Callable(this, "_note_off_callback"));
 	sequencer->set_tempo_changed_callback(Callable(this, "_tempo_changed_callback"));

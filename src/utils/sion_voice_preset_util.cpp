@@ -9,9 +9,9 @@
 #include <godot_cpp/core/class_db.hpp>
 #include "sion_enums.h"
 #include "sion_voice.h"
-#include "processor/siopm_channel_params.h"
-#include "processor/siopm_operator_params.h"
-#include "processor/wave/siopm_wave_table.h"
+#include "chip/siopm_channel_params.h"
+#include "chip/siopm_operator_params.h"
+#include "chip/wave/siopm_wave_table.h"
 
 void SiONVoicePresetUtil::_generate_default_voices() {
 	// 16 default voices.

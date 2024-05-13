@@ -18,9 +18,9 @@ class MMLSequenceGroup;
 class SiMMLRefTable;
 class SiMMLTrack;
 class SiOPMChannelParams;
-class SiOPMModule;
+class SiOPMSoundChip;
 
-// The SiMMLSequencer operates SiOPMModule by MML.
+// The SiMMLSequencer operates SiOPMSoundChip by MML.
 // SiMMLSequencer -> SiMMLTrack -> SiOPMChannelFM -> SiOPMOperator. (-> means "operates")
 class SiMMLSequencer : public MMLSequencer {
 	GDCLASS(SiMMLSequencer, MMLSequencer)
@@ -30,7 +30,7 @@ class SiMMLSequencer : public MMLSequencer {
 	static const int DEFAULT_MAX_TRACK_COUNT = 128;
 
 	SiMMLRefTable *_table = nullptr;
-	SiOPMModule *_module = nullptr;
+	SiOPMSoundChip *_sound_chip = nullptr;
 	MMLExecutorConnector *_connector = nullptr;
 
 	String _title;
@@ -236,7 +236,7 @@ public:
 
 	//
 
-	SiMMLSequencer(SiOPMModule *p_module = nullptr);
+	SiMMLSequencer(SiOPMSoundChip *p_chip = nullptr);
 	~SiMMLSequencer() {}
 };
 

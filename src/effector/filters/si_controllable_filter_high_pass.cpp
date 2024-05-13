@@ -6,7 +6,7 @@
 
 #include "si_controllable_filter_high_pass.h"
 
-#include "processor/siopm_ref_table.h"
+#include "chip/siopm_ref_table.h"
 
 void SiControllableFilterHighPass::_process_lfo(Vector<double> *r_buffer, int p_start_index, int p_length) {
 	double cutoff = SiOPMRefTable::get_instance()->filter_cutoff_table[_cutoff_index];

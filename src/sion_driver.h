@@ -27,12 +27,12 @@ class FaderUtil;
 class MIDIModule;
 class MMLEvent;
 class MMLSequence;
-class SiEffectorModule;
+class SiEffector;
 class SiMMLSequencer;
 class SiMMLTrack;
 class SiONData;
 class SiONDataConverterSMF;
-class SiOPMModule;
+class SiOPMSoundChip;
 class SiOPMWaveTable;
 class SiOPMWavePCMData;
 class SiOPMWaveSamplerData;
@@ -69,8 +69,8 @@ private:
 	static SiONDriver *_mutex;
 	static bool _allow_multiple_drivers;
 
-	SiOPMModule *module = nullptr;
-	SiEffectorModule *effector = nullptr;
+	SiOPMSoundChip *sound_chip = nullptr;
+	SiEffector *effector = nullptr;
 	SiMMLSequencer *sequencer = nullptr;
 
 	// Data.

@@ -4,9 +4,9 @@ Import("env")
 
 env.add_source_files(env.library_sources, "*.cpp")
 
+SConscript("chip/SCsub")
 SConscript("effector/SCsub")
 SConscript("events/SCsub")
-SConscript("processor/SCsub")
 SConscript("sequencer/SCsub")
 SConscript("templates/SCsub")
 SConscript("utils/SCsub")

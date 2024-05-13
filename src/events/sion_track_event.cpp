@@ -8,7 +8,7 @@
 
 #include "sion_data.h"
 #include "sion_driver.h"
-#include "processor/channels/siopm_channel_base.h"
+#include "chip/channels/siopm_channel_base.h"
 #include "sequencer/simml_track.h"
 #include "sequencer/simml_sequencer.h"
 

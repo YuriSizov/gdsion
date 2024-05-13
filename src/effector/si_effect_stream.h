@@ -14,12 +14,12 @@
 
 using namespace godot;
 
-class SiOPMModule;
+class SiOPMSoundChip;
 class SiOPMStream;
 
 class SiEffectStream {
 
-	SiOPMModule *_module = nullptr;
+	SiOPMSoundChip *_sound_chip = nullptr;
 	List<Ref<SiEffectBase>> _chain;
 
 	SiOPMStream *_stream = nullptr;
@@ -61,8 +61,8 @@ public:
 	void reset();
 	void free();
 
-	// Prefer creating effect streams via SiEffectModule.
-	SiEffectStream(SiOPMModule *p_module, SiOPMStream *p_stream = nullptr);
+	// Prefer creating effect streams via SiEffector.
+	SiEffectStream(SiOPMSoundChip *p_chip, SiOPMStream *p_stream = nullptr);
 	~SiEffectStream() {}
 };
 

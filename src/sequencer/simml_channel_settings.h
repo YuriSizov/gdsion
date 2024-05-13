@@ -9,7 +9,7 @@
 
 #include <godot_cpp/templates/vector.hpp>
 #include "sion_enums.h"
-#include "processor/channels/siopm_channel_manager.h"
+#include "chip/channels/siopm_channel_manager.h"
 
 using namespace godot;
 

@@ -11,13 +11,13 @@
 #include <godot_cpp/core/error_macros.hpp>
 #include <godot_cpp/variant/variant.hpp>
 #include "sion_enums.h"
-#include "processor/channels/siopm_channel_base.h"
-#include "processor/siopm_channel_params.h"
-#include "processor/siopm_module.h"
-#include "processor/siopm_operator_params.h"
-#include "processor/siopm_ref_table.h"
-#include "processor/wave/siopm_wave_base.h"
-#include "processor/wave/siopm_wave_pcm_table.h"
+#include "chip/channels/siopm_channel_base.h"
+#include "chip/siopm_channel_params.h"
+#include "chip/siopm_operator_params.h"
+#include "chip/siopm_ref_table.h"
+#include "chip/siopm_sound_chip.h"
+#include "chip/wave/siopm_wave_base.h"
+#include "chip/wave/siopm_wave_pcm_table.h"
 #include "sequencer/base/mml_executor.h"
 #include "sequencer/base/mml_executor_connector.h"
 #include "sequencer/base/mml_parser.h"
@@ -367,7 +367,7 @@ void SiMMLSequencer::_on_tempo_changed(double p_tempo_ratio) {
 }
 
 void SiMMLSequencer::process_dummy(int p_sample_count) {
-	int buffer_count = p_sample_count / _module->get_buffer_length();
+	int buffer_count = p_sample_count / _sound_chip->get_buffer_length();
 	if (buffer_count == 0) {
 		return;
 	}
@@ -458,7 +458,7 @@ void SiMMLSequencer::process() {
 
 	_bpm = _adjustible_bpm;
 	_current_track = nullptr;
-	_processed_sample_count += _module->get_buffer_length();
+	_processed_sample_count += _sound_chip->get_buffer_length();
 
 	_is_sequence_finished = finished;
 }
@@ -1251,7 +1251,7 @@ MMLEvent *SiMMLSequencer::_on_mml_volume_shift(MMLEvent *p_event) {
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_volume_setting(MMLEvent *p_event) {
-	GET_EV_PARAMS(SiOPMModule::STREAM_SEND_SIZE);
+	GET_EV_PARAMS(SiOPMSoundChip::STREAM_SEND_SIZE);
 	BIND_EV_PARAM(velocity_mode,  0, 0);
 	BIND_EV_PARAM(velocity_shift, 1, 4);
 
@@ -1283,7 +1283,7 @@ MMLEvent *SiMMLSequencer::_on_mml_expression_setting(MMLEvent *p_event) {
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_master_volume(MMLEvent *p_event) {
-	GET_EV_PARAMS(SiOPMModule::STREAM_SEND_SIZE);
+	GET_EV_PARAMS(SiOPMSoundChip::STREAM_SEND_SIZE);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_VOLUME) {
 		return next_event->next; // Check the mask.
@@ -1639,7 +1639,7 @@ void SiMMLSequencer::_register_event_listeners() {
 }
 
 void SiMMLSequencer::_reset_initial_operator_params() {
-	SiOPMOperatorParams *op_params = _module->get_init_operator_params();
+	SiOPMOperatorParams *op_params = _sound_chip->get_init_operator_params();
 
 	op_params->set_attack_rate(63);
 	op_params->set_decay_rate(0);
@@ -1735,10 +1735,10 @@ void SiMMLSequencer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_on_mml_register_update", "event"),            &SiMMLSequencer::_on_mml_register_update);
 }
 
-SiMMLSequencer::SiMMLSequencer(SiOPMModule *p_module) :
+SiMMLSequencer::SiMMLSequencer(SiOPMSoundChip *p_chip) :
 		MMLSequencer() {
 	_table = SiMMLRefTable::get_instance();
-	_module = p_module;
+	_sound_chip = p_chip;
 	_connector = memnew(MMLExecutorConnector);
 
 	_macro_strings.resize_zeroed(MACRO_SIZE);

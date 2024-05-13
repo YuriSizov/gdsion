@@ -11,14 +11,14 @@
 #include <godot_cpp/core/memory.hpp>
 
 #include "sion_enums.h"
-#include "processor/siopm_channel_params.h"
-#include "processor/siopm_operator_params.h"
-#include "processor/siopm_ref_table.h"
-#include "processor/wave/siopm_wave_pcm_data.h"
-#include "processor/wave/siopm_wave_pcm_table.h"
-#include "processor/wave/siopm_wave_sampler_data.h"
-#include "processor/wave/siopm_wave_sampler_table.h"
-#include "processor/wave/siopm_wave_table.h"
+#include "chip/siopm_channel_params.h"
+#include "chip/siopm_operator_params.h"
+#include "chip/siopm_ref_table.h"
+#include "chip/wave/siopm_wave_pcm_data.h"
+#include "chip/wave/siopm_wave_pcm_table.h"
+#include "chip/wave/siopm_wave_sampler_data.h"
+#include "chip/wave/siopm_wave_sampler_table.h"
+#include "chip/wave/siopm_wave_table.h"
 #include "utils/translator_util.h"
 
 const char *SiONVoice::CHIPTYPE_AUTO = "<autodetect>";

@@ -8,7 +8,7 @@
 
 #include <godot_cpp/classes/reg_ex.hpp>
 #include <godot_cpp/classes/reg_ex_match.hpp>
-#include "processor/channels/siopm_channel_base.h"
+#include "chip/channels/siopm_channel_base.h"
 #include "sequencer/base/mml_event.h"
 #include "sequencer/base/mml_sequence.h"
 #include "sequencer/base/mml_sequence_group.h"

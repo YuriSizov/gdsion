@@ -7,11 +7,11 @@
 #include "sion_data.h"
 
 #include "sion_voice.h"
-#include "processor/siopm_ref_table.h"
-#include "processor/wave/siopm_wave_pcm_data.h"
-#include "processor/wave/siopm_wave_pcm_table.h"
-#include "processor/wave/siopm_wave_sampler_data.h"
-#include "processor/wave/siopm_wave_sampler_table.h"
+#include "chip/siopm_ref_table.h"
+#include "chip/wave/siopm_wave_pcm_data.h"
+#include "chip/wave/siopm_wave_pcm_table.h"
+#include "chip/wave/siopm_wave_sampler_data.h"
+#include "chip/wave/siopm_wave_sampler_table.h"
 
 SiOPMWavePCMData *SiONData::set_pcm_wave(int p_index, const Variant &p_data, double p_sampling_note, int p_key_range_from, int p_key_range_to, int p_src_channel_count, int p_channel_count) {
 	SiOPMWavePCMTable *pcm_table = (SiOPMWavePCMTable *)(get_pcm_voice(p_index)->get_wave_data());

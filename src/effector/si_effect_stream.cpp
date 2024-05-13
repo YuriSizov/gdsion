@@ -8,9 +8,9 @@
 
 #include <godot_cpp/classes/reg_ex.hpp>
 #include <godot_cpp/classes/reg_ex_match.hpp>
-#include "effector/si_effector_module.h"
-#include "processor/siopm_module.h"
-#include "processor/siopm_stream.h"
+#include "chip/siopm_sound_chip.h"
+#include "chip/siopm_stream.h"
+#include "effector/si_effector.h"
 
 int SiEffectStream::get_pan() const {
 	return _pan - 64;
@@ -25,13 +25,13 @@ bool SiEffectStream::is_outputting_directly() const {
 }
 
 void SiEffectStream::set_all_stream_send_levels(Vector<int> p_param) {
-	for (int i = 0; i < SiOPMModule::STREAM_SEND_SIZE; i++) {
+	for (int i = 0; i < SiOPMSoundChip::STREAM_SEND_SIZE; i++) {
 		int value = p_param[i];
 		_volumes.write[i] = value == INT32_MIN ? 0 : (value * 0.0078125);
 	}
 
 	_has_effect_send = false;
-	for (int i = 1; i < SiOPMModule::STREAM_SEND_SIZE; i++) {
+	for (int i = 1; i < SiOPMSoundChip::STREAM_SEND_SIZE; i++) {
 		if (_volumes[i] > 0) {
 			_has_effect_send = true;
 		}
@@ -50,7 +50,7 @@ void SiEffectStream::set_stream_send(int p_stream_num, double p_volume) {
 	}
 
 	_has_effect_send = false;
-	for (int i = 1; i < SiOPMModule::STREAM_SEND_SIZE; i++) {
+	for (int i = 1; i < SiOPMSoundChip::STREAM_SEND_SIZE; i++) {
 		if (_volumes[i] > 0) {
 			_has_effect_send = true;
 		}
@@ -90,11 +90,11 @@ int SiEffectStream::process(int p_start_idx, int p_length, bool p_write_in_strea
 
 	if (p_write_in_stream) {
 		if (_has_effect_send) {
-			for (int i = 0; i < SiOPMModule::STREAM_SEND_SIZE; i++) {
+			for (int i = 0; i < SiOPMSoundChip::STREAM_SEND_SIZE; i++) {
 				if (_volumes[i] > 0) {
 					SiOPMStream *stream = _output_streams[i];
 					if (!stream) {
-						stream = _module->get_stream_slot(i);
+						stream = _sound_chip->get_stream_slot(i);
 					}
 					if (stream) {
 						stream->write_from_vector(buffer, p_start_idx, p_start_idx, p_length, _volumes[i], _pan, 2);
@@ -104,7 +104,7 @@ int SiEffectStream::process(int p_start_idx, int p_length, bool p_write_in_strea
 		} else {
 			SiOPMStream *stream = _output_streams[0];
 			if (!stream) {
-				stream = _module->get_output_stream();
+				stream = _sound_chip->get_output_stream();
 			}
 			stream->write_from_vector(buffer, p_start_idx, p_start_idx, p_length, _volumes[0], _pan, 2);
 		}
@@ -120,7 +120,7 @@ void SiEffectStream::_connect_effect(String p_cmd, Vector<double> p_args, int p_
 		return;
 	}
 
-	Ref<SiEffectBase> effect = SiEffectorModule::get_effector_instance(p_cmd);
+	Ref<SiEffectBase> effect = SiEffector::get_effect_instance(p_cmd);
 	if (effect.is_valid()) {
 		effect->set_by_mml(p_args);
 		_chain.push_back(effect);
@@ -141,8 +141,8 @@ void SiEffectStream::_set_volume(int p_slot, String p_cmd, Vector<double> p_args
 		set_stream_send(0, CLAMP(value, 0, 1));
 
 		int max_count = p_argc;
-		if ((max_count + p_slot) >= SiOPMModule::STREAM_SEND_SIZE) {
-			max_count = SiOPMModule::STREAM_SEND_SIZE - p_slot - 1;
+		if ((max_count + p_slot) >= SiOPMSoundChip::STREAM_SEND_SIZE) {
+			max_count = SiOPMSoundChip::STREAM_SEND_SIZE - p_slot - 1;
 		}
 
 		for (int i = 1; i < max_count; i++) {
@@ -226,7 +226,7 @@ void SiEffectStream::initialize(int p_depth) {
 	free();
 	reset();
 
-	for (int i = 0; i < SiOPMModule::STREAM_SEND_SIZE; i++) {
+	for (int i = 0; i < SiOPMSoundChip::STREAM_SEND_SIZE; i++) {
 		_volumes.write[i] = 0;
 		_output_streams.write[i] = nullptr;
 	}
@@ -238,7 +238,7 @@ void SiEffectStream::initialize(int p_depth) {
 }
 
 void SiEffectStream::reset() {
-	_stream->resize(_module->get_buffer_length() << 1);
+	_stream->resize(_sound_chip->get_buffer_length() << 1);
 	_stream->clear();
 }
 
@@ -249,14 +249,14 @@ void SiEffectStream::free() {
 	_chain.clear();
 }
 
-SiEffectStream::SiEffectStream(SiOPMModule *p_module, SiOPMStream *p_stream) {
-	_module = p_module;
+SiEffectStream::SiEffectStream(SiOPMSoundChip *p_chip, SiOPMStream *p_stream) {
+	_sound_chip = p_chip;
 	if (p_stream) {
 		_stream = p_stream;
 	} else {
 		_stream = memnew(SiOPMStream);
 	}
 
-	_volumes.resize_zeroed(SiOPMModule::STREAM_SEND_SIZE);
-	_output_streams.resize_zeroed(SiOPMModule::STREAM_SEND_SIZE);
+	_volumes.resize_zeroed(SiOPMSoundChip::STREAM_SEND_SIZE);
+	_output_streams.resize_zeroed(SiOPMSoundChip::STREAM_SEND_SIZE);
 }

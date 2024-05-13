@@ -6,8 +6,8 @@
 
 #include "simml_simulator_base_fm.h"
 
-#include "processor/channels/siopm_channel_base.h"
-#include "processor/siopm_channel_params.h"
+#include "chip/channels/siopm_channel_base.h"
+#include "chip/siopm_channel_params.h"
 #include "sequencer/base/mml_sequence.h"
 #include "sequencer/simml_track.h"
 #include "sequencer/simml_voice.h"

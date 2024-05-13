@@ -10,9 +10,9 @@
 #include <godot_cpp/classes/reg_ex_match.hpp>
 #include <godot_cpp/core/error_macros.hpp>
 #include <godot_cpp/templates/vector.hpp>
-#include "processor/siopm_channel_params.h"
-#include "processor/siopm_operator_params.h"
-#include "processor/siopm_ref_table.h"
+#include "chip/siopm_channel_params.h"
+#include "chip/siopm_operator_params.h"
+#include "chip/siopm_ref_table.h"
 #include "sequencer/simml_ref_table.h"
 #include "utils/godot_util.h"
 

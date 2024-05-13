@@ -6,8 +6,8 @@
 
 #include "transformer_util.h"
 
-#include "processor/siopm_ref_table.h"
-#include "processor/wave/siopm_wave_table.h"
+#include "chip/siopm_ref_table.h"
+#include "chip/wave/siopm_wave_table.h"
 
 void TransformerUtil::_amplify_log_data(Vector<int> *r_src, int p_gain) {
 	int gain = p_gain & ~1;

@@ -6,10 +6,10 @@
 
 #include "simml_data.h"
 
-#include "processor/siopm_ref_table.h"
-#include "processor/wave/siopm_wave_pcm_table.h"
-#include "processor/wave/siopm_wave_sampler_table.h"
-#include "processor/wave/siopm_wave_table.h"
+#include "chip/siopm_ref_table.h"
+#include "chip/wave/siopm_wave_pcm_table.h"
+#include "chip/wave/siopm_wave_sampler_table.h"
+#include "chip/wave/siopm_wave_table.h"
 #include "sequencer/simml_envelope_table.h"
 #include "sequencer/simml_ref_table.h"
 #include "sequencer/simml_voice.h"

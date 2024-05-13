@@ -7,8 +7,8 @@
 #include "simml_simulator_base.h"
 
 #include "sion_enums.h"
-#include "processor/channels/siopm_channel_base.h"
-#include "processor/channels/siopm_channel_manager.h"
+#include "chip/channels/siopm_channel_base.h"
+#include "chip/channels/siopm_channel_manager.h"
 #include "sequencer/base/mml_sequence.h"
 #include "sequencer/simml_track.h"
 #include "sequencer/simulator/simml_simulator_voice.h"
