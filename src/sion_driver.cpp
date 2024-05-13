@@ -640,6 +640,8 @@ void SiONDriver::resume() {
 
 SiMMLTrack *SiONDriver::play_sound(int p_sample_number, double p_length, double p_delay, double p_quant, int p_track_id, bool p_disposable) {
 	ERR_FAIL_COND_V_MSG(!_is_streaming, nullptr, "SiONDriver: Driver is not streaming, you must call SiONDriver.play() first.");
+	ERR_FAIL_COND_V_MSG(p_length < 0, nullptr, "SiONDriver: Sound length cannot be less than zero.");
+	ERR_FAIL_COND_V_MSG(p_delay < 0, nullptr, "SiONDriver: Sound delay cannot be less than zero.");
 
 	int internal_track_id = (p_track_id & SiMMLTrack::TRACK_ID_FILTER) | SiMMLTrack::DRIVER_NOTE;
 	double delay_samples = sequencer->calculate_sample_delay(0, p_delay, p_quant);
@@ -677,6 +679,8 @@ SiMMLTrack *SiONDriver::play_sound(int p_sample_number, double p_length, double 
 
 SiMMLTrack *SiONDriver::note_on(int p_note, const Ref<SiONVoice> &p_voice, double p_length, double p_delay, double p_quant, int p_track_id, bool p_disposable) {
 	ERR_FAIL_COND_V_MSG(!_is_streaming, nullptr, "SiONDriver: Driver is not streaming, you must call SiONDriver.play() first.");
+	ERR_FAIL_COND_V_MSG(p_length < 0, nullptr, "SiONDriver: Note length cannot be less than zero.");
+	ERR_FAIL_COND_V_MSG(p_delay < 0, nullptr, "SiONDriver: Note delay cannot be less than zero.");
 
 	int internal_track_id = (p_track_id & SiMMLTrack::TRACK_ID_FILTER) | SiMMLTrack::DRIVER_NOTE;
 	double delay_samples = sequencer->calculate_sample_delay(0, p_delay, p_quant);
@@ -716,6 +720,7 @@ SiMMLTrack *SiONDriver::note_on(int p_note, const Ref<SiONVoice> &p_voice, doubl
 
 TypedArray<SiMMLTrack> SiONDriver::note_off(int p_note, int p_track_id, double p_delay, double p_quant, bool p_stop_immediately) {
 	ERR_FAIL_COND_V_MSG(!_is_streaming, TypedArray<SiMMLTrack>(), "SiONDriver: Driver is not streaming, you must call SiONDriver.play() first.");
+	ERR_FAIL_COND_V_MSG(p_delay < 0, TypedArray<SiMMLTrack>(), "SiONDriver: Note off delay cannot be less than zero.");
 
 	int internal_track_id = (p_track_id & SiMMLTrack::TRACK_ID_FILTER) | SiMMLTrack::DRIVER_NOTE;
 	double delay_samples = sequencer->calculate_sample_delay(0, p_delay, p_quant);
@@ -740,6 +745,10 @@ TypedArray<SiMMLTrack> SiONDriver::note_off(int p_note, int p_track_id, double p
 }
 
 TypedArray<SiMMLTrack> SiONDriver::sequence_on(const Ref<SiONData> &p_data, const Ref<SiONVoice> &p_voice, double p_length, double p_delay, double p_quant, int p_track_id, bool p_disposable) {
+	ERR_FAIL_COND_V(p_data.is_null(), TypedArray<SiMMLTrack>());
+	ERR_FAIL_COND_V_MSG(p_length < 0, TypedArray<SiMMLTrack>(), "SiONDriver: Sequence length cannot be less than zero.");
+	ERR_FAIL_COND_V_MSG(p_delay < 0, TypedArray<SiMMLTrack>(), "SiONDriver: Sequence delay cannot be less than zero.");
+
 	int internal_track_id = (p_track_id & SiMMLTrack::TRACK_ID_FILTER) | SiMMLTrack::DRIVER_SEQUENCE;
 	double delay_samples = sequencer->calculate_sample_delay(0, p_delay, p_quant);
 	int length_samples = sequencer->calculate_sample_length(p_length);
@@ -764,6 +773,8 @@ TypedArray<SiMMLTrack> SiONDriver::sequence_on(const Ref<SiONData> &p_data, cons
 }
 
 TypedArray<SiMMLTrack> SiONDriver::sequence_off(int p_track_id, double p_delay, double p_quant, bool p_stop_with_reset) {
+	ERR_FAIL_COND_V_MSG(p_delay < 0, TypedArray<SiMMLTrack>(), "SiONDriver: Sequence off delay cannot be less than zero.");
+
 	int internal_track_id = (p_track_id & SiMMLTrack::TRACK_ID_FILTER) | SiMMLTrack::DRIVER_SEQUENCE;
 	double delay_samples = sequencer->calculate_sample_delay(0, p_delay, p_quant);
 
@@ -1104,6 +1115,8 @@ void SiONDriver::_beat_callback(int p_buffer_index, int p_beat_counter) {
 }
 
 void SiONDriver::set_beat_callback_interval(double p_length_16th) {
+	ERR_FAIL_COND_MSG(p_length_16th < 0, "SiONDriver: Beat callback interval value cannot be less than zero.");
+
 	int filter = 1;
 	double length = p_length_16th;
 
@@ -1121,6 +1134,8 @@ void SiONDriver::_timer_callback() {
 }
 
 void SiONDriver::set_timer_interval(double p_length) {
+	ERR_FAIL_COND_MSG(p_length < 0, "SiONDriver: Timer interval value cannot be less than zero.");
+
 	_timer_interval_event->length = _convert_event_length(p_length);
 
 	if (p_length > 0) {
