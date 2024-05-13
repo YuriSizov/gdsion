@@ -1210,6 +1210,12 @@ void SiONDriver::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("sequence_on", "data", "voice", "length", "delay", "quant", "track_id", "disposable"), &SiONDriver::sequence_on, DEFVAL((Object *)nullptr), DEFVAL(0), DEFVAL(0), DEFVAL(1), DEFVAL(0), DEFVAL(true));
 	ClassDB::bind_method(D_METHOD("sequence_off", "track_id", "delay", "quant", "stop_with_reset"), &SiONDriver::sequence_off, DEFVAL(0), DEFVAL(1), DEFVAL(false));
 
+	// Sub-module access.
+
+	ClassDB::bind_method(D_METHOD("get_sound_chip"), &SiONDriver::get_sound_chip);
+	ClassDB::bind_method(D_METHOD("get_effector"), &SiONDriver::get_effector);
+	ClassDB::bind_method(D_METHOD("get_sequencer"), &SiONDriver::get_sequencer);
+
 	ADD_SIGNAL(MethodInfo("timer_interval"));
 
 	ADD_SIGNAL(MethodInfo(SiONEvent::QUEUE_EXECUTING, PropertyInfo(Variant::OBJECT, "event")));

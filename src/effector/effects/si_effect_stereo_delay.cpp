@@ -12,7 +12,7 @@ void SiEffectStereoDelay::set_params(double p_delay_time, double p_feedback, boo
 		offset = DELAY_BUFFER_FILTER;
 	}
 
-	_pointer_write = (_pointer_read + offset) + DELAY_BUFFER_FILTER;
+	_pointer_write = (_pointer_read + offset) & DELAY_BUFFER_FILTER;
 
 	_feedback = p_feedback;
 	if (_feedback >= 1) {
@@ -32,8 +32,8 @@ int SiEffectStereoDelay::prepare_process() {
 	return 2;
 }
 
-void SiEffectStereoDelay::_process_channel(Vector<double> *r_buffer, int p_buffer_index, Vector<double> p_read_buffer, Vector<double> *r_write_buffer) {
-	double value = p_read_buffer[_pointer_read];
+void SiEffectStereoDelay::_process_channel(Vector<double> *r_buffer, int p_buffer_index, Vector<double> *p_read_buffer, Vector<double> *r_write_buffer) {
+	double value = (*p_read_buffer)[_pointer_read];
 	r_write_buffer->write[_pointer_write] = (*r_buffer)[p_buffer_index] - value * _feedback;
 
 	r_buffer->write[p_buffer_index] *= 1 - _wet;
@@ -45,8 +45,8 @@ int SiEffectStereoDelay::process(int p_channels, Vector<double> *r_buffer, int p
 	int length = p_length << 1;
 
 	for (int i = start_index; i < (start_index + length); i += 2) {
-		_process_channel(r_buffer, i,     (_cross ? _delay_buffer_right : _delay_buffer_left), &_delay_buffer_left);
-		_process_channel(r_buffer, i + 1, (_cross ? _delay_buffer_left : _delay_buffer_right), &_delay_buffer_right);
+		_process_channel(r_buffer, i,     (_cross ? &_delay_buffer_right : &_delay_buffer_left), &_delay_buffer_left);
+		_process_channel(r_buffer, i + 1, (_cross ? &_delay_buffer_left : &_delay_buffer_right), &_delay_buffer_right);
 
 		_pointer_write = (_pointer_write + 1) & DELAY_BUFFER_FILTER;
 		_pointer_read  = (_pointer_read  + 1) & DELAY_BUFFER_FILTER;

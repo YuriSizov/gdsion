@@ -7,6 +7,7 @@
 #ifndef SI_EFFECTOR_H
 #define SI_EFFECTOR_H
 
+#include <godot_cpp/core/object.hpp>
 #include <godot_cpp/templates/hash_map.hpp>
 #include <godot_cpp/templates/list.hpp>
 #include <godot_cpp/templates/vector.hpp>
@@ -17,7 +18,8 @@ using namespace godot;
 class SiEffectStream;
 class SiOPMSoundChip;
 
-class SiEffector {
+class SiEffector : public Object {
+	GDCLASS(SiEffector, Object)
 
 	static HashMap<String, List<Ref<SiEffectBase>>> _effect_instances;
 
@@ -33,6 +35,9 @@ class SiEffector {
 	SiEffectStream *_get_global_stream(int p_slot);
 	SiEffectStream *_alloc_stream(int p_depth);
 
+protected:
+	static void _bind_methods();
+
 public:
 	// Effects.
 
@@ -46,20 +51,10 @@ public:
 
 	// Slots and connections.
 
-	void set_slot0(List<Ref<SiEffectBase>> p_effects) { set_slot_effect_list(0, p_effects); }
-	void set_slot1(List<Ref<SiEffectBase>> p_effects) { set_slot_effect_list(1, p_effects); }
-	void set_slot2(List<Ref<SiEffectBase>> p_effects) { set_slot_effect_list(2, p_effects); }
-	void set_slot3(List<Ref<SiEffectBase>> p_effects) { set_slot_effect_list(3, p_effects); }
-	void set_slot4(List<Ref<SiEffectBase>> p_effects) { set_slot_effect_list(4, p_effects); }
-	void set_slot5(List<Ref<SiEffectBase>> p_effects) { set_slot_effect_list(5, p_effects); }
-	void set_slot6(List<Ref<SiEffectBase>> p_effects) { set_slot_effect_list(6, p_effects); }
-	void set_slot7(List<Ref<SiEffectBase>> p_effects) { set_slot_effect_list(7, p_effects); }
-
-	List<Ref<SiEffectBase>> get_slot_effect_list(int p_slot) const;
-	void set_slot_effect_list(int p_slot, List<Ref<SiEffectBase>> p_effects);
-	void clear_slot(int p_slot);
-
-	void connect_effect(int p_slot, const Ref<SiEffectBase> &p_effect);
+	TypedArray<SiEffectBase> get_slot_effects(int p_slot) const;
+	void add_slot_effect(int p_slot, const Ref<SiEffectBase> &p_effect);
+	void set_slot_effects(int p_slot, const TypedArray<SiEffectBase> &p_effects);
+	void clear_slot_effects(int p_slot);
 
 	SiEffectStream *create_local_effect(int p_depth, List<Ref<SiEffectBase>> p_effects);
 	void delete_local_effect(SiEffectStream *p_effect);
@@ -77,7 +72,7 @@ public:
 
 	void initialize();
 
-	SiEffector(SiOPMSoundChip *p_chip);
+	SiEffector(SiOPMSoundChip *p_chip = nullptr);
 	~SiEffector() {}
 };
 

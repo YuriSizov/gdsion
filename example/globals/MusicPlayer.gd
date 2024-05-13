@@ -9,6 +9,7 @@
 class_name MusicPlayer extends Object
 
 signal instrument_changed()
+signal filter_changed()
 
 const AVAILABLE_INSTRUMENTS := [
 	{ "category": "MIDI", "name": "Grand Piano" },
@@ -27,9 +28,22 @@ const AVAILABLE_INSTRUMENTS := [
 	{ "category": "DRUMKIT", "name": "Midi Drumkit" },
 ]
 
+const AVAILABLE_FILTERS := [
+	"DELAY",
+	"CHORUS",
+	"REVERB",
+	"DISTORTION",
+	"LOW BOOST",
+	"COMPRESSOR",
+	"HIGH PASS",
+]
+
 var _driver: SiONDriver = null
 var _active_instrument: Instrument = null
 var _active_instrument_index: int = 0
+
+var _active_filter_index: int = 0
+var _active_filter_power: int = 0
 
 
 func _init(controller: Node) -> void:
@@ -69,6 +83,48 @@ func _update_instrument() -> void:
 	_active_instrument.update_filter()
 
 
+func _update_filter() -> void:
+	_driver.get_effector().clear_slot_effects(0)
+	if _active_filter_power <= 5:
+		return
+	
+	match _active_filter_index:
+		0:
+			var effect_delay := SiEffectStereoDelay.new()
+			effect_delay.set_params((300.0 * _active_filter_power) / 100.0, 0.1, false)
+			_driver.get_effector().add_slot_effect(0, effect_delay);
+	
+		1:
+			var effect_chorus := SiEffectStereoChorus.new()
+			effect_chorus.set_params(20, 0.2, 4, 10 + ((50.0 * _active_filter_power) / 100.0))
+			_driver.get_effector().add_slot_effect(0, effect_chorus);
+	
+		2:
+			var effect_reverb := SiEffectStereoReverb.new()
+			effect_reverb.set_params(0.7, 0.4 + ((0.5 * _active_filter_power) / 100.0), 0.8, 0.3)
+			_driver.get_effector().add_slot_effect(0, effect_reverb);
+	
+		3:
+			var effect_distortion := SiEffectDistortion.new()
+			effect_distortion.set_params(-20 - ((80.0 * _active_filter_power) / 100.0), 18, 2400, 1)
+			_driver.get_effector().add_slot_effect(0, effect_distortion);
+	
+		4:
+			var effect_lowboost := SiFilterLowBoost.new()
+			effect_lowboost.set_params(3000, 1, 4 + ((6.0 * _active_filter_power) / 100.0))
+			_driver.get_effector().add_slot_effect(0, effect_lowboost);
+	
+		5:
+			var effect_compressor := SiEffectCompressor.new()
+			effect_compressor.set_params(0.7, 50, 20, 20, -6, 0.2 + ((0.6 * _active_filter_power) / 100.0))
+			_driver.get_effector().add_slot_effect(0, effect_compressor);
+	
+		6:
+			var effect_highpass := SiControllableFilterHighPass.new()
+			effect_highpass.set_params_manually(((1.0 * _active_filter_power) / 100.0), 0.9)
+			_driver.get_effector().add_slot_effect(0, effect_highpass);
+
+
 # Configuration.
 
 func get_active_instrument() -> Instrument:
@@ -84,6 +140,28 @@ func change_instrument(shift: int) -> void:
 
 	_update_instrument()
 	instrument_changed.emit()
+
+
+func get_active_filter() -> String:
+	return AVAILABLE_FILTERS[_active_filter_index]
+
+
+func change_filter(shift: int) -> void:
+	_active_filter_index += shift
+	if _active_filter_index < 0:
+		_active_filter_index = AVAILABLE_FILTERS.size() - 1
+	elif _active_filter_index >= AVAILABLE_FILTERS.size():
+		_active_filter_index = 0
+
+	_update_filter()
+	filter_changed.emit()
+
+
+func change_filter_power(value: int) -> void:
+	_active_filter_power = clampi(value, 0, 100)
+
+	_update_filter()
+	filter_changed.emit()
 
 
 # Output and streaming control.

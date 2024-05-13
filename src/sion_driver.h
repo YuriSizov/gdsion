@@ -277,6 +277,8 @@ public:
 	static bool are_multiple_drivers_allowed() { return _allow_multiple_drivers; }
 	static void set_allow_multiple_drivers(bool p_allow) { _allow_multiple_drivers = p_allow; }
 
+	SiOPMSoundChip *get_sound_chip() const { return sound_chip; }
+	SiEffector *get_effector() const { return effector; }
 	SiMMLSequencer *get_sequencer() const { return sequencer; }
 
 	// Data.

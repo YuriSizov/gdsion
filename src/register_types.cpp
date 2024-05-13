@@ -21,6 +21,7 @@
 #include "chip/channels/siopm_channel_sampler.h"
 #include "chip/siopm_channel_params.h"
 #include "chip/siopm_ref_table.h"
+#include "chip/siopm_sound_chip.h"
 #include "chip/wave/siopm_wave_base.h"
 #include "chip/wave/siopm_wave_pcm_data.h"
 #include "chip/wave/siopm_wave_pcm_table.h"
@@ -53,6 +54,7 @@
 #include "effector/filters/si_filter_vowel.h"
 #include "effector/si_effect_base.h"
 #include "effector/si_effect_composite.h"
+#include "effector/si_effector.h"
 #include "events/sion_event.h"
 #include "events/sion_track_event.h"
 #include "sequencer/base/beats_per_minute.h"
@@ -82,10 +84,30 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 	// Also, all of these classes must have a constructor that has no required
 	// arguments. Even if this is not a supported case for the class itself.
 
+	// Chip.
+
+	ClassDB::register_abstract_class<SiOPMChannelBase>();
+	ClassDB::register_abstract_class<SiOPMChannelFM>();
+	ClassDB::register_abstract_class<SiOPMChannelKS>();
+	ClassDB::register_abstract_class<SiOPMChannelPCM>();
+	ClassDB::register_abstract_class<SiOPMChannelSampler>();
+	ClassDB::register_abstract_class<SiOPMChannelParams>();
+	ClassDB::register_abstract_class<SiOPMSoundChip>();
+	ClassDB::register_abstract_class<SiOPMWaveBase>();
+	ClassDB::register_abstract_class<SiOPMWavePCMData>();
+	ClassDB::register_abstract_class<SiOPMWavePCMTable>();
+	ClassDB::register_abstract_class<SiOPMWaveSamplerData>();
+	ClassDB::register_abstract_class<SiOPMWaveSamplerTable>();
+	ClassDB::register_abstract_class<SiOPMWaveTable>();
+
 	// Effector.
+
+	ClassDB::register_abstract_class<SiEffector>();
+
 	ClassDB::register_abstract_class<SiEffectBase>();
 	ClassDB::register_abstract_class<SiControllableFilterBase>();
 	ClassDB::register_abstract_class<SiFilterBase>();
+
 	ClassDB::register_class<SiControllableFilterHighPass>();
 	ClassDB::register_class<SiControllableFilterLowPass>();
 	ClassDB::register_class<SiEffectAutopan>();
@@ -111,24 +133,12 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<SiFilterVowel>();
 
 	// Events.
+
 	ClassDB::register_abstract_class<SiONEvent>();
 	ClassDB::register_abstract_class<SiONTrackEvent>();
 
-	// Processor.
-	ClassDB::register_abstract_class<SiOPMChannelBase>();
-	ClassDB::register_abstract_class<SiOPMChannelFM>();
-	ClassDB::register_abstract_class<SiOPMChannelKS>();
-	ClassDB::register_abstract_class<SiOPMChannelPCM>();
-	ClassDB::register_abstract_class<SiOPMChannelSampler>();
-	ClassDB::register_abstract_class<SiOPMChannelParams>();
-	ClassDB::register_abstract_class<SiOPMWaveBase>();
-	ClassDB::register_abstract_class<SiOPMWavePCMData>();
-	ClassDB::register_abstract_class<SiOPMWavePCMTable>();
-	ClassDB::register_abstract_class<SiOPMWaveSamplerData>();
-	ClassDB::register_abstract_class<SiOPMWaveSamplerTable>();
-	ClassDB::register_abstract_class<SiOPMWaveTable>();
-
 	// Sequencer.
+
 	ClassDB::register_class<BeatsPerMinute>();
 	ClassDB::register_abstract_class<MMLData>();
 	ClassDB::register_abstract_class<MMLEvent>();
@@ -140,6 +150,7 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_abstract_class<SiMMLVoice>();
 
 	// Utils.
+
 	ClassDB::register_class<SiONVoicePresetUtil>();
 
 	// Main SiON API classes.
@@ -149,7 +160,6 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<SiONVoice>();
 
 	// Initialize singletons before the execution.
-
 	MMLParser::initialize();
 	MMLSequencer::initialize();
 	SiOPMRefTable::initialize();

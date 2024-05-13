@@ -7,6 +7,7 @@
 #ifndef SIOPM_SOUND_CHIP_H
 #define SIOPM_SOUND_CHIP_H
 
+#include <godot_cpp/core/object.hpp>
 #include <godot_cpp/templates/list.hpp>
 #include <godot_cpp/templates/vector.hpp>
 #include "templates/singly_linked_list.h"
@@ -16,7 +17,8 @@ using namespace godot;
 class SiOPMOperatorParams;
 class SiOPMStream;
 
-class SiOPMSoundChip {
+class SiOPMSoundChip : public Object {
+	GDCLASS(SiOPMSoundChip, Object)
 
 	SiOPMOperatorParams *init_operator_params = nullptr;
 	SinglyLinkedList<int> *zero_buffer = nullptr;
@@ -33,6 +35,9 @@ class SiOPMSoundChip {
 	// Both expected to be of PIPE_SIZE size.
 	Vector<SinglyLinkedList<int> *> _pipe_buffer;
 	Vector<List<SinglyLinkedList<int> *>> _pipe_buffer_pager;
+
+protected:
+	static void _bind_methods() {}
 
 public:
 	static const int STREAM_SEND_SIZE = 8;

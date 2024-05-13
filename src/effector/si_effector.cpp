@@ -37,6 +37,30 @@
 
 HashMap<String, List<Ref<SiEffectBase>>> SiEffector::_effect_instances;
 
+SiEffectStream *SiEffector::_get_global_stream(int p_slot) {
+	if (_global_effects[p_slot] == nullptr) {
+		SiEffectStream *stream = _alloc_stream(0);
+		_global_effects.write[p_slot] = stream;
+		_sound_chip->set_stream_slot(p_slot, stream->get_stream());
+		_global_effect_count++;
+	}
+
+	return _global_effects[p_slot];
+}
+
+SiEffectStream *SiEffector::_alloc_stream(int p_depth) {
+	SiEffectStream *effect = nullptr;
+	if (!_free_effect_streams.is_empty()) {
+		effect = _free_effect_streams.front()->get();
+		_free_effect_streams.pop_front();
+	} else {
+		effect = memnew(SiEffectStream(_sound_chip));
+	}
+
+	effect->initialize(p_depth);
+	return effect;
+}
+
 // Effects.
 
 template <class T>
@@ -116,44 +140,40 @@ Ref<T> SiEffector::create_effect_instance() {
 
 // Slots and connections.
 
-SiEffectStream *SiEffector::_get_global_stream(int p_slot) {
-	if (_global_effects[p_slot] == nullptr) {
-		SiEffectStream *effect = _alloc_stream(0);
-		_global_effects.write[p_slot] = effect;
-		_sound_chip->set_stream_slot(p_slot, effect->get_stream());
-		_global_effect_count++;
-	}
-
-	return _global_effects[p_slot];
-}
-
-SiEffectStream *SiEffector::_alloc_stream(int p_depth) {
-	SiEffectStream *effect = nullptr;
-	if (!_free_effect_streams.is_empty()) {
-		effect = _free_effect_streams.front()->get();
-		_free_effect_streams.pop_front();
-	} else {
-		effect = memnew(SiEffectStream(_sound_chip));
-	}
-
-	effect->initialize(p_depth);
-	return effect;
-}
-
-List<Ref<SiEffectBase>> SiEffector::get_slot_effect_list(int p_slot) const {
+TypedArray<SiEffectBase> SiEffector::get_slot_effects(int p_slot) const {
 	if (!_global_effects[p_slot]) {
-		return List<Ref<SiEffectBase>>();
+		return TypedArray<SiEffectBase>();
 	}
-	return _global_effects[p_slot]->get_chain();
+
+	List<Ref<SiEffectBase>> chained_effects = _global_effects[p_slot]->get_chain();
+
+	TypedArray<SiEffectBase> effects;
+	for (const Ref<SiEffectBase> &effect : chained_effects) {
+		effects.push_back(effect);
+	}
+
+	return effects;
 }
 
-void SiEffector::set_slot_effect_list(int p_slot, List<Ref<SiEffectBase>> p_effects) {
-	SiEffectStream *effect = _get_global_stream(p_slot);
-	effect->set_chain(p_effects);
-	effect->prepare_process();
+void SiEffector::add_slot_effect(int p_slot, const Ref<SiEffectBase> &p_effect) {
+	SiEffectStream *stream = _get_global_stream(p_slot);
+	stream->add_to_chain(p_effect);
+	p_effect->prepare_process();
 }
 
-void SiEffector::clear_slot(int p_slot) {
+void SiEffector::set_slot_effects(int p_slot, const TypedArray<SiEffectBase> &p_effects) {
+	List<Ref<SiEffectBase>> chained_effects;
+	for (int i = 0; i < p_effects.size(); i++) {
+		Ref<SiEffectBase> effect = p_effects[i];
+		chained_effects.push_back(effect);
+	}
+
+	SiEffectStream *stream = _get_global_stream(p_slot);
+	stream->set_chain(chained_effects);
+	stream->prepare_process();
+}
+
+void SiEffector::clear_slot_effects(int p_slot) {
 	if (p_slot == 0) {
 		_master_effect->initialize(0);
 	} else {
@@ -163,12 +183,6 @@ void SiEffector::clear_slot(int p_slot) {
 			_global_effects.write[p_slot] = nullptr;
 		}
 	}
-}
-
-void SiEffector::connect_effect(int p_slot, const Ref<SiEffectBase> &p_effect) {
-	SiEffectStream *effect = _get_global_stream(p_slot);
-	effect->get_chain().push_back(p_effect);
-	p_effect->prepare_process();
 }
 
 SiEffectStream *SiEffector::create_local_effect(int p_depth, List<Ref<SiEffectBase>> p_effects) {
@@ -199,8 +213,8 @@ void SiEffector::delete_local_effect(SiEffectStream *p_effect) {
 }
 
 void SiEffector::parse_global_effect_mml(int p_slot, String p_mml, String p_postfix) {
-	SiEffectStream *effect = _get_global_stream(p_slot);
-	effect->parse_mml(p_slot, p_mml, p_postfix);
+	SiEffectStream *stream = _get_global_stream(p_slot);
+	stream->parse_mml(p_slot, p_mml, p_postfix);
 }
 
 // Processing.
@@ -284,7 +298,7 @@ void SiEffector::reset() {
 //
 
 // This function is called from SiONDriver::play() when its 2nd argument is set to true.
-// If you want to connect effects by code, you have to call this first, then call connect_effect(),
+// If you want to connect effects by code, you have to call this first, then call add_slot_effect(),
 // and then SiONDriver::play() with the 2nd argument set to false.
 void SiEffector::initialize() {
 	for (SiEffectStream *effect : _local_effects) {
@@ -304,6 +318,13 @@ void SiEffector::initialize() {
 
 	_master_effect->initialize(0);
 	_global_effects.write[0] = _master_effect;
+}
+
+void SiEffector::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("get_slot_effects", "slot"), &SiEffector::get_slot_effects);
+	ClassDB::bind_method(D_METHOD("add_slot_effect", "slot", "effect"), &SiEffector::add_slot_effect);
+	ClassDB::bind_method(D_METHOD("set_slot_effects", "slot", "effects"), &SiEffector::set_slot_effects);
+	ClassDB::bind_method(D_METHOD("clear_slot_effects", "slot"), &SiEffector::clear_slot_effects);
 }
 
 SiEffector::SiEffector(SiOPMSoundChip *p_chip) {

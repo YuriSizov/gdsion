@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://btlcavlirkxet"]
+[gd_scene load_steps=10 format=3 uid="uid://btlcavlirkxet"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_8sk4m"]
 [ext_resource type="Script" path="res://gui/Visualizer.gd" id="2_3u74r"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://gui/PianoRoll.gd" id="3_71u1t"]
 [ext_resource type="Script" path="res://gui/InstrumentSelector.gd" id="4_0mkok"]
 [ext_resource type="Texture2D" uid="uid://c37ayws6ebi88" path="res://icons/arrow_left.png" id="4_btwgs"]
+[ext_resource type="Script" path="res://gui/FilterSelector.gd" id="4_uavpo"]
 [ext_resource type="Texture2D" uid="uid://bp1awbe5naawb" path="res://icons/arrow_right.png" id="5_ururd"]
 
 [node name="Main" type="Control"]
@@ -43,37 +44,93 @@ grow_horizontal = 2
 grow_vertical = 0
 script = ExtResource("3_71u1t")
 
-[node name="InstrumentSelector" type="HBoxContainer" parent="PianoRoll"]
+[node name="Controls" type="HBoxContainer" parent="PianoRoll"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -83.0
-offset_top = -47.0
-offset_right = -2.0
-offset_bottom = -7.0
-grow_horizontal = 0
+offset_bottom = -8.0
+grow_horizontal = 2
 grow_vertical = 0
-script = ExtResource("4_0mkok")
 
-[node name="LeftButton" type="Button" parent="PianoRoll/InstrumentSelector"]
-custom_minimum_size = Vector2(36, 0)
+[node name="FilterLabel" type="Label" parent="PianoRoll/Controls"]
+auto_translate_mode = 1
+layout_mode = 2
+theme_override_colors/font_color = Color(0.503461, 0.593425, 0.670281, 1)
+theme_override_font_sizes/font_size = 16
+text = "Filter:"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="FilterSelector" type="HBoxContainer" parent="PianoRoll/Controls"]
+auto_translate_mode = 1
+layout_mode = 2
+script = ExtResource("4_uavpo")
+
+[node name="LeftButton" type="Button" parent="PianoRoll/Controls/FilterSelector"]
+auto_translate_mode = 1
+custom_minimum_size = Vector2(36, 36)
 layout_mode = 2
 icon = ExtResource("4_btwgs")
 flat = true
+icon_alignment = 1
 expand_icon = true
 
-[node name="Label" type="Label" parent="PianoRoll/InstrumentSelector"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "[INSTRUMENT NAME]"
-
-[node name="RightButton" type="Button" parent="PianoRoll/InstrumentSelector"]
+[node name="Label" type="Label" parent="PianoRoll/Controls/FilterSelector"]
 auto_translate_mode = 1
-custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "[FILTER NAME]"
+
+[node name="RightButton" type="Button" parent="PianoRoll/Controls/FilterSelector"]
+auto_translate_mode = 1
+custom_minimum_size = Vector2(36, 36)
 layout_mode = 2
 icon = ExtResource("5_ururd")
 flat = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="PowerSlider" type="HSlider" parent="PianoRoll/Controls/FilterSelector"]
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Filler" type="Control" parent="PianoRoll/Controls"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="InstrumentLabel" type="Label" parent="PianoRoll/Controls"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.503461, 0.593425, 0.670281, 1)
+theme_override_font_sizes/font_size = 16
+text = "Instrument:"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="InstrumentSelector" type="HBoxContainer" parent="PianoRoll/Controls"]
+layout_mode = 2
+script = ExtResource("4_0mkok")
+
+[node name="LeftButton" type="Button" parent="PianoRoll/Controls/InstrumentSelector"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+icon = ExtResource("4_btwgs")
+flat = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="Label" type="Label" parent="PianoRoll/Controls/InstrumentSelector"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "[INSTRUMENT NAME]"
+
+[node name="RightButton" type="Button" parent="PianoRoll/Controls/InstrumentSelector"]
+auto_translate_mode = 1
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+icon = ExtResource("5_ururd")
+flat = true
+icon_alignment = 1
 expand_icon = true
 
 [node name="PlayButton" type="Button" parent="."]

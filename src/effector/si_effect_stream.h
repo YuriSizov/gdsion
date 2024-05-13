@@ -31,12 +31,13 @@ class SiEffectStream {
 	Vector<double> _volumes;
 	Vector<SiOPMStream *> _output_streams;
 
-	void _connect_effect(String p_cmd, Vector<double> p_args, int p_argc);
+	void _add_effect(String p_cmd, Vector<double> p_args, int p_argc);
 	void _set_volume(int p_slot, String p_cmd, Vector<double> p_args, int p_argc);
 
 public:
 	List<Ref<SiEffectBase>> get_chain() const { return _chain; }
-	void set_chain(List<Ref<SiEffectBase>> p_chain) { _chain = p_chain; }
+	void set_chain(const List<Ref<SiEffectBase>> &p_effects) { _chain = p_effects; }
+	void add_to_chain(const Ref<SiEffectBase> &p_effect) { _chain.push_back(p_effect); }
 	SiOPMStream *get_stream() const { return _stream; }
 
 	int get_depth() const { return _depth; }

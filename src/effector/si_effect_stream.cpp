@@ -115,7 +115,7 @@ int SiEffectStream::process(int p_start_idx, int p_length, bool p_write_in_strea
 
 //
 
-void SiEffectStream::_connect_effect(String p_cmd, Vector<double> p_args, int p_argc) {
+void SiEffectStream::_add_effect(String p_cmd, Vector<double> p_args, int p_argc) {
 	if (p_argc == 0) {
 		return;
 	}
@@ -185,7 +185,7 @@ void SiEffectStream::parse_mml(int p_slot, String p_mml, String p_postfix) {
 			args.write[argc] = res->get_string(2).to_float();
 			argc++;
 		} else {
-			_connect_effect(command, args, argc);
+			_add_effect(command, args, argc);
 			CLEAR_ARGS();
 
 			command = res->get_string(1);
@@ -194,7 +194,7 @@ void SiEffectStream::parse_mml(int p_slot, String p_mml, String p_postfix) {
 		}
 	}
 
-	_connect_effect(command, args, argc);
+	_add_effect(command, args, argc);
 	CLEAR_ARGS();
 
 	// Parse the postfix.
