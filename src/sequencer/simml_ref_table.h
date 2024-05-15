@@ -17,7 +17,6 @@ using namespace godot;
 
 class SiMMLChannelSettings;
 class SiMMLEnvelopeTable;
-class SiMMLSimulatorBase;
 enum SiONModuleType : unsigned int;
 
 // Reference data object for the sequencer and related operations.
@@ -44,7 +43,6 @@ public:
 	// These are not expected to be written to externally. But that might happen.
 
 	HashMap<SiONModuleType, SiMMLChannelSettings *> channel_settings_map;
-	HashMap<SiONModuleType, SiMMLSimulatorBase *> channel_simulator_map;
 
 	// Mapping from tsscp @s command to OPM attack rate.
 	String tss_scmd_to_attack_rate[256];

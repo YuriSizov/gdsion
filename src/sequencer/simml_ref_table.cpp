@@ -16,30 +16,7 @@
 #include "chip/siopm_ref_table.h"
 #include "sequencer/simml_channel_settings.h"
 #include "sequencer/simml_envelope_table.h"
-#include "sequencer/simulator/simml_simulator_base.h"
 #include "sequencer/simml_voice.h"
-
-#include "sequencer/simulator/simml_simulator_apu.h"
-#include "sequencer/simulator/simml_simulator_fm_ma3.h"
-#include "sequencer/simulator/simml_simulator_fm_opl3.h"
-#include "sequencer/simulator/simml_simulator_fm_opll.h"
-#include "sequencer/simulator/simml_simulator_fm_opm.h"
-#include "sequencer/simulator/simml_simulator_fm_opn.h"
-#include "sequencer/simulator/simml_simulator_fm_opna.h"
-#include "sequencer/simulator/simml_simulator_fm_siopm.h"
-#include "sequencer/simulator/simml_simulator_gb.h"
-#include "sequencer/simulator/simml_simulator_ks.h"
-#include "sequencer/simulator/simml_simulator_ma3_wave_table.h"
-#include "sequencer/simulator/simml_simulator_noise.h"
-#include "sequencer/simulator/simml_simulator_pcm.h"
-#include "sequencer/simulator/simml_simulator_psg.h"
-#include "sequencer/simulator/simml_simulator_pulse.h"
-#include "sequencer/simulator/simml_simulator_ramp.h"
-#include "sequencer/simulator/simml_simulator_sampler.h"
-#include "sequencer/simulator/simml_simulator_sid.h"
-#include "sequencer/simulator/simml_simulator_siopm.h"
-#include "sequencer/simulator/simml_simulator_vrc6.h"
-#include "sequencer/simulator/simml_simulator_wt.h"
 
 using namespace godot;
 
@@ -350,31 +327,6 @@ SiMMLRefTable::SiMMLRefTable() {
 			cs->set_channel_type(SiOPMChannelManager::CT_CHANNEL_KS);
 			cs->set_suitable_for_fm_voice(false);
 		}
-	}
-
-	// Simulators map.
-	{
-		channel_simulator_map[MT_PSG]     = memnew(SiMMLSimulatorPSG);          // PSG(DCSG)
-		channel_simulator_map[MT_APU]     = memnew(SiMMLSimulatorAPU);          // FC pAPU
-		channel_simulator_map[MT_NOISE]   = memnew(SiMMLSimulatorNoise);        // noise wave
-		channel_simulator_map[MT_MA3]     = memnew(SiMMLSimulatorMA3WaveTable); // MA3 wave form
-		channel_simulator_map[MT_CUSTOM]  = memnew(SiMMLSimulatorWT);           // SCC / custom wave table
-		channel_simulator_map[MT_ALL]     = memnew(SiMMLSimulatorSiOPM);        // all pgTypes
-		channel_simulator_map[MT_FM]      = memnew(SiMMLSimulatorFMSiOPM);      // FM sound module
-		channel_simulator_map[MT_PCM]     = memnew(SiMMLSimulatorPCM);          // PCM
-		channel_simulator_map[MT_PULSE]   = memnew(SiMMLSimulatorPulse);        // pulse wave
-		channel_simulator_map[MT_RAMP]    = memnew(SiMMLSimulatorRamp);         // ramp wave
-		channel_simulator_map[MT_SAMPLE]  = memnew(SiMMLSimulatorSampler);      // sampler
-		channel_simulator_map[MT_KS]      = memnew(SiMMLSimulatorKS);           // karplus strong
-		channel_simulator_map[MT_GB]      = memnew(SiMMLSimulatorGB);           // gameboy
-		channel_simulator_map[MT_VRC6]    = memnew(SiMMLSimulatorVRC6);         // vrc6
-		channel_simulator_map[MT_SID]     = memnew(SiMMLSimulatorSID);          // sid
-		channel_simulator_map[MT_FM_OPM]  = memnew(SiMMLSimulatorFMOPM);        // YM2151
-		channel_simulator_map[MT_FM_OPN]  = memnew(SiMMLSimulatorFMOPN);        // YM2203
-		channel_simulator_map[MT_FM_OPNA] = memnew(SiMMLSimulatorFMOPNA);       // YM2608
-		channel_simulator_map[MT_FM_OPLL] = memnew(SiMMLSimulatorFMOPLL);       // YM2413
-		channel_simulator_map[MT_FM_OPL3] = memnew(SiMMLSimulatorFMOPL3);       // YM3812
-		channel_simulator_map[MT_FM_MA3]  = memnew(SiMMLSimulatorFMMA3);        // YMU762
 	}
 
 	// OPLL default voices.
