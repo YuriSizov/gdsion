@@ -9,6 +9,7 @@
 #include <godot_cpp/core/class_db.hpp>
 #include "sion_enums.h"
 #include "chip/channels/siopm_channel_base.h"
+#include "chip/channels/siopm_channel_manager.h"
 #include "chip/siopm_ref_table.h"
 #include "chip/wave/siopm_wave_sampler_table.h"
 #include "chip/wave/siopm_wave_table.h"
@@ -883,7 +884,6 @@ void SiMMLTrack::change_note_length(int p_length) {
 void SiMMLTrack::reset(int p_buffer_index) {
 	// Channel module settings.
 	_channel_settings = _table->channel_settings_map[MT_PSG];
-	_simulator = _table->channel_simulator_map[MT_PSG];
 	_channel_number = 0;
 
 	// Initialize channel.
@@ -903,7 +903,10 @@ void SiMMLTrack::reset(int p_buffer_index) {
 	_pitch_bend = 0;
 	_note = -1;
 
-	_channel = nullptr;
+	if (_channel) {
+		SiOPMChannelManager::delete_channel(_channel);
+		_channel = nullptr;
+	}
 	_voice_index = _channel_settings->initialize_tone(this, INT32_MIN, p_buffer_index); // This sets the channel.
 
 	int (&velocity_table)[SiOPMRefTable::TL_TABLE_SIZE] = SiOPMRefTable::get_instance()->eg_total_level_tables[_velocity_mode];
@@ -1022,4 +1025,9 @@ SiMMLTrack::SiMMLTrack() {
 
 	_table_envelope_mod_amp.resize_zeroed(2);
 	_table_envelope_mod_pitch.resize_zeroed(2);
+}
+
+SiMMLTrack::~SiMMLTrack() {
+	_table = nullptr;
+	memdelete(_executor);
 }

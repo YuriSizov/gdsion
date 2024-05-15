@@ -73,7 +73,7 @@ public:
 	void clear();
 
 	MMLExecutor();
-	~MMLExecutor() {}
+	~MMLExecutor();
 };
 
 #endif // MML_EXECUTOR_H

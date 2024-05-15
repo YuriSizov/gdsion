@@ -408,7 +408,7 @@ void SiOPMChannelBase::buffer_no_process(int p_length) {
 void SiOPMChannelBase::initialize(SiOPMChannelBase *p_prev, int p_buffer_index) {
 	// Volume.
 
-	if (p_prev) {
+	if (p_prev && p_prev != this) {
 		for (int i = 0; i < SiOPMSoundChip::STREAM_SEND_SIZE; i++) {
 			_volumes.write[i] = p_prev->_volumes[i];
 			_streams.write[i] = p_prev->_streams[i];
@@ -419,7 +419,7 @@ void SiOPMChannelBase::initialize(SiOPMChannelBase *p_prev, int p_buffer_index) 
 		_mute = p_prev->_mute;
 		COPY_TL_TABLE(_velocity_table, p_prev->_velocity_table);
 		COPY_TL_TABLE(_expression_table, p_prev->_expression_table);
-	} else {
+	} else if (!p_prev) {
 		_volumes.write[0] = 0.5;
 		_streams.write[0] = nullptr;
 		for (int i = 1; i < SiOPMSoundChip::STREAM_SEND_SIZE; i++) {

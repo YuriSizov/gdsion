@@ -22,7 +22,6 @@ class MMLExecutor;
 class MMLSequence;
 class SiMMLChannelSettings;
 class SiMMLEnvelopeTable;
-class SiMMLSimulatorBase;
 class SiOPMChannelBase;
 
 class SiMMLTrack : public Object {
@@ -68,7 +67,6 @@ private:
 	SiOPMChannelBase *_channel = nullptr;
 	MMLExecutor *_executor = nullptr;
 	SiMMLChannelSettings *_channel_settings = nullptr;
-	SiMMLSimulatorBase *_simulator = nullptr;
 
 	Ref<SiMMLData> _mml_data;
 	SiMMLRefTable *_table = nullptr;
@@ -385,7 +383,7 @@ public:
 	void initialize(MMLSequence *p_sequence, int p_fps, int p_internal_track_id, const Callable &p_event_trigger_on, const Callable &p_event_trigger_off, bool p_disposable);
 
 	SiMMLTrack();
-	~SiMMLTrack() {}
+	~SiMMLTrack();
 };
 
 #endif // SIMML_TRACK_H

@@ -88,6 +88,7 @@ public:
 	void free();
 
 	MMLEvent(int p_id = 0, int p_data = 0, int p_length = 0);
+	~MMLEvent() {}
 };
 
 #endif // MML_EVENT_H

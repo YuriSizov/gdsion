@@ -192,3 +192,15 @@ MMLExecutor::MMLExecutor() {
 	_bend_from->next = _bend_event;
 	_bend_event->next = _note_event;
 }
+
+MMLExecutor::~MMLExecutor() {
+	MMLParser::get_instance()->free_event(_process_event);
+	MMLParser::get_instance()->free_event(_note_event);
+	MMLParser::get_instance()->free_event(_bend_from);
+	MMLParser::get_instance()->free_event(_bend_event);
+
+	_process_event = nullptr;
+	_note_event = nullptr;
+	_bend_from = nullptr;
+	_bend_event = nullptr;
+}
