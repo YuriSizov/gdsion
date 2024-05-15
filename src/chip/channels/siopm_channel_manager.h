@@ -41,6 +41,8 @@ private:
 
 public:
 	static void initialize(SiOPMSoundChip *p_chip);
+	static void finalize();
+
 	static void initialize_all_channels();
 	static void reset_all_channels();
 
@@ -50,7 +52,7 @@ public:
 	int get_length() const { return _length; }
 
 	SiOPMChannelManager(ChannelType p_channel_type);
-	~SiOPMChannelManager() {}
+	~SiOPMChannelManager();
 };
 
 #endif // SIOPM_CHANNEL_MANAGER_H

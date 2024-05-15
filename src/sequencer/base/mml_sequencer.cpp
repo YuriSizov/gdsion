@@ -591,8 +591,9 @@ MMLSequencer::MMLSequencer() {
 
 	_global_executor = memnew(MMLExecutor);
 	MMLParser::get_instance()->get_command_letters(&_event_command_letter_map);
+}
 
-	// 3 : callback every 4 beat
-	_on_beat_callback_filter = 3;
-
+MMLSequencer::~MMLSequencer() {
+	memdelete(_parser_settings);
+	memdelete(_global_executor);
 }

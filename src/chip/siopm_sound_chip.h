@@ -70,7 +70,7 @@ public:
 	void reset();
 
 	SiOPMSoundChip();
-	~SiOPMSoundChip() {}
+	~SiOPMSoundChip();
 };
 
 #endif // SIOPM_SOUND_CHIP_H

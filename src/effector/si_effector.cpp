@@ -335,7 +335,6 @@ SiEffector::SiEffector(SiOPMSoundChip *p_chip) {
 	_global_effects.write[0] = _master_effect;
 
 	// Register default effect instances.
-	// FIXME: Implement all effects and filters.
 
 	register_effect<SiEffectAutopan>("autopan");
 	register_effect<SiEffectCompressor>("comp");
@@ -361,4 +360,26 @@ SiEffector::SiEffector(SiOPMSoundChip *p_chip) {
 
 	register_effect<SiControllableFilterHighPass>("nhf");
 	register_effect<SiControllableFilterLowPass>("nlf");
+}
+
+SiEffector::~SiEffector() {
+	_sound_chip = nullptr;
+	_master_effect = nullptr;
+
+	for (SiEffectStream *effect : _free_effect_streams) {
+		memdelete(effect);
+	}
+	_free_effect_streams.clear();
+
+	for (SiEffectStream *effect : _local_effects) {
+		memdelete(effect);
+	}
+	_local_effects.clear();
+
+	for (SiEffectStream *effect : _global_effects) {
+		if (effect != nullptr) {
+			memdelete(effect);
+		}
+	}
+	_global_effects.clear();
 }

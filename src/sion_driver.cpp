@@ -1366,3 +1366,19 @@ SiONDriver::SiONDriver(int p_buffer_length, int p_channel_count, int p_sample_ra
 	_performance_stats.processing_time_data = SinglyLinkedList<int>::alloc_ring(TIME_AVERAGING_COUNT);
 	_performance_stats.total_processing_time_ratio = _sample_rate / (_buffer_length * TIME_AVERAGING_COUNT);
 }
+
+SiONDriver::~SiONDriver() {
+	if (_mutex == this) {
+		_mutex = nullptr;
+	}
+
+	_timer_interval_event = nullptr;
+	memdelete(_timer_sequence);
+
+	memdelete(_fader);
+	memdelete(_background_fader);
+
+	memdelete(sequencer);
+	memdelete(effector);
+	memdelete(sound_chip);
+}

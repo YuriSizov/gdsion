@@ -28,6 +28,16 @@ void SiOPMChannelManager::initialize(SiOPMSoundChip *p_chip) {
 	_channel_managers[CT_CHANNEL_KS]      = memnew(SiOPMChannelManager(CT_CHANNEL_KS));
 }
 
+void SiOPMChannelManager::finalize() {
+	_sound_chip = nullptr;
+
+	memdelete(_channel_managers[CT_CHANNEL_FM]);
+	memdelete(_channel_managers[CT_CHANNEL_PCM]);
+	memdelete(_channel_managers[CT_CHANNEL_SAMPLER]);
+	memdelete(_channel_managers[CT_CHANNEL_KS]);
+	_channel_managers.clear();
+}
+
 void SiOPMChannelManager::initialize_all_channels() {
 	for (const KeyValue<ChannelType, SiOPMChannelManager *> &kv : _channel_managers) {
 		kv.value->_initialize_all();
@@ -128,4 +138,15 @@ SiOPMChannelManager::SiOPMChannelManager(ChannelType p_channel_type) {
 	_terminator->_next = _terminator;
 	_terminator->_prev = _terminator;
 	_length = 0;
+}
+
+SiOPMChannelManager::~SiOPMChannelManager() {
+	SiOPMChannelBase *channel = _terminator->_next;
+	while (channel && channel != _terminator) {
+		SiOPMChannelBase *next_channel = channel->_next;
+		memdelete(channel);
+		channel = next_channel;
+	}
+
+	memdelete(_terminator);
 }

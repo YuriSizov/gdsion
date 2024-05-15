@@ -73,7 +73,7 @@ public:
 	void initialize();
 
 	SiEffector(SiOPMSoundChip *p_chip = nullptr);
-	~SiEffector() {}
+	~SiEffector();
 };
 
 #endif // SI_EFFECTOR_H

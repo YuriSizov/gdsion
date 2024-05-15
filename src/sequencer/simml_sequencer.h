@@ -237,7 +237,7 @@ public:
 	//
 
 	SiMMLSequencer(SiOPMSoundChip *p_chip = nullptr);
-	~SiMMLSequencer() {}
+	~SiMMLSequencer();
 };
 
 #endif // SIMML_SEQUENCER_H

@@ -91,3 +91,11 @@ SiOPMSoundChip::SiOPMSoundChip() {
 
 	SiOPMChannelManager::initialize(this);
 }
+
+SiOPMSoundChip::~SiOPMSoundChip() {
+	memdelete(init_operator_params);
+	memdelete(output_stream);
+
+	SinglyLinkedList<int>::free_ring(zero_buffer);
+	SiOPMChannelManager::finalize();
+}

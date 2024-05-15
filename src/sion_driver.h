@@ -417,7 +417,7 @@ public:
 	//
 
 	SiONDriver(int p_buffer_length = 2048, int p_channel_count = 2, int p_sample_rate = 44100, int p_bitrate = 0);
-	~SiONDriver() {}
+	~SiONDriver();
 };
 
 #endif // SION_DRIVER_H

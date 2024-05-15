@@ -1747,3 +1747,22 @@ SiMMLSequencer::SiMMLSequencer(SiOPMSoundChip *p_chip) :
 	_reset_initial_operator_params();
 	_reset_parser_settings();
 }
+
+SiMMLSequencer::~SiMMLSequencer() {
+	_table = nullptr;
+	_sound_chip = nullptr;
+
+	memdelete(_connector);
+
+	_current_track = nullptr;
+
+	for (SiMMLTrack *track : _free_tracks) {
+		memdelete(track);
+	}
+	_free_tracks.clear();
+
+	for (SiMMLTrack *track : _tracks) {
+		memdelete(track);
+	}
+	_tracks.clear();
+}

@@ -104,7 +104,7 @@ protected:
 	int _global_buffer_index = 0;
 	double _global_beat_16th = 0;
 	// Filter for the on-beat callback, 0 = 16th beat, 1 = 8th beat, 3 = 4th beat, 7 = 2nd beat, 15 = whole tone.
-	int _on_beat_callback_filter = 0;
+	int _on_beat_callback_filter = 3;
 
 	// Events.
 
@@ -166,7 +166,7 @@ public:
 	//
 
 	MMLSequencer();
-	~MMLSequencer() {}
+	~MMLSequencer();
 };
 
 #endif // MML_SEQUENCER_H
