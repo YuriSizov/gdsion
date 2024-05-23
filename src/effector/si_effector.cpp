@@ -88,7 +88,7 @@ Ref<SiEffectBase> SiEffector::get_effect_instance(const String &p_name) {
 	}
 
 	// Failing above we allocate a new one.
-	// FIXME: Maybe there is a better way to do it, but templates, the most obvious choice, didn't prove to be helpful.
+	// TODO: Maybe there is a better way to do it, but templates, the most obvious choice, didn't prove to be helpful.
 
 #define CREATE_EFFECT(m_type, m_name)                                 \
 	if (p_name == m_name) {                                           \

@@ -383,7 +383,7 @@ double MMLSequencer::compile(int p_interval) {
 
 	MMLEvent *event = MMLParser::get_instance()->parse(p_interval);
 	// If there is no event, then the parsing process is still going.
-	// FIXME: Use a signal instead?
+	// TODO: Use a signal instead?
 	if (!event) {
 		return MMLParser::get_instance()->get_parse_progress();
 	}

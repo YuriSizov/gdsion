@@ -97,7 +97,8 @@ void TranslatorUtil::_set_params_by_array(SiOPMChannelParams *r_params, Vector<i
 		op_params->key_scaling_rate           = p_data[data_index++] & 3;          // 8
 		op_params->key_scaling_level          = p_data[data_index++] & 3;          // 9
 
-		// FIXME: Original code briefly converts this value to a Number type, which is equivalent to double. However, it's unclear if this is intentional or not.
+		// Note: Original code briefly converts this value to a Number type, which is
+		// equivalent to double. However, it's unclear if this is intentional or not.
 		// Fine multiple (fmul) is stored and set as an int in the class definition.
 		int n = p_data[data_index++];
 		op_params->fine_multiple = (n == 0) ? 64 : n * 128;                         // 10
