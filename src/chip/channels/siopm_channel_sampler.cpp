@@ -120,7 +120,8 @@ void SiOPMChannelSampler::buffer(int p_length) {
 					SiOPMStream *stream = _streams[i] ? _streams[i] : _sound_chip->get_stream_slot(i);
 					if (stream) {
 						double volume = _volumes[i] * _expression * _sound_chip->get_sampler_volume();
-						stream->write_from_vector(&_sample_data->get_wave_data(), _sample_index, _buffer_index, processed, volume, _sample_pan, _sample_data->get_channel_count());
+						Vector<double> wave_data = _sample_data->get_wave_data();
+						stream->write_from_vector(&wave_data, _sample_index, _buffer_index, processed, volume, _sample_pan, _sample_data->get_channel_count());
 					}
 				}
 			}
@@ -128,7 +129,8 @@ void SiOPMChannelSampler::buffer(int p_length) {
 			SiOPMStream *stream = _streams[0] ? _streams[0] : _sound_chip->get_output_stream();
 
 			double volume = _volumes[0] * _expression * _sound_chip->get_sampler_volume();
-			stream->write_from_vector(&_sample_data->get_wave_data(), _sample_index, _buffer_index, processed, volume, _sample_pan, _sample_data->get_channel_count());
+			Vector<double> wave_data = _sample_data->get_wave_data();
+			stream->write_from_vector(&wave_data, _sample_index, _buffer_index, processed, volume, _sample_pan, _sample_data->get_channel_count());
 		}
 
 		_sample_index += processed;
