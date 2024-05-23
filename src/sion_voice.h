@@ -66,7 +66,7 @@ public:
 	String get_mml(int p_index, String p_chip_type = SiONVoice::CHIPTYPE_AUTO, bool p_append_postfix = true) const;
 	int set_by_mml(String p_mml);
 
-	SiOPMWaveTable *set_wave_table(Vector<double> p_data);
+	SiOPMWaveTable *set_wave_table(Vector<double> *p_data);
 
 	SiOPMWavePCMData *set_pcm_voice(const Variant &p_data, int p_sampling_note = 69, int p_src_channel_count = 2, int p_channel_count = 0);
 	SiOPMWaveSamplerData *set_mp3_voice(Object *p_wave, bool p_ignore_note_off = false, int p_channel_count = 2);

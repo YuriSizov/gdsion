@@ -104,24 +104,24 @@ String SiONVoice::get_mml(int p_index, String p_chip_type, bool p_append_postfix
 
 	String mml;
 	if (type == SiONVoice::CHIPTYPE_OPL) {
-		mml = "#OPL@" + itos(p_index) + TranslatorUtil::mml_opl_params(channel_params, " ", "\n", _name);
+		mml = "#OPL@" + itos(p_index) + TranslatorUtil::get_opl_params_as_mml(channel_params, " ", "\n", _name);
 	} else if (type == SiONVoice::CHIPTYPE_OPM) {
-		mml = "#OPM@" + itos(p_index) + TranslatorUtil::mml_opm_params(channel_params, " ", "\n", _name);
+		mml = "#OPM@" + itos(p_index) + TranslatorUtil::get_opm_params_as_mml(channel_params, " ", "\n", _name);
 	} else if (type == SiONVoice::CHIPTYPE_OPN) {
-		mml = "#OPN@" + itos(p_index) + TranslatorUtil::mml_opn_params(channel_params, " ", "\n", _name);
+		mml = "#OPN@" + itos(p_index) + TranslatorUtil::get_opn_params_as_mml(channel_params, " ", "\n", _name);
 	} else if (type == SiONVoice::CHIPTYPE_OPX) {
-		mml = "#OPX@" + itos(p_index) + TranslatorUtil::mml_opx_params(channel_params, " ", "\n", _name);
+		mml = "#OPX@" + itos(p_index) + TranslatorUtil::get_opx_params_as_mml(channel_params, " ", "\n", _name);
 	} else if (type == SiONVoice::CHIPTYPE_MA3) {
-		mml = "#MA@"  + itos(p_index) + TranslatorUtil::mml_ma3_params(channel_params, " ", "\n", _name);
+		mml = "#MA@"  + itos(p_index) + TranslatorUtil::get_ma3_params_as_mml(channel_params, " ", "\n", _name);
 	} else if (type == SiONVoice::CHIPTYPE_ANALOG_LIKE) {
-		mml = "#AL@"  + itos(p_index) + TranslatorUtil::mml_al_params(channel_params, " ", "\n", _name);
+		mml = "#AL@"  + itos(p_index) + TranslatorUtil::get_al_params_as_mml(channel_params, " ", "\n", _name);
 	} else {
-		mml = "#@"    + itos(p_index) + TranslatorUtil::mml_params(channel_params, " ", "\n", _name);
+		mml = "#@"    + itos(p_index) + TranslatorUtil::get_params_as_mml(channel_params, " ", "\n", _name);
 	}
 
 	if (p_append_postfix) {
 		Ref<SiONVoice> this_voice = const_cast<SiONVoice *>(this);
-		String postfix = TranslatorUtil::mml_voice_setting(this_voice);
+		String postfix = TranslatorUtil::get_voice_setting_as_mml(this_voice);
 		if (!postfix.is_empty()) {
 			mml += "\n" + postfix;
 		}
@@ -183,12 +183,12 @@ int SiONVoice::set_by_mml(String p_mml) {
 	return voice_index;
 }
 
-SiOPMWaveTable *SiONVoice::set_wave_table(Vector<double> p_data) {
+SiOPMWaveTable *SiONVoice::set_wave_table(Vector<double> *p_data) {
 	module_type = MT_CUSTOM;
 
 	Vector<int> table;
-	for (int i = 0; i < p_data.size(); i++) {
-		int table_index = SiOPMRefTable::calculate_log_table_index(p_data[i]);
+	for (int i = 0; i < p_data->size(); i++) {
+		int table_index = SiOPMRefTable::calculate_log_table_index((*p_data)[i]);
 		table.append(table_index);
 	}
 	wave_data = SiOPMWaveTable::alloc(table);

@@ -42,7 +42,7 @@ public:
 	SiMMLEnvelopeTable *get_envelope_table(int p_index) const;
 	void set_envelope_table(int p_index, SiMMLEnvelopeTable *p_envelope);
 	SiOPMWaveTable *get_wave_table(int p_index) const;
-	SiOPMWaveTable *set_wave_table(int p_index, Vector<double> p_data);
+	SiOPMWaveTable *set_wave_table(int p_index, Vector<double> *p_data);
 	SiOPMWaveSamplerTable *get_sampler_table(int p_index) const;
 	void set_sampler_table(int p_index, SiOPMWaveSamplerTable *p_sampler);
 

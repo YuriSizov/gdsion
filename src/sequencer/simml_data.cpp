@@ -47,13 +47,13 @@ SiOPMWaveTable *SiMMLData::get_wave_table(int p_index) const {
 	return _wave_tables[index];
 }
 
-SiOPMWaveTable *SiMMLData::set_wave_table(int p_index, Vector<double> p_data) {
+SiOPMWaveTable *SiMMLData::set_wave_table(int p_index, Vector<double> *p_data) {
 	int index = p_index & (SiOPMRefTable::WAVE_TABLE_MAX - 1);
 
 	Vector<int> log_table;
-	log_table.resize_zeroed(p_data.size());
-	for (int i = 0; i < p_data.size(); i++) {
-		log_table.write[i] = SiOPMRefTable::calculate_log_table_index(p_data[i]);
+	log_table.resize_zeroed(p_data->size());
+	for (int i = 0; i < p_data->size(); i++) {
+		log_table.write[i] = SiOPMRefTable::calculate_log_table_index((*p_data)[i]);
 	}
 
 	_wave_tables.write[index] = SiOPMWaveTable::alloc(log_table);

@@ -802,14 +802,18 @@ bool SiMMLSequencer::_parse_system_command_before(String p_command, String p_par
 		ERR_FAIL_COND_V_MSG((number < 0 || number > 255), true, vformat("SiMMLSequencer: Parameter '%d' for command '%s' is outside of valid range (%d : %d).", number, p_command, 0, 255));
 
 		Ref<SiMMLData> simml_data = mml_data;
-		simml_data->set_wave_table(number, TranslatorUtil::parse_wav(content, postfix));
+		Vector<double> wave_data;
+		TranslatorUtil::parse_wav(content, postfix, &wave_data);
+		simml_data->set_wave_table(number, &wave_data);
 		return true;
 	}
 	if (p_command == "#WAVB") {
 		ERR_FAIL_COND_V_MSG((number < 0 || number > 255), true, vformat("SiMMLSequencer: Parameter '%d' for command '%s' is outside of valid range (%d : %d).", number, p_command, 0, 255));
 
 		Ref<SiMMLData> simml_data = mml_data;
-		simml_data->set_wave_table(number, TranslatorUtil::parse_wavb(has_content ? content : postfix));
+		Vector<double> wave_data;
+		TranslatorUtil::parse_wavb(has_content ? content : postfix, &wave_data);
+		simml_data->set_wave_table(number, &wave_data);
 		return true;
 	}
 

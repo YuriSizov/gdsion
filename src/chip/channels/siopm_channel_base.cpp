@@ -11,9 +11,9 @@
 #include "chip/siopm_stream.h"
 #include "utils/godot_util.h"
 
-#define COPY_TL_TABLE(m_target, m_source)                     \
+#define COPY_TL_TABLE(m_target, m_source)                        \
 	for (int _i = 0; _i < SiOPMRefTable::TL_TABLE_SIZE; _i++) {  \
-		m_target[_i] = m_source[_i];                          \
+		m_target[_i] = m_source[_i];                             \
 	}
 
 int SiOPMChannelBase::get_master_volume() const {

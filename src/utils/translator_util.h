@@ -44,6 +44,18 @@ class TranslatorUtil {
 	static int _get_nearest_dt2(int p_detune);
 	static int _balance_total_levels(int p_level0, int p_level1);
 
+	struct OperatorParamsSizes {
+		int pg_type = 1;
+		int total_level = 2;
+		int detune = 1;
+		int phase = 1;
+		int fixed_pitch = 1;
+	};
+
+	static String _format_mml_comment(const String &p_comment, const String &p_line_end);
+	static String _format_mml_digit(int p_value, int p_padded = 0);
+	static OperatorParamsSizes _get_operator_params_sizes(SiOPMChannelParams *p_params);
+
 public:
 	// Channel params.
 
@@ -71,16 +83,16 @@ public:
 	static Vector<int> get_ma3_params(SiOPMChannelParams *p_params);
 	static Vector<int> get_al_params(SiOPMChannelParams *p_params);
 
-	static String mml_params(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
-	static String mml_opl_params(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
-	static String mml_opm_params(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
-	static String mml_opn_params(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
-	static String mml_opx_params(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
-	static String mml_ma3_params(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
-	static String mml_al_params(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
+	static String get_params_as_mml(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
+	static String get_opl_params_as_mml(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
+	static String get_opm_params_as_mml(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
+	static String get_opn_params_as_mml(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
+	static String get_opx_params_as_mml(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
+	static String get_ma3_params_as_mml(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
+	static String get_al_params_as_mml(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
 
 	static void parse_voice_setting(const Ref<SiMMLVoice> &p_voice, String p_mml, Vector<SiMMLEnvelopeTable *> p_envelopes = Vector<SiMMLEnvelopeTable *>());
-	static String mml_voice_setting(const Ref<SiMMLVoice> &p_voice);
+	static String get_voice_setting_as_mml(const Ref<SiMMLVoice> &p_voice);
 
 	//
 
@@ -95,8 +107,8 @@ public:
 
 	static MMLTableNumbers parse_table_numbers(String p_table_numbers, String p_postfix, int p_max_index = 65536);
 
-	static Vector<double> parse_wav(String p_table_numbers, String p_postfix);
-	static Vector<double> parse_wavb(String p_hex);
+	static void parse_wav(String p_table_numbers, String p_postfix, Vector<double> *r_data);
+	static void parse_wavb(String p_hex, Vector<double> *r_data);
 
 	// TODO: The sound reference table is mostly needed for passing a map of Flash Sound objects. Some code changes may be needed in places that utilize that.
 	static bool parse_sampler_wave(SiOPMWaveSamplerTable *p_table, int p_note_number, String p_mml, HashMap<String, Variant> p_sound_ref_table);

@@ -126,10 +126,10 @@ String SiOPMChannelParams::to_string() const {
 	String str = "SiOPMChannelParam : ";
 	str += "opeCount=" + itos(operator_count) + "\n";
 
-#define FORMAT_VALUE(m_name, m_value)                   \
+#define FORMAT_VALUE(m_name, m_value)                          \
 	str += "  " + String(m_name) + "=" + itos(m_value) + "\n";
 
-#define FORMAT_VALUE_PAIR(m_name1, m_value1, m_name2, m_value2)                                    \
+#define FORMAT_VALUE_PAIR(m_name1, m_value1, m_name2, m_value2)                                                   \
 	str += "  " + String(m_name1) + "=" + itos(m_value1) + " / " + String(m_name2) + "=" + itos(m_value2) + "\n";
 
 	FORMAT_VALUE("freq.ratio", envelope_frequency_ratio);

@@ -13,6 +13,10 @@
 #include "chip/siopm_channel_params.h"
 #include "chip/siopm_operator_params.h"
 #include "chip/siopm_ref_table.h"
+#include "chip/wave/siopm_wave_pcm_data.h"
+#include "chip/wave/siopm_wave_pcm_table.h"
+#include "chip/wave/siopm_wave_sampler_data.h"
+#include "chip/wave/siopm_wave_sampler_table.h"
 #include "sequencer/simml_ref_table.h"
 #include "utils/godot_util.h"
 
@@ -703,46 +707,423 @@ Vector<int> TranslatorUtil::get_al_params(SiOPMChannelParams *p_params) {
 	return res;
 }
 
-String TranslatorUtil::mml_params(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
-	// FIXME: NOT IMPLEMENTED
-	return "";
+String TranslatorUtil::_format_mml_comment(const String &p_comment, const String &p_line_end) {
+	if (p_comment.is_empty()) {
+		return "";
+	}
+
+	if (p_line_end == "\n") {
+		return vformat(" // %s", p_comment);
+	} else {
+		return vformat("/* %s */", p_comment);
+	}
 }
 
-String TranslatorUtil::mml_opl_params(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
-	// FIXME: NOT IMPLEMENTED
-	return "";
+String TranslatorUtil::_format_mml_digit(int p_value, int p_padded) {
+	if (p_padded <= 0) {
+		return itos(p_value);
+	}
+
+	int padded_length = p_padded;
+	if (p_value < 0) {
+		padded_length -= 1; // Accounts for the minus sign.
+	}
+
+	return itos(p_value).pad_zeros(padded_length);
 }
 
-String TranslatorUtil::mml_opm_params(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
-	// FIXME: NOT IMPLEMENTED
-	return "";
+TranslatorUtil::OperatorParamsSizes TranslatorUtil::_get_operator_params_sizes(SiOPMChannelParams *p_params) {
+	OperatorParamsSizes sizes;
+
+#define MAX_PARAM_SIZE(m_key, m_value)              \
+	{                                               \
+		String value_string = itos(m_value);        \
+		if (value_string.length() > sizes.m_key) {  \
+			sizes.m_key = value_string.length();    \
+		}                                           \
+	}
+
+	for (int i = 0; i < p_params->operator_count; i++) {
+		SiOPMOperatorParams *op_params = p_params->operator_params[i];
+
+		MAX_PARAM_SIZE(pg_type, op_params->pulse_generator_type)
+		MAX_PARAM_SIZE(total_level, op_params->total_level)
+		MAX_PARAM_SIZE(detune, op_params->detune)
+		MAX_PARAM_SIZE(phase, op_params->initial_phase)
+		MAX_PARAM_SIZE(fixed_pitch, op_params->fixed_pitch >> 6)
+	}
+
+#undef MAX_PARAM_SIZE
+
+	return sizes;
 }
 
-String TranslatorUtil::mml_opn_params(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
-	// FIXME: NOT IMPLEMENTED
-	return "";
+String TranslatorUtil::get_params_as_mml(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
+	if (p_params->get_operator_count() == 0) {
+		return "";
+	}
+
+	// Open MML string.
+	String mml = "{";
+
+	// Channel parameters.
+
+	mml += _format_mml_digit(p_params->algorithm) + p_separator;
+	mml += _format_mml_digit(p_params->feedback)  + p_separator;
+	mml += _format_mml_digit(p_params->feedback_connection);
+
+	// Custom comment message.
+
+	mml += _format_mml_comment(p_comment, p_line_end);
+
+	// Operator parameters.
+
+	OperatorParamsSizes sizes = _get_operator_params_sizes(p_params);
+
+	for (int i = 0; i < p_params->get_operator_count(); i++) {
+		SiOPMOperatorParams *op_params = p_params->get_operator_params(i);
+
+		mml += p_line_end;
+
+		mml += _format_mml_digit(op_params->pulse_generator_type, sizes.pg_type)  + p_separator;
+		mml += _format_mml_digit(op_params->attack_rate, 2)                       + p_separator;
+		mml += _format_mml_digit(op_params->decay_rate, 2)                        + p_separator;
+		mml += _format_mml_digit(op_params->sustain_rate, 2)                      + p_separator;
+		mml += _format_mml_digit(op_params->release_rate, 2)                      + p_separator;
+		mml += _format_mml_digit(op_params->sustain_level, 2)                     + p_separator;
+		mml += _format_mml_digit(op_params->total_level, sizes.total_level)       + p_separator;
+		mml += _format_mml_digit(op_params->key_scaling_rate)                     + p_separator;
+		mml += _format_mml_digit(op_params->key_scaling_level)                    + p_separator;
+		mml += _format_mml_digit(op_params->get_multiple(), 2)                    + p_separator;
+		mml += _format_mml_digit(op_params->detune1)                              + p_separator;
+		mml += _format_mml_digit(op_params->detune, sizes.detune)                 + p_separator;
+		mml += _format_mml_digit(op_params->amplitude_modulation_shift)           + p_separator;
+		mml += _format_mml_digit(op_params->initial_phase, sizes.phase)           + p_separator;
+		mml += _format_mml_digit(op_params->fixed_pitch >> 6, sizes.fixed_pitch);
+	}
+
+	// Close MML string.
+	mml += "}";
+
+	return mml;
 }
 
-String TranslatorUtil::mml_opx_params(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
-	// FIXME: NOT IMPLEMENTED
-	return "";
+String TranslatorUtil::get_opl_params_as_mml(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
+	if (p_params->get_operator_count() == 0) {
+		return "";
+	}
+
+	int alg_index = _get_algorithm_index(p_params->operator_count, p_params->algorithm, SiMMLRefTable::get_instance()->algorithm_opl, "#OPL@");
+	if (alg_index == -1) {
+		return "";
+	}
+
+	// Open MML string.
+	String mml = "{";
+
+	// Channel parameters.
+
+	mml += _format_mml_digit(alg_index) + p_separator;
+	mml += _format_mml_digit(p_params->feedback);
+
+
+	// Custom comment message.
+
+	mml += _format_mml_comment(p_comment, p_line_end);
+
+	// Operator parameters.
+
+	for (int i = 0; i < p_params->get_operator_count(); i++) {
+		SiOPMOperatorParams *op_params = p_params->get_operator_params(i);
+
+		int wave_shape = _get_ma3_from_pg_type(op_params->pulse_generator_type, "#OPL@");
+		if (wave_shape == -1) {
+			return "";
+		}
+
+		mml += p_line_end;
+
+		mml += _format_mml_digit(wave_shape)                       + p_separator;
+		mml += _format_mml_digit(op_params->attack_rate >> 2, 2)   + p_separator;
+		mml += _format_mml_digit(op_params->decay_rate >> 2, 2)    + p_separator;
+		mml += _format_mml_digit(op_params->release_rate >> 2, 2)  + p_separator;
+		mml += (op_params->sustain_rate == 0 ? "1" : "0")          + p_separator;
+		mml += _format_mml_digit(op_params->sustain_level, 2)      + p_separator;
+
+		int total_level = op_params->total_level < 63 ? op_params->total_level : 63;
+		mml += _format_mml_digit(total_level, 2)                   + p_separator;
+		mml += _format_mml_digit(op_params->key_scaling_rate >> 1) + p_separator;
+		mml += _format_mml_digit(op_params->key_scaling_level)     + p_separator;
+		mml += _format_mml_digit(op_params->get_multiple(), 2)     + p_separator;
+		mml += _format_mml_digit(op_params->amplitude_modulation_shift);
+	}
+
+	// Close MML string.
+	mml += "}";
+
+	return mml;
 }
 
-String TranslatorUtil::mml_ma3_params(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
-	// FIXME: NOT IMPLEMENTED
-	return "";
+String TranslatorUtil::get_opm_params_as_mml(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
+	if (p_params->get_operator_count() == 0) {
+		return "";
+	}
+
+	int alg_index = _get_algorithm_index(p_params->operator_count, p_params->algorithm, SiMMLRefTable::get_instance()->algorithm_opm, "#OPM@");
+	if (alg_index == -1) {
+		return "";
+	}
+
+	// Open MML string.
+	String mml = "{";
+
+	// Channel parameters.
+
+	mml += _format_mml_digit(alg_index) + p_separator;
+	mml += _format_mml_digit(p_params->feedback);
+
+
+	// Custom comment message.
+
+	mml += _format_mml_comment(p_comment, p_line_end);
+
+	// Operator parameters.
+
+	OperatorParamsSizes sizes = _get_operator_params_sizes(p_params);
+
+	for (int i = 0; i < p_params->get_operator_count(); i++) {
+		SiOPMOperatorParams *op_params = p_params->get_operator_params(i);
+
+		mml += p_line_end;
+
+		mml += _format_mml_digit(op_params->attack_rate >> 1, 2)            + p_separator;
+		mml += _format_mml_digit(op_params->decay_rate >> 1, 2)             + p_separator;
+		mml += _format_mml_digit(op_params->sustain_rate >> 1, 2)           + p_separator;
+		mml += _format_mml_digit(op_params->release_rate >> 2, 2)           + p_separator;
+		mml += _format_mml_digit(op_params->sustain_level, 2)               + p_separator;
+		mml += _format_mml_digit(op_params->total_level, sizes.total_level) + p_separator;
+		mml += _format_mml_digit(op_params->key_scaling_level)              + p_separator;
+		mml += _format_mml_digit(op_params->get_multiple(), 2)              + p_separator;
+		mml += _format_mml_digit(op_params->detune1)                        + p_separator;
+
+		int	detune2 = _get_nearest_dt2(op_params->detune);
+		mml += _format_mml_digit(detune2)                                   + p_separator;
+		mml += _format_mml_digit(op_params->amplitude_modulation_shift);
+	}
+
+	// Close MML string.
+	mml += "}";
+
+	return mml;
 }
 
-String TranslatorUtil::mml_al_params(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
-	// FIXME: NOT IMPLEMENTED
-	return "";
+String TranslatorUtil::get_opn_params_as_mml(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
+	if (p_params->get_operator_count() == 0) {
+		return "";
+	}
+
+	// Note: OPM and OPN share the algo list.
+	int alg_index = _get_algorithm_index(p_params->operator_count, p_params->algorithm, SiMMLRefTable::get_instance()->algorithm_opm, "#OPN@");
+	if (alg_index == -1) {
+		return "";
+	}
+
+	// Open MML string.
+	String mml = "{";
+
+	// Channel parameters.
+
+	mml += _format_mml_digit(alg_index) + p_separator;
+	mml += _format_mml_digit(p_params->feedback);
+
+	// Custom comment message.
+
+	mml += _format_mml_comment(p_comment, p_line_end);
+
+	// Operator parameters.
+
+	OperatorParamsSizes sizes = _get_operator_params_sizes(p_params);
+
+	for (int i = 0; i < p_params->get_operator_count(); i++) {
+		SiOPMOperatorParams *op_params = p_params->get_operator_params(i);
+
+		mml += p_line_end;
+
+		mml += _format_mml_digit(op_params->attack_rate >> 1, 2)            + p_separator;
+		mml += _format_mml_digit(op_params->decay_rate >> 1, 2)             + p_separator;
+		mml += _format_mml_digit(op_params->sustain_rate >> 1, 2)           + p_separator;
+		mml += _format_mml_digit(op_params->release_rate >> 2, 2)           + p_separator;
+		mml += _format_mml_digit(op_params->sustain_level, 2)               + p_separator;
+		mml += _format_mml_digit(op_params->total_level, sizes.total_level) + p_separator;
+		mml += _format_mml_digit(op_params->key_scaling_level)              + p_separator;
+		mml += _format_mml_digit(op_params->get_multiple(), 2)              + p_separator;
+		mml += _format_mml_digit(op_params->detune1)                        + p_separator;
+		mml += _format_mml_digit(op_params->amplitude_modulation_shift);
+	}
+
+	// Close MML string.
+	mml += "}";
+
+	return mml;
+}
+
+String TranslatorUtil::get_opx_params_as_mml(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
+	if (p_params->get_operator_count() == 0) {
+		return "";
+	}
+
+	int alg_index = _get_algorithm_index(p_params->operator_count, p_params->algorithm, SiMMLRefTable::get_instance()->algorithm_opx, "#OPX@");
+	if (alg_index == -1) {
+		return "";
+	}
+
+	// Open MML string.
+	String mml = "{";
+
+	// Channel parameters.
+
+	mml += _format_mml_digit(alg_index) + p_separator;
+	mml += _format_mml_digit(p_params->feedback);
+
+	// Custom comment message.
+
+	mml += _format_mml_comment(p_comment, p_line_end);
+
+	// Operator parameters.
+
+	OperatorParamsSizes sizes = _get_operator_params_sizes(p_params);
+
+	for (int i = 0; i < p_params->get_operator_count(); i++) {
+		SiOPMOperatorParams *op_params = p_params->get_operator_params(i);
+
+		int wave_shape = _get_ma3_from_pg_type(op_params->pulse_generator_type, "#OPX@");
+		if (wave_shape == -1) {
+			return "";
+		}
+
+		mml += p_line_end;
+
+		mml += _format_mml_digit(wave_shape)                                + p_separator;
+		mml += _format_mml_digit(op_params->attack_rate >> 1, 2)            + p_separator;
+		mml += _format_mml_digit(op_params->decay_rate >> 1, 2)             + p_separator;
+		mml += _format_mml_digit(op_params->sustain_rate >> 1, 2)           + p_separator;
+		mml += _format_mml_digit(op_params->release_rate >> 2, 2)           + p_separator;
+		mml += _format_mml_digit(op_params->sustain_level, 2)               + p_separator;
+		mml += _format_mml_digit(op_params->total_level, sizes.total_level) + p_separator;
+		mml += _format_mml_digit(op_params->key_scaling_level)              + p_separator;
+		mml += _format_mml_digit(op_params->get_multiple(), 2)              + p_separator;
+		mml += _format_mml_digit(op_params->detune1)                        + p_separator;
+		mml += _format_mml_digit(op_params->detune, sizes.detune)           + p_separator;
+		mml += _format_mml_digit(op_params->amplitude_modulation_shift);
+	}
+
+	// Close MML string.
+	mml += "}";
+
+	return mml;
+}
+
+String TranslatorUtil::get_ma3_params_as_mml(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
+	if (p_params->get_operator_count() == 0) {
+		return "";
+	}
+
+	int alg_index = _get_algorithm_index(p_params->operator_count, p_params->algorithm, SiMMLRefTable::get_instance()->algorithm_ma3, "#MA@");
+	if (alg_index == -1) {
+		return "";
+	}
+
+	// Open MML string.
+	String mml = "{";
+
+	// Channel parameters.
+
+	mml += _format_mml_digit(alg_index) + p_separator;
+	mml += _format_mml_digit(p_params->feedback);
+
+	// Custom comment message.
+
+	mml += _format_mml_comment(p_comment, p_line_end);
+
+	// Operator parameters.
+
+	for (int i = 0; i < p_params->get_operator_count(); i++) {
+		SiOPMOperatorParams *op_params = p_params->get_operator_params(i);
+
+		int wave_shape = _get_ma3_from_pg_type(op_params->pulse_generator_type, "#MA@");
+		if (wave_shape == -1) {
+			return "";
+		}
+
+		mml += p_line_end;
+
+		mml += _format_mml_digit(wave_shape, 2)                    + p_separator;
+		mml += _format_mml_digit(op_params->attack_rate >> 2, 2)   + p_separator;
+		mml += _format_mml_digit(op_params->decay_rate >> 2, 2)    + p_separator;
+		mml += _format_mml_digit(op_params->sustain_rate >> 2, 2)  + p_separator;
+		mml += _format_mml_digit(op_params->release_rate >> 2, 2)  + p_separator;
+		mml += _format_mml_digit(op_params->sustain_level, 2)      + p_separator;
+
+		int total_level = op_params->total_level < 63 ? op_params->total_level : 63;
+		mml += _format_mml_digit(total_level, 2)                   + p_separator;
+		mml += _format_mml_digit(op_params->key_scaling_rate >> 1) + p_separator;
+		mml += _format_mml_digit(op_params->key_scaling_level)     + p_separator;
+		mml += _format_mml_digit(op_params->get_multiple(), 2)     + p_separator;
+		mml += _format_mml_digit(op_params->detune1)               + p_separator;
+		mml += _format_mml_digit(op_params->amplitude_modulation_shift);
+	}
+
+	// Close MML string.
+	mml += "}";
+
+	return mml;
+}
+
+String TranslatorUtil::get_al_params_as_mml(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
+	if (p_params->get_operator_count() != 5) {
+		return "";
+	}
+
+	SiOPMOperatorParams *op_params0 = p_params->operator_params[0];
+	SiOPMOperatorParams *op_params1 = p_params->operator_params[1];
+
+	// Open MML string.
+	String mml = "{";
+
+	// Leading parameters.
+
+	mml += _format_mml_digit(p_params->algorithm)              + p_separator;
+	mml += _format_mml_digit(op_params0->pulse_generator_type) + p_separator;
+	mml += _format_mml_digit(op_params1->pulse_generator_type) + p_separator;
+
+	int balanced_levels = _balance_total_levels(op_params0->total_level, op_params1->total_level);
+	mml += _format_mml_digit(balanced_levels)                  + p_separator;
+	mml += _format_mml_digit(op_params1->detune)               + p_separator;
+
+	// Custom comment message.
+
+	mml += _format_mml_comment(p_comment, p_line_end);
+
+	// Trailing parameters.
+
+	mml += p_line_end;
+
+	mml += _format_mml_digit(op_params0->attack_rate)   + p_separator;
+	mml += _format_mml_digit(op_params0->decay_rate)    + p_separator;
+	mml += _format_mml_digit(op_params0->sustain_level) + p_separator;
+	mml += _format_mml_digit(op_params0->release_rate);
+
+	// Close MML string.
+	mml += "}";
+
+	return mml;
 }
 
 void TranslatorUtil::parse_voice_setting(const Ref<SiMMLVoice> &p_voice, String p_mml, Vector<SiMMLEnvelopeTable *> p_envelopes) {
 	// FIXME: NOT IMPLEMENTED
 }
 
-String TranslatorUtil::mml_voice_setting(const Ref<SiMMLVoice> &p_voice) {
+String TranslatorUtil::get_voice_setting_as_mml(const Ref<SiMMLVoice> &p_voice) {
 	// FIXME: NOT IMPLEMENTED
 	return "";
 }
@@ -883,27 +1264,129 @@ TranslatorUtil::MMLTableNumbers TranslatorUtil::parse_table_numbers(String p_tab
 	return parsed_table;
 }
 
-Vector<double> TranslatorUtil::parse_wav(String p_table_numbers, String p_postfix) {
-	// FIXME: NOT IMPLEMENTED
-	return Vector<double>();
+void TranslatorUtil::parse_wav(String p_table_numbers, String p_postfix, Vector<double> *r_data) {
+	MMLTableNumbers res = parse_table_numbers(p_table_numbers, p_postfix, 1024);
+
+	int data_length = 2;
+	while (data_length < 1024 && data_length < res.length) {
+		data_length <<= 1;
+	}
+	r_data->resize_zeroed(data_length);
+
+	int i = 0;
+	SinglyLinkedList<int> *value_base = res.head;
+	for (; i < data_length && value_base != nullptr; i++) {
+		double value = (value_base->value + 0.5) * 0.0078125;
+		r_data->write[i] = CLAMP(value, -1, 1);
+
+		value_base = value_base->next;
+	}
+
+	for (; i < data_length; i++) {
+		r_data->write[i] = 0;
+	}
 }
 
-Vector<double> TranslatorUtil::parse_wavb(String p_hex) {
-	// FIXME: NOT IMPLEMENTED
-	return Vector<double>();
+void TranslatorUtil::parse_wavb(String p_hex, Vector<double> *r_data) {
+	// FIXME: Godot's RegEx implementation doesn't support passing global flags. This pattern originally used "gm". Behavioral implications require investigation.
+	Ref<RegEx> re_spaces = RegEx::create_from_string("\\s+");
+	String hex = re_spaces->sub(p_hex, "", true);
+
+	int data_length = hex.length() >> 1;
+	r_data->resize_zeroed(data_length);
+
+	for (int i = 0; i < data_length; i++) {
+		int value = hex.substr(i << 1, 2).hex_to_int();
+		if (value < 128) {
+			r_data->write[i] = value * 0.0078125;
+		} else {
+			r_data->write[i] = (value - 256) * 0.0078125;
+		}
+	}
 }
+
+#define PARSE_ARGUMENT(m_index, m_default)                                                     \
+	((m_index < args.size() && !args[m_index].is_empty()) ? args[m_index].to_int() : m_default)
 
 bool TranslatorUtil::parse_sampler_wave(SiOPMWaveSamplerTable *p_table, int p_note_number, String p_mml, HashMap<String, Variant> p_sound_ref_table) {
-	// FIXME: NOT IMPLEMENTED
-	return false;
+	PackedStringArray args = split_string_by_regex(p_mml, "\\s*,\\s*");
+	ERR_FAIL_COND_V(args.size() == 0, false);
+
+	String wave_id = args[0];
+	if (!p_sound_ref_table.has(wave_id)) {
+		return false;
+	}
+
+	bool ignore_note_off = (bool)PARSE_ARGUMENT(1, 0);
+	int pan              = PARSE_ARGUMENT(2, 0);
+	int channel_count    = PARSE_ARGUMENT(3, 2);
+	int start_point      = PARSE_ARGUMENT(4, -1);
+	int end_point        = PARSE_ARGUMENT(5, -1);
+	int loop_point       = PARSE_ARGUMENT(6, -1);
+
+	SiOPMWaveSamplerData *sampler_data = memnew(SiOPMWaveSamplerData(p_sound_ref_table[wave_id], ignore_note_off, pan, 2, channel_count));
+	sampler_data->slice(start_point, end_point, loop_point);
+	p_table->set_sample(sampler_data, p_note_number);
+
+	return true;
 }
 
 bool TranslatorUtil::parse_pcm_wave(SiOPMWavePCMTable *p_table, String p_mml, HashMap<String, Variant> p_sound_ref_table) {
-	// FIXME: NOT IMPLEMENTED
-	return false;
+	PackedStringArray args = split_string_by_regex(p_mml, "\\s*,\\s*");
+	ERR_FAIL_COND_V(args.size() == 0, false);
+
+	String wave_id = args[0];
+	if (!p_sound_ref_table.has(wave_id)) {
+		return false;
+	}
+
+	int sampling_pitch = PARSE_ARGUMENT(1, 69) * 64;
+	int key_range_from = PARSE_ARGUMENT(2, 0);
+	int key_range_to   = PARSE_ARGUMENT(3, 127);
+	int channel_count  = PARSE_ARGUMENT(4, 2);
+	int start_point    = PARSE_ARGUMENT(5, -1);
+	int end_point      = PARSE_ARGUMENT(6, -1);
+	int loop_point     = PARSE_ARGUMENT(7, -1);
+
+	SiOPMWavePCMData *pcm_data = memnew(SiOPMWavePCMData(p_sound_ref_table[wave_id], sampling_pitch, 2, channel_count));
+	pcm_data->slice(start_point, end_point, loop_point);
+	p_table->set_sample(pcm_data, key_range_from, key_range_to);
+
+	return true;
 }
 
 bool TranslatorUtil::parse_pcm_voice(const Ref<SiMMLVoice> &p_voice, String p_mml, String p_postfix, Vector<SiMMLEnvelopeTable *> p_envelopes) {
-	// FIXME: NOT IMPLEMENTED
-	return false;
+	SiOPMWavePCMTable *table = Object::cast_to<SiOPMWavePCMTable>(p_voice->get_wave_data());
+	if (!table) {
+		return false;
+	}
+
+	PackedStringArray args = split_string_by_regex(p_mml, "\\s*,\\s*");
+
+	int volume_note_number = PARSE_ARGUMENT(0, 64);
+	int volume_key_range   = PARSE_ARGUMENT(1, 0);
+	int volume_range       = PARSE_ARGUMENT(2, 0);
+	int pan_note_number    = PARSE_ARGUMENT(3, 64);
+	int pan_key_range      = PARSE_ARGUMENT(4, 0);
+	int pan_width          = PARSE_ARGUMENT(5, 0);
+	int attack_rate        = PARSE_ARGUMENT(6, 63);
+	int decay_rate         = PARSE_ARGUMENT(7, 0);
+	int sustain_rate       = PARSE_ARGUMENT(8, 0);
+	int release_rate       = PARSE_ARGUMENT(9, 63);
+	int sustain_level      = PARSE_ARGUMENT(10, 0);
+
+	SiOPMOperatorParams *op_params = p_voice->get_channel_params()->operator_params[0];
+	op_params->attack_rate = attack_rate;
+	op_params->decay_rate = decay_rate;
+	op_params->sustain_rate = sustain_rate;
+	op_params->release_rate = release_rate;
+	op_params->sustain_level = sustain_level;
+
+	table->set_key_scale_volume(volume_note_number, volume_key_range, volume_range);
+	table->set_key_scale_pan(pan_note_number, pan_key_range, pan_width);
+	parse_voice_setting(p_voice, p_postfix, p_envelopes);
+
+	return true;
 }
+
+#undef PARSE_ARGUMENT
