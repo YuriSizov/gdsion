@@ -79,14 +79,12 @@ int SiEffectStream::prepare_process() {
 }
 
 int SiEffectStream::process(int p_start_idx, int p_length, bool p_write_in_stream) {
-	Vector<double> buffer = _stream->get_buffer();
+	Vector<double> *buffer = _stream->get_buffer_ptr();
 	int channel_count = _stream->get_channel_count();
 
 	for (int i = 0; i < _chain.size(); i++) {
-		channel_count = _chain[i]->process(channel_count, &buffer, p_start_idx, p_length);
+		channel_count = _chain[i]->process(channel_count, buffer, p_start_idx, p_length);
 	}
-
-	_stream->set_buffer(buffer);
 
 	if (p_write_in_stream) {
 		if (_has_effect_send) {

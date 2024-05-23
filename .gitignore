@@ -77,6 +77,11 @@ __pycache__/
 
 ### IDEs and code editors ###
 
+# Visual Studio
+.vs/
+*.sln
+*.vcxproj*
+
 # Visual Studio Code
 .vscode/
 *.code-workspace

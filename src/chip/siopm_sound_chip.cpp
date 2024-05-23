@@ -10,12 +10,8 @@
 #include "chip/siopm_operator_params.h"
 #include "chip/siopm_stream.h"
 
-Vector<double> SiOPMSoundChip::get_output_buffer() const {
-	return output_stream->get_buffer();
-}
-
-void SiOPMSoundChip::set_output_buffer(Vector<double> p_buffer) {
-	output_stream->set_buffer(p_buffer);
+Vector<double> *SiOPMSoundChip::get_output_buffer_ptr() {
+	return output_stream->get_buffer_ptr();
 }
 
 int SiOPMSoundChip::get_channel_count() const {

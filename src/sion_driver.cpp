@@ -398,16 +398,16 @@ bool SiONDriver::_rendering() {
 		_render_buffer.resize_zeroed(_render_buffer_index + buffer_extension);
 	}
 
-	// Copy the output.
-	Vector<double> output_buffer = sound_chip->get_output_buffer();
+	// Read the output.
+	Vector<double> *output_buffer = sound_chip->get_output_buffer_ptr();
 
 	if (_render_buffer_channel_count == 2) {
 		for (int i = 0, j = _render_buffer_index; i < rendering_length; i++, j++) {
-			_render_buffer.write[j] = output_buffer[i];
+			_render_buffer.write[j] = (*output_buffer)[i];
 		}
 	} else {
 		for (int i = 0, j = _render_buffer_index; i < rendering_length; i += 2, j++) {
-			_render_buffer.write[j] = output_buffer[i];
+			_render_buffer.write[j] = (*output_buffer)[i];
 		}
 	}
 
@@ -464,9 +464,9 @@ void SiONDriver::_streaming() {
 	_performance_stats.average_processing_time = _performance_stats.total_processing_time * _performance_stats.total_processing_time_ratio;
 
 	// Write samples.
-	Vector<double> output_buffer = sound_chip->get_output_buffer();
-	for (int i = 0; i < output_buffer.size(); i += 2) {
-		stream_buffer.push_back(Vector2(output_buffer[i], output_buffer[i + 1]));
+	Vector<double> *output_buffer = sound_chip->get_output_buffer_ptr();
+	for (int i = 0; i < output_buffer->size(); i += 2) {
+		stream_buffer.push_back(Vector2((*output_buffer)[i], (*output_buffer)[i + 1]));
 	}
 	_audio_playback->push_buffer(stream_buffer);
 

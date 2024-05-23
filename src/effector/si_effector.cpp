@@ -264,13 +264,11 @@ void SiEffector::end_process() {
 			if (effect->is_outputting_directly()) {
 				effect->process(0, _sound_chip->get_buffer_length(), false);
 
-				// TODO: Is this the best way to do this — to copy the buffer over?
-				Vector<double> buffer = effect->get_stream()->get_buffer();
-				Vector<double> output = _sound_chip->get_output_buffer();
-				for (int j = 0; j < output.size(); j++) {
-					output.write[j] += buffer[j];
+				Vector<double> *buffer = effect->get_stream()->get_buffer_ptr();
+				Vector<double> *output = _sound_chip->get_output_stream()->get_buffer_ptr();
+				for (int j = 0; j < output->size(); j++) {
+					output->write[j] += (*buffer)[j];
 				}
-				_sound_chip->set_output_buffer(output);
 			} else {
 				effect->process(0, _sound_chip->get_buffer_length(), true);
 			}

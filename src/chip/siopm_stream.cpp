@@ -108,7 +108,7 @@ void SiOPMStream::write_stereo(SinglyLinkedList<int> *p_left, SinglyLinkedList<i
 	}
 }
 
-void SiOPMStream::write_from_vector(Vector<double> p_data, int p_start_data, int p_start_buffer, int p_length, double p_volume, int p_pan, int p_sample_channel_count) {
+void SiOPMStream::write_from_vector(Vector<double> *p_data, int p_start_data, int p_start_buffer, int p_length, double p_volume, int p_pan, int p_sample_channel_count) {
 	double volume = p_volume;
 
 	if (channels == 2) {
@@ -120,10 +120,10 @@ void SiOPMStream::write_from_vector(Vector<double> p_data, int p_start_data, int
 			int buffer_size = (p_start_data + p_length) << 1;
 
 			for (int j = p_start_data << 1, i = p_start_buffer << 1; j < buffer_size;) {
-				buffer.write[i] += p_data[j] * volume_left;
+				buffer.write[i] += (*p_data)[j] * volume_left;
 				j++;
 				i++;
-				buffer.write[i] += p_data[j] * volume_right;
+				buffer.write[i] += (*p_data)[j] * volume_right;
 				j++;
 				i++;
 			}
@@ -133,9 +133,9 @@ void SiOPMStream::write_from_vector(Vector<double> p_data, int p_start_data, int
 			int buffer_size = p_start_data + p_length;
 
 			for (int j = p_start_data, i = p_start_buffer << 1; j < buffer_size; j++) {
-				buffer.write[i] += p_data[j] * volume_left;
+				buffer.write[i] += (*p_data)[j] * volume_left;
 				i++;
-				buffer.write[i] += p_data[j] * volume_right;
+				buffer.write[i] += (*p_data)[j] * volume_right;
 				i++;
 			}
 		}
@@ -145,9 +145,9 @@ void SiOPMStream::write_from_vector(Vector<double> p_data, int p_start_data, int
 			int buffer_size = (p_start_data + p_length) << 1;
 
 			for (int j = p_start_data << 1, i = p_start_buffer << 1; j < buffer_size;) {
-				buffer.write[i] += (p_data[j] + p_data[j + 1]) * volume;
+				buffer.write[i] += ((*p_data)[j] + (*p_data)[j + 1]) * volume;
 				i++;
-				buffer.write[i] += (p_data[j] + p_data[j + 1]) * volume;
+				buffer.write[i] += ((*p_data)[j] + (*p_data)[j + 1]) * volume;
 				i++;
 				j += 2;
 			}
@@ -155,9 +155,9 @@ void SiOPMStream::write_from_vector(Vector<double> p_data, int p_start_data, int
 			int buffer_size = p_start_data + p_length;
 
 			for (int j = p_start_data, i = p_start_buffer << 1; j < buffer_size; j++) {
-				buffer.write[i] += p_data[j] * volume;
+				buffer.write[i] += (*p_data)[j] * volume;
 				i++;
-				buffer.write[i] += p_data[j] * volume;
+				buffer.write[i] += (*p_data)[j] * volume;
 				i++;
 			}
 		}

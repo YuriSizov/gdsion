@@ -47,8 +47,7 @@ public:
 	SinglyLinkedList<int> *get_zero_buffer() const { return zero_buffer; }
 
 	SiOPMStream *get_output_stream() const { return output_stream; }
-	Vector<double> get_output_buffer() const;
-	void set_output_buffer(Vector<double> p_buffer);
+	Vector<double> *get_output_buffer_ptr();
 	int get_channel_count() const;
 
 	SiOPMStream *get_stream_slot(int p_slot) const { return stream_slot[p_slot]; }
