@@ -19,6 +19,7 @@
 #include "chip/wave/siopm_wave_sampler_data.h"
 #include "chip/wave/siopm_wave_sampler_table.h"
 #include "chip/wave/siopm_wave_table.h"
+#include "utils/godot_util.h"
 #include "utils/translator_util.h"
 
 const char *SiONVoice::CHIPTYPE_AUTO = "<autodetect>";
@@ -31,69 +32,83 @@ const char *SiONVoice::CHIPTYPE_MA3 = "MA3";
 const char *SiONVoice::CHIPTYPE_PMS_GUITAR = "PMSGuitar";
 const char *SiONVoice::CHIPTYPE_ANALOG_LIKE = "AnalogLike";
 
-void SiONVoice::set_params(Vector<int> p_args) {
-	TranslatorUtil::set_params(channel_params, p_args);
+void SiONVoice::set_params(TypedArray<int> p_args) {
+	Vector<int> data = make_vector_from_typed_array<int>(p_args);
+	TranslatorUtil::set_params(channel_params, data);
 	chip_type = SiONVoice::CHIPTYPE_SIOPM;
 }
 
-void SiONVoice::set_params_opl(Vector<int> p_args) {
-	TranslatorUtil::set_opl_params(channel_params, p_args);
+void SiONVoice::set_params_opl(TypedArray<int> p_args) {
+	Vector<int> data = make_vector_from_typed_array<int>(p_args);
+	TranslatorUtil::set_opl_params(channel_params, data);
 	chip_type = SiONVoice::CHIPTYPE_OPL;
 }
 
-void SiONVoice::set_params_opm(Vector<int> p_args) {
-	TranslatorUtil::set_opm_params(channel_params, p_args);
+void SiONVoice::set_params_opm(TypedArray<int> p_args) {
+	Vector<int> data = make_vector_from_typed_array<int>(p_args);
+	TranslatorUtil::set_opm_params(channel_params, data);
 	chip_type = SiONVoice::CHIPTYPE_OPM;
 }
 
-void SiONVoice::set_params_opn(Vector<int> p_args) {
-	TranslatorUtil::set_opn_params(channel_params, p_args);
+void SiONVoice::set_params_opn(TypedArray<int> p_args) {
+	Vector<int> data = make_vector_from_typed_array<int>(p_args);
+	TranslatorUtil::set_opn_params(channel_params, data);
 	chip_type = SiONVoice::CHIPTYPE_OPN;
 }
 
-void SiONVoice::set_params_opx(Vector<int> p_args) {
-	TranslatorUtil::set_opx_params(channel_params, p_args);
+void SiONVoice::set_params_opx(TypedArray<int> p_args) {
+	Vector<int> data = make_vector_from_typed_array<int>(p_args);
+	TranslatorUtil::set_opx_params(channel_params, data);
 	chip_type = SiONVoice::CHIPTYPE_OPX;
 }
 
-void SiONVoice::set_params_ma3(Vector<int> p_args) {
-	TranslatorUtil::set_ma3_params(channel_params, p_args);
+void SiONVoice::set_params_ma3(TypedArray<int> p_args) {
+	Vector<int> data = make_vector_from_typed_array<int>(p_args);
+	TranslatorUtil::set_ma3_params(channel_params, data);
 	chip_type = SiONVoice::CHIPTYPE_MA3;
 
 }
 
-void SiONVoice::set_params_al(Vector<int> p_args) {
-	TranslatorUtil::set_al_params(channel_params, p_args);
+void SiONVoice::set_params_al(TypedArray<int> p_args) {
+	Vector<int> data = make_vector_from_typed_array<int>(p_args);
+	TranslatorUtil::set_al_params(channel_params, data);
 	chip_type = SiONVoice::CHIPTYPE_ANALOG_LIKE;
 
 }
 
-Vector<int> SiONVoice::get_params() const {
-	return TranslatorUtil::get_params(channel_params);
+TypedArray<int> SiONVoice::get_params() const {
+	Vector<int> data = TranslatorUtil::get_params(channel_params);
+	return make_typed_array_from_vector<int>(data);
 }
 
-Vector<int> SiONVoice::get_params_opl() const {
-	return TranslatorUtil::get_opl_params(channel_params);
+TypedArray<int> SiONVoice::get_params_opl() const {
+	Vector<int> data = TranslatorUtil::get_opl_params(channel_params);
+	return make_typed_array_from_vector<int>(data);
 }
 
-Vector<int> SiONVoice::get_params_opm() const {
-	return TranslatorUtil::get_opm_params(channel_params);
+TypedArray<int> SiONVoice::get_params_opm() const {
+	Vector<int> data = TranslatorUtil::get_opm_params(channel_params);
+	return make_typed_array_from_vector<int>(data);
 }
 
-Vector<int> SiONVoice::get_params_opn() const {
-	return TranslatorUtil::get_opn_params(channel_params);
+TypedArray<int> SiONVoice::get_params_opn() const {
+	Vector<int> data = TranslatorUtil::get_opn_params(channel_params);
+	return make_typed_array_from_vector<int>(data);
 }
 
-Vector<int> SiONVoice::get_params_opx() const {
-	return TranslatorUtil::get_opx_params(channel_params);
+TypedArray<int> SiONVoice::get_params_opx() const {
+	Vector<int> data = TranslatorUtil::get_opx_params(channel_params);
+	return make_typed_array_from_vector<int>(data);
 }
 
-Vector<int> SiONVoice::get_params_ma3() const {
-	return TranslatorUtil::get_ma3_params(channel_params);
+TypedArray<int> SiONVoice::get_params_ma3() const {
+	Vector<int> data = TranslatorUtil::get_ma3_params(channel_params);
+	return make_typed_array_from_vector<int>(data);
 }
 
-Vector<int> SiONVoice::get_params_al() const {
-	return TranslatorUtil::get_al_params(channel_params);
+TypedArray<int> SiONVoice::get_params_al() const {
+	Vector<int> data = TranslatorUtil::get_ma3_params(channel_params);
+	return make_typed_array_from_vector<int>(data);
 }
 
 String SiONVoice::get_mml(int p_index, String p_chip_type, bool p_append_postfix) const {
@@ -254,7 +269,7 @@ void SiONVoice::set_pms_guitar(int p_attack_rate, int p_decay_rate, int p_total_
 	module_type = MT_KS;
 	channel_num = 1;
 
-	Vector<int> param_args = { 1, 0, 0, p_wave_shape, p_attack_rate, p_decay_rate, 0, 63, 15, p_total_level, 0, 0, 1, 0, 0, 0, 0, p_fixed_pitch };
+	TypedArray<int> param_args = make_typed_array_from_vector<int>({ 1, 0, 0, p_wave_shape, p_attack_rate, p_decay_rate, 0, 63, 15, p_total_level, 0, 0, 1, 0, 0, 0, 0, p_fixed_pitch });
 	set_params(param_args);
 	pms_tension = p_tension;
 	chip_type = SiONVoice::CHIPTYPE_PMS_GUITAR;
@@ -348,6 +363,28 @@ void SiONVoice::_bind_methods() {
 
 	// Public API.
 
+	ClassDB::bind_method(D_METHOD("get_name"), &SiONVoice::get_name);
+	ClassDB::bind_method(D_METHOD("set_name", "value"), &SiONVoice::set_name);
+
+	ClassDB::bind_method(D_METHOD("get_params"), &SiONVoice::get_params);
+	ClassDB::bind_method(D_METHOD("get_params_opl"), &SiONVoice::get_params_opl);
+	ClassDB::bind_method(D_METHOD("get_params_opm"), &SiONVoice::get_params_opm);
+	ClassDB::bind_method(D_METHOD("get_params_opn"), &SiONVoice::get_params_opn);
+	ClassDB::bind_method(D_METHOD("get_params_opx"), &SiONVoice::get_params_opx);
+	ClassDB::bind_method(D_METHOD("get_params_ma3"), &SiONVoice::get_params_ma3);
+	ClassDB::bind_method(D_METHOD("get_params_al"), &SiONVoice::get_params_al);
+
+	ClassDB::bind_method(D_METHOD("set_params", "args"), &SiONVoice::set_params);
+	ClassDB::bind_method(D_METHOD("set_params_opl", "args"), &SiONVoice::set_params_opl);
+	ClassDB::bind_method(D_METHOD("set_params_opm", "args"), &SiONVoice::set_params_opm);
+	ClassDB::bind_method(D_METHOD("set_params_opn", "args"), &SiONVoice::set_params_opn);
+	ClassDB::bind_method(D_METHOD("set_params_opx", "args"), &SiONVoice::set_params_opx);
+	ClassDB::bind_method(D_METHOD("set_params_ma3", "args"), &SiONVoice::set_params_ma3);
+	ClassDB::bind_method(D_METHOD("set_params_al", "args"), &SiONVoice::set_params_al);
+
+	ClassDB::bind_method(D_METHOD("get_mml", "index", "chip_type", "append_postfix"), &SiONVoice::get_mml, DEFVAL(SiONVoice::CHIPTYPE_AUTO), DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("set_by_mml", "mml"), &SiONVoice::set_by_mml);
+
 	ClassDB::bind_method(D_METHOD("set_pms_guitar", "attack_rate", "decay_rate", "total_level", "fixed_pitch", "wave_shape", "tension"), &SiONVoice::set_pms_guitar, DEFVAL(48), DEFVAL(48), DEFVAL(0), DEFVAL(69), DEFVAL(20), DEFVAL(8));
 	ClassDB::bind_method(D_METHOD("set_analog_like", "connection_type", "wave_shape1", "wave_shape2", "balance", "pitch_difference"), &SiONVoice::set_analog_like, DEFVAL(1), DEFVAL(1), DEFVAL(0), DEFVAL(0));
 
@@ -355,6 +392,8 @@ void SiONVoice::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_filter_envelope", "filter_type", "cutoff", "resonance", "attack_rate", "decay_rate1", "decay_rate2", "release_rate", "decay_cutoff1", "decay_cutoff2", "sustain_cutoff", "release_cutoff"), &SiONVoice::set_filter_envelope, DEFVAL(0), DEFVAL(128), DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(128), DEFVAL(64), DEFVAL(32), DEFVAL(128));
 	ClassDB::bind_method(D_METHOD("set_amplitude_modulation", "depth", "end_depth", "delay", "term"), &SiONVoice::set_amplitude_modulation, DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("set_pitch_modulation", "depth", "end_depth", "delay", "term"), &SiONVoice::set_pitch_modulation, DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(0));
+
+	ClassDB::add_property("SiONVoice", PropertyInfo(Variant::STRING, "name"), "set_name", "get_name");
 }
 
 SiONVoice::SiONVoice(SiONModuleType p_module_type, int p_channel_num, int p_attack_rate, int p_release_rate, int p_pitch_shift, int p_connection_type, int p_wave_shape2, int p_pitch_shift2) :

@@ -12,6 +12,7 @@
 #include "chip/siopm_channel_params.h"
 #include "chip/siopm_operator_params.h"
 #include "chip/wave/siopm_wave_table.h"
+#include "utils/godot_util.h"
 
 void SiONVoicePresetUtil::_generate_default_voices() {
 	// 16 default voices.
@@ -828,7 +829,8 @@ void SiONVoicePresetUtil::_create_analog_voice(const String &p_key, const String
 
 void SiONVoicePresetUtil::_create_opn_voice(const String &p_key, const String &p_name, Vector<int> p_params) {
 	Ref<SiONVoice> voice = memnew(SiONVoice);
-	voice->set_params_opn(p_params);
+	TypedArray<int> params = make_typed_array_from_vector<int>(p_params);
+	voice->set_params_opn(params);
 
 	voice->set_name(p_name);
 	_register_voice(p_key, voice);
@@ -836,7 +838,8 @@ void SiONVoicePresetUtil::_create_opn_voice(const String &p_key, const String &p
 
 void SiONVoicePresetUtil::_create_ma3_voice(const String &p_key, const String &p_name, Vector<int> p_params) {
 	Ref<SiONVoice> voice = memnew(SiONVoice);
-	voice->set_params_ma3(p_params);
+	TypedArray<int> params = make_typed_array_from_vector<int>(p_params);
+	voice->set_params_ma3(params);
 
 	voice->set_name(p_name);
 	_register_voice(p_key, voice);

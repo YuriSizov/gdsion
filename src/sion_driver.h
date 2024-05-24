@@ -14,6 +14,7 @@
 #include <godot_cpp/templates/hash_map.hpp>
 #include <godot_cpp/templates/list.hpp>
 #include <godot_cpp/templates/vector.hpp>
+#include <godot_cpp/variant/typed_array.hpp>
 #include "sion_voice.h"
 #include "events/sion_event.h"
 #include "events/sion_track_event.h"

@@ -9,6 +9,7 @@
 
 #include <godot_cpp/core/object.hpp>
 #include <godot_cpp/templates/vector.hpp>
+#include <godot_cpp/variant/typed_array.hpp>
 #include "sequencer/simml_voice.h"
 
 using namespace godot;
@@ -47,21 +48,21 @@ public:
 	String get_name() const { return _name; }
 	void set_name(const String &p_name) { _name = p_name; }
 
-	void set_params(Vector<int> p_args);
-	void set_params_opl(Vector<int> p_args);
-	void set_params_opm(Vector<int> p_args);
-	void set_params_opn(Vector<int> p_args);
-	void set_params_opx(Vector<int> p_args);
-	void set_params_ma3(Vector<int> p_args);
-	void set_params_al(Vector<int> p_args);
+	void set_params(TypedArray<int> p_args);
+	void set_params_opl(TypedArray<int> p_args);
+	void set_params_opm(TypedArray<int> p_args);
+	void set_params_opn(TypedArray<int> p_args);
+	void set_params_opx(TypedArray<int> p_args);
+	void set_params_ma3(TypedArray<int> p_args);
+	void set_params_al(TypedArray<int> p_args);
 
-	Vector<int> get_params() const;
-	Vector<int> get_params_opl() const;
-	Vector<int> get_params_opm() const;
-	Vector<int> get_params_opn() const;
-	Vector<int> get_params_opx() const;
-	Vector<int> get_params_ma3() const;
-	Vector<int> get_params_al() const;
+	TypedArray<int> get_params() const;
+	TypedArray<int> get_params_opl() const;
+	TypedArray<int> get_params_opm() const;
+	TypedArray<int> get_params_opn() const;
+	TypedArray<int> get_params_opx() const;
+	TypedArray<int> get_params_ma3() const;
+	TypedArray<int> get_params_al() const;
 
 	String get_mml(int p_index, String p_chip_type = SiONVoice::CHIPTYPE_AUTO, bool p_append_postfix = true) const;
 	int set_by_mml(String p_mml);
