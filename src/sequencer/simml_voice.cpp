@@ -59,6 +59,14 @@ void SiMMLVoice::set_module_type(SiONModuleType p_module_type, int p_channel_num
 	}
 }
 
+bool SiMMLVoice::has_amplitude_modulation() const {
+	return amplitude_modulation_depth > 0 || amplitude_modulation_depth_end > 0;
+}
+
+bool SiMMLVoice::has_pitch_modulation() const {
+	return pitch_modulation_depth > 0 || pitch_modulation_depth_end > 0;
+}
+
 void SiMMLVoice::update_track_voice(SiMMLTrack *p_track) {
 	switch (module_type) {
 		case MT_FM: { // Registered FM voice (%6)

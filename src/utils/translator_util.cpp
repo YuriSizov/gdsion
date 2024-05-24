@@ -30,12 +30,10 @@ Vector<int> TranslatorUtil::_split_data_string(SiOPMChannelParams *r_params, Str
 
 	// FIXME: Godot's RegEx implementation doesn't support passing global flags. This pattern originally used "gms". Behavioral implications require investigation.
 	Ref<RegEx> re_command = RegEx::create_from_string("/\\*.*?\\*/|//.*?[\\r\\n]+");
-	// FIXME: Godot's RegEx implementation doesn't support passing global flags. This pattern originally used "g". Behavioral implications require investigation.
 	Ref<RegEx> re_cleanup = RegEx::create_from_string("^[^\\d\\-.]+|[^\\d\\-.]+$");
 
 	String sanitized_string = re_command->sub(p_data_string, "", true);
 	sanitized_string = re_cleanup->sub(sanitized_string, "", true);
-	// FIXME: Godot's RegEx implementation doesn't support passing global flags. This pattern originally used "gm". Behavioral implications require investigation.
 	PackedStringArray string_data = split_string_by_regex(sanitized_string, "[^\\d\\-.]+");
 
 	for (int i = 1; i < 5; i++) {
@@ -1120,12 +1118,328 @@ String TranslatorUtil::get_al_params_as_mml(SiOPMChannelParams *p_params, String
 }
 
 void TranslatorUtil::parse_voice_setting(const Ref<SiMMLVoice> &p_voice, String p_mml, Vector<SiMMLEnvelopeTable *> p_envelopes) {
-	// FIXME: NOT IMPLEMENTED
+	SiOPMChannelParams *params = p_voice->channel_params;
+
+	String base_re_exp = "(%[fvx]|@[fpqv]|@er|@lfo|kt?|m[ap]|_?@@|_?n[aptf]|po|p|q|s|x|v)";
+	String args_re_exp = "(-?\\d*)" + String("(\\s*,\\s*(-?\\d*))?").repeat(10); // One mandatory and 10 optional arguments supported.
+
+	Ref<RegEx> re_setting = RegEx::create_from_string(base_re_exp + args_re_exp);
+	TypedArray<RegExMatch> settings = re_setting->search_all(p_mml);
+
+	// For convenience macros take the ordered index of the argument, and convert it to the index of a capture group.
+	// Capture group indices for arguments start at 2 and then continue with every even number up to 22 (11 arguments).
+
+#define EXTRACT_ARGUMENT(m_index, m_default)                                                                                     \
+	(!parsed_setting->get_string(2 + m_index * 2).is_empty() ? parsed_setting->get_string(2 + m_index * 2).to_int() : m_default)
+
+#define EXTRACT_ARGUMENT_MOD(m_index, m_mod, m_default)                                                                                  \
+	(!parsed_setting->get_string(2 + m_index * 2).is_empty() ? parsed_setting->get_string(2 + m_index * 2).to_int() * m_mod : m_default)
+
+#define EXTRACT_ARGUMENT_POS(m_index, m_default)                                                                                  \
+	(parsed_setting->get_string(2 + m_index * 2).to_int() > 0 ? parsed_setting->get_string(2 + m_index * 2).to_int() : m_default)
+
+	for (int i = 0; i < settings.size(); i++) {
+		Ref<RegExMatch> parsed_setting = settings[i];
+		const String command = parsed_setting->get_string(1);
+
+		if (command == "@f") {
+			params->filter_cutoff         = EXTRACT_ARGUMENT(0, 128);
+			params->filter_resonance      = EXTRACT_ARGUMENT(1, 0);
+			params->filter_attack_rate    = EXTRACT_ARGUMENT(2, 0);
+			params->filter_decay_rate1    = EXTRACT_ARGUMENT(3, 0);
+			params->filter_decay_rate2    = EXTRACT_ARGUMENT(4, 0);
+			params->filter_release_rate   = EXTRACT_ARGUMENT(5, 0);
+			params->filter_decay_offset1  = EXTRACT_ARGUMENT(6, 128);
+			params->filter_decay_offset2  = EXTRACT_ARGUMENT(7, 64);
+			params->filter_sustain_offset = EXTRACT_ARGUMENT(8, 32);
+			params->filter_release_offset = EXTRACT_ARGUMENT(9, 128);
+
+		} else if (command == "@lfo") {
+			params->set_lfo_frame(EXTRACT_ARGUMENT(0, 30));
+			params->lfo_wave_shape = EXTRACT_ARGUMENT(1, SiOPMRefTable::LFO_WAVE_TRIANGLE);
+
+		} else if (command == "ma") {
+			p_voice->amplitude_modulation_depth     = EXTRACT_ARGUMENT(0, 0);
+			p_voice->amplitude_modulation_depth_end = EXTRACT_ARGUMENT(1, 0);
+			p_voice->amplitude_modulation_delay     = EXTRACT_ARGUMENT(2, 0);
+			p_voice->amplitude_modulation_term      = EXTRACT_ARGUMENT(3, 0);
+
+			params->amplitude_modulation_depth = p_voice->amplitude_modulation_depth;
+
+		} else if (command == "mp") {
+			p_voice->pitch_modulation_depth     = EXTRACT_ARGUMENT(0, 0);
+			p_voice->pitch_modulation_depth_end = EXTRACT_ARGUMENT(1, 0);
+			p_voice->pitch_modulation_delay     = EXTRACT_ARGUMENT(2, 0);
+			p_voice->pitch_modulation_term      = EXTRACT_ARGUMENT(3, 0);
+
+			params->pitch_modulation_depth = p_voice->pitch_modulation_depth;
+
+		} else if (command == "po") {
+			p_voice->portament = EXTRACT_ARGUMENT(0, 30);
+
+		} else if (command == "q") {
+			// FIXME: Is NAN a good idea?
+			p_voice->default_gate_time = EXTRACT_ARGUMENT_MOD(0, 0.125, NAN);
+
+		} else if (command == "s") {
+			//[release rate] = EXTRACT_ARGUMENT(0, 0); // Is not implemented in the original code.
+			p_voice->release_sweep = EXTRACT_ARGUMENT(2, 0);
+
+		} else if (command == "%f") {
+			params->filter_type = EXTRACT_ARGUMENT(0, 0);
+
+		} else if (command == "@er") {
+			for (int j = 0; j < 4; j++) {
+				params->operator_params[j]->envelope_reset_on_attack = (parsed_setting->get_string(2) != "1");
+			}
+
+		} else if (command == "k") {
+			p_voice->pitch_shift = EXTRACT_ARGUMENT(0, 0);
+
+		} else if (command == "kt") {
+			p_voice->note_shift = EXTRACT_ARGUMENT(0, 0);
+
+		} else if (command == "@v") {
+			params->master_volumes.write[0] = EXTRACT_ARGUMENT_MOD(0, 0.0078125, 0.5);
+			params->master_volumes.write[1] = EXTRACT_ARGUMENT_MOD(1, 0.0078125, 0);
+			params->master_volumes.write[2] = EXTRACT_ARGUMENT_MOD(2, 0.0078125, 0);
+			params->master_volumes.write[3] = EXTRACT_ARGUMENT_MOD(3, 0.0078125, 0);
+			params->master_volumes.write[4] = EXTRACT_ARGUMENT_MOD(4, 0.0078125, 0);
+			params->master_volumes.write[5] = EXTRACT_ARGUMENT_MOD(5, 0.0078125, 0);
+			params->master_volumes.write[6] = EXTRACT_ARGUMENT_MOD(6, 0.0078125, 0);
+			params->master_volumes.write[7] = EXTRACT_ARGUMENT_MOD(7, 0.0078125, 0);
+
+		} else if (command == "p") {
+			params->pan = EXTRACT_ARGUMENT_MOD(0, 16, 64);
+
+		} else if (command == "@p") {
+			params->pan = EXTRACT_ARGUMENT(0, 64);
+
+		} else if (command == "v") {
+			if (!parsed_setting->get_string(2).is_empty()) {
+				p_voice->velocity = parsed_setting->get_string(2).to_int() << p_voice->velocity_shift;
+			} else {
+				p_voice->velocity = 256;
+			}
+
+		} else if (command == "x") {
+			p_voice->expression = EXTRACT_ARGUMENT(0, 128);
+
+		} else if (command == "%v") {
+			p_voice->velocity_mode  = EXTRACT_ARGUMENT(0, 0);
+			p_voice->velocity_shift = EXTRACT_ARGUMENT(1, 4);
+
+		} else if (command == "%x") {
+			p_voice->expression_mode = EXTRACT_ARGUMENT(0, 0);
+
+		} else if (command == "@q") {
+			p_voice->default_gate_ticks         = EXTRACT_ARGUMENT(0, 0);
+			p_voice->default_key_on_delay_ticks = EXTRACT_ARGUMENT(1, 0);
+
+		} else if (command == "@@") {
+			int value = EXTRACT_ARGUMENT(0, 0);
+			if (!p_envelopes.is_empty() && value >= 0 && value < 255) {
+				p_voice->note_on_tone_envelope = p_envelopes[i];
+				p_voice->note_on_tone_envelope_step = EXTRACT_ARGUMENT_POS(1, 1);
+			}
+
+		} else if (command == "na") {
+			int value = EXTRACT_ARGUMENT(0, 0);
+			if (!p_envelopes.is_empty() && value >= 0 && value < 255) {
+				p_voice->note_on_amplitude_envelope = p_envelopes[i];
+				p_voice->note_on_amplitude_envelope_step = EXTRACT_ARGUMENT_POS(1, 1);
+			}
+
+		} else if (command == "np") {
+			int value = EXTRACT_ARGUMENT(0, 0);
+			if (!p_envelopes.is_empty() && value >= 0 && value < 255) {
+				p_voice->note_on_pitch_envelope = p_envelopes[i];
+				p_voice->note_on_pitch_envelope_step = EXTRACT_ARGUMENT_POS(1, 1);
+			}
+
+		} else if (command == "nt") {
+			int value = EXTRACT_ARGUMENT(0, 0);
+			if (!p_envelopes.is_empty() && value >= 0 && value < 255) {
+				p_voice->note_on_note_envelope = p_envelopes[i];
+				p_voice->note_on_note_envelope_step = EXTRACT_ARGUMENT_POS(1, 1);
+			}
+
+		} else if (command == "nf") {
+			int value = EXTRACT_ARGUMENT(0, 0);
+			if (!p_envelopes.is_empty() && value >= 0 && value < 255) {
+				p_voice->note_on_filter_envelope = p_envelopes[i];
+				p_voice->note_on_filter_envelope_step = EXTRACT_ARGUMENT_POS(1, 1);
+			}
+
+		} else if (command == "_@@") {
+			int value = EXTRACT_ARGUMENT(0, 0);
+			if (!p_envelopes.is_empty() && value >= 0 && value < 255) {
+				p_voice->note_off_tone_envelope = p_envelopes[i];
+				p_voice->note_off_tone_envelope_step = EXTRACT_ARGUMENT_POS(1, 1);
+			}
+
+		} else if (command == "_na") {
+			int value = EXTRACT_ARGUMENT(0, 0);
+			if (!p_envelopes.is_empty() && value >= 0 && value < 255) {
+				p_voice->note_off_amplitude_envelope = p_envelopes[i];
+				p_voice->note_off_amplitude_envelope_step = EXTRACT_ARGUMENT_POS(1, 1);
+			}
+
+		} else if (command == "_np") {
+			int value = EXTRACT_ARGUMENT(0, 0);
+			if (!p_envelopes.is_empty() && value >= 0 && value < 255) {
+				p_voice->note_off_pitch_envelope = p_envelopes[i];
+				p_voice->note_off_pitch_envelope_step = EXTRACT_ARGUMENT_POS(1, 1);
+			}
+
+		} else if (command == "_nt") {
+			int value = EXTRACT_ARGUMENT(0, 0);
+			if (!p_envelopes.is_empty() && value >= 0 && value < 255) {
+				p_voice->note_off_note_envelope = p_envelopes[i];
+				p_voice->note_off_note_envelope_step = EXTRACT_ARGUMENT_POS(1, 1);
+			}
+
+		} else if (command == "_nf") {
+			int value = EXTRACT_ARGUMENT(0, 0);
+			if (!p_envelopes.is_empty() && value >= 0 && value < 255) {
+				p_voice->note_off_filter_envelope = p_envelopes[i];
+				p_voice->note_off_filter_envelope_step = EXTRACT_ARGUMENT_POS(1, 1);
+			}
+		}
+	}
+
+#undef EXTRACT_ARGUMENT
+#undef EXTRACT_ARGUMENT_MOD
+#undef EXTRACT_ARGUMENT_POS
 }
 
 String TranslatorUtil::get_voice_setting_as_mml(const Ref<SiMMLVoice> &p_voice) {
-	// FIXME: NOT IMPLEMENTED
-	return "";
+	SiOPMChannelParams *params = p_voice->channel_params;
+	String mml;
+
+	if (params->filter_type > 0) {
+		mml += "%f" + itos(params->filter_type);
+	}
+	if (params->has_filter() || params->has_filter_advanced()) {
+		mml += vformat("@f%d,%d", params->filter_cutoff, params->filter_resonance);
+
+		if (params->has_filter_advanced()) {
+			mml += vformat(
+				",%d,%d,%d,%d,%d,%d,%d,%d",
+				params->filter_attack_rate,
+				params->filter_decay_rate1,
+				params->filter_decay_rate2,
+				params->filter_release_rate,
+				params->filter_decay_offset1,
+				params->filter_decay_offset2,
+				params->filter_sustain_offset,
+				params->filter_release_offset
+			);
+		}
+	}
+
+	if (p_voice->has_amplitude_modulation() || params->has_amplitude_modulation() || p_voice->has_pitch_modulation() || params->has_pitch_modulation()) {
+		if (params->get_lfo_frame() != 30 || params->lfo_wave_shape != SiOPMRefTable::LFO_WAVE_TRIANGLE) {
+			mml += "@lfo" + itos(params->get_lfo_frame());
+
+			if (params->lfo_wave_shape != SiOPMRefTable::LFO_WAVE_TRIANGLE) {
+				mml += "," + itos(params->lfo_wave_shape);
+			}
+		}
+
+		if (p_voice->has_amplitude_modulation()) {
+			mml += vformat(
+				"ma%d,%d,%d,%d",
+				p_voice->amplitude_modulation_depth,
+				p_voice->amplitude_modulation_depth_end,
+				p_voice->amplitude_modulation_delay,
+				p_voice->amplitude_modulation_term
+			);
+		} else if (params->has_amplitude_modulation()) {
+			mml += "ma" + itos(params->amplitude_modulation_depth);
+		}
+
+		if (p_voice->has_pitch_modulation()) {
+			mml += vformat(
+				"mp%d,%d,%d,%d",
+				p_voice->pitch_modulation_depth,
+				p_voice->pitch_modulation_depth_end,
+				p_voice->pitch_modulation_delay,
+				p_voice->pitch_modulation_term
+			);
+		} else if (params->has_pitch_modulation()) {
+			mml += "mp" + itos(params->pitch_modulation_depth);
+		}
+	}
+
+	if (p_voice->velocity_mode != 0 || p_voice->velocity_shift != 4) {
+		mml += vformat("%%v%d,%d", p_voice->velocity_mode, p_voice->velocity_shift);
+	}
+
+	if (p_voice->expression_mode != 0) {
+		mml += "%x" + itos(p_voice->expression_mode);
+	}
+
+	if (p_voice->portament > 0) {
+		mml += "po" + itos(p_voice->portament);
+	}
+
+	if (!Math::is_nan(p_voice->default_gate_time)) {
+		mml += "q" + itos(p_voice->default_gate_time * 8);
+	}
+
+	if (p_voice->default_gate_ticks > 0 || p_voice->default_key_on_delay_ticks > 0) {
+		mml += vformat("@q%d,%d", p_voice->default_gate_ticks, p_voice->default_key_on_delay_ticks);
+	}
+
+	if (p_voice->release_sweep > 0) {
+		// First argument, release rate, is not implemented.
+		mml += "s," + itos(p_voice->release_sweep);
+	}
+
+	if (params->operator_params[0]->envelope_reset_on_attack) {
+		mml += "@er1";
+	}
+
+	if (p_voice->pitch_shift != 0) {
+		mml += "k" + itos(p_voice->pitch_shift);
+	}
+	if (p_voice->note_shift != 0) {
+		mml += "kt" + itos(p_voice->note_shift);
+	}
+
+	if (p_voice->update_volumes) {
+		int volumes_count = (params->master_volumes[0] == 0.5 ? 0 : 1);
+		for (int i = 1; i < 8; i++) {
+			if (params->master_volumes[i] != 0) {
+				volumes_count = i + 1;
+			}
+		}
+
+		if (volumes_count > 0) {
+			mml += "@v" + itos(params->master_volumes[0] * 128);
+			for (int i = 1; i < volumes_count; i++) {
+				mml += "," + itos(params->master_volumes[i] * 128);
+			}
+		}
+
+		if (params->pan != 64) {
+			if (params->pan & 15) {
+				mml += "@p" + itos(params->pan - 64);
+			} else {
+				mml += "p" + itos(params->pan >> 4);
+			}
+		}
+
+		if (p_voice->velocity != 256) {
+			mml += "v" + itos(p_voice->velocity >> p_voice->velocity_shift);
+		}
+		if (p_voice->expression != 128) {
+			mml += "x" + itos(p_voice->expression);
+		}
+	}
+
+	return mml;
 }
 
 //
@@ -1156,8 +1470,7 @@ TranslatorUtil::MMLTableNumbers TranslatorUtil::parse_table_numbers(String p_tab
 		postfix_offset = res->get_string(4).to_float();
 	}
 
-	// res[1];(n..),m {res[2];n.., res[3];m} / res[4];n / res[5];|[] / res[6]; ]n
-	// FIXME: Godot's RegEx implementation doesn't support passing global flags. This pattern originally used "gm". Behavioral implications require investigation.
+	// match[1];(n..),m {match[2];n.., match[3];m} / match[4];n / match[5];|[] / match[6]; ]n
 	Ref<RegEx> re_table = RegEx::create_from_string("(\\(\\s*([,\\-\\d\\s]+)\\)[,\\s]*(\\d+))|(-?\\d+)|(\\||\\[|\\](\\d*))");
 	TypedArray<RegExMatch> numbers = re_table->search_all(p_table_numbers);
 
@@ -1166,7 +1479,7 @@ TranslatorUtil::MMLTableNumbers TranslatorUtil::parse_table_numbers(String p_tab
 		Ref<RegExMatch> parsed_number = numbers[n];
 
 		if (!parsed_number->get_string(1).is_empty()) {
-			// Interpolation: "(res[2]..),res[3]"
+			// Interpolation: "(match[2]..),match[3]"
 
 			PackedStringArray arr = split_string_by_regex(parsed_number->get_string(2), "[,\\s]+");
 			int inter_size = parsed_number->get_string(3).to_int();
@@ -1288,7 +1601,6 @@ void TranslatorUtil::parse_wav(String p_table_numbers, String p_postfix, Vector<
 }
 
 void TranslatorUtil::parse_wavb(String p_hex, Vector<double> *r_data) {
-	// FIXME: Godot's RegEx implementation doesn't support passing global flags. This pattern originally used "gm". Behavioral implications require investigation.
 	Ref<RegEx> re_spaces = RegEx::create_from_string("\\s+");
 	String hex = re_spaces->sub(p_hex, "", true);
 

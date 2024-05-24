@@ -21,6 +21,8 @@ enum SiONModuleType : unsigned int;
 class SiMMLVoice : public RefCounted {
 	GDCLASS(SiMMLVoice, RefCounted)
 
+	friend class TranslatorUtil;
+
 	// Set to true to update track params alongside channel params.
 	bool update_track_parameters = false;
 	// Set to true to update volume, velocity, expression, and panning when the voice is set.
@@ -127,6 +129,9 @@ public:
 	void set_velocity_shift(int p_value) { velocity_shift = p_value; }
 	int get_expression_mode() const { return expression_mode; }
 	void set_expression_mode(int p_value) { expression_mode = p_value; }
+
+	bool has_amplitude_modulation() const;
+	bool has_pitch_modulation() const;
 
 	void update_track_voice(SiMMLTrack *p_track);
 

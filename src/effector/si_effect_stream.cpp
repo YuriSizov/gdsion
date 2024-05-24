@@ -169,7 +169,6 @@ void SiEffectStream::parse_mml(int p_slot, String p_mml, String p_postfix) {
 
 	String command;
 
-	// FIXME: Godot's RegEx implementation doesn't support passing global flags. These patterns originally used "g". Behavioral implications require investigation.
 	Ref<RegEx> re_mml = RegEx::create_from_string("([a-zA-Z_]+|,)\\s*([.\\-\\d]+)?");
 	Ref<RegEx> re_postfix = RegEx::create_from_string("(p|@p|@v|,)\\s*([.\\-\\d]+)?");
 

@@ -80,8 +80,10 @@ public:
 
 	int get_amplitude_modulation_depth() const { return amplitude_modulation_depth; }
 	void set_amplitude_modulation_depth(int p_value) { amplitude_modulation_depth = p_value; }
+	bool has_amplitude_modulation() const;
 	int get_pitch_modulation_depth() const { return pitch_modulation_depth; }
 	void set_pitch_modulation_depth(int p_value) { pitch_modulation_depth = p_value; }
+	bool has_pitch_modulation() const;
 
 	double get_master_volume(int p_index) const;
 	void set_master_volume(int p_index, double p_value);
@@ -111,6 +113,9 @@ public:
 	void set_filter_sustain_offset(int p_value) { filter_sustain_offset = p_value; }
 	int get_filter_release_offset() const { return filter_release_offset; }
 	void set_filter_release_offset(int p_value) { filter_release_offset = p_value; }
+
+	bool has_filter() const;
+	bool has_filter_advanced() const;
 
 	int get_lfo_frame() const;
 	void set_lfo_frame(int p_fps);

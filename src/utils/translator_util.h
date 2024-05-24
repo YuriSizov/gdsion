@@ -23,7 +23,6 @@ class SiOPMChannelParams;
 class SiOPMWavePCMTable;
 class SiOPMWaveSamplerTable;
 
-// TODO: Partially implemented, aside from some MML parsing and stringification methods. Refer to FIXMEs and TODOs.
 class TranslatorUtil {
 
 	static Vector<int> _split_data_string(SiOPMChannelParams *r_params, String p_data_string, int p_channel_param_count, int p_operator_param_count, const String &p_command);

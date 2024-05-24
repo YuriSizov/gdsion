@@ -22,6 +22,14 @@ SiOPMOperatorParams *SiOPMChannelParams::get_operator_params(int p_index) {
 	return operator_params[p_index];
 }
 
+bool SiOPMChannelParams::has_amplitude_modulation() const {
+	return amplitude_modulation_depth > 0;
+}
+
+bool SiOPMChannelParams::has_pitch_modulation() const {
+	return pitch_modulation_depth > 0;
+}
+
 double SiOPMChannelParams::get_master_volume(int p_index) const {
 	ERR_FAIL_INDEX_V(p_index, master_volumes.size(), 0);
 
@@ -32,6 +40,14 @@ void SiOPMChannelParams::set_master_volume(int p_index, double p_value) {
 	ERR_FAIL_INDEX(p_index, master_volumes.size());
 
 	master_volumes.write[p_index] = p_value;
+}
+
+bool SiOPMChannelParams::has_filter() const {
+	return filter_cutoff < 128 || filter_resonance > 0;
+}
+
+bool SiOPMChannelParams::has_filter_advanced() const {
+	return filter_attack_rate > 0 || filter_release_rate > 0;
 }
 
 int SiOPMChannelParams::get_lfo_frame() const {
