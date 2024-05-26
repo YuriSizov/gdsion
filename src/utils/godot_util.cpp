@@ -15,10 +15,18 @@ PackedStringArray split_string_by_regex(const String &p_string, const String &p_
 
 	Ref<RegEx> re_split = RegEx::create_from_string(p_regex);
 	TypedArray<RegExMatch> matches = re_split->search_all(p_string);
+
+	int last_index = 0;
 	for (int i = 0; i < matches.size(); i++) {
-		Ref<RegExMatch> match = matches[i];
-		arr.append(match->get_string());
+		Ref<RegExMatch> separator = matches[i];
+		String match = p_string.substr(last_index, separator->get_start() - last_index);
+
+		arr.append(match);
+		last_index = separator->get_end();
 	}
+
+	String last_match = p_string.substr(last_index);
+	arr.append(last_match);
 
 	return arr;
 }

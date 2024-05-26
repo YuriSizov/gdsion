@@ -28,11 +28,12 @@ Vector<int> TranslatorUtil::_split_data_string(SiOPMChannelParams *r_params, Str
 		return Vector<int>();
 	}
 
-	// FIXME: Godot's RegEx implementation doesn't support passing global flags. This pattern originally used "gms". Behavioral implications require investigation.
-	Ref<RegEx> re_command = RegEx::create_from_string("/\\*.*?\\*/|//.*?[\\r\\n]+");
+	// Godot's RegEx implementation doesn't support passing global flags, but PCRE2 allows local flags, which we can abuse.
+	// (?s) enables single line mode (dot matches newline) for the entire expression.
+	Ref<RegEx> re_comments = RegEx::create_from_string("(?s)/\\*.*?\\*/|//.*?[\\r\\n]+");
 	Ref<RegEx> re_cleanup = RegEx::create_from_string("^[^\\d\\-.]+|[^\\d\\-.]+$");
 
-	String sanitized_string = re_command->sub(p_data_string, "", true);
+	String sanitized_string = re_comments->sub(p_data_string, "", true);
 	sanitized_string = re_cleanup->sub(sanitized_string, "", true);
 	PackedStringArray string_data = split_string_by_regex(sanitized_string, "[^\\d\\-.]+");
 

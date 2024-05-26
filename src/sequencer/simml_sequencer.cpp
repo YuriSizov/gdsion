@@ -174,8 +174,9 @@ String SiMMLSequencer::_on_before_compile(String p_mml) {
 
 	// Remove comments.
 
-	// FIXME: Godot's RegEx implementation doesn't support passing global flags. This pattern originally used "gms". Behavioral implications require investigation.
-	Ref<RegEx> re_comments = RegEx::create_from_string("/\\*.*?\\*/|//.*?[\\r\\n]+");
+	// Godot's RegEx implementation doesn't support passing global flags, but PCRE2 allows local flags, which we can abuse.
+	// (?s) enables single line mode (dot matches newline) for the entire expression.
+	Ref<RegEx> re_comments = RegEx::create_from_string("(?s)/\\*.*?\\*/|//.*?[\\r\\n]+");
 	mml = re_comments->sub(mml, "", true);
 
 	// Format last.
@@ -200,8 +201,9 @@ String SiMMLSequencer::_on_before_compile(String p_mml) {
 
 	String expanded_mml;
 
-	// FIXME: Godot's RegEx implementation doesn't support passing global flags. This pattern originally used "gms". Behavioral implications require investigation.
-	Ref<RegEx> re_sequence = RegEx::create_from_string("[ \\t\\r\\n]*(#([A-Z@\\-]+)(\\+=|=)?)?([^;{]*({.*?})?[^;]*);");
+	// Godot's RegEx implementation doesn't support passing global flags, but PCRE2 allows local flags, which we can abuse.
+	// (?s) enables single line mode (dot matches newline) for the entire expression.
+	Ref<RegEx> re_sequence = RegEx::create_from_string("(?s)[ \\t\\r\\n]*(#([A-Z@\\-]+)(\\+=|=)?)?([^;{]*({.*?})?[^;]*);");
 	Ref<RegEx> re_macro_id = RegEx::create_from_string("([A-Z])?(-([A-Z])?)?");
 
 	TypedArray<RegExMatch> matches = re_sequence->search_all(mml);
@@ -264,8 +266,9 @@ String SiMMLSequencer::_on_before_compile(String p_mml) {
 
 	// Expand repeat.
 
-	// FIXME: Godot's RegEx implementation doesn't support passing global flags. This pattern originally used "gms". Behavioral implications require investigation.
-	Ref<RegEx> re_repeat = RegEx::create_from_string("!\\[(\\d*)(.*?)(!\\|(.*?))?!\\](\\d*)");
+	// Godot's RegEx implementation doesn't support passing global flags, but PCRE2 allows local flags, which we can abuse.
+	// (?s) enables single line mode (dot matches newline) for the entire expression.
+	Ref<RegEx> re_repeat = RegEx::create_from_string("(?s)!\\[(\\d*)(.*?)(!\\|(.*?))?!\\](\\d*)");
 	matches = re_repeat->search_all(expanded_mml);
 	// Iterate backwards so we can do in-place replacements without disturbing indices.
 	for (int i = matches.size() - 1; i >= 0; i--) {
@@ -334,8 +337,9 @@ void SiMMLSequencer::_on_beat(int p_delay_samples, int p_beat_counter) {
 void SiMMLSequencer::_on_table_parse(MMLEvent *p_prev, String p_table) {
 	ERR_FAIL_COND_MSG(p_prev->id < _envelope_event_id || p_prev->id > _envelope_event_id + 10, "SiMMLSequencer : Internal table is available only for envelope commands.");
 
-	// FIXME: Godot's RegEx implementation doesn't support passing global flags. This pattern originally used "ms". Behavioral implications require investigation.
-	Ref<RegEx> re_table = RegEx::create_from_string("\\{([^}]*)\\}(.*)");
+	// Godot's RegEx implementation doesn't support passing global flags, but PCRE2 allows local flags, which we can abuse.
+	// (?s) enables single line mode (dot matches newline) for the entire expression.
+	Ref<RegEx> re_table = RegEx::create_from_string("(?s)\\{([^}]*)\\}(.*)");
 
 	Ref<RegExMatch> res = re_table->search(p_table);
 	ERR_FAIL_COND_MSG(!res.is_valid(), "SiMMLSequencer: Invalid table format.");
@@ -680,8 +684,9 @@ void SiMMLSequencer::_try_process_command_callback(String p_command, int p_numbe
 }
 
 bool SiMMLSequencer::_parse_system_command_before(String p_command, String p_param) {
-	// FIXME: Godot's RegEx implementation doesn't support passing global flags. This pattern originally used "ms". Behavioral implications require investigation.
-	Ref<RegEx> re_param = RegEx::create_from_string("\\s*(\\d*)\\s*(\\{(.*?)\\})?(.*)");
+	// Godot's RegEx implementation doesn't support passing global flags, but PCRE2 allows local flags, which we can abuse.
+	// (?s) enables single line mode (dot matches newline) for the entire expression.
+	Ref<RegEx> re_param = RegEx::create_from_string("(?s)\\s*(\\d*)\\s*(\\{(.*?)\\})?(.*)");
 	Ref<RegExMatch> res = re_param->search(p_param);
 
 	int number = res->get_string(1).to_int();

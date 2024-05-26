@@ -65,8 +65,10 @@ void MMLParser::_create_mml_regex(bool p_reset) {
 		user_defs_str = String("|").join(user_defs);
 	}
 
-	String reg_string;
-	reg_string  = "(\\s+)";                                            // whitespace [1]
+	// Godot's RegEx implementation doesn't support passing global flags, but PCRE2 allows local flags, which we can abuse.
+	// (?s) enables single line mode (dot matches newline) for the entire expression.
+	String reg_string = "(?s)";
+	reg_string += "(\\s+)";                                            // whitespace [1]
 	reg_string += "|(#[^;]*)";                                         // system [2]
 	reg_string += "|(";                                                // --all-- [3]
 		reg_string += "([a-g])([\\-+#]?)";                                 // note [4][5]
@@ -76,7 +78,6 @@ void MMLParser::_create_mml_regex(bool p_reset) {
 	reg_string += ")\\s*(-?[0-9]*)";                                   // parameter [9]
 	reg_string += "\\s*(\\.*)";                                        // periods [10]
 
-	// FIXME: Godot's RegEx implementation doesn't support passing global flags. This pattern originally used "gms". Behavioral implications require investigation.
 	_mml_regex = RegEx::create_from_string(reg_string);
 }
 

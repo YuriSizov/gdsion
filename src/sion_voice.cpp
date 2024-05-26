@@ -148,8 +148,9 @@ String SiONVoice::get_mml(int p_index, String p_chip_type, bool p_append_postfix
 int SiONVoice::set_by_mml(String p_mml) {
 	reset();
 
-	// FIXME: Godot's RegEx implementation doesn't support passing global flags. This pattern originally used "ms". Behavioral implications require investigation.
-	Ref<RegEx> re_command = RegEx::create_from_string("(#[A-Z]*@)\\s*(\\d+)\\s*{(.*?)}(.*?);");
+	// Godot's RegEx implementation doesn't support passing global flags, but PCRE2 allows local flags, which we can abuse.
+	// (?s) enables single line mode (dot matches newline) for the entire expression.
+	Ref<RegEx> re_command = RegEx::create_from_string("(?s)(#[A-Z]*@)\\s*(\\d+)\\s*{(.*?)}(.*?);");
 	Ref<RegExMatch> res = re_command->search(p_mml);
 	if (res.is_null()) {
 		return -1;
