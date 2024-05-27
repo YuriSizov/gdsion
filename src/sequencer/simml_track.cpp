@@ -458,11 +458,11 @@ void SiMMLTrack::handle_pitch_bend(int p_next_note, int p_term) {
 }
 
 void SiMMLTrack::handle_velocity(int p_value) {
-	_velocity = p_value << _velocity_shift;
+	set_velocity(p_value << _velocity_shift);
 }
 
 void SiMMLTrack::handle_velocity_shift(int p_value) {
-	_velocity += p_value << _velocity_shift;
+	set_velocity(_velocity + p_value << _velocity_shift);
 }
 
 // Playback.
