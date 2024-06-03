@@ -1,0 +1,40 @@
+name: Build and Test Pull Request
+
+on:
+  pull_request:
+
+# Make sure jobs cannot overlap.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+# First, build the extension and upload the artifacts.
+
+  build-linux:
+    name: Compile and upload Linux version
+    uses: ./.github/workflows/extension-build-linux.yml
+
+  build-macos:
+    name: Compile and upload macOS version
+    uses: ./.github/workflows/extension-build-macos.yml
+
+  build-windows:
+    name: Compile and upload Windows version
+    uses: ./.github/workflows/extension-build-windows.yml
+
+  build-web:
+    name: Compile and upload Web version
+    uses: ./.github/workflows/extension-build-web.yml
+
+  build-android:
+    name: Compile and upload Android version
+    uses: ./.github/workflows/extension-build-android.yml
+
+# Then, use the artifacts to test the example project.
+
+  export-example-project:
+    name: Export the example project for target platforms
+    needs: [ build-linux, build-macos, build-windows, build-web, build-android ]
+    uses: ./.github/workflows/example-export-project.yml

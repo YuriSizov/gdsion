@@ -8,6 +8,8 @@ inputs:
     default: "bin"
   platform:
     default: ""
+  release-version:
+    required: true
 
 runs:
   using: "composite"
@@ -19,9 +21,9 @@ runs:
         path: ${{ inputs.path }}
         filename: libgdsion-${{ inputs.platform }}.zip
 
-    - name: Update the rolling release with the artifact
+    - name: Update the release with the platform artifact
       shell: bash
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        gh release upload latest-unstable ${{ inputs.directory }}/libgdsion-${{ inputs.platform }}.zip --clobber
+        gh release upload ${{ inputs.release-version }} ${{ inputs.directory }}/libgdsion-${{ inputs.platform }}.zip --clobber

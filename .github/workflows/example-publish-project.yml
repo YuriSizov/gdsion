@@ -2,10 +2,14 @@ name: Publish Example Project
 
 on:
   workflow_call:
+    inputs:
+      release-version:
+        required: true
+        type: string
 
 # Make sure jobs cannot overlap.
 concurrency:
-  group: publish-unstable-example-project
+  group: publish-${{ github.ref }}-example-project
   cancel-in-progress: true
 
 jobs:
@@ -41,11 +45,11 @@ jobs:
           directory: example/export
           split: true
 
-      - name: Update the rolling release with the example project
+      - name: Update the release with the example project
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload latest-unstable example/example-project-source.zip --clobber
-          gh release upload latest-unstable example/export/*.zip --clobber
+          gh release upload ${{ inputs.release-version }} example/example-project-source.zip --clobber
+          gh release upload ${{ inputs.release-version }} example/export/*.zip --clobber
 
