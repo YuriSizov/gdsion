@@ -15,7 +15,6 @@ runs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        git tag -d ${{ inputs.release-version }}
         git push origin :refs/tags/${{ inputs.release-version }}
         git tag ${{ inputs.release-version }} ${{ github.sha }}
         git push origin ${{ inputs.release-version }}
