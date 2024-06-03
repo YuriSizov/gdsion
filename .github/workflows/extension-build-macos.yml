@@ -5,7 +5,7 @@ on:
 
 # Make sure jobs cannot overlap.
 concurrency:
-  group: build-unstable-main-macos
+  group: build-${{ github.ref }}-macos
   cancel-in-progress: true
 
 jobs:
@@ -13,6 +13,7 @@ jobs:
     name: Compile and upload macOS version
     runs-on: macos-latest
     env:
+      GIT_BASE_REF: 'main'
       SCONS_PLATFORM: macos
 
     steps:

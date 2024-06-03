@@ -1,4 +1,4 @@
-name: Build Unstable (main branch)
+name: Build and Publish Unstable (main branch)
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 # Make sure jobs cannot overlap.
 concurrency:
-  group: build-unstable-main
+  group: build-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -40,6 +40,8 @@ jobs:
     name: Package and publish the extension
     needs: [ build-linux, build-macos, build-windows, build-web, build-android ]
     uses: ./.github/workflows/extension-publish-all.yml
+    with:
+      release-version: 'latest-unstable'
 
   export-example-project:
     name: Export the example project for target platforms
@@ -50,3 +52,19 @@ jobs:
     name: Package and publish the example project
     needs: [ export-example-project ]
     uses: ./.github/workflows/example-publish-project.yml
+    with:
+      release-version: 'latest-unstable'
+
+# Lastly, update the release tag and republish it.
+
+  release-all:
+    name: Update tag and re-release the GitHub Release
+    needs: [ publish-all, publish-example-project ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update GitHub Release
+        uses: ./.github/actions/update-release
+        with:
+          release-version: 'latest-unstable'
+          republish: true
+

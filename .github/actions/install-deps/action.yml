@@ -55,7 +55,7 @@ runs:
       with:
         version: ${{ inputs.emscripten_version }}
         actions-cache-folder: emsdk-cache
-        cache-key: emsdk-${{ env.SCONS_PLATFORM }}-main
+        cache-key: emsdk-${{ env.SCONS_PLATFORM }}-${{ env.GIT_BASE_REF }}-${{ inputs.emscripten_version }}
 
     - name: "Web: Verify Emscripten"
       if: ${{ env.SCONS_PLATFORM == 'web' }}

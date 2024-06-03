@@ -5,7 +5,7 @@ on:
 
 # Make sure jobs cannot overlap.
 concurrency:
-  group: export-unstable-example-project
+  group: export-${{ github.ref }}-example-project
   cancel-in-progress: true
 
 env:

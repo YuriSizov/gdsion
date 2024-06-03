@@ -5,7 +5,7 @@ on:
 
 # Make sure jobs cannot overlap.
 concurrency:
-  group: build-unstable-main-web
+  group: build-${{ github.ref }}-web
   cancel-in-progress: true
 
 jobs:
@@ -13,6 +13,7 @@ jobs:
     name: Compile and upload Web version
     runs-on: ubuntu-latest
     env:
+      GIT_BASE_REF: 'main'
       SCONS_PLATFORM: web
 
     steps:
