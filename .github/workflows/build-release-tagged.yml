@@ -1,9 +1,10 @@
-name: Build and Publish Unstable (main branch)
+name: Build and Publish Tagged Release
 
 on:
   push:
-    branches:
-      - 'main'
+    tags:
+      # Match only tags that look like version numbers, e.g. 0.1, 2.3-beta, 4.5.6d, etc.
+      - '[0-9]+.[0-9]+*'
 
 # Make sure jobs cannot overlap.
 concurrency:
@@ -18,44 +19,58 @@ jobs:
     name: Compile and upload Linux version
     uses: ./.github/workflows/extension-build-linux.yml
     with:
-      git-base-ref: 'main'
+      git-base-ref: ${{ github.ref }}
 
   build-macos:
     name: Compile and upload macOS version
     uses: ./.github/workflows/extension-build-macos.yml
     with:
-      git-base-ref: 'main'
+      git-base-ref: ${{ github.ref }}
 
   build-windows:
     name: Compile and upload Windows version
     uses: ./.github/workflows/extension-build-windows.yml
     with:
-      git-base-ref: 'main'
+      git-base-ref: ${{ github.ref }}
 
   build-web:
     name: Compile and upload Web version
     uses: ./.github/workflows/extension-build-web.yml
     with:
-      git-base-ref: 'main'
+      git-base-ref: ${{ github.ref }}
 
   build-android:
     name: Compile and upload Android version
     uses: ./.github/workflows/extension-build-android.yml
     with:
-      git-base-ref: 'main'
+      git-base-ref: ${{ github.ref }}
 
-# Then, use the artifacts to prepare the example project and publish the build.
+# Then, make a draft release for the tag.
+
+  release-all:
+    name: Make a draft GitHub Release for the tag
+    needs: [ build-linux, build-macos, build-windows, build-web, build-android ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Make GitHub Release
+        uses: ./.github/actions/make-release
+        with:
+          release-version: ${{ github.ref }}
+
+# Lastly, use the artifacts to prepare the example project and publish the build.
 
   publish-all:
     name: Package and publish the extension
-    needs: [ build-linux, build-macos, build-windows, build-web, build-android ]
+    needs: [ release-all ]
     uses: ./.github/workflows/extension-publish-all.yml
     with:
-      release-version: 'latest-unstable'
+      release-version: ${{ github.ref }}
 
   export-example-project:
     name: Export the example project for target platforms
-    needs: [ build-linux, build-macos, build-windows, build-web, build-android ]
+    needs: [ release-all ]
     uses: ./.github/workflows/example-export-project.yml
 
   publish-example-project:
@@ -63,20 +78,4 @@ jobs:
     needs: [ export-example-project ]
     uses: ./.github/workflows/example-publish-project.yml
     with:
-      release-version: 'latest-unstable'
-
-# Lastly, update the release tag and republish it.
-
-  release-all:
-    name: Update tag and re-release the GitHub Release
-    needs: [ publish-all, publish-example-project ]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Update GitHub Release
-        uses: ./.github/actions/update-release
-        with:
-          release-version: 'latest-unstable'
-          republish: true
-
+      release-version: ${{ github.ref }}

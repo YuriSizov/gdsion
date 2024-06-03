@@ -2,6 +2,10 @@ name: Build Extension - Android
 
 on:
   workflow_call:
+    inputs:
+      git-base-ref:
+        type: string
+        default: 'main'
 
 # Make sure jobs cannot overlap.
 concurrency:
@@ -18,7 +22,7 @@ jobs:
     name: Compile and upload Android (${{ matrix.arch }}) version
     runs-on: ubuntu-latest
     env:
-      GIT_BASE_REF: 'main'
+      GIT_BASE_REF: ${{ inputs.git-base-ref }}
       SCONS_PLATFORM: android
       SCONS_PLATFORM_SUFFIX: ".${{ matrix.arch }}"
 

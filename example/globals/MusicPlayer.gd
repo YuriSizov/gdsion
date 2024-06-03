@@ -52,6 +52,8 @@ func _init(controller: Node) -> void:
 	_driver = SiONDriver.create(controller.buffer_size)
 	controller.add_child(_driver)
 
+	print("Created synthesizer driver (v%s-%s)" % [ SiONDriver.get_version(), SiONDriver.get_version_flavor() ])
+
 
 # Initialization.
 

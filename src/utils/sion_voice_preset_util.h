@@ -12,6 +12,7 @@
 #include <godot_cpp/templates/hash_map.hpp>
 #include <godot_cpp/templates/list.hpp>
 #include <godot_cpp/templates/vector.hpp>
+#include <godot_cpp/variant/packed_string_array.hpp>
 #include <godot_cpp/variant/string.hpp>
 
 using namespace godot;
@@ -67,6 +68,7 @@ public:
 	};
 
 	void generate_voices(uint32_t p_flags = GeneratorFlags::INCLUDE_ALL);
+	PackedStringArray get_voice_preset_keys() const;
 	Ref<SiONVoice> get_voice_preset(const String &p_key) const;
 
 	SiONVoicePresetUtil(uint32_t p_flags = GeneratorFlags::INCLUDE_ALL);

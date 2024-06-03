@@ -47,6 +47,7 @@ class SiONDriver : public Node {
 
 public:
 	static const char *VERSION;
+	static const char *VERSION_FLAVOR;
 
 	// Note-on exception modes.
 	enum ExceptionMode {
@@ -267,6 +268,9 @@ protected:
 	void _notification(int p_what);
 
 public:
+	static String get_version() { return VERSION; }
+	static String get_version_flavor() { return VERSION_FLAVOR; }
+
 	// The singleton instance.
 	static SiONDriver *get_mutex() { return _mutex; }
 	// NOTE: Godot doesn't support exposing constructors to the API, so we make do with a static factory method. Hopefully this can be fixed at some point.

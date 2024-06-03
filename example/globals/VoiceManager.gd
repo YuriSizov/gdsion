@@ -13,7 +13,10 @@ var _drumkits: Array[Drumkit] = []
 
 
 func _init() -> void:
+	# Generate presets with default flags.
 	_preset_util = SiONVoicePresetUtil.new()
+
+	# Full list of preset keys can be fetched with _preset_util.get_voice_preset_keys().
 	_register_voices()
 	_register_drumkits()
 

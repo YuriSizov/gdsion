@@ -2,6 +2,10 @@ name: Build Extension - macOS
 
 on:
   workflow_call:
+    inputs:
+      git-base-ref:
+        type: string
+        default: 'main'
 
 # Make sure jobs cannot overlap.
 concurrency:
@@ -13,7 +17,7 @@ jobs:
     name: Compile and upload macOS version
     runs-on: macos-latest
     env:
-      GIT_BASE_REF: 'main'
+      GIT_BASE_REF: ${{ inputs.git-base-ref }}
       SCONS_PLATFORM: macos
 
     steps:

@@ -1,5 +1,5 @@
 name: Update GitHub Release
-description: Update the tag of an existing GH Release, and republish it.
+description: Update the tag of an existing GitHub release, and republish it.
 
 inputs:
   release-version:

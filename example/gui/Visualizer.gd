@@ -36,7 +36,7 @@ func _draw() -> void:
 
 	var offset := (size - RENDER_SIZE) / 2
 	var w := RENDER_SIZE.x / VU_COUNT
-	var prev_hz := 0
+	var prev_hz := 0.0
 
 	var new_heights := PackedFloat32Array()
 	var new_colors := PackedColorArray()
@@ -48,6 +48,7 @@ func _draw() -> void:
 		var height := _get_height(i - 1, magnitude)
 		var color := _get_color(i - 1, height)
 
+		@warning_ignore("integer_division")
 		var bar_position := Vector2(
 			offset.x + SPACE_WIDTH / 2 + w * (i - 1),
 			offset.y + RENDER_SIZE.y - height

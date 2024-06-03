@@ -39,9 +39,12 @@
 
 // TODO: Extract somewhere more manageable?
 const char *SiONDriver::VERSION = "0.7.0.0"; // Original code is versioned 0.6.6.0.
+const char *SiONDriver::VERSION_FLAVOR = "beta0";
 
 SiONDriver *SiONDriver::_mutex = nullptr;
 bool SiONDriver::_allow_multiple_drivers = false;
+
+//
 
 SiONDriver::SiONDriverJob::SiONDriverJob(String p_mml, Vector<double> p_buffer, const Ref<SiONData> &p_data, int p_channel_count, bool p_reset_effector) {
 	mml = p_mml;
@@ -1182,6 +1185,11 @@ void SiONDriver::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("_fade_callback", "value"), &SiONDriver::_fade_callback);
 	ClassDB::bind_method(D_METHOD("_fade_background_callback", "value"), &SiONDriver::_fade_callback);
+
+	//
+
+	ClassDB::bind_static_method("SiONDriver", D_METHOD("get_version"), &SiONDriver::get_version);
+	ClassDB::bind_static_method("SiONDriver", D_METHOD("get_version_flavor"), &SiONDriver::get_version_flavor);
 
 	// Factory.
 

@@ -910,6 +910,16 @@ void SiONVoicePresetUtil::generate_voices(uint32_t p_flags) {
 	}
 }
 
+PackedStringArray SiONVoicePresetUtil::get_voice_preset_keys() const {
+	PackedStringArray keys;
+
+	for (const KeyValue<String, Ref<SiONVoice>> &E : _voice_map) {
+		keys.push_back(E.key);
+	}
+
+	return keys;
+}
+
 Ref<SiONVoice> SiONVoicePresetUtil::get_voice_preset(const String &p_key) const {
 	ERR_FAIL_COND_V_MSG(!_voice_map.has(p_key), nullptr, vformat("SiONVoicePresetUtil: Nonexistent voice preset '%s'.", p_key));
 
@@ -920,6 +930,7 @@ Ref<SiONVoice> SiONVoicePresetUtil::get_voice_preset(const String &p_key) const 
 
 void SiONVoicePresetUtil::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("generate_voices", "flags"), &SiONVoicePresetUtil::generate_voices, DEFVAL(GeneratorFlags::INCLUDE_ALL));
+	ClassDB::bind_method(D_METHOD("get_voice_preset_keys"), &SiONVoicePresetUtil::get_voice_preset_keys);
 	ClassDB::bind_method(D_METHOD("get_voice_preset", "key"), &SiONVoicePresetUtil::get_voice_preset);
 
 	BIND_ENUM_CONSTANT(INCLUDE_DEFAULT);

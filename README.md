@@ -9,21 +9,24 @@ The name of the synthesizer should be pronounced like the word "_scion_".
 
 ## Download
 
-This project is feature complete, but there is no stable release available yet. You can download the **latest unstable** build and give it a try.
+This project is in the _beta_ phase. This means it's feature complete, but still requires some bug fixing and testing. Please make backups when working with prerelease libraries! [Bug reports](https://github.com/YuriSizov/gdsion/issues) are highly appreciated.
 
 The project is compatible with **Godot 4.3**.
 
-As _Godot 4.3_ is still being developed, there might be compatibility issues between _GDSiON_ and available builds of the engine. The project has been developed and tested with the [4.3-dev5](https://godotengine.org/download/archive/4.3-dev5/) release, so this is the minimum recommended version for now.
+> [!NOTE]
+> As _Godot 4.3_ is still being developed, there might be compatibility issues between _GDSiON_ and available builds of the engine. The project has been developed and tested with the [4.3-dev5](https://godotengine.org/download/archive/4.3-dev5/) release, so this is the minimum recommended version for now.
 
-* **[Download for Linux](https://github.com/YuriSizov/gdsion/releases/download/latest-unstable/libgdsion-linux.zip)**
-* **[Download for macOS](https://github.com/YuriSizov/gdsion/releases/download/latest-unstable/libgdsion-macos.zip)**
-* **[Download for Windows](https://github.com/YuriSizov/gdsion/releases/download/latest-unstable/libgdsion-windows.zip)**
-* **[Download for Web](https://github.com/YuriSizov/gdsion/releases/download/latest-unstable/libgdsion-web.zip)** (requires _4.3-beta1_ or later)
-* **[Download for Android](https://github.com/YuriSizov/gdsion/releases/download/latest-unstable/libgdsion-android.zip)**
+### Current release: 0.7-beta0
+
+* **[Download for Linux](https://github.com/YuriSizov/gdsion/releases/download/0.7-beta0/libgdsion-linux.zip)**
+* **[Download for macOS](https://github.com/YuriSizov/gdsion/releases/download/0.7-beta0/libgdsion-macos.zip)**
+* **[Download for Windows](https://github.com/YuriSizov/gdsion/releases/download/0.7-beta0/libgdsion-windows.zip)**
+* **[Download for Web](https://github.com/YuriSizov/gdsion/releases/download/0.7-beta0/libgdsion-web.zip)** (requires _4.3-beta1_ or later)
+* **[Download for Android](https://github.com/YuriSizov/gdsion/releases/download/0.7-beta0/libgdsion-android.zip)**
 
 _These archives contain both release and debug binaries._
 
-Please make backups when working with unstable libraries! [Bug reports](https://github.com/YuriSizov/gdsion/issues) are highly appreciated as well.
+If you need the most recent fixes, you can also download the _[latest unstable](https://github.com/YuriSizov/gdsion/releases/latest-unstable)_ version, built from the latest commit of the `main` branch.
 
 ## Setup
 
@@ -52,7 +55,7 @@ driver.play("t100 l8 [ ccggaag4 ffeeddc4 | [ggffeed4]2 ]2")
 
 You can also play a melody by directly feeding the driver your notes, one by one or as a sequence.
 
-_GDSiON_ is capable of emulating a variety of instruments and algorithms, which you can configure for your playback. You can use `SiONVoicePresetUtil` to generate presets for over 500 instrument voices.
+_GDSiON_ is capable of emulating a variety of instruments and algorithms, which you can configure for your playback. You can use `SiONVoicePresetUtil` to generate presets for over 650 instrument voices.
 
 **Check the example project for an interactive demo!**
 

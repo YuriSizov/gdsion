@@ -2,6 +2,10 @@ name: Build Extension - Windows
 
 on:
   workflow_call:
+    inputs:
+      git-base-ref:
+        type: string
+        default: 'main'
 
 # Make sure jobs cannot overlap.
 concurrency:
@@ -18,7 +22,7 @@ jobs:
     name: Compile and upload Windows (${{ matrix.arch }}) version
     runs-on: windows-latest
     env:
-      GIT_BASE_REF: 'main'
+      GIT_BASE_REF: ${{ inputs.git-base-ref }}
       SCONS_PLATFORM: windows
       SCONS_PLATFORM_SUFFIX: ".${{ matrix.arch }}"
 
