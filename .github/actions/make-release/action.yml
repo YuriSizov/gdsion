@@ -11,8 +11,8 @@ runs:
     - name: Prepare release notes for this release
       shell: bash
       run: |
-        sed -i 's/\${COMMIT_HASH}/${{ github.sha }}/' $GITHUB_ACTION_PATH/release-notes.md
-        sed -i 's/\${VERSION_TAG}/${{ inputs.release-version }}/' $GITHUB_ACTION_PATH/release-notes.md
+        sed -i 's/\${COMMIT_HASH}/${{ github.sha }}/g' $GITHUB_ACTION_PATH/release-notes.md
+        sed -i 's/\${VERSION_TAG}/${{ inputs.release-version }}/g' $GITHUB_ACTION_PATH/release-notes.md
 
     - name: Create a draft release with custom release notes
       shell: bash
