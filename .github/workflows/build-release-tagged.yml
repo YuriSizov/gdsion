@@ -57,7 +57,7 @@ jobs:
       - name: Make GitHub Release
         uses: ./.github/actions/make-release
         with:
-          release-version: ${{ github.ref }}
+          release-version: ${{ github.ref_name }}
 
 # Lastly, use the artifacts to prepare the example project and publish the build.
 
@@ -66,7 +66,7 @@ jobs:
     needs: [ release-all ]
     uses: ./.github/workflows/extension-publish-all.yml
     with:
-      release-version: ${{ github.ref }}
+      release-version: ${{ github.ref_name }}
 
   export-example-project:
     name: Export the example project for target platforms
@@ -78,4 +78,4 @@ jobs:
     needs: [ export-example-project ]
     uses: ./.github/workflows/example-publish-project.yml
     with:
-      release-version: ${{ github.ref }}
+      release-version: ${{ github.ref_name }}
