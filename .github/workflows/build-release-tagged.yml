@@ -26,6 +26,7 @@ jobs:
     uses: ./.github/workflows/extension-build-macos.yml
     with:
       git-base-ref: ${{ github.ref }}
+      with-codesign: true
 
   build-windows:
     name: Compile and upload Windows version

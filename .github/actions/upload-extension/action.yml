@@ -1,9 +1,17 @@
 name: Upload GDSiON release
 description: Strip and upload build artifacts.
 
+inputs:
+  sign-extension:
+    description: Flag that enables the codesign routine for platforms that support it.
+    default: false
+
 runs:
   using: "composite"
   steps:
+
+    # Linux-specific steps.
+
     - name: Prepare the binaries (Linux)
       if: ${{ env.SCONS_PLATFORM == 'linux' }}
       shell: bash
@@ -11,17 +19,58 @@ runs:
         strip bin/libgdsion.linux.*
         chmod +x bin/libgdsion.linux.*
 
+    # macOS-specific steps.
+
     - name: Prepare the binaries (macOS)
       if: ${{ env.SCONS_PLATFORM == 'macos' }}
       shell: bash
       run: |
         chmod +x bin/libgdsion.macos.*
 
+    - name: Set up codesign (macOS)
+      if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.sign-extension }}
+      uses: ./.github/actions/sign-extension
+      with:
+        setup-env: true
+
+        apple-cert-base64:   ${{ secrets.APPLE_CERT_BASE64 }}
+        apple-cert-password: ${{ secrets.APPLE_CERT_PASSWORD }}
+
+    - name: Sign the binaries (macOS, debug)
+      if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.sign-extension }}
+      uses: ./.github/actions/sign-extension
+      with:
+        codesign: true
+        directory: bin
+        target-name: libgdsion.macos.template_debug.framework
+
+        apple-dev-id:        ${{ secrets.APPLE_DEV_ID }}
+        apple-dev-app-id:    ${{ secrets.APPLE_DEV_APP_ID }}
+        apple-dev-team-id:   ${{ secrets.APPLE_DEV_TEAM_ID }}
+        apple-dev-password:  ${{ secrets.APPLE_DEV_PASSWORD }}
+
+    - name: Sign the binaries (macOS, release)
+      if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.sign-extension }}
+      uses: ./.github/actions/sign-extension
+      with:
+        codesign: true
+        directory: bin
+        target-name: libgdsion.macos.template_release.framework
+
+        apple-dev-id:        ${{ secrets.APPLE_DEV_ID }}
+        apple-dev-app-id:    ${{ secrets.APPLE_DEV_APP_ID }}
+        apple-dev-team-id:   ${{ secrets.APPLE_DEV_TEAM_ID }}
+        apple-dev-password:  ${{ secrets.APPLE_DEV_PASSWORD }}
+
+    # Windows-specific steps.
+
     - name: Prepare the binaries (Windows)
       if: ${{ env.SCONS_PLATFORM == 'windows' }}
       shell: powershell
       run: |
         Remove-Item bin/* -Include *.exp,*.lib,*.pdb -Force
+
+    # Common final steps.
 
     - name: Upload the binaries as an artifact
       uses: actions/upload-artifact@v4

@@ -1,0 +1,72 @@
+name: Codesign GDSiON (macos)
+description: Configure the environment and sign the build artifacts for macOS.
+
+inputs:
+  setup-env:
+    description: Flag that enables the setup step.
+    default: false
+  codesign:
+    description: Flag that enables the codesign step.
+    default: false
+
+  # Setup arguments.
+  apple-cert-base64:
+    required: true
+  apple-cert-password:
+    required: true
+
+  # Codesign arguments.
+  apple-dev-id:
+    required: true
+  apple-dev-app-id:
+    required: true
+  apple-dev-team-id:
+    required: true
+  apple-dev-password:
+    required: true
+
+  # Input/output arguments.
+  directory:
+    description: Path to the root folder of the .framework folder.
+    required: true
+  target-name:
+    description: Exact name of the .framework folder.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    # macOS-specific steps.
+
+    # Setup.
+
+    - name: Set up the signing environment
+      if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.setup-env }}
+      shell: bash
+      env:
+        APPLE_CERT_BASE64:   ${{ inputs.apple-cert-base64 }}
+        APPLE_CERT_PASSWORD: ${{ inputs.apple-cert-password }}
+      run: $GITHUB_ACTION_PATH/setup.sh
+
+    # Codesign.
+
+    - name: Prepare the .plist file
+      if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.codesign }}
+      shell: bash
+      env:
+        RESOURCES_PATH: '${{ inputs.directory }}/${{ inputs.target-name }}/Resources'
+      run: |
+        mkdir $RESOURCES_PATH
+        sed 's/\${FRAMEWORK_NAME}/${{ inputs.target-name }}/g' $GITHUB_ACTION_PATH/Info.plist > $RESOURCES_PATH/Info.plist
+
+    - name: Sign and notarize the framework
+      if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.codesign }}
+      shell: bash
+      env:
+        APPLE_DEV_ID:       ${{ inputs.apple-dev-id }}
+        APPLE_DEV_APP_ID:   ${{ inputs.apple-dev-app-id }}
+        APPLE_DEV_TEAM_ID:  ${{ inputs.apple-dev-team-id }}
+        APPLE_DEV_PASSWORD: ${{ inputs.apple-dev-password }}
+        FRAMEWORK_PATH:     ${{ inputs.directory }}/${{ inputs.target-name }}
+        ARCHIVE_PATH:       ${{ inputs.directory }}/framework.zip
+      run: $GITHUB_ACTION_PATH/sign.sh

@@ -6,6 +6,9 @@ on:
       git-base-ref:
         type: string
         default: 'main'
+      with-codesign:
+        type: boolean
+        default: false
 
 # Make sure jobs cannot overlap.
 concurrency:
@@ -44,3 +47,5 @@ jobs:
 
       - name: Upload release
         uses: ./.github/actions/upload-extension
+        with:
+          sign-extension: ${{ inputs.with-codesign }}

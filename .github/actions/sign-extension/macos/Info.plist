@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleExecutable</key>
+	<string>${FRAMEWORK_NAME}</string>
+	<key>CFBundleName</key>
+	<string>GDSiON Software Synthesizer</string>
+	<key>CFBundleDisplayName</key>
+	<string>GDSiON Software Synthesizer</string>
+	<key>CFBundleIdentifier</key>
+	<string>net.humnom.gdsion</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright (c) 2024 Yuri Sizov and contributors</string>
+	<key>CFBundleVersion</key>
+	<string>0.6.9</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.6.9</string>
+	<key>CFBundlePackageType</key>
+	<string>FMWK</string>
+	<key>CSResourcesFileMapped</key>
+	<true/>
+	<key>DTPlatformName</key>
+	<string>macosx</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.12</string>
+</dict>
+</plist>
