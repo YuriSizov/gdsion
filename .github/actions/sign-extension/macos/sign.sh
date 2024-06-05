@@ -8,7 +8,7 @@ apple_dev_team_id="$APPLE_DEV_TEAM_ID"
 apple_dev_password="$APPLE_DEV_PASSWORD"
 
 framework_path="$FRAMEWORK_PATH"
-archive_path="$ARCHIVE_PATH"
+archive_path="$ARCHIVE_PATH.zip"
 
 if [ -z "${apple_dev_id}" ]; then
   echo "ERROR: Missing Apple developer ID."
@@ -30,16 +30,12 @@ if [ -z "${framework_path}" ]; then
   echo "ERROR: Missing framework path to sign."
   exit 1
 fi
-if [ -z "${archive_path}" ]; then
-  echo "ERROR: Missing target archive path."
-  exit 1
-fi
 
 # Sign and notarize the framework.
 
 echo "Signing and verifying the framework at '${framework_path}'..."
 
-codesign --verify --timestamp --verbose --deep --sign "${apple_dev_app_id}" "${framework_path}"
+codesign --timestamp --verbose --deep --sign "${apple_dev_app_id}" "${framework_path}"
 codesign --verify "${framework_path}"
 
 echo "Archiving and notarizing the signed framework..."

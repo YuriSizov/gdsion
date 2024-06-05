@@ -39,3 +39,4 @@ security find-identity
 echo "Granting access to the keychain..."
 
 security set-key-partition-list -S "apple-tool:,apple:" -s -k ${keychain_password} ${keychain}
+security set-keychain-settings ${keychain}
