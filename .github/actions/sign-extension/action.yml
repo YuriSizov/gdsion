@@ -46,7 +46,7 @@ runs:
       env:
         APPLE_CERT_BASE64:   ${{ inputs.apple-cert-base64 }}
         APPLE_CERT_PASSWORD: ${{ inputs.apple-cert-password }}
-      run: $GITHUB_ACTION_PATH/setup.sh
+      run: $GITHUB_ACTION_PATH/macos/setup.sh
 
     # Codesign.
 
@@ -57,7 +57,7 @@ runs:
         RESOURCES_PATH: '${{ inputs.directory }}/${{ inputs.target-name }}/Resources'
       run: |
         mkdir $RESOURCES_PATH
-        sed 's/\${FRAMEWORK_NAME}/${{ inputs.target-name }}/g' $GITHUB_ACTION_PATH/Info.plist > $RESOURCES_PATH/Info.plist
+        sed 's/\${FRAMEWORK_NAME}/${{ inputs.target-name }}/g' $GITHUB_ACTION_PATH/macos/Info.plist > $RESOURCES_PATH/Info.plist
 
     - name: Sign and notarize the framework
       if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.codesign }}
@@ -69,4 +69,4 @@ runs:
         APPLE_DEV_PASSWORD: ${{ inputs.apple-dev-password }}
         FRAMEWORK_PATH:     ${{ inputs.directory }}/${{ inputs.target-name }}
         ARCHIVE_PATH:       ${{ inputs.directory }}/framework.zip
-      run: $GITHUB_ACTION_PATH/sign.sh
+      run: $GITHUB_ACTION_PATH/macos/sign.sh
