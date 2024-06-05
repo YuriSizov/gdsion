@@ -41,7 +41,7 @@ runs:
     # Setup.
 
     - name: Set up the signing environment
-      if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.setup-env }}
+      if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.setup-env == 'true' }}
       shell: bash
       env:
         APPLE_CERT_BASE64:   ${{ inputs.apple-cert-base64 }}
@@ -51,7 +51,7 @@ runs:
     # Codesign.
 
     - name: Prepare the .plist file
-      if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.codesign }}
+      if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.codesign == 'true' }}
       shell: bash
       env:
         RESOURCES_PATH: '${{ inputs.directory }}/${{ inputs.target-name }}/Resources'
@@ -60,7 +60,7 @@ runs:
         sed 's/\${FRAMEWORK_NAME}/${{ inputs.target-name }}/g' $GITHUB_ACTION_PATH/macos/Info.plist > $RESOURCES_PATH/Info.plist
 
     - name: Sign and notarize the framework
-      if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.codesign }}
+      if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.codesign == 'true' }}
       shell: bash
       env:
         APPLE_DEV_ID:       ${{ inputs.apple-dev-id }}
