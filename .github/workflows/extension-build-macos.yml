@@ -49,3 +49,9 @@ jobs:
         uses: ./.github/actions/upload-extension
         with:
           sign-extension: ${{ inputs.with-codesign }}
+          apple-cert-base64:   ${{ secrets.APPLE_CERT_BASE64 }}
+          apple-cert-password: ${{ secrets.APPLE_CERT_PASSWORD }}
+          apple-dev-id:        ${{ secrets.APPLE_DEV_ID }}
+          apple-dev-app-id:    ${{ secrets.APPLE_DEV_APP_ID }}
+          apple-dev-team-id:   ${{ secrets.APPLE_DEV_TEAM_ID }}
+          apple-dev-password:  ${{ secrets.APPLE_DEV_PASSWORD }}

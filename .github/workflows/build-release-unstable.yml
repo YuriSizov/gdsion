@@ -23,6 +23,7 @@ jobs:
   build-macos:
     name: Compile and upload macOS version
     uses: ./.github/workflows/extension-build-macos.yml
+    secrets: inherit
     with:
       git-base-ref: 'main'
       with-codesign: true

@@ -6,6 +6,20 @@ inputs:
     description: Flag that enables the codesign routine for platforms that support it.
     default: false
 
+  # Explicit secrets passthrough for codesign.
+  apple-cert-base64:
+    required: true
+  apple-cert-password:
+    required: true
+  apple-dev-id:
+    required: true
+  apple-dev-app-id:
+    required: true
+  apple-dev-team-id:
+    required: true
+  apple-dev-password:
+    required: true
+
 runs:
   using: "composite"
   steps:
@@ -33,8 +47,8 @@ runs:
       with:
         setup-env: true
 
-        apple-cert-base64:   ${{ secrets.APPLE_CERT_BASE64 }}
-        apple-cert-password: ${{ secrets.APPLE_CERT_PASSWORD }}
+        apple-cert-base64:   ${{ inputs.apple-cert-base64 }}
+        apple-cert-password: ${{ inputs.apple-cert-password }}
 
     - name: Sign the binaries (macOS, debug)
       if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.sign-extension }}
@@ -44,10 +58,10 @@ runs:
         directory: bin
         target-name: libgdsion.macos.template_debug.framework
 
-        apple-dev-id:        ${{ secrets.APPLE_DEV_ID }}
-        apple-dev-app-id:    ${{ secrets.APPLE_DEV_APP_ID }}
-        apple-dev-team-id:   ${{ secrets.APPLE_DEV_TEAM_ID }}
-        apple-dev-password:  ${{ secrets.APPLE_DEV_PASSWORD }}
+        apple-dev-id:        ${{ inputs.apple-dev-id }}
+        apple-dev-app-id:    ${{ inputs.apple-dev-app-id }}
+        apple-dev-team-id:   ${{ inputs.apple-dev-team-id }}
+        apple-dev-password:  ${{ inputs.apple-dev-password }}
 
     - name: Sign the binaries (macOS, release)
       if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.sign-extension }}
@@ -57,10 +71,10 @@ runs:
         directory: bin
         target-name: libgdsion.macos.template_release.framework
 
-        apple-dev-id:        ${{ secrets.APPLE_DEV_ID }}
-        apple-dev-app-id:    ${{ secrets.APPLE_DEV_APP_ID }}
-        apple-dev-team-id:   ${{ secrets.APPLE_DEV_TEAM_ID }}
-        apple-dev-password:  ${{ secrets.APPLE_DEV_PASSWORD }}
+        apple-dev-id:        ${{ inputs.apple-dev-id }}
+        apple-dev-app-id:    ${{ inputs.apple-dev-app-id }}
+        apple-dev-team-id:   ${{ inputs.apple-dev-team-id }}
+        apple-dev-password:  ${{ inputs.apple-dev-password }}
 
     # Windows-specific steps.
 
