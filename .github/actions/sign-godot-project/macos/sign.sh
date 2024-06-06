@@ -46,3 +46,7 @@ xcrun notarytool submit "${archive_path}" --apple-id ${apple_dev_id} --team-id $
 echo "Stapling the notarization ticket to the signed app..."
 
 xcrun stapler staple "${app_path}"
+
+echo "Cleaning up..."
+
+rm -f "${archive_path}"
