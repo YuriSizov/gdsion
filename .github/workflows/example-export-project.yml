@@ -115,12 +115,13 @@ jobs:
       # This step helps to preserve file permissions.
       - name: Tar up the example project
         shell: bash
+        working-directory: "${{ steps.export-project-step.outputs.export-path }}"
         run: |
-          tar -cvf gdsion-example.tar "${{ steps.export-project-step.outputs.export-path }}"
+          tar -cvf gdsion-example.tar .
 
       - name: Upload the example project
         uses: actions/upload-artifact@v4
         with:
           name: example-project-${{ matrix.platform }}-${{ matrix.arch }}
-          path: gdsion-example.tar
+          path: "${{ steps.export-project-step.outputs.export-path }}/gdsion-example.tar"
           retention-days: 14
