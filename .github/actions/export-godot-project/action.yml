@@ -10,8 +10,6 @@ inputs:
     required: true
   output:
     required: true
-  app-name:
-    required: true
 
   project-path:
     default: "./example"
@@ -54,4 +52,3 @@ runs:
         cd ${{ inputs.project-path }}/${{ env.EXPORT_OUTPUT_PATH }}
         unzip ${{ inputs.output }}
         rm -f ${{ inputs.output }}
-        chmod +x "${{ inputs.app-name }}/Contents/MacOS/$(basename "${{ inputs.app-name }}" .app)"

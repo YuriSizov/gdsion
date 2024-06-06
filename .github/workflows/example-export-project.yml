@@ -85,7 +85,6 @@ jobs:
           arch: ${{ matrix.arch }}
           preset: ${{ matrix.preset }}
           output: ${{ matrix.output }}
-          app-name: ${{ matrix.app-name }}
 
       # Codesign if necessary.
 
@@ -113,9 +112,15 @@ jobs:
 
       # Upload the results.
 
+      # This step helps to preserve file permissions.
+      - name: Tar up the example project
+        shell: bash
+        run: |
+          tar -cvf gdsion-example.tar "${{ steps.export-project-step.outputs.export-path }}"
+
       - name: Upload the example project
         uses: actions/upload-artifact@v4
         with:
           name: example-project-${{ matrix.platform }}-${{ matrix.arch }}
-          path: "${{ steps.export-project-step.outputs.export-path }}/*"
+          path: gdsion-example.tar
           retention-days: 14

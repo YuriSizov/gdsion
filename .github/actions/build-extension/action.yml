@@ -37,15 +37,6 @@ runs:
       shell: bash
       run: |
         strip bin/libgdsion.linux.*
-        chmod +x bin/libgdsion.linux.*
-
-    # macOS-specific post-build steps.
-
-    - name: Prepare the binaries (macOS)
-      if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.finalize-binaries == 'true' }}
-      shell: bash
-      run: |
-        chmod +x bin/libgdsion.macos.*
 
     # Windows-specific post-build steps.
 

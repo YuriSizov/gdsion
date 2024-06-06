@@ -39,6 +39,19 @@ jobs:
           path: example/export
           pattern: example-project-*
 
+      - name: Untar downloaded artifacts
+        shell: bash
+        working-directory: example/export
+        run: |
+          for name in ./*; do
+            if [ -d "$name" ]; then
+              cd "./$name"
+              tar -xvf gdsion-example.tar
+              rm -f gdsion-example.tar
+              cd ..
+            fi
+          done
+
       - name: Archive example project exports
         uses: ./.github/actions/zip-folder
         with:
