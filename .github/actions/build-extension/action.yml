@@ -30,27 +30,27 @@ runs:
         echo "Example project build results:"
         ls -l example/bin/
 
-      # Linux-specific post-build steps.
+    # Linux-specific post-build steps.
 
-      - name: Prepare the binaries (Linux)
-        if: ${{ env.SCONS_PLATFORM == 'linux' && inputs.finalize-binaries == 'true' }}
-        shell: bash
-        run: |
-          strip bin/libgdsion.linux.*
-          chmod +x bin/libgdsion.linux.*
+    - name: Prepare the binaries (Linux)
+      if: ${{ env.SCONS_PLATFORM == 'linux' && inputs.finalize-binaries == 'true' }}
+      shell: bash
+      run: |
+        strip bin/libgdsion.linux.*
+        chmod +x bin/libgdsion.linux.*
 
-      # macOS-specific post-build steps.
+    # macOS-specific post-build steps.
 
-      - name: Prepare the binaries (macOS)
-        if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.finalize-binaries == 'true' }}
-        shell: bash
-        run: |
-          chmod +x bin/libgdsion.macos.*
+    - name: Prepare the binaries (macOS)
+      if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.finalize-binaries == 'true' }}
+      shell: bash
+      run: |
+        chmod +x bin/libgdsion.macos.*
 
-      # Windows-specific post-build steps.
+    # Windows-specific post-build steps.
 
-      - name: Prepare the binaries (Windows)
-        if: ${{ env.SCONS_PLATFORM == 'windows' && inputs.finalize-binaries == 'true' }}
-        shell: powershell
-        run: |
-          Remove-Item bin/* -Include *.exp,*.lib,*.pdb -Force
+    - name: Prepare the binaries (Windows)
+      if: ${{ env.SCONS_PLATFORM == 'windows' && inputs.finalize-binaries == 'true' }}
+      shell: powershell
+      run: |
+        Remove-Item bin/* -Include *.exp,*.lib,*.pdb -Force
