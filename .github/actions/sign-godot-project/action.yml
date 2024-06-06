@@ -1,7 +1,15 @@
 name: Codesign Godot Project
 description: Codesign and notarize Godot project export artifacts.
 
+# This actions is close but slightly different to sign-extension. Eventually,
+# they may be unified. But for now care should be applied to keep them in sync when
+# it matters.
+
 inputs:
+  platform:
+    description: Target platform.
+    required: true
+
   setup-env:
     description: Flag that enables the setup step.
     default: false
@@ -41,7 +49,7 @@ runs:
     # Setup.
 
     - name: Set up the signing environment (macos)
-      if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.setup-env == 'true' }}
+      if: ${{ inputs.platform == 'macos' && inputs.setup-env == 'true' }}
       shell: bash
       env:
         APPLE_CERT_BASE64:   ${{ inputs.apple-cert-base64 }}
@@ -51,7 +59,7 @@ runs:
     # Codesign.
 
     - name: Sign and notarize the project (macos)
-      if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.codesign == 'true' }}
+      if: ${{ inputs.platform == 'macos' && inputs.codesign == 'true' }}
       shell: bash
       env:
         APPLE_DEV_ID:       ${{ inputs.apple-dev-id }}

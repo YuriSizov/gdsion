@@ -92,6 +92,7 @@ jobs:
         if: ${{ inputs.with-codesign }}
         uses: ./.github/actions/sign-godot-project
         with:
+          platform: ${{ matrix.platform }}
           setup-env: true
           apple-cert-base64:   ${{ secrets.APPLE_CERT_BASE64 }}
           apple-cert-password: ${{ secrets.APPLE_CERT_PASSWORD }}
@@ -100,6 +101,7 @@ jobs:
         if: ${{ inputs.with-codesign }}
         uses: ./.github/actions/sign-godot-project
         with:
+          platform: ${{ matrix.platform }}
           codesign: true
           directory: ${{ steps.export-project-step.outputs.export-path }}
           target-name: ${{ matrix.app-name }}

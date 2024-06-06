@@ -1,6 +1,10 @@
 name: Codesign GDSiON
 description: Codesign and notarize extension build artifacts.
 
+# This actions is close but slightly different to sign-godot-project. Eventually,
+# they may be unified. But for now care should be applied to keep them in sync when
+# it matters.
+
 inputs:
   setup-env:
     description: Flag that enables the setup step.
