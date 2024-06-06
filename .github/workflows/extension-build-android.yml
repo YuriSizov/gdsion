@@ -31,12 +31,16 @@ jobs:
         with:
           submodules: true
 
+      # Set up prerequisites.
+
       - name: Set up build cache
         uses: ./.github/actions/setup-cache
         continue-on-error: true
 
       - name: Install build dependencies
         uses: ./.github/actions/install-deps
+
+      # Build all targets.
 
       - name: Build GDSiON (release, ${{ matrix.arch }})
         uses: ./.github/actions/build-extension
@@ -49,6 +53,8 @@ jobs:
         with:
           target: template_debug
           sconsflags: arch=${{ matrix.arch }}
+
+      # Upload the results.
 
       - name: Upload release
         uses: ./.github/actions/upload-extension

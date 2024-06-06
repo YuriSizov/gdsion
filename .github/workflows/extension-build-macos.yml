@@ -28,12 +28,16 @@ jobs:
         with:
           submodules: true
 
+      # Set up prerequisites.
+
       - name: Set up build cache
         uses: ./.github/actions/setup-cache
         continue-on-error: true
 
       - name: Install build dependencies
         uses: ./.github/actions/install-deps
+
+      # Build all targets.
 
       - name: Build GDSiON (release)
         uses: ./.github/actions/build-extension
@@ -45,13 +49,41 @@ jobs:
         with:
           target: template_debug
 
-      - name: Upload release
-        uses: ./.github/actions/upload-extension
+      # Codesign if necessary.
+
+      - name: Set up codesign environment
+        if: ${{ inputs.with-codesign }}
+        uses: ./.github/actions/sign-extension
         with:
-          sign-extension: ${{ inputs.with-codesign }}
+          setup-env: true
           apple-cert-base64:   ${{ secrets.APPLE_CERT_BASE64 }}
           apple-cert-password: ${{ secrets.APPLE_CERT_PASSWORD }}
+
+      - name: Sign the binaries (release)
+        if: ${{ inputs.with-codesign }}
+        uses: ./.github/actions/sign-extension
+        with:
+          codesign: true
+          directory: bin
+          target-name: libgdsion.macos.template_release.framework
           apple-dev-id:        ${{ secrets.APPLE_DEV_ID }}
           apple-dev-app-id:    ${{ secrets.APPLE_DEV_APP_ID }}
           apple-dev-team-id:   ${{ secrets.APPLE_DEV_TEAM_ID }}
           apple-dev-password:  ${{ secrets.APPLE_DEV_PASSWORD }}
+
+      - name: Sign the binaries (debug)
+        if: ${{ inputs.with-codesign }}
+        uses: ./.github/actions/sign-extension
+        with:
+          codesign: true
+          directory: bin
+          target-name: libgdsion.macos.template_debug.framework
+          apple-dev-id:        ${{ secrets.APPLE_DEV_ID }}
+          apple-dev-app-id:    ${{ secrets.APPLE_DEV_APP_ID }}
+          apple-dev-team-id:   ${{ secrets.APPLE_DEV_TEAM_ID }}
+          apple-dev-password:  ${{ secrets.APPLE_DEV_PASSWORD }}
+
+      # Upload the results.
+
+      - name: Upload release
+        uses: ./.github/actions/upload-extension

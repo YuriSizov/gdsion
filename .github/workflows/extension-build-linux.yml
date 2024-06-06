@@ -25,6 +25,8 @@ jobs:
         with:
           submodules: true
 
+      # Set up prerequisites.
+
       - name: Set up build cache
         uses: ./.github/actions/setup-cache
         continue-on-error: true
@@ -35,6 +37,8 @@ jobs:
       - name: Setup GCC problem matcher
         uses: ammaraskar/gcc-problem-matcher@master
 
+      # Build all targets.
+
       - name: Build GDSiON (release)
         uses: ./.github/actions/build-extension
         with:
@@ -44,6 +48,8 @@ jobs:
         uses: ./.github/actions/build-extension
         with:
           target: template_debug
+
+      # Upload the results.
 
       - name: Upload release
         uses: ./.github/actions/upload-extension

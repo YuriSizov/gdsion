@@ -74,6 +74,9 @@ jobs:
     name: Export the example project for target platforms
     needs: [ release-all ]
     uses: ./.github/workflows/example-export-project.yml
+    secrets: inherit
+    with:
+      with-codesign: true
 
   publish-example-project:
     name: Package and publish the example project

@@ -7,8 +7,8 @@ apple_dev_app_id="$APPLE_DEV_APP_ID"
 apple_dev_team_id="$APPLE_DEV_TEAM_ID"
 apple_dev_password="$APPLE_DEV_PASSWORD"
 
-framework_path="$FRAMEWORK_PATH"
-archive_path="$FRAMEWORK_PATH.zip"
+app_path="$APP_PATH"
+archive_path="$APP_PATH.zip"
 
 if [ -z "${apple_dev_id}" ]; then
   echo "ERROR: Missing Apple developer ID."
@@ -26,19 +26,23 @@ if [ -z "${apple_dev_password}" ]; then
   echo "ERROR: Missing Apple developer password."
   exit 1
 fi
-if [ -z "${framework_path}" ]; then
-  echo "ERROR: Missing framework path to sign."
+if [ -z "${app_path}" ]; then
+  echo "ERROR: Missing application path to sign."
   exit 1
 fi
 
-# Sign and notarize the framework.
+# Sign, notarize, and staple the app.
 
-echo "Signing and verifying the framework at '${framework_path}'..."
+echo "Signing and verifying the app at '${app_path}'..."
 
-codesign --timestamp --verbose --deep --sign "${apple_dev_app_id}" "${framework_path}"
-codesign --verify "${framework_path}"
+codesign --timestamp --verbose --deep --force --options runtime --sign "${apple_dev_app_id}" "${app_path}"
+codesign --verify "${app_path}"
 
-echo "Archiving and notarizing the signed framework..."
+echo "Archiving and notarizing the signed app..."
 
-ditto -ck "${framework_path}" "${archive_path}"
+ditto -ck "${app_path}" "${archive_path}"
 xcrun notarytool submit "${archive_path}" --apple-id ${apple_dev_id} --team-id ${apple_dev_team_id} --password ${apple_dev_password} --wait
+
+echo "Stapling the notarization ticket to the signed app..."
+
+xcrun stapler staple "${app_path}"

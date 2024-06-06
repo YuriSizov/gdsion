@@ -6,7 +6,11 @@ inputs:
     description: The build configuration target (editor, template_release, template_debug).
     default: "template_release"
   sconsflags:
+    description: Additional build flags for scons.
     default: ""
+  finalize-binaries:
+    description: Flag that enables finalization steps, like stripping.
+    default: true
 
 runs:
   using: "composite"
@@ -25,3 +29,28 @@ runs:
         ls -l bin/
         echo "Example project build results:"
         ls -l example/bin/
+
+      # Linux-specific post-build steps.
+
+      - name: Prepare the binaries (Linux)
+        if: ${{ env.SCONS_PLATFORM == 'linux' && inputs.finalize-binaries == 'true' }}
+        shell: bash
+        run: |
+          strip bin/libgdsion.linux.*
+          chmod +x bin/libgdsion.linux.*
+
+      # macOS-specific post-build steps.
+
+      - name: Prepare the binaries (macOS)
+        if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.finalize-binaries == 'true' }}
+        shell: bash
+        run: |
+          chmod +x bin/libgdsion.macos.*
+
+      # Windows-specific post-build steps.
+
+      - name: Prepare the binaries (Windows)
+        if: ${{ env.SCONS_PLATFORM == 'windows' && inputs.finalize-binaries == 'true' }}
+        shell: powershell
+        run: |
+          Remove-Item bin/* -Include *.exp,*.lib,*.pdb -Force

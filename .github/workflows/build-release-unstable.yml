@@ -59,6 +59,9 @@ jobs:
     name: Export the example project for target platforms
     needs: [ build-linux, build-macos, build-windows, build-web, build-android ]
     uses: ./.github/workflows/example-export-project.yml
+    secrets: inherit
+    with:
+      with-codesign: true
 
   publish-example-project:
     name: Package and publish the example project

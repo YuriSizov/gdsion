@@ -1,5 +1,5 @@
-name: Codesign GDSiON
-description: Codesign and notarize extension build artifacts.
+name: Codesign Godot Project
+description: Codesign and notarize Godot project export artifacts.
 
 inputs:
   setup-env:
@@ -27,10 +27,10 @@ inputs:
 
   # Input/output arguments.
   directory:
-    description: Path to the folder with the extension.
+    description: Path to the folder with the project.
     required: true
   target-name:
-    description: Name of the extension executable file or folder (like on macOS).
+    description: Name of the project executable file or folder (like on macOS).
     required: true
 
 runs:
@@ -50,16 +50,7 @@ runs:
 
     # Codesign.
 
-    - name: Prepare the .plist file
-      if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.codesign == 'true' }}
-      shell: bash
-      env:
-        RESOURCES_PATH: '${{ inputs.directory }}/${{ inputs.target-name }}/Resources'
-      run: |
-        mkdir $RESOURCES_PATH
-        sed 's/\${FRAMEWORK_NAME}/${{ inputs.target-name }}/g' $GITHUB_ACTION_PATH/macos/Info.plist > $RESOURCES_PATH/Info.plist
-
-    - name: Sign and notarize the extension (macos)
+    - name: Sign and notarize the project (macos)
       if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.codesign == 'true' }}
       shell: bash
       env:
@@ -67,5 +58,5 @@ runs:
         APPLE_DEV_APP_ID:   ${{ inputs.apple-dev-app-id }}
         APPLE_DEV_TEAM_ID:  ${{ inputs.apple-dev-team-id }}
         APPLE_DEV_PASSWORD: ${{ inputs.apple-dev-password }}
-        FRAMEWORK_PATH:     ${{ inputs.directory }}/${{ inputs.target-name }}
+        APP_PATH:           ${{ inputs.directory }}/${{ inputs.target-name }}
       run: $GITHUB_ACTION_PATH/macos/sign.sh
