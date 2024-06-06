@@ -85,6 +85,7 @@ jobs:
           arch: ${{ matrix.arch }}
           preset: ${{ matrix.preset }}
           output: ${{ matrix.output }}
+          app-name: ${{ matrix.app-name }}
 
       # Codesign if necessary.
 
