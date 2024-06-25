@@ -133,7 +133,7 @@ void SiOPMChannelManager::_reset_all() {
 SiOPMChannelManager::SiOPMChannelManager(ChannelType p_channel_type) {
 	_channel_type = p_channel_type;
 
-	_terminator = new SiOPMChannelBase(_sound_chip);
+	_terminator = memnew(SiOPMChannelBase(_sound_chip));
 	_terminator->_is_free = false;
 	_terminator->_next = _terminator;
 	_terminator->_prev = _terminator;

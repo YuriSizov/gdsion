@@ -339,8 +339,8 @@ public:
 	void set_update_register_callback(const Callable &p_func);
 	void call_update_register(int p_address, int p_data);
 
-	void set_note_on_callback(const Callable &p_func = nullptr);
-	void set_note_off_callback(const Callable &p_func = nullptr);
+	void set_note_on_callback(const Callable &p_func = Callable());
+	void set_note_off_callback(const Callable &p_func = Callable());
 	// This overrides custom note callbacks.
 	void set_event_trigger_callbacks(int p_id, EventTriggerType p_note_on_type = EventTriggerType::EVENT_FRAME, EventTriggerType p_note_off_type = EventTriggerType::NO_EVENTS);
 

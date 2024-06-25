@@ -367,7 +367,7 @@ void SiMMLTrack::call_update_register(int p_address, int p_data) {
 }
 
 void SiMMLTrack::set_note_on_callback(const Callable &p_func) {
-	_callback_before_note_on  = p_func;
+	_callback_before_note_on = p_func;
 }
 
 void SiMMLTrack::set_note_off_callback(const Callable &p_func) {
@@ -376,7 +376,7 @@ void SiMMLTrack::set_note_off_callback(const Callable &p_func) {
 
 void SiMMLTrack::set_event_trigger_callbacks(int p_id, EventTriggerType p_note_on_type, EventTriggerType p_note_off_type) {
 	_event_trigger_id = p_id;
-	_event_trigger_type_on  = p_note_on_type;
+	_event_trigger_type_on = p_note_on_type;
 	_event_trigger_type_off = p_note_off_type;
 
 	_callback_before_note_on = (_event_trigger_type_on != NO_EVENTS ? _event_trigger_on : Callable());
