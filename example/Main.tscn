@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://btlcavlirkxet"]
+[gd_scene load_steps=11 format=3 uid="uid://btlcavlirkxet"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_8sk4m"]
 [ext_resource type="Script" path="res://gui/Visualizer.gd" id="2_3u74r"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://c37ayws6ebi88" path="res://icons/arrow_left.png" id="4_btwgs"]
 [ext_resource type="Script" path="res://gui/FilterSelector.gd" id="4_uavpo"]
 [ext_resource type="Texture2D" uid="uid://bp1awbe5naawb" path="res://icons/arrow_right.png" id="5_ururd"]
+[ext_resource type="Texture2D" uid="uid://d4darly7q0o0o" path="res://icons/level.png" id="7_6h62v"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -48,6 +49,9 @@ script = ExtResource("3_71u1t")
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
+offset_left = 10.0
+offset_top = -44.0
+offset_right = -10.0
 offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 0
@@ -57,7 +61,7 @@ auto_translate_mode = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(0.503461, 0.593425, 0.670281, 1)
 theme_override_font_sizes/font_size = 16
-text = "Filter:"
+text = "Effect:"
 horizontal_alignment = 2
 vertical_alignment = 1
 
@@ -79,7 +83,7 @@ expand_icon = true
 auto_translate_mode = 1
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "[FILTER NAME]"
+text = "[EFFECT NAME]"
 
 [node name="RightButton" type="Button" parent="PianoRoll/Controls/FilterSelector"]
 auto_translate_mode = 1
@@ -90,10 +94,21 @@ flat = true
 icon_alignment = 1
 expand_icon = true
 
-[node name="PowerSlider" type="HSlider" parent="PianoRoll/Controls/FilterSelector"]
-custom_minimum_size = Vector2(240, 0)
+[node name="Control" type="Control" parent="PianoRoll/Controls/FilterSelector"]
+layout_mode = 2
+
+[node name="PowerIcon" type="TextureRect" parent="PianoRoll/Controls/FilterSelector"]
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 size_flags_vertical = 4
+texture = ExtResource("7_6h62v")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PowerSlider" type="HSlider" parent="PianoRoll/Controls/FilterSelector"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_vertical = 1
 
 [node name="Filler" type="Control" parent="PianoRoll/Controls"]
 layout_mode = 2

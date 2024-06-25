@@ -1,7 +1,17 @@
-[gd_resource type="Theme" load_steps=2 format=3 uid="uid://bm402itx0nq0t"]
+[gd_resource type="Theme" load_steps=3 format=3 uid="uid://bm402itx0nq0t"]
 
 [ext_resource type="FontFile" uid="uid://y70lqerdtol1" path="res://fonts/Kenney Future Narrow.ttf" id="1_8d45h"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iv47y"]
+content_margin_top = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.248965, 0.270927, 0.316075, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [resource]
 default_font = ExtResource("1_8d45h")
 default_font_size = 30
+HSlider/styles/slider = SubResource("StyleBoxFlat_iv47y")

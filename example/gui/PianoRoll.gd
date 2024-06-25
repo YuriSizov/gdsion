@@ -4,9 +4,11 @@
 # Provided under MIT                              #
 ###################################################
 
+@tool
 extends Control
 
 const FONT := preload("res://fonts/Kenney Future Narrow.ttf")
+const NOTE_LENGTH := 4
 
 var _keys: Array = []
 var _notes: PackedStringArray = PackedStringArray()
@@ -30,9 +32,10 @@ func _init() -> void:
 
 func _ready() -> void:
 	_update_instrument()
-	Controller.music_player.instrument_changed.connect(_update_instrument)
-
 	_update_positions()
+	
+	if not Engine.is_editor_hint():
+		Controller.music_player.instrument_changed.connect(_update_instrument)
 
 
 func _draw() -> void:
@@ -79,34 +82,47 @@ func _update_notes() -> void:
 
 
 func _update_keys() -> void:
-	_keys.resize(256)
-	_keys.fill(-1)
+	if is_drumkit:
+		var instrument := Controller.music_player.get_active_instrument()
+		var active_drumkit := Controller.voice_manager.get_drumkit(instrument.type)
+		
+		_keys.resize(active_drumkit.size)
+		for i in active_drumkit.size:
+			_keys[i] = i
+	else:
+		_keys.resize(256)
+		_keys.fill(-1)
 
-	const scale_layout := [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
-	var scale_size := scale_layout.size()
+		const scale_layout := [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
+		var scale_size := scale_layout.size()
 
-	var key_count := 0
-	var key_idx := 0
-	var scale_idx := 0
-	var last_note := 0
+		var key_count := 0
+		var key_idx := 0
+		var scale_idx := 0
+		var last_note := 0
 
-	while last_note < 104:
-		_keys[key_idx] = last_note
-		key_count += 1
+		while last_note < 104:
+			_keys[key_idx] = last_note
+			key_count += 1
 
-		last_note += scale_layout[scale_idx]
+			last_note += scale_layout[scale_idx]
 
-		key_idx += 1
-		scale_idx += 1
-		if scale_idx >= scale_size:
-			scale_idx -= scale_size
+			key_idx += 1
+			scale_idx += 1
+			if scale_idx >= scale_size:
+				scale_idx -= scale_size
 
-	_keys.resize(key_count)
+		_keys.resize(key_count)
 
 
 func _update_instrument() -> void:
+	if Engine.is_editor_hint():
+		return
+	
 	var instrument := Controller.music_player.get_active_instrument()
 	is_drumkit = instrument.type != 0
+
+	_update_keys()
 	_update_positions()
 	queue_redraw()
 
@@ -117,14 +133,19 @@ func _update_positions() -> void:
 	_normal_key_boxes.clear()
 	_sharp_key_boxes.clear()
 
+	var active_drumkit: Drumkit = null
 	var normal_key_count := 0
-	for i in _keys.size():
-		var key: int = _keys[i]
-		var note_name := _notes[key]
-
-		var sharp_note := (is_drumkit && i % 2 == 0) || (not is_drumkit && note_name.ends_with("#"))
-		if not sharp_note:
-			normal_key_count += 1
+	
+	if is_drumkit:
+		var instrument := Controller.music_player.get_active_instrument()
+		active_drumkit = Controller.voice_manager.get_drumkit(instrument.type)
+		normal_key_count = _keys.size()
+	else:
+		for i in _keys.size():
+			var key: int = _keys[i]
+			var note_name := _notes[key]
+			if not note_name.ends_with("#"):
+				normal_key_count += 1
 
 	# Split available space evenly, but don't make resulting keys too wide.
 	var key_width: int = min(size.x / normal_key_count, 120)
@@ -133,9 +154,15 @@ func _update_positions() -> void:
 	var offset_idx := -1
 	for i in _keys.size():
 		var key: int = _keys[i]
-		var note_name := _notes[key]
+		var note_name := ""
+		var sharp_note := false
 
-		var sharp_note := (is_drumkit && i % 2 == 0) || (not is_drumkit && note_name.ends_with("#"))
+		if is_drumkit:
+			note_name = active_drumkit.voice_name[key]
+		else:
+			note_name = _notes[key]
+			sharp_note = note_name.ends_with("#")
+
 		if not sharp_note:
 			offset_idx += 1
 
@@ -145,10 +172,7 @@ func _update_positions() -> void:
 		if sharp_note:
 			key_size.x *= 0.75
 			key_size.y /= 2
-			if is_drumkit:
-				key_position.x += key_width + (key_width - key_size.x) / 2
-			else:
-				key_position.x += key_width - key_size.x / 2
+			key_position.x += key_width - key_size.x / 2
 			key_position.y += 2
 
 		var key_box := KeyBox.new(Rect2(key_position, key_size), note_name, i)
@@ -200,7 +224,11 @@ func _update_active_key(key: int) -> void:
 		return
 
 	_active_key = key
-	Controller.music_player.play_note(_active_key, 4)
+	var note_length := NOTE_LENGTH
+	if is_drumkit:
+		note_length = NOTE_LENGTH * 2
+	
+	Controller.music_player.play_note(_active_key, note_length)
 	queue_redraw()
 
 func _clear_active_key() -> void:

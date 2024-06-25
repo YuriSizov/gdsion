@@ -27,7 +27,7 @@ const AVAILABLE_INSTRUMENTS := [
 	{ "category": "CHIPTUNE", "name": "Square Wave" },
 	{ "category": "CHIPTUNE", "name": "Triangle LO-FI" },
 
-	{ "category": "DRUMKIT", "name": "Midi Drumkit" },
+	{ "category": "DRUMKIT", "name": "Simple Drumkit" },
 ]
 
 const AVAILABLE_FILTERS := [
