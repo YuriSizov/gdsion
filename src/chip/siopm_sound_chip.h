@@ -37,7 +37,7 @@ class SiOPMSoundChip : public Object {
 	Vector<List<SinglyLinkedList<int> *>> _pipe_buffer_pager;
 
 protected:
-	static void _bind_methods() {}
+	static void _bind_methods();
 
 public:
 	static const int STREAM_SEND_SIZE = 8;

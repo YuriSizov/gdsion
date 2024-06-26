@@ -1090,7 +1090,7 @@ void SiONDriver::_publish_note_event(SiMMLTrack *p_track, int p_type, String p_f
 		return;
 	}
 
-	// Sound event; dispatch immediately.
+	// Stream event; dispatch immediately.
 	if (p_type & 2) {
 		Ref<SiONTrackEvent> event = memnew(SiONTrackEvent(p_stream_event, this, p_track));
 		_dispatch_event(event);
@@ -1212,11 +1212,11 @@ void SiONDriver::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("pause"), &SiONDriver::pause);
 	ClassDB::bind_method(D_METHOD("resume"), &SiONDriver::resume);
 
-	ClassDB::bind_method(D_METHOD("play_sound", "sample_number", "length", "delay", "quant", "track_id", "disposable"), &SiONDriver::play_sound, DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(true));
-	ClassDB::bind_method(D_METHOD("note_on", "note", "voice", "length", "delay", "quant", "track_id", "disposable"), &SiONDriver::note_on, DEFVAL((Object *)nullptr), DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(true));
-	ClassDB::bind_method(D_METHOD("note_off", "note", "track_id", "delay", "quant", "stop_immediately"), &SiONDriver::note_off, DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(false));
-	ClassDB::bind_method(D_METHOD("sequence_on", "data", "voice", "length", "delay", "quant", "track_id", "disposable"), &SiONDriver::sequence_on, DEFVAL((Object *)nullptr), DEFVAL(0), DEFVAL(0), DEFVAL(1), DEFVAL(0), DEFVAL(true));
-	ClassDB::bind_method(D_METHOD("sequence_off", "track_id", "delay", "quant", "stop_with_reset"), &SiONDriver::sequence_off, DEFVAL(0), DEFVAL(1), DEFVAL(false));
+	ClassDB::bind_method(D_METHOD("play_sound", "sample_number", "length", "delay", "quantize", "track_id", "disposable"), &SiONDriver::play_sound, DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("note_on", "note", "voice", "length", "delay", "quantize", "track_id", "disposable"), &SiONDriver::note_on, DEFVAL((Object *)nullptr), DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("note_off", "note", "track_id", "delay", "quantize", "stop_immediately"), &SiONDriver::note_off, DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(false));
+	ClassDB::bind_method(D_METHOD("sequence_on", "data", "voice", "length", "delay", "quantize", "track_id", "disposable"), &SiONDriver::sequence_on, DEFVAL((Object *)nullptr), DEFVAL(0), DEFVAL(0), DEFVAL(1), DEFVAL(0), DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("sequence_off", "track_id", "delay", "quantize", "stop_with_reset"), &SiONDriver::sequence_off, DEFVAL(0), DEFVAL(1), DEFVAL(false));
 
 	// Sub-module access.
 
@@ -1226,24 +1226,24 @@ void SiONDriver::_bind_methods() {
 
 	ADD_SIGNAL(MethodInfo("timer_interval"));
 
-	ADD_SIGNAL(MethodInfo(SiONEvent::QUEUE_EXECUTING, PropertyInfo(Variant::OBJECT, "event")));
-	ADD_SIGNAL(MethodInfo(SiONEvent::QUEUE_COMPLETED, PropertyInfo(Variant::OBJECT, "event")));
-	ADD_SIGNAL(MethodInfo(SiONEvent::QUEUE_CANCELLED, PropertyInfo(Variant::OBJECT, "event")));
-	ADD_SIGNAL(MethodInfo(SiONEvent::STREAMING, PropertyInfo(Variant::OBJECT, "event")));
-	ADD_SIGNAL(MethodInfo(SiONEvent::STREAM_STARTED, PropertyInfo(Variant::OBJECT, "event")));
-	ADD_SIGNAL(MethodInfo(SiONEvent::STREAM_STOPPED, PropertyInfo(Variant::OBJECT, "event")));
-	ADD_SIGNAL(MethodInfo(SiONEvent::SEQUENCE_FINISHED, PropertyInfo(Variant::OBJECT, "event")));
-	ADD_SIGNAL(MethodInfo(SiONEvent::FADING, PropertyInfo(Variant::OBJECT, "event")));
-	ADD_SIGNAL(MethodInfo(SiONEvent::FADE_IN_COMPLETED, PropertyInfo(Variant::OBJECT, "event")));
-	ADD_SIGNAL(MethodInfo(SiONEvent::FADE_OUT_COMPLETED, PropertyInfo(Variant::OBJECT, "event")));
+	ADD_SIGNAL(MethodInfo(SiONEvent::QUEUE_EXECUTING, PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "SiONEvent")));
+	ADD_SIGNAL(MethodInfo(SiONEvent::QUEUE_COMPLETED, PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "SiONEvent")));
+	ADD_SIGNAL(MethodInfo(SiONEvent::QUEUE_CANCELLED, PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "SiONEvent")));
+	ADD_SIGNAL(MethodInfo(SiONEvent::STREAMING, PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "SiONEvent")));
+	ADD_SIGNAL(MethodInfo(SiONEvent::STREAM_STARTED, PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "SiONEvent")));
+	ADD_SIGNAL(MethodInfo(SiONEvent::STREAM_STOPPED, PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "SiONEvent")));
+	ADD_SIGNAL(MethodInfo(SiONEvent::SEQUENCE_FINISHED, PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "SiONEvent")));
+	ADD_SIGNAL(MethodInfo(SiONEvent::FADING, PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "SiONEvent")));
+	ADD_SIGNAL(MethodInfo(SiONEvent::FADE_IN_COMPLETED, PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "SiONEvent")));
+	ADD_SIGNAL(MethodInfo(SiONEvent::FADE_OUT_COMPLETED, PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "SiONEvent")));
 
-	ADD_SIGNAL(MethodInfo(SiONTrackEvent::NOTE_ON_STREAM, PropertyInfo(Variant::OBJECT, "event")));
-	ADD_SIGNAL(MethodInfo(SiONTrackEvent::NOTE_OFF_STREAM, PropertyInfo(Variant::OBJECT, "event")));
-	ADD_SIGNAL(MethodInfo(SiONTrackEvent::NOTE_ON_FRAME, PropertyInfo(Variant::OBJECT, "event")));
-	ADD_SIGNAL(MethodInfo(SiONTrackEvent::NOTE_OFF_FRAME, PropertyInfo(Variant::OBJECT, "event")));
-	ADD_SIGNAL(MethodInfo(SiONTrackEvent::STREAMING_BEAT, PropertyInfo(Variant::OBJECT, "event")));
-	ADD_SIGNAL(MethodInfo(SiONTrackEvent::BPM_CHANGED, PropertyInfo(Variant::OBJECT, "event")));
-	ADD_SIGNAL(MethodInfo(SiONTrackEvent::USER_DEFINED, PropertyInfo(Variant::OBJECT, "event")));
+	ADD_SIGNAL(MethodInfo(SiONTrackEvent::NOTE_ON_STREAM, PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "SiONTrackEvent")));
+	ADD_SIGNAL(MethodInfo(SiONTrackEvent::NOTE_OFF_STREAM, PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "SiONTrackEvent")));
+	ADD_SIGNAL(MethodInfo(SiONTrackEvent::NOTE_ON_FRAME, PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "SiONTrackEvent")));
+	ADD_SIGNAL(MethodInfo(SiONTrackEvent::NOTE_OFF_FRAME, PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "SiONTrackEvent")));
+	ADD_SIGNAL(MethodInfo(SiONTrackEvent::STREAMING_BEAT, PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "SiONTrackEvent")));
+	ADD_SIGNAL(MethodInfo(SiONTrackEvent::BPM_CHANGED, PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "SiONTrackEvent")));
+	ADD_SIGNAL(MethodInfo(SiONTrackEvent::USER_DEFINED, PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "SiONTrackEvent")));
 
 	//
 

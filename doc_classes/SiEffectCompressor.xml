@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SiEffectCompressor" inherits="SiEffectBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Compressor effect.
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_params">
+			<return type="void" />
+			<param index="0" name="threshold" type="float" default="0.7" />
+			<param index="1" name="window_time" type="float" default="50" />
+			<param index="2" name="attack_time" type="float" default="20" />
+			<param index="3" name="release_time" type="float" default="20" />
+			<param index="4" name="max_gain" type="float" default="-6" />
+			<param index="5" name="mixing_level" type="float" default="0.5" />
+			<description>
+				Sets effect parameters.
+			</description>
+		</method>
+	</methods>
+</class>

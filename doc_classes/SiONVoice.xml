@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SiONVoice" inherits="SiMMLVoice" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Container for the configuration of a synthesized voice.
+	</brief_description>
+	<description>
+		A new voice can be created using the factory method [method create].
+		[codeblocks]
+		[gdscript]
+			var voice := SiONVoice.create()
+			voice.name = "My Instrument"
+		[/gdscript]
+		[/codeblocks]
+		Using the class constructor creates a voice with every parameter set to default, which is not desirable most of the time.
+		A large number of preconfigured voices can be accessed via [SiONVoicePresetUtil].
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="create" qualifiers="static">
+			<return type="SiONVoice" />
+			<param index="0" name="module_type" type="int" enum="SiONModuleType" default="5" />
+			<param index="1" name="channel_num" type="int" default="0" />
+			<param index="2" name="attack_rate" type="int" default="63" />
+			<param index="3" name="release_rate" type="int" default="63" />
+			<param index="4" name="pitch_shift" type="int" default="0" />
+			<param index="5" name="connection_type" type="int" default="-1" />
+			<param index="6" name="wave_shape2" type="int" default="0" />
+			<param index="7" name="pitch_shift2" type="int" default="0" />
+			<description>
+				Creates a new instance of [SiONVoice]. Prefer using this method instead of the class constructor.
+			</description>
+		</method>
+		<method name="get_mml" qualifiers="const">
+			<return type="String" />
+			<param index="0" name="index" type="int" />
+			<param index="1" name="chip_type" type="String" default="&quot;&lt;autodetect&gt;&quot;" />
+			<param index="2" name="append_postfix" type="bool" default="true" />
+			<description>
+				Returns a configuration of this voice as an MML string. This string can be then passed back to the driver for playback, alongside a melody.
+				Use [param index] to specify an internal index for this voice, which can then be referenced elsewhere in your MML string.
+				Use [param chip_type] to force the type used when generating voice configuration. By default voice's actual chip type is used.
+				Use [param append_postfix] to include additional configuration for this voice, such as filter and modulation settings from the channel.
+			</description>
+		</method>
+		<method name="get_params" qualifiers="const">
+			<return type="int[]" />
+			<description>
+				Returns a configuration of this voice as an array of integers. The voice is treated as a SiOPM voice.
+			</description>
+		</method>
+		<method name="get_params_al" qualifiers="const">
+			<return type="int[]" />
+			<description>
+				Returns a configuration of this voice as an array of integers. The voice is treated as an AL voice.
+			</description>
+		</method>
+		<method name="get_params_ma3" qualifiers="const">
+			<return type="int[]" />
+			<description>
+				Returns a configuration of this voice as an array of integers. The voice is treated as an MA3 voice.
+			</description>
+		</method>
+		<method name="get_params_opl" qualifiers="const">
+			<return type="int[]" />
+			<description>
+				Returns a configuration of this voice as an array of integers. The voice is treated as an OPL voice.
+			</description>
+		</method>
+		<method name="get_params_opm" qualifiers="const">
+			<return type="int[]" />
+			<description>
+				Returns a configuration of this voice as an array of integers. The voice is treated as an OPM voice.
+			</description>
+		</method>
+		<method name="get_params_opn" qualifiers="const">
+			<return type="int[]" />
+			<description>
+				Returns a configuration of this voice as an array of integers. The voice is treated as an OPN voice.
+			</description>
+		</method>
+		<method name="get_params_opx" qualifiers="const">
+			<return type="int[]" />
+			<description>
+				Returns a configuration of this voice as an array of integers. The voice is treated as an OPX voice.
+			</description>
+		</method>
+		<method name="set_amplitude_modulation">
+			<return type="void" />
+			<param index="0" name="depth" type="int" default="0" />
+			<param index="1" name="end_depth" type="int" default="0" />
+			<param index="2" name="delay" type="int" default="0" />
+			<param index="3" name="term" type="int" default="0" />
+			<description>
+				Sets amplitude modulation parameters.
+			</description>
+		</method>
+		<method name="set_analog_like">
+			<return type="void" />
+			<param index="0" name="connection_type" type="int" />
+			<param index="1" name="wave_shape1" type="int" default="1" />
+			<param index="2" name="wave_shape2" type="int" default="1" />
+			<param index="3" name="balance" type="int" default="0" />
+			<param index="4" name="pitch_difference" type="int" default="0" />
+			<description>
+				Sets analoge-like parameters.
+			</description>
+		</method>
+		<method name="set_by_mml">
+			<return type="int" />
+			<param index="0" name="mml" type="String" />
+			<description>
+				Sets this voice by an MML string.
+			</description>
+		</method>
+		<method name="set_envelope">
+			<return type="void" />
+			<param index="0" name="attack_rate" type="int" />
+			<param index="1" name="decay_rate" type="int" />
+			<param index="2" name="sustain_rate" type="int" />
+			<param index="3" name="release_rate" type="int" />
+			<param index="4" name="sustain_level" type="int" />
+			<param index="5" name="total_level" type="int" />
+			<description>
+				Sets envelope parameters.
+			</description>
+		</method>
+		<method name="set_filter_envelope">
+			<return type="void" />
+			<param index="0" name="filter_type" type="int" default="0" />
+			<param index="1" name="cutoff" type="int" default="128" />
+			<param index="2" name="resonance" type="int" default="0" />
+			<param index="3" name="attack_rate" type="int" default="0" />
+			<param index="4" name="decay_rate1" type="int" default="0" />
+			<param index="5" name="decay_rate2" type="int" default="0" />
+			<param index="6" name="release_rate" type="int" default="0" />
+			<param index="7" name="decay_cutoff1" type="int" default="128" />
+			<param index="8" name="decay_cutoff2" type="int" default="64" />
+			<param index="9" name="sustain_cutoff" type="int" default="32" />
+			<param index="10" name="release_cutoff" type="int" default="128" />
+			<description>
+				Sets filter envelope parameters.
+			</description>
+		</method>
+		<method name="set_params">
+			<return type="void" />
+			<param index="0" name="args" type="int[]" />
+			<description>
+				Sets the configuration of this voice as an array of integers. The voice is treated as a SiOPM voice.
+			</description>
+		</method>
+		<method name="set_params_al">
+			<return type="void" />
+			<param index="0" name="args" type="int[]" />
+			<description>
+				Sets the configuration of this voice as an array of integers. The voice is treated as an AL voice.
+			</description>
+		</method>
+		<method name="set_params_ma3">
+			<return type="void" />
+			<param index="0" name="args" type="int[]" />
+			<description>
+				Sets the configuration of this voice as an array of integers. The voice is treated as an MA3 voice.
+			</description>
+		</method>
+		<method name="set_params_opl">
+			<return type="void" />
+			<param index="0" name="args" type="int[]" />
+			<description>
+				Sets the configuration of this voice as an array of integers. The voice is treated as an OPL voice.
+			</description>
+		</method>
+		<method name="set_params_opm">
+			<return type="void" />
+			<param index="0" name="args" type="int[]" />
+			<description>
+				Sets the configuration of this voice as an array of integers. The voice is treated as an OPM voice.
+			</description>
+		</method>
+		<method name="set_params_opn">
+			<return type="void" />
+			<param index="0" name="args" type="int[]" />
+			<description>
+				Sets the configuration of this voice as an array of integers. The voice is treated as an OPN voice.
+			</description>
+		</method>
+		<method name="set_params_opx">
+			<return type="void" />
+			<param index="0" name="args" type="int[]" />
+			<description>
+				Sets the configuration of this voice as an array of integers. The voice is treated as an OPX voice.
+			</description>
+		</method>
+		<method name="set_pitch_modulation">
+			<return type="void" />
+			<param index="0" name="depth" type="int" default="0" />
+			<param index="1" name="end_depth" type="int" default="0" />
+			<param index="2" name="delay" type="int" default="0" />
+			<param index="3" name="term" type="int" default="0" />
+			<description>
+				Sets pitch modulation parameters.
+			</description>
+		</method>
+		<method name="set_pms_guitar">
+			<return type="void" />
+			<param index="0" name="attack_rate" type="int" default="48" />
+			<param index="1" name="decay_rate" type="int" default="48" />
+			<param index="2" name="total_level" type="int" default="0" />
+			<param index="3" name="fixed_pitch" type="int" default="69" />
+			<param index="4" name="wave_shape" type="int" default="20" />
+			<param index="5" name="tension" type="int" default="8" />
+			<description>
+				Sets PMS guitar parameters.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="name" type="String" setter="set_name" getter="get_name" default="&quot;&quot;">
+			Human-readable name associated with this voice.
+		</member>
+	</members>
+</class>

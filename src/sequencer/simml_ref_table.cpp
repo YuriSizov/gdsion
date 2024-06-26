@@ -194,21 +194,21 @@ SiMMLRefTable::SiMMLRefTable() {
 
 	// Channel module settings map.
 	{
-		channel_settings_map[MT_PSG]    = memnew(SiMMLChannelSettings(MT_PSG,    PG_SQUARE,      3,   1, 4));   // PSG
-		channel_settings_map[MT_APU]    = memnew(SiMMLChannelSettings(MT_APU,    PG_PULSE,       11,  2, 4));   // FC pAPU
-		channel_settings_map[MT_NOISE]  = memnew(SiMMLChannelSettings(MT_NOISE,  PG_NOISE_WHITE, 16,  1, 16));  // noise
-		channel_settings_map[MT_MA3]    = memnew(SiMMLChannelSettings(MT_MA3,    PG_MA3_WAVE,    32,  1, 32));  // MA3
-		channel_settings_map[MT_CUSTOM] = memnew(SiMMLChannelSettings(MT_CUSTOM, PG_CUSTOM,      256, 1, 256)); // SCC / custom wave table
-		channel_settings_map[MT_ALL]    = memnew(SiMMLChannelSettings(MT_ALL,    PG_SINE,        512, 1, 512)); // all pgTypes
-		channel_settings_map[MT_FM]     = memnew(SiMMLChannelSettings(MT_FM,     PG_SINE,        1,   1, 1));   // FM sound module
-		channel_settings_map[MT_PCM]    = memnew(SiMMLChannelSettings(MT_PCM,    PG_PCM,         128, 1, 128)); // PCM
-		channel_settings_map[MT_PULSE]  = memnew(SiMMLChannelSettings(MT_PULSE,  PG_PULSE,       32,  1, 32));  // pulse
-		channel_settings_map[MT_RAMP]   = memnew(SiMMLChannelSettings(MT_RAMP,   PG_RAMP,        128, 1, 128)); // ramp
-		channel_settings_map[MT_SAMPLE] = memnew(SiMMLChannelSettings(MT_SAMPLE, PG_SINE,        4,   1, 4));   // sampler. this is based on SiOPMChannelSampler
-		channel_settings_map[MT_KS]     = memnew(SiMMLChannelSettings(MT_KS,     PG_SINE,        3,   1, 3));   // karplus strong (0-2 to choose seed generator algrithm)
-		channel_settings_map[MT_GB]     = memnew(SiMMLChannelSettings(MT_GB,     PG_PULSE,       11,  2, 4));   // Gameboy
-		channel_settings_map[MT_VRC6]   = memnew(SiMMLChannelSettings(MT_VRC6,   PG_PULSE,       9,   1, 3));   // VRC6
-		channel_settings_map[MT_SID]    = memnew(SiMMLChannelSettings(MT_SID,    PG_PULSE,       12,  1, 3));   // SID
+		channel_settings_map[MT_PSG]    = memnew(SiMMLChannelSettings(MT_PSG,    PG_SQUARE,      3,   1, 4));
+		channel_settings_map[MT_APU]    = memnew(SiMMLChannelSettings(MT_APU,    PG_PULSE,       11,  2, 4));
+		channel_settings_map[MT_NOISE]  = memnew(SiMMLChannelSettings(MT_NOISE,  PG_NOISE_WHITE, 16,  1, 16));
+		channel_settings_map[MT_MA3]    = memnew(SiMMLChannelSettings(MT_MA3,    PG_MA3_WAVE,    32,  1, 32));
+		channel_settings_map[MT_CUSTOM] = memnew(SiMMLChannelSettings(MT_CUSTOM, PG_CUSTOM,      256, 1, 256));
+		channel_settings_map[MT_ALL]    = memnew(SiMMLChannelSettings(MT_ALL,    PG_SINE,        512, 1, 512));
+		channel_settings_map[MT_FM]     = memnew(SiMMLChannelSettings(MT_FM,     PG_SINE,        1,   1, 1));
+		channel_settings_map[MT_PCM]    = memnew(SiMMLChannelSettings(MT_PCM,    PG_PCM,         128, 1, 128));
+		channel_settings_map[MT_PULSE]  = memnew(SiMMLChannelSettings(MT_PULSE,  PG_PULSE,       32,  1, 32));
+		channel_settings_map[MT_RAMP]   = memnew(SiMMLChannelSettings(MT_RAMP,   PG_RAMP,        128, 1, 128));
+		channel_settings_map[MT_SAMPLE] = memnew(SiMMLChannelSettings(MT_SAMPLE, PG_SINE,        4,   1, 4));
+		channel_settings_map[MT_KS]     = memnew(SiMMLChannelSettings(MT_KS,     PG_SINE,        3,   1, 3));
+		channel_settings_map[MT_GB]     = memnew(SiMMLChannelSettings(MT_GB,     PG_PULSE,       11,  2, 4));
+		channel_settings_map[MT_VRC6]   = memnew(SiMMLChannelSettings(MT_VRC6,   PG_PULSE,       9,   1, 3));
+		channel_settings_map[MT_SID]    = memnew(SiMMLChannelSettings(MT_SID,    PG_PULSE,       12,  1, 3));
 
 		// PSG settings.
 		{

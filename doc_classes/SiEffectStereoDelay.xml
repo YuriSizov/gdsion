@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SiEffectStereoDelay" inherits="SiEffectBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Stereo delay effect.
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_params">
+			<return type="void" />
+			<param index="0" name="delay_time" type="float" default="250" />
+			<param index="1" name="feedback" type="float" default="0.25" />
+			<param index="2" name="is_cross" type="bool" default="false" />
+			<param index="3" name="wet" type="float" default="0.25" />
+			<description>
+				Sets effect parameters.
+			</description>
+		</method>
+	</methods>
+</class>

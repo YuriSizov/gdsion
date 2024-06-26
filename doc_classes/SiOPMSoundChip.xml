@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SiOPMSoundChip" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Internal sound chip module.
+	</brief_description>
+	<description>
+		It is responsible for maintaining output buffers and pipes, populated by channels and effectors and consumed by the driver.
+		[b]Warning:[/b] This class currently has no intended use in the API. If you need this class and its unexposed methods in your project, please [b][url=https://github.com/YuriSizov/gdsion/issues]create a feature request with your use case[/url][/b]!
+	</description>
+	<tutorials>
+	</tutorials>
+	<constants>
+		<constant name="STREAM_SEND_SIZE" value="8">
+			Maximum number of stream buffers used by various components and modules.
+		</constant>
+	</constants>
+</class>

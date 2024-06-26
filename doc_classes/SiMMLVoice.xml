@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SiMMLVoice" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Container for the simulated instrument voice configuration. Base class for [SiONVoice].
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_channel_params" qualifiers="const">
+			<return type="SiOPMChannelParams" />
+			<description>
+				Returns a reference to the [SiOPMChannelParams] instance used by this voice.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="expression" type="int" setter="set_expression" getter="get_expression" default="128">
+			Expression component of the volume.
+		</member>
+		<member name="expression_mode" type="int" setter="set_expression_mode" getter="get_expression_mode" default="0">
+			Expression to level conversion table mode. Can be set by an expression mode MML command ([code]%x[/code]). See also [member velocity_mode].
+		</member>
+		<member name="update_track_parameters" type="bool" setter="set_update_track_parameters" getter="should_update_track_parameters" default="true">
+			Flag that determines whether tracks and their channels should be updated according to this voice.
+		</member>
+		<member name="update_volumes" type="bool" setter="set_update_volumes" getter="should_update_volumes" default="false">
+			Flag that determines whether velocity and expression of tracks should be updated according to this voice.
+		</member>
+		<member name="velocity" type="int" setter="set_velocity" getter="get_velocity" default="256">
+			Velocity component of the volume.
+		</member>
+		<member name="velocity_mode" type="int" setter="set_velocity_mode" getter="get_velocity_mode" default="0">
+			Velocity to level conversion table mode. Can be set by a velocity mode MML command ([code]%v[/code]).
+			[codeblock lang=text]
+				0 - linear scale.
+				1 - log scale; dynamic range = 96dB; total level based.
+				2 - log scale; dynamic range = 64dB; fmp7 based.
+				3 - log scale; dynamic range = 48dB; PSG volume based.
+				4 - log scale; dynamic range = 32dB; based on N88 basic v command.
+			[/codeblock]
+		</member>
+		<member name="velocity_shift" type="int" setter="set_velocity_shift" getter="get_velocity_shift" default="4">
+			Velocity shift amount. Can be set by a velocity mode MML command ([code]%v[/code]).
+		</member>
+	</members>
+</class>

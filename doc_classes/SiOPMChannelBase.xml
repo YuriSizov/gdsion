@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SiOPMChannelBase" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Base class for all specific channel implementations.
+	</brief_description>
+	<description>
+		Channels are responsible for synthesizing sound waves based on given parameters using low-frequency oscillation and pulse generation.
+		[b]Warning:[/b] This class currently has no intended use in the API. If you need this class and its unexposed methods in your project, please [b][url=https://github.com/YuriSizov/gdsion/issues]create a feature request with your use case[/url][/b]!
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

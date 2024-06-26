@@ -6,6 +6,7 @@
 
 #include "siopm_sound_chip.h"
 
+#include <godot_cpp/core/class_db.hpp>
 #include "chip/channels/siopm_channel_manager.h"
 #include "chip/siopm_operator_params.h"
 #include "chip/siopm_stream.h"
@@ -71,6 +72,10 @@ void SiOPMSoundChip::initialize(int p_channel_count, int p_bitrate, int p_buffer
 
 void SiOPMSoundChip::reset() {
 	SiOPMChannelManager::reset_all_channels();
+}
+
+void SiOPMSoundChip::_bind_methods() {
+	BIND_CONSTANT(STREAM_SEND_SIZE);
 }
 
 SiOPMSoundChip::SiOPMSoundChip() {

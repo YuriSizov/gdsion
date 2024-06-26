@@ -10,21 +10,21 @@
 #include <godot_cpp/core/binder_common.hpp>
 
 enum SiONModuleType : unsigned int {
-	MT_PSG     = 0,  // PSG(DCSG)
+	MT_PSG     = 0,  // PSG (DCSG)
 	MT_APU     = 1,  // FC pAPU
-	MT_NOISE   = 2,  // noise wave
+	MT_NOISE   = 2,  // Noise wave
 	MT_MA3     = 3,  // MA3 wave form
 	MT_CUSTOM  = 4,  // SCC / custom wave table
-	MT_ALL     = 5,  // all pgTypes
+	MT_ALL     = 5,  // All PG types
 	MT_FM      = 6,  // FM sound module
 	MT_PCM     = 7,  // PCM
-	MT_PULSE   = 8,  // pulse wave
-	MT_RAMP    = 9,  // ramp wave
-	MT_SAMPLE  = 10, // sampler
-	MT_KS      = 11, // karplus strong
-	MT_GB      = 12, // gameboy
-	MT_VRC6    = 13, // vrc6
-	MT_SID     = 14, // sid
+	MT_PULSE   = 8,  // Pulse wave
+	MT_RAMP    = 9,  // Ramp wave
+	MT_SAMPLE  = 10, // Sampler
+	MT_KS      = 11, // Karplus-Strong
+	MT_GB      = 12, // GameBoy-like
+	MT_VRC6    = 13, // VRC6
+	MT_SID     = 14, // SID
 	MT_FM_OPM  = 15, // YM2151
 	MT_FM_OPN  = 16, // YM2203
 	MT_FM_OPNA = 17, // YM2608
@@ -76,7 +76,7 @@ enum SiONPulseGeneratorType : int {
 								// ( 96-127) reserved
 	PG_RAMP				= 128,  // (128-255) ramp wave.         PG_RAMP+[0,127]
 	PG_CUSTOM			= 256,  // (256-383) custom wave table. PG_CUSTOM+[0,127]
-	PG_PCM				= 384,  // (384-511) PCM data.          PG_PCM+[0,128]
+	PG_PCM				= 384,  // (384-511) PCM data.          PG_PCM+[0,127]
 
 	PG_USER_CUSTOM		= -1,   // User registered custom wave table.
 	PG_USER_PCM			= -2,   // User registered PCM data.

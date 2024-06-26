@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SiControllableFilterLowPass" inherits="SiControllableFilterBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Controllable version of the low pass filter.
+	</brief_description>
+	<description>
+		See also [SiFilterLowPass].
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

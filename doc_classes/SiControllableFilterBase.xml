@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SiControllableFilterBase" inherits="SiEffectBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Base class for all controllable filters.
+	</brief_description>
+	<description>
+		Controllable filters allow to set their parameters directly without preprocessing.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_params">
+			<return type="void" />
+			<param index="0" name="cutoff" type="int" default="255" />
+			<param index="1" name="resonance" type="int" default="255" />
+			<param index="2" name="fps" type="float" default="20" />
+			<description>
+				Sets filter parameters.
+			</description>
+		</method>
+		<method name="set_params_manually">
+			<return type="void" />
+			<param index="0" name="cutoff" type="float" />
+			<param index="1" name="resonance" type="float" />
+			<description>
+				Sets filter parameters directly.
+			</description>
+		</method>
+	</methods>
+</class>

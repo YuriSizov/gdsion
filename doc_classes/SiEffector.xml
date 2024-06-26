@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SiEffector" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Internal effector module.
+	</brief_description>
+	<description>
+		It is responsible for management of various effects and filters applied globally to the entire generated sound wave.
+		Effects can populate up to [constant SiOPMSoundChip.STREAM_SEND_SIZE] slots. Slot [code]0[/code] has a special meaning as the master slot.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_slot_effect">
+			<return type="void" />
+			<param index="0" name="slot" type="int" />
+			<param index="1" name="effect" type="SiEffectBase" />
+			<description>
+				Appends a new effect to the given slot. Effects in each slot are chained together and processed in the assignment order.
+			</description>
+		</method>
+		<method name="clear_slot_effects">
+			<return type="void" />
+			<param index="0" name="slot" type="int" />
+			<description>
+				Clears all effects assigned to the given slot.
+			</description>
+		</method>
+		<method name="get_slot_effects" qualifiers="const">
+			<return type="SiEffectBase[]" />
+			<param index="0" name="slot" type="int" />
+			<description>
+				Returns all effects assigned to the given slot.
+			</description>
+		</method>
+		<method name="set_slot_effects">
+			<return type="void" />
+			<param index="0" name="slot" type="int" />
+			<param index="1" name="effects" type="SiEffectBase[]" />
+			<description>
+				Sets a collection of effects to the given slot, overriding existing effects.
+			</description>
+		</method>
+	</methods>
+</class>

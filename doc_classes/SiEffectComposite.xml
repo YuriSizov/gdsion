@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SiEffectComposite" inherits="SiEffectBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Composite effect built from other effects and filters.
+	</brief_description>
+	<description>
+		A composite effect can have up to [code]8[/code] slots, each containing a chain of effects. Slot at the index [code]0[/code] has a special meaning as the master slot.
+		When processing, first secondary slots are calculated and mixed, and then the master slot is calculated and mixed.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_slot_effects">
+			<return type="void" />
+			<param index="0" name="slot" type="int" />
+			<param index="1" name="effects" type="SiEffectBase[]" />
+			<description>
+				Sets a collection of effects for the given slot, overriding existing effects.
+			</description>
+		</method>
+		<method name="set_slot_levels">
+			<return type="void" />
+			<param index="0" name="slot" type="int" />
+			<param index="1" name="send_level" type="float" />
+			<param index="2" name="mix_level" type="float" />
+			<description>
+				Sets send and mix levels for the given slot.
+			</description>
+		</method>
+	</methods>
+</class>

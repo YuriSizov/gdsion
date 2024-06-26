@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SiONEvent" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Generic container for event data for GDSiON events.
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_data" qualifiers="const">
+			<return type="SiONData" />
+			<description>
+				Returns a reference to the [SiONData] instance involved in the event.
+			</description>
+		</method>
+		<method name="get_driver" qualifiers="const">
+			<return type="SiONDriver" />
+			<description>
+				Returns a reference to the [SiONDriver] instance.
+			</description>
+		</method>
+		<method name="get_event_type" qualifiers="const">
+			<return type="String" />
+			<description>
+				Returns the type of the event, as a string.
+			</description>
+		</method>
+		<method name="get_stream_buffer" qualifiers="const">
+			<return type="PackedVector2Array" />
+			<description>
+				Returns a stream buffer involved in the event. The buffer is always provided in stereo, with the [code]x[/code] aspect representing the left channel, and the [code]y[/code] aspect representing the right channel.
+			</description>
+		</method>
+	</methods>
+</class>

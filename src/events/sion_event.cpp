@@ -30,6 +30,7 @@ Ref<SiONData> SiONEvent::get_data() const {
 //
 
 void SiONEvent::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("get_event_type"), &SiONEvent::get_event_type);
 	ClassDB::bind_method(D_METHOD("get_driver"), &SiONEvent::get_driver);
 	ClassDB::bind_method(D_METHOD("get_data"), &SiONEvent::get_data);
 	ClassDB::bind_method(D_METHOD("get_stream_buffer"), &SiONEvent::get_stream_buffer);

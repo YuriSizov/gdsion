@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SiEffectDownsampler" inherits="SiEffectBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Downsampler effect.
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_params">
+			<return type="void" />
+			<param index="0" name="frequency_shift" type="int" default="0" />
+			<param index="1" name="bitrate" type="int" default="16" />
+			<param index="2" name="channel_count" type="int" default="2" />
+			<description>
+				Sets effect parameters.
+			</description>
+		</method>
+	</methods>
+</class>

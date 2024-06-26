@@ -15,6 +15,8 @@ using namespace godot;
 class SiEffectComposite : public SiEffectBase {
 	GDCLASS(SiEffectComposite, SiEffectBase)
 
+	static const int SLOTS_MAX = 8;
+
 	struct SlottedEffect {
 		Vector<Ref<SiEffectBase>> effects;
 		Vector<double> buffer;
@@ -22,7 +24,7 @@ class SiEffectComposite : public SiEffectBase {
 		double mix_level = 1;
 	};
 
-	SlottedEffect _slots[8];
+	SlottedEffect _slots[SLOTS_MAX];
 
 	void _set_slot_effects_bind(int p_slot, TypedArray<SiEffectBase> p_effects);
 

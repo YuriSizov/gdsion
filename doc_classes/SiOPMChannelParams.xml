@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SiOPMChannelParams" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Container for channel parameters passed from and to [SiMMLVoice] and [SiONVoice] voices.
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_master_volume" qualifiers="const">
+			<return type="float" />
+			<param index="0" name="index" type="int" />
+			<description>
+				Returns the master value of the volume at the given index. There are no more than [constant SiOPMSoundChip.STREAM_SEND_SIZE] volume slots.
+			</description>
+		</method>
+		<method name="set_master_volume">
+			<return type="void" />
+			<param index="0" name="index" type="int" />
+			<param index="1" name="value" type="float" />
+			<description>
+				Sets the master value for the volume at the given index. There are no more than [constant SiOPMSoundChip.STREAM_SEND_SIZE] volume slots.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="algorithm" type="int" setter="set_algorithm" getter="get_algorithm">
+			Algorithm used by the voice.
+		</member>
+		<member name="amplitude_modulation_depth" type="int" setter="set_amplitude_modulation_depth" getter="get_amplitude_modulation_depth">
+			Amplitude modulation depth. Value of [code]0[/code] disables amplitude modulation.
+		</member>
+		<member name="envelope_frequency_ratio" type="int" setter="set_envelope_frequency_ratio" getter="get_envelope_frequency_ratio">
+			Frequency ratio used in envelopes.
+		</member>
+		<member name="feedback" type="int" setter="set_feedback" getter="get_feedback">
+			Feedback strength of the voice.
+		</member>
+		<member name="feedback_connection" type="int" setter="set_feedback_connection" getter="get_feedback_connection">
+			Feedback connection strength of the voice.
+		</member>
+		<member name="filter_attack_rate" type="int" setter="set_filter_attack_rate" getter="get_filter_attack_rate">
+			Attack rate applied as a filter (see also [member filter_type]). Can be set by a filter MML command ([code]@f[/code]).
+		</member>
+		<member name="filter_cutoff" type="int" setter="set_filter_cutoff" getter="get_filter_cutoff">
+			Cutoff applied as a filter (see also [member filter_type]). Can be set by a filter MML command ([code]@f[/code]).
+		</member>
+		<member name="filter_decay_offset1" type="int" setter="set_filter_decay_offset1" getter="get_filter_decay_offset1">
+			Decay offset 1 applied as a filter (see also [member filter_type]). Can be set by a filter MML command ([code]@f[/code]).
+		</member>
+		<member name="filter_decay_offset2" type="int" setter="set_filter_decay_offset2" getter="get_filter_decay_offset2">
+			Decay offset 2 applied as a filter (see also [member filter_type]). Can be set by a filter MML command ([code]@f[/code]).
+		</member>
+		<member name="filter_decay_rate1" type="int" setter="set_filter_decay_rate1" getter="get_filter_decay_rate1">
+			Decay rate 1 applied as a filter (see also [member filter_type]). Can be set by a filter MML command ([code]@f[/code]).
+		</member>
+		<member name="filter_decay_rate2" type="int" setter="set_filter_decay_rate2" getter="get_filter_decay_rate2">
+			Decay rate 2 applied as a filter (see also [member filter_type]). Can be set by a filter MML command ([code]@f[/code]).
+		</member>
+		<member name="filter_release_offset" type="int" setter="set_filter_release_offset" getter="get_filter_release_offset">
+			Release offset applied as a filter (see also [member filter_type]). Can be set by a filter MML command ([code]@f[/code]).
+		</member>
+		<member name="filter_release_rate" type="int" setter="set_filter_release_rate" getter="get_filter_release_rate">
+			Release rate applied as a filter (see also [member filter_type]). Can be set by a filter MML command ([code]@f[/code]).
+		</member>
+		<member name="filter_resonance" type="int" setter="set_filter_resonance" getter="get_filter_resonance">
+			Resonance applied as a filter (see also [member filter_type]). Can be set by a filter MML command ([code]@f[/code]).
+		</member>
+		<member name="filter_sustain_offset" type="int" setter="set_filter_sustain_offset" getter="get_filter_sustain_offset">
+			Sustain offset applied as a filter (see also [member filter_type]). Can be set by a filter MML command ([code]@f[/code]).
+		</member>
+		<member name="filter_type" type="int" setter="set_filter_type" getter="get_filter_type">
+			Filter type. Can be set by a filter mode MML command ([code]%f[/code]).
+		</member>
+		<member name="lfo_frequency_step" type="int" setter="set_lfo_frequency_step" getter="get_lfo_frequency_step">
+			Frequency step of the low-frequency oscillator.
+		</member>
+		<member name="lfo_wave_shape" type="int" setter="set_lfo_wave_shape" getter="get_lfo_wave_shape">
+			Wave shape of the low-frequency oscillator.
+		</member>
+		<member name="operator_count" type="int" setter="set_operator_count" getter="get_operator_count">
+			Number of processing operators used by the channel. Valid values are between [code]0[/code] and [code]5[/code]. Setting it to [code]0[/code] disables all operator parameters. The value of [code]5[/code] sets an analog-like mode.
+		</member>
+		<member name="pan" type="int" setter="set_pan" getter="get_pan">
+			Panning strength. Can be set by a pan MML command ([code]p[/code] or [code]@p[/code])
+		</member>
+		<member name="pitch_modulation_depth" type="int" setter="set_pitch_modulation_depth" getter="get_pitch_modulation_depth">
+			Pitch modulation depth. Value of [code]0[/code] disables pitch modulation.
+		</member>
+	</members>
+</class>

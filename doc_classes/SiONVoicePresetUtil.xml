@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SiONVoicePresetUtil" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Utility for generating [SiONVoice] presets.
+	</brief_description>
+	<description>
+		Voice presets are a good way to quickly get started with GDSiON before diving deeper into fine tuning the synthesizer to your needs. [SiONVoicePresetUtil] can produce hundreds of preconfigured instrument voices in different categories.
+		To begin, simply instantiate the utility:
+		[codeblocks]
+		[gdscript]
+			var preset_util := SiONVoicePresetUtil.new()
+			print(preset_util.get_voice_preset_keys()) # Prints all available voice presets by their key.
+		[/gdscript]
+		[/codeblocks]
+		Alternatively, you can use [method generate_voices] to only generate a subset of available voices (see [enum GeneratorFlags]). To get the voice that you need, pass its key to [method get_voice_preset].
+		Preset keys are static and will remain compatible with future version, unless stated otherwise in release notes. This means you can rely on them and hardcode them.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="generate_voices">
+			<return type="void" />
+			<param index="0" name="flags" type="int" default="65535" />
+			<description>
+				Regenerates voice presets for the given set of flags (see [enum GeneratorFlags]). Multiple flags can be selected using bitwise operators.
+			</description>
+		</method>
+		<method name="get_voice_preset" qualifiers="const">
+			<return type="SiONVoice" />
+			<param index="0" name="key" type="String" />
+			<description>
+				Returns a voice for the given key. See also [method get_voice_preset_keys].
+			</description>
+		</method>
+		<method name="get_voice_preset_keys" qualifiers="const">
+			<return type="PackedStringArray" />
+			<description>
+				Returns a list of all generated voices by they key.
+			</description>
+		</method>
+	</methods>
+	<constants>
+		<constant name="INCLUDE_DEFAULT" value="1" enum="GeneratorFlags">
+			Generate generic voices.
+		</constant>
+		<constant name="INCLUDE_VALSOUND" value="2" enum="GeneratorFlags">
+			Generate valsound voices.
+		</constant>
+		<constant name="INCLUDE_MIDI" value="4" enum="GeneratorFlags">
+			Generate MIDI voices.
+		</constant>
+		<constant name="INCLUDE_MIDIDRUM" value="8" enum="GeneratorFlags">
+			Generate MIDI drums.
+		</constant>
+		<constant name="INCLUDE_WAVETABLE" value="16" enum="GeneratorFlags">
+			Generate wave table voices.
+		</constant>
+		<constant name="INCLUDE_SINGLE_DRUM" value="32" enum="GeneratorFlags">
+			Generate single drums.
+		</constant>
+		<constant name="INCLUDE_ALL" value="65535" enum="GeneratorFlags">
+			Generate everything, including potential future additions.
+		</constant>
+	</constants>
+</class>

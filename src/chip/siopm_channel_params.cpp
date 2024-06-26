@@ -248,6 +248,39 @@ void SiOPMChannelParams::copy_from(SiOPMChannelParams *p_params) {
 }
 
 void SiOPMChannelParams::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("get_operator_count"), &SiOPMChannelParams::get_operator_count);
+	ClassDB::bind_method(D_METHOD("set_operator_count", "value"), &SiOPMChannelParams::set_operator_count);
+
+	ClassDB::bind_method(D_METHOD("get_algorithm"), &SiOPMChannelParams::get_algorithm);
+	ClassDB::bind_method(D_METHOD("set_algorithm", "value"), &SiOPMChannelParams::set_algorithm);
+
+	ClassDB::bind_method(D_METHOD("get_feedback"), &SiOPMChannelParams::get_feedback);
+	ClassDB::bind_method(D_METHOD("set_feedback", "value"), &SiOPMChannelParams::set_feedback);
+
+	ClassDB::bind_method(D_METHOD("get_feedback_connection"), &SiOPMChannelParams::get_feedback_connection);
+	ClassDB::bind_method(D_METHOD("set_feedback_connection", "value"), &SiOPMChannelParams::set_feedback_connection);
+
+	ClassDB::bind_method(D_METHOD("get_envelope_frequency_ratio"), &SiOPMChannelParams::get_envelope_frequency_ratio);
+	ClassDB::bind_method(D_METHOD("set_envelope_frequency_ratio", "value"), &SiOPMChannelParams::set_envelope_frequency_ratio);
+
+	ClassDB::bind_method(D_METHOD("get_lfo_wave_shape"), &SiOPMChannelParams::get_lfo_wave_shape);
+	ClassDB::bind_method(D_METHOD("set_lfo_wave_shape", "value"), &SiOPMChannelParams::set_lfo_wave_shape);
+
+	ClassDB::bind_method(D_METHOD("get_lfo_frequency_step"), &SiOPMChannelParams::get_lfo_frequency_step);
+	ClassDB::bind_method(D_METHOD("set_lfo_frequency_step", "value"), &SiOPMChannelParams::set_lfo_frequency_step);
+
+	ClassDB::bind_method(D_METHOD("get_amplitude_modulation_depth"), &SiOPMChannelParams::get_amplitude_modulation_depth);
+	ClassDB::bind_method(D_METHOD("set_amplitude_modulation_depth", "value"), &SiOPMChannelParams::set_amplitude_modulation_depth);
+
+	ClassDB::bind_method(D_METHOD("get_pitch_modulation_depth"), &SiOPMChannelParams::get_pitch_modulation_depth);
+	ClassDB::bind_method(D_METHOD("set_pitch_modulation_depth", "value"), &SiOPMChannelParams::set_pitch_modulation_depth);
+
+	ClassDB::bind_method(D_METHOD("get_master_volume", "index"), &SiOPMChannelParams::get_master_volume);
+	ClassDB::bind_method(D_METHOD("set_master_volume", "index", "value"), &SiOPMChannelParams::set_master_volume);
+
+	ClassDB::bind_method(D_METHOD("get_pan"), &SiOPMChannelParams::get_pan);
+	ClassDB::bind_method(D_METHOD("set_pan", "value"), &SiOPMChannelParams::set_pan);
+
 	ClassDB::bind_method(D_METHOD("get_filter_type"), &SiOPMChannelParams::get_filter_type);
 	ClassDB::bind_method(D_METHOD("set_filter_type", "value"), &SiOPMChannelParams::set_filter_type);
 
@@ -280,6 +313,21 @@ void SiOPMChannelParams::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("get_filter_release_offset"), &SiOPMChannelParams::get_filter_release_offset);
 	ClassDB::bind_method(D_METHOD("set_filter_release_offset", "value"), &SiOPMChannelParams::set_filter_release_offset);
+
+	ClassDB::add_property("SiOPMChannelParams", PropertyInfo(Variant::INT, "operator_count"), "set_operator_count", "get_operator_count");
+
+	ClassDB::add_property("SiOPMChannelParams", PropertyInfo(Variant::INT, "algorithm"), "set_algorithm", "get_algorithm");
+	ClassDB::add_property("SiOPMChannelParams", PropertyInfo(Variant::INT, "feedback"), "set_feedback", "get_feedback");
+	ClassDB::add_property("SiOPMChannelParams", PropertyInfo(Variant::INT, "feedback_connection"), "set_feedback_connection", "get_feedback_connection");
+	ClassDB::add_property("SiOPMChannelParams", PropertyInfo(Variant::INT, "envelope_frequency_ratio"), "set_envelope_frequency_ratio", "get_envelope_frequency_ratio");
+
+	ClassDB::add_property("SiOPMChannelParams", PropertyInfo(Variant::INT, "lfo_wave_shape"), "set_lfo_wave_shape", "get_lfo_wave_shape");
+	ClassDB::add_property("SiOPMChannelParams", PropertyInfo(Variant::INT, "lfo_frequency_step"), "set_lfo_frequency_step", "get_lfo_frequency_step");
+
+	ClassDB::add_property("SiOPMChannelParams", PropertyInfo(Variant::INT, "amplitude_modulation_depth"), "set_amplitude_modulation_depth", "get_amplitude_modulation_depth");
+	ClassDB::add_property("SiOPMChannelParams", PropertyInfo(Variant::INT, "pitch_modulation_depth"), "set_pitch_modulation_depth", "get_pitch_modulation_depth");
+
+	ClassDB::add_property("SiOPMChannelParams", PropertyInfo(Variant::INT, "pan"), "set_pan", "get_pan");
 
 	ClassDB::add_property("SiOPMChannelParams", PropertyInfo(Variant::INT, "filter_type"), "set_filter_type", "get_filter_type");
 	ClassDB::add_property("SiOPMChannelParams", PropertyInfo(Variant::INT, "filter_cutoff"), "set_filter_cutoff", "get_filter_cutoff");

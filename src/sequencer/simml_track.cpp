@@ -1006,6 +1006,9 @@ void SiMMLTrack::initialize(MMLSequence *p_sequence, int p_fps, int p_internal_t
 void SiMMLTrack::_bind_methods() {
 	// To be used as callables.
 	ClassDB::bind_method(D_METHOD("_default_update_register", "address", "data"), &SiMMLTrack::_default_update_register);
+
+	ClassDB::bind_method(D_METHOD("get_track_id"), &SiMMLTrack::get_track_id);
+	ClassDB::bind_method(D_METHOD("get_track_type_id"), &SiMMLTrack::get_track_type_id);
 }
 
 SiMMLTrack::SiMMLTrack() {

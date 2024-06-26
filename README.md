@@ -36,14 +36,14 @@ If you need the most recent fixes, you can also download the _[latest unstable](
 4. Restart the editor, and start using the synth!
 
 > [!TIP]
-> You can type "SiON" in the search bar of the editor's built-in help to find available classes. Complete class and method descriptions are coming once _Godot 4.3_ reaches a more stable state (the ability to create class reference has been added very recently).
+> You can type "SiON" in the search bar of the editor's built-in help to find available classes.
 
 ## Usage
 
 First, you need to create a `SiONDriver` instance and add it to the scene tree. **Only one driver** can exist at the same time. (Some internal global objects are stateful and having multiple drivers can lead to conflicts.)
 
 ```gdscript
-var driver := SiONDriver.new()
+var driver := SiONDriver.create()
 add_child(driver)
 ```
 

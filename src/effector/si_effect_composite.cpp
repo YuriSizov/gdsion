@@ -17,20 +17,20 @@ void SiEffectComposite::_set_slot_effects_bind(int p_slot, TypedArray<SiEffectBa
 }
 
 void SiEffectComposite::set_slot_effects(int p_slot, Vector<Ref<SiEffectBase>> p_effects) {
-	ERR_FAIL_INDEX(p_slot, 8);
+	ERR_FAIL_INDEX(p_slot, SLOTS_MAX);
 
 	_slots[p_slot].effects = p_effects;
 }
 
 void SiEffectComposite::set_slot_levels(int p_slot, double p_send_level, double p_mix_level) {
-	ERR_FAIL_INDEX(p_slot, 8);
+	ERR_FAIL_INDEX(p_slot, SLOTS_MAX);
 
 	_slots[p_slot].send_level = p_send_level;
 	_slots[p_slot].mix_level = p_mix_level;
 }
 
 int SiEffectComposite::prepare_process() {
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < SLOTS_MAX; i++) {
 		for (Ref<SiEffectBase> effect : _slots[i].effects) {
 			effect->prepare_process();
 		}
@@ -40,25 +40,26 @@ int SiEffectComposite::prepare_process() {
 }
 
 int SiEffectComposite::process(int p_channels, Vector<double> *r_buffer, int p_start_index, int p_length) {
-	for (int i = 0; i < 8; i++) {
+	for (int i = 1; i < SLOTS_MAX; i++) {
 		if (_slots[i].effects.is_empty()) {
 			continue;
 		}
 
-		Vector<double> slot_buffer = _slots[i].buffer;
-		if (slot_buffer.size() < r_buffer->size()) {
-			slot_buffer.resize_zeroed(r_buffer->size());
+		Vector<double> *slot_buffer = &_slots[i].buffer;
+		if (slot_buffer->size() < r_buffer->size()) {
+			slot_buffer->resize_zeroed(r_buffer->size());
 		}
 
 		for (int j = p_start_index; j < (p_start_index + p_length); j++) {
-			slot_buffer.write[j] = (*r_buffer)[j] * _slots[i].send_level;
+			slot_buffer->write[j] = (*r_buffer)[j] * _slots[i].send_level;
 		}
 	}
 
 	for (int j = p_start_index; j < (p_start_index + p_length); j++) {
 		r_buffer->write[j] *= _slots[0].send_level;
 	}
-	for (int i = 1; i < 8; i++) {
+
+	for (int i = 1; i < SLOTS_MAX; i++) {
 		if (_slots[i].effects.is_empty()) {
 			continue;
 		}
@@ -90,7 +91,7 @@ int SiEffectComposite::process(int p_channels, Vector<double> *r_buffer, int p_s
 }
 
 void SiEffectComposite::reset() {
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < SLOTS_MAX; i++) {
 		_slots[i].effects.clear();
 		_slots[i].buffer.clear();
 		_slots[i].send_level = 1;

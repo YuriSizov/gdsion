@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SiEffectStereoExpander" inherits="SiEffectBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Stereo expander effect.
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_params">
+			<return type="void" />
+			<param index="0" name="stereo_width" type="float" default="1.4" />
+			<param index="1" name="rotation" type="float" default="0" />
+			<param index="2" name="phase_invert" type="bool" default="false" />
+			<description>
+				Sets effect parameters.
+			</description>
+		</method>
+	</methods>
+</class>

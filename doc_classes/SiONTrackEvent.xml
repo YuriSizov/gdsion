@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SiONTrackEvent" inherits="SiONEvent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Container for [SiMMLTrack] related events.
+	</brief_description>
+	<description>
+		Some events may not have a [SiMMLTrack] instance associated with them. In these cases data is provided by the sender. If there is a track, event data is taken from the track directly.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_buffer_index" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the buffer index.
+			</description>
+		</method>
+		<method name="get_event_trigger_id" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the trigger ID of the event.
+			</description>
+		</method>
+		<method name="get_frame_trigger_delay" qualifiers="const">
+			<return type="float" />
+			<description>
+				Returns the trigger delay in frames.
+			</description>
+		</method>
+		<method name="get_note" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the note involved in the event, if available.
+			</description>
+		</method>
+		<method name="get_track" qualifiers="const">
+			<return type="SiMMLTrack" />
+			<description>
+				Returns a reference to the [SiMMLTrack] instance involved in the event.
+			</description>
+		</method>
+	</methods>
+</class>

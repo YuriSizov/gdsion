@@ -38,6 +38,8 @@
 HashMap<String, List<Ref<SiEffectBase>>> SiEffector::_effect_instances;
 
 SiEffectStream *SiEffector::_get_global_stream(int p_slot) {
+	ERR_FAIL_INDEX_V(p_slot, SiOPMSoundChip::STREAM_SEND_SIZE, nullptr);
+
 	if (_global_effects[p_slot] == nullptr) {
 		SiEffectStream *stream = _alloc_stream(0);
 		_global_effects.write[p_slot] = stream;
@@ -141,6 +143,8 @@ Ref<T> SiEffector::create_effect_instance() {
 // Slots and connections.
 
 TypedArray<SiEffectBase> SiEffector::get_slot_effects(int p_slot) const {
+	ERR_FAIL_INDEX_V_MSG(p_slot, SiOPMSoundChip::STREAM_SEND_SIZE, TypedArray<SiEffectBase>(), "SiEffector: Invalid effect slot index.");
+
 	if (!_global_effects[p_slot]) {
 		return TypedArray<SiEffectBase>();
 	}
@@ -156,12 +160,16 @@ TypedArray<SiEffectBase> SiEffector::get_slot_effects(int p_slot) const {
 }
 
 void SiEffector::add_slot_effect(int p_slot, const Ref<SiEffectBase> &p_effect) {
+	ERR_FAIL_INDEX_MSG(p_slot, SiOPMSoundChip::STREAM_SEND_SIZE, "SiEffector: Invalid effect slot index.");
+
 	SiEffectStream *stream = _get_global_stream(p_slot);
 	stream->add_to_chain(p_effect);
 	p_effect->prepare_process();
 }
 
 void SiEffector::set_slot_effects(int p_slot, const TypedArray<SiEffectBase> &p_effects) {
+	ERR_FAIL_INDEX_MSG(p_slot, SiOPMSoundChip::STREAM_SEND_SIZE, "SiEffector: Invalid effect slot index.");
+
 	List<Ref<SiEffectBase>> chained_effects;
 	for (int i = 0; i < p_effects.size(); i++) {
 		Ref<SiEffectBase> effect = p_effects[i];
@@ -174,6 +182,8 @@ void SiEffector::set_slot_effects(int p_slot, const TypedArray<SiEffectBase> &p_
 }
 
 void SiEffector::clear_slot_effects(int p_slot) {
+	ERR_FAIL_INDEX_MSG(p_slot, SiOPMSoundChip::STREAM_SEND_SIZE, "SiEffector: Invalid effect slot index.");
+
 	if (p_slot == 0) {
 		_master_effect->initialize(0);
 	} else {
@@ -213,6 +223,8 @@ void SiEffector::delete_local_effect(SiEffectStream *p_effect) {
 }
 
 void SiEffector::parse_global_effect_mml(int p_slot, String p_mml, String p_postfix) {
+	ERR_FAIL_INDEX_MSG(p_slot, SiOPMSoundChip::STREAM_SEND_SIZE, "SiEffector: Invalid effect slot index.");
+
 	SiEffectStream *stream = _get_global_stream(p_slot);
 	stream->parse_mml(p_slot, p_mml, p_postfix);
 }

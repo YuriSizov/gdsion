@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SiFilterVowel" inherits="SiEffectBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Vowel filter.
+	</brief_description>
+	<description>
+		A combination of 6 peaking filters (formants). Note that each formant has different defaults.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_formant_band1">
+			<return type="void" />
+			<param index="0" name="frequency" type="float" default="800" />
+			<param index="1" name="gain" type="int" default="36" />
+			<param index="2" name="band_index" type="int" default="3" />
+			<description>
+				Sets parameters for the 1st formant (peaking filter).
+			</description>
+		</method>
+		<method name="set_formant_band2">
+			<return type="void" />
+			<param index="0" name="frequency" type="float" default="1300" />
+			<param index="1" name="gain" type="int" default="24" />
+			<param index="2" name="band_index" type="int" default="3" />
+			<description>
+				Sets parameters for the 2nd formant (peaking filter).
+			</description>
+		</method>
+		<method name="set_formant_band3">
+			<return type="void" />
+			<param index="0" name="frequency" type="float" default="2200" />
+			<param index="1" name="gain" type="int" default="12" />
+			<param index="2" name="band_index" type="int" default="3" />
+			<description>
+				Sets parameters for the 3rd formant (peaking filter).
+			</description>
+		</method>
+		<method name="set_formant_band4">
+			<return type="void" />
+			<param index="0" name="frequency" type="float" default="3500" />
+			<param index="1" name="gain" type="int" default="9" />
+			<param index="2" name="band_index" type="int" default="3" />
+			<description>
+				Sets parameters for the 4th formant (peaking filter).
+			</description>
+		</method>
+		<method name="set_formant_band5">
+			<return type="void" />
+			<param index="0" name="frequency" type="float" default="4500" />
+			<param index="1" name="gain" type="int" default="6" />
+			<param index="2" name="band_index" type="int" default="3" />
+			<description>
+				Sets parameters for the 5th formant (peaking filter).
+			</description>
+		</method>
+		<method name="set_formant_band6">
+			<return type="void" />
+			<param index="0" name="frequency" type="float" default="5500" />
+			<param index="1" name="gain" type="int" default="3" />
+			<param index="2" name="band_index" type="int" default="3" />
+			<description>
+				Sets parameters for the 6th formant (peaking filter).
+			</description>
+		</method>
+		<method name="set_vowel_formants">
+			<return type="void" />
+			<param index="0" name="output_level" type="float" />
+			<param index="1" name="frequency1" type="float" />
+			<param index="2" name="gain1" type="int" />
+			<param index="3" name="frequency2" type="float" />
+			<param index="4" name="gain2" type="int" />
+			<param index="5" name="delay" type="int" default="0" />
+			<description>
+				Sets 1st and 2nd formants with a delay.
+			</description>
+		</method>
+	</methods>
+</class>

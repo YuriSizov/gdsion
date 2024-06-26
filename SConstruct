@@ -45,7 +45,15 @@ def _register_library(name, path):
     env.Append(CPPPATH=["#{}/".format(path)])
     env.library_sources = []
 
+    # Recursively iterate through sub configs in source folders and perform steps defined there.
     SConscript("{}/SCsub".format(path))
+
+    # Add documentation to the list of sources as well.
+    if env["target"] in ["editor", "template_debug"]:
+        doc_data = env.GodotCPPDocData("{}/gen/doc_data.gen.cpp".format(path), source=Glob("doc_classes/*.xml"))
+        env.library_sources.append(doc_data)
+
+    # Finally, register the library to be built.
 
     if env["platform"] == "macos":
         library = env.SharedLibrary(

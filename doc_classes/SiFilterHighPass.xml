@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SiFilterHighPass" inherits="SiFilterBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		High pass filter.
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_params">
+			<return type="void" />
+			<param index="0" name="frequency" type="float" default="5500" />
+			<param index="1" name="band" type="float" default="1" />
+			<description>
+				Sets filter parameters.
+			</description>
+		</method>
+	</methods>
+</class>
