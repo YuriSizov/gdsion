@@ -241,7 +241,7 @@ public:
 	// PG pitch wave length (in samples) table.
 	double pitch_wave_length[PITCH_TABLE_SIZE];
 	// PG phase step shift filter.
-	int phase_step_shift_filter[PT_MAX];
+	int phase_step_shift_filter[SiONPitchTableType::PITCH_TABLE_MAX];
 	// PG sound reference table.
 	HashMap<String, Variant> sound_reference;
 

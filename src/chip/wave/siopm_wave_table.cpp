@@ -54,6 +54,6 @@ void SiOPMWaveTable::free() {
 }
 
 SiOPMWaveTable::SiOPMWaveTable() :
-		SiOPMWaveBase(MT_CUSTOM) {
+		SiOPMWaveBase(SiONModuleType::MODULE_CUSTOM) {
 	// Empty.
 }

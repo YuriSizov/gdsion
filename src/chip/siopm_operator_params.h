@@ -19,9 +19,9 @@ class SiOPMOperatorParams {
 	friend class TranslatorUtil;
 
 	// Pulse generator type [0,511]
-	int pulse_generator_type = SiONPulseGeneratorType::PG_SINE;
+	int pulse_generator_type = SiONPulseGeneratorType::PULSE_SINE;
 	// Pitch table type [0,7]
-	SiONPitchTableType pitch_table_type = SiONPitchTableType::PT_OPM;
+	SiONPitchTableType pitch_table_type = SiONPitchTableType::PITCH_TABLE_OPM;
 
 	// Attack rate [0,63]
 	int attack_rate = 0;

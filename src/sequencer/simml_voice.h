@@ -15,6 +15,7 @@ class SiOPMChannelParams;
 class SiOPMWaveBase;
 class SiMMLEnvelopeTable;
 class SiMMLTrack;
+enum SiONChipType : signed int;
 enum SiONModuleType : unsigned int;
 
 // Base voice data class.
@@ -68,7 +69,7 @@ class SiMMLVoice : public RefCounted {
 	int note_off_note_envelope_step = 1;
 
 protected:
-	String chip_type;
+	SiONChipType chip_type = (SiONChipType)0;
 	SiONModuleType module_type = (SiONModuleType)5;
 	int channel_num = -1;
 	// PMS guitar tension.
@@ -94,9 +95,13 @@ protected:
 public:
 	static Ref<SiMMLVoice> create_blank_pcm_voice(int p_channel_num);
 
-	void set_chip_type(String p_type) { chip_type = p_type; };
+	SiONChipType get_chip_type() const { return chip_type; }
+	void set_chip_type(SiONChipType p_type) { chip_type = p_type; }
+	SiONModuleType get_module_type() const { return module_type; }
 	void set_module_type(SiONModuleType p_module_type, int p_channel_num = 0, int p_tone_num = -1);
+	int get_channel_num() const { return channel_num; }
 	void set_channel_num(int p_num) { channel_num = p_num; }
+	int get_tone_num() const { return tone_num; }
 	void set_tone_num(int p_num) { tone_num = p_num; }
 
 	SiOPMChannelParams *get_channel_params() const { return channel_params; }

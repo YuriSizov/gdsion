@@ -63,8 +63,8 @@ void SiOPMChannelParams::set_by_opm_register(int p_channel, int p_address, int p
 		switch (p_address) {
 			case 15: { // NOIZE:7 FREQ:4-0 for channel#7
 				if (p_channel == 7 && (p_data & 128)) {
-					operator_params[3]->pulse_generator_type = PG_NOISE_PULSE;
-					operator_params[3]->pitch_table_type = PT_OPM_NOISE;
+					operator_params[3]->pulse_generator_type = SiONPulseGeneratorType::PULSE_NOISE_PULSE;
+					operator_params[3]->pitch_table_type = SiONPitchTableType::PITCH_TABLE_OPM_NOISE;
 					operator_params[3]->fixed_pitch = ((p_data & 31) << 6) + 2048;
 				}
 			} break;

@@ -319,181 +319,211 @@
 		</signal>
 	</signals>
 	<constants>
-		<constant name="MT_PSG" value="0" enum="SiONModuleType">
+		<constant name="CHIP_AUTO" value="-1" enum="SiONChipType">
+			Used to select the chip type automatically. See [method SiONVoice.get_mml].
+		</constant>
+		<constant name="CHIP_SIOPM" value="0" enum="SiONChipType">
+			Generic SiON sound chip type.
+		</constant>
+		<constant name="CHIP_OPL" value="1" enum="SiONChipType">
+			OPL sound chip type.
+		</constant>
+		<constant name="CHIP_OPM" value="2" enum="SiONChipType">
+			OPM sound chip type.
+		</constant>
+		<constant name="CHIP_OPN" value="3" enum="SiONChipType">
+			OPN sound chip type.
+		</constant>
+		<constant name="CHIP_OPX" value="4" enum="SiONChipType">
+			OPX sound chip type.
+		</constant>
+		<constant name="CHIP_MA3" value="5" enum="SiONChipType">
+			MA3 sound chip type.
+		</constant>
+		<constant name="CHIP_PMS_GUITAR" value="6" enum="SiONChipType">
+			PMS guitar sound chip type.
+		</constant>
+		<constant name="CHIP_ANALOG_LIKE" value="7" enum="SiONChipType">
+			Analog-like sound chip type.
+		</constant>
+		<constant name="CHIP_MAX" value="8" enum="SiONChipType">
+			Total number of available chip types.
+		</constant>
+		<constant name="MODULE_PSG" value="0" enum="SiONModuleType">
 			PSG module type.
 		</constant>
-		<constant name="MT_APU" value="1" enum="SiONModuleType">
+		<constant name="MODULE_APU" value="1" enum="SiONModuleType">
 			FC pAPU module type.
 		</constant>
-		<constant name="MT_NOISE" value="2" enum="SiONModuleType">
+		<constant name="MODULE_NOISE" value="2" enum="SiONModuleType">
 			Noise wave module type.
 		</constant>
-		<constant name="MT_MA3" value="3" enum="SiONModuleType">
+		<constant name="MODULE_MA3" value="3" enum="SiONModuleType">
 			MA3 module type.
 		</constant>
-		<constant name="MT_CUSTOM" value="4" enum="SiONModuleType">
+		<constant name="MODULE_CUSTOM" value="4" enum="SiONModuleType">
 			SCC / custom wave table module type.
 		</constant>
-		<constant name="MT_ALL" value="5" enum="SiONModuleType">
+		<constant name="MODULE_ANY_PG" value="5" enum="SiONModuleType">
 			Any pulse generator module type.
 		</constant>
-		<constant name="MT_FM" value="6" enum="SiONModuleType">
+		<constant name="MODULE_FM" value="6" enum="SiONModuleType">
 			FM module type.
 		</constant>
-		<constant name="MT_PCM" value="7" enum="SiONModuleType">
+		<constant name="MODULE_PCM" value="7" enum="SiONModuleType">
 			PCM module type.
 		</constant>
-		<constant name="MT_PULSE" value="8" enum="SiONModuleType">
+		<constant name="MODULE_PULSE" value="8" enum="SiONModuleType">
 			Pulse wave module type.
 		</constant>
-		<constant name="MT_RAMP" value="9" enum="SiONModuleType">
+		<constant name="MODULE_RAMP" value="9" enum="SiONModuleType">
 			Ramp wave module type.
 		</constant>
-		<constant name="MT_SAMPLE" value="10" enum="SiONModuleType">
+		<constant name="MODULE_SAMPLE" value="10" enum="SiONModuleType">
 			Sampler module type.
 		</constant>
-		<constant name="MT_KS" value="11" enum="SiONModuleType">
+		<constant name="MODULE_KS" value="11" enum="SiONModuleType">
 			Karplus-Strong module type.
 		</constant>
-		<constant name="MT_GB" value="12" enum="SiONModuleType">
+		<constant name="MODULE_GB" value="12" enum="SiONModuleType">
 			GameBoy-like module type.
 		</constant>
-		<constant name="MT_VRC6" value="13" enum="SiONModuleType">
+		<constant name="MODULE_VRC6" value="13" enum="SiONModuleType">
 			VRC6 module type.
 		</constant>
-		<constant name="MT_SID" value="14" enum="SiONModuleType">
+		<constant name="MODULE_SID" value="14" enum="SiONModuleType">
 			SID module type.
 		</constant>
-		<constant name="MT_FM_OPM" value="15" enum="SiONModuleType">
+		<constant name="MODULE_FM_OPM" value="15" enum="SiONModuleType">
 			YM2151 module type (unused).
 		</constant>
-		<constant name="MT_FM_OPN" value="16" enum="SiONModuleType">
+		<constant name="MODULE_FM_OPN" value="16" enum="SiONModuleType">
 			YM2203 module type (unused).
 		</constant>
-		<constant name="MT_FM_OPNA" value="17" enum="SiONModuleType">
+		<constant name="MODULE_FM_OPNA" value="17" enum="SiONModuleType">
 			YM2608 module type (unused).
 		</constant>
-		<constant name="MT_FM_OPLL" value="18" enum="SiONModuleType">
+		<constant name="MODULE_FM_OPLL" value="18" enum="SiONModuleType">
 			YM2413 module type (unused).
 		</constant>
-		<constant name="MT_FM_OPL3" value="19" enum="SiONModuleType">
+		<constant name="MODULE_FM_OPL3" value="19" enum="SiONModuleType">
 			YM3812 module type (unused).
 		</constant>
-		<constant name="MT_FM_MA3" value="20" enum="SiONModuleType">
+		<constant name="MODULE_FM_MA3" value="20" enum="SiONModuleType">
 			YMU762 module type (unused).
 		</constant>
-		<constant name="MT_MAX" value="21" enum="SiONModuleType">
+		<constant name="MODULE_MAX" value="21" enum="SiONModuleType">
 			Total number of available module types.
 		</constant>
-		<constant name="PT_OPM" value="0" enum="SiONPitchTableType">
+		<constant name="PITCH_TABLE_OPM" value="0" enum="SiONPitchTableType">
 			OPM pitch table type.
 		</constant>
-		<constant name="PT_PCM" value="1" enum="SiONPitchTableType">
+		<constant name="PITCH_TABLE_PCM" value="1" enum="SiONPitchTableType">
 			PCM pitch table type.
 		</constant>
-		<constant name="PT_PSG" value="2" enum="SiONPitchTableType">
+		<constant name="PITCH_TABLE_PSG" value="2" enum="SiONPitchTableType">
 			PSG pitch table type.
 		</constant>
-		<constant name="PT_OPM_NOISE" value="3" enum="SiONPitchTableType">
+		<constant name="PITCH_TABLE_OPM_NOISE" value="3" enum="SiONPitchTableType">
 			OPM noise pitch table type.
 		</constant>
-		<constant name="PT_PSG_NOISE" value="4" enum="SiONPitchTableType">
+		<constant name="PITCH_TABLE_PSG_NOISE" value="4" enum="SiONPitchTableType">
 			PSG noise pitch table type.
 		</constant>
-		<constant name="PT_APU_NOISE" value="5" enum="SiONPitchTableType">
+		<constant name="PITCH_TABLE_APU_NOISE" value="5" enum="SiONPitchTableType">
 			APU noise pitch table type.
 		</constant>
-		<constant name="PT_GB_NOISE" value="6" enum="SiONPitchTableType">
+		<constant name="PITCH_TABLE_GB_NOISE" value="6" enum="SiONPitchTableType">
 			GameBoy-like noise pitch table type.
 		</constant>
-		<constant name="PT_MAX" value="7" enum="SiONPitchTableType">
+		<constant name="PITCH_TABLE_MAX" value="7" enum="SiONPitchTableType">
 			Total number of available pitch table types.
 		</constant>
-		<constant name="PG_SINE" value="0" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_SINE" value="0" enum="SiONPulseGeneratorType">
 			Sine wave pulse generator.
 		</constant>
-		<constant name="PG_SAW_UP" value="1" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_SAW_UP" value="1" enum="SiONPulseGeneratorType">
 			Upwards saw wave pulse generator.
 		</constant>
-		<constant name="PG_SAW_DOWN" value="2" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_SAW_DOWN" value="2" enum="SiONPulseGeneratorType">
 			Downwards saw wave pulse generator.
 		</constant>
-		<constant name="PG_TRIANGLE_FC" value="3" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_TRIANGLE_FC" value="3" enum="SiONPulseGeneratorType">
 			Triangle wave pulse generator quantized by 4 bit.
 		</constant>
-		<constant name="PG_TRIANGLE" value="4" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_TRIANGLE" value="4" enum="SiONPulseGeneratorType">
 			Triangle wave pulse generator.
 		</constant>
-		<constant name="PG_SQUARE" value="5" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_SQUARE" value="5" enum="SiONPulseGeneratorType">
 			Square wave pulse generator.
 		</constant>
-		<constant name="PG_NOISE" value="6" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_NOISE" value="6" enum="SiONPulseGeneratorType">
 			32k white noise pulse generator.
 		</constant>
-		<constant name="PG_KNMBSMM" value="7" enum="SiONPulseGeneratorType">
-			KNMBSMM pulse generator.
+		<constant name="PULSE_KNM_BUBBLE" value="7" enum="SiONPulseGeneratorType">
+			Konami bubble system pulse generator.
 		</constant>
-		<constant name="PG_SYNC_LOW" value="8" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_SYNC_LOW" value="8" enum="SiONPulseGeneratorType">
 			Low frequency pseudo sync pulse generator.
 		</constant>
-		<constant name="PG_SYNC_HIGH" value="9" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_SYNC_HIGH" value="9" enum="SiONPulseGeneratorType">
 			High frequency pseudo sync pulse generator.
 		</constant>
-		<constant name="PG_OFFSET" value="10" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_OFFSET" value="10" enum="SiONPulseGeneratorType">
 			Offset pulse generator.
 		</constant>
-		<constant name="PG_SAW_VC6" value="11" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_SAW_VC6" value="11" enum="SiONPulseGeneratorType">
 			VC6 saw pulse generator (32 samples saw).
 		</constant>
-		<constant name="PG_NOISE_WHITE" value="16" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_NOISE_WHITE" value="16" enum="SiONPulseGeneratorType">
 			16k white noise pulse generator.
 		</constant>
-		<constant name="PG_NOISE_PULSE" value="17" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_NOISE_PULSE" value="17" enum="SiONPulseGeneratorType">
 			16k pulse noise pulse generator.
 		</constant>
-		<constant name="PG_NOISE_SHORT" value="18" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_NOISE_SHORT" value="18" enum="SiONPulseGeneratorType">
 			FC short noise pulse generator.
 		</constant>
-		<constant name="PG_NOISE_HIPAS" value="19" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_NOISE_HIPASS" value="19" enum="SiONPulseGeneratorType">
 			FC high pass noise pulse generator.
 		</constant>
-		<constant name="PG_NOISE_PINK" value="20" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_NOISE_PINK" value="20" enum="SiONPulseGeneratorType">
 			Pink noise pulse generator.
 		</constant>
-		<constant name="PG_NOISE_GB_SHORT" value="21" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_NOISE_GB_SHORT" value="21" enum="SiONPulseGeneratorType">
 			GameBoy-like short noise pulse generator.
 		</constant>
-		<constant name="PG_PC_NZ_16BIT" value="24" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_PC_NZ_16BIT" value="24" enum="SiONPulseGeneratorType">
 			Pitch-controllable periodic noise pulse generator.
 		</constant>
-		<constant name="PG_PC_NZ_SHORT" value="25" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_PC_NZ_SHORT" value="25" enum="SiONPulseGeneratorType">
 			Pitch-controllable 93-byte noise pulse generator.
 		</constant>
-		<constant name="PG_PC_NZ_OPM" value="26" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_PC_NZ_OPM" value="26" enum="SiONPulseGeneratorType">
 			Pitch-controllable pulse noise with OPM noise table pulse generator.
 		</constant>
-		<constant name="PG_MA3_WAVE" value="32" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_MA3_WAVE" value="32" enum="SiONPulseGeneratorType">
 			This and the next [code]32[/code] values are MA3 waveform pulse generators.
 		</constant>
-		<constant name="PG_PULSE" value="64" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_PULSE" value="64" enum="SiONPulseGeneratorType">
 			This and the next [code]16[/code] values are square pulse wave pulse generators.
 		</constant>
-		<constant name="PG_PULSE_SPIKE" value="80" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_PULSE_SPIKE" value="80" enum="SiONPulseGeneratorType">
 			This and the next [code]16[/code] values are square pulse wave with spike pulse generators.
 		</constant>
-		<constant name="PG_RAMP" value="128" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_RAMP" value="128" enum="SiONPulseGeneratorType">
 			This and the next [code]128[/code] values are ramp wave pulse generators.
 		</constant>
-		<constant name="PG_CUSTOM" value="256" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_CUSTOM" value="256" enum="SiONPulseGeneratorType">
 			This and the next [code]128[/code] values are custom wave table pulse generators.
 		</constant>
-		<constant name="PG_PCM" value="384" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_PCM" value="384" enum="SiONPulseGeneratorType">
 			This and the next [code]128[/code] values are PCM data pulse generators.
 		</constant>
-		<constant name="PG_USER_CUSTOM" value="-1" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_USER_CUSTOM" value="-1" enum="SiONPulseGeneratorType">
 			User registered custom wave table pulse generator.
 		</constant>
-		<constant name="PG_USER_PCM" value="-2" enum="SiONPulseGeneratorType">
+		<constant name="PULSE_USER_PCM" value="-2" enum="SiONPulseGeneratorType">
 			User registered PCM data pulse generator.
 		</constant>
 	</constants>

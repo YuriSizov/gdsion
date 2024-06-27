@@ -151,7 +151,7 @@ void SiOPMWaveSamplerData::slice(int p_start_point, int p_end_point, int p_loop_
 //
 
 SiOPMWaveSamplerData::SiOPMWaveSamplerData(const Variant &p_data, int p_ignore_note_off, int p_pan, int p_src_channel_count, int p_channel_count) :
-		SiOPMWaveBase(MT_SAMPLE) {
+		SiOPMWaveBase(SiONModuleType::MODULE_SAMPLE) {
 	if (!p_data) {
 		return;
 	}

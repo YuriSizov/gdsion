@@ -1353,7 +1353,7 @@ MMLEvent *SiMMLSequencer::_on_mml_ring_modulation(MMLEvent *p_event) {
 
 MMLEvent *SiMMLSequencer::_on_mml_module_type(MMLEvent *p_event) {
 	GET_EV_PARAMS(2);
-	BIND_EV_PARAM_RANGE(type, 0, 0, MT_MAX, MT_ALL);
+	BIND_EV_PARAM_RANGE(type, 0, 0, SiONModuleType::MODULE_MAX, SiONModuleType::MODULE_ANY_PG);
 	BIND_EV_PARAM(channel_num, 1, INT32_MIN);
 
 	_current_track->set_channel_module_type((SiONModuleType)type, channel_num);
@@ -1665,7 +1665,7 @@ void SiMMLSequencer::_reset_initial_operator_params() {
 	op_params->set_initial_phase(0);
 	op_params->set_fixed_pitch(0);
 	op_params->set_frequency_modulation_level(5);
-	op_params->set_pulse_generator_type(PG_SQUARE);
+	op_params->set_pulse_generator_type(SiONPulseGeneratorType::PULSE_SQUARE);
 }
 
 void SiMMLSequencer::_reset_parser_settings() {

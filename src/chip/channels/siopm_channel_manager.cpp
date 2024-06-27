@@ -22,19 +22,19 @@ HashMap<SiOPMChannelManager::ChannelType, SiOPMChannelManager *> SiOPMChannelMan
 void SiOPMChannelManager::initialize(SiOPMSoundChip *p_chip) {
 	_sound_chip = p_chip;
 
-	_channel_managers[CT_CHANNEL_FM]      = memnew(SiOPMChannelManager(CT_CHANNEL_FM));
-	_channel_managers[CT_CHANNEL_PCM]     = memnew(SiOPMChannelManager(CT_CHANNEL_PCM));
-	_channel_managers[CT_CHANNEL_SAMPLER] = memnew(SiOPMChannelManager(CT_CHANNEL_SAMPLER));
-	_channel_managers[CT_CHANNEL_KS]      = memnew(SiOPMChannelManager(CT_CHANNEL_KS));
+	_channel_managers[CHANNEL_FM]      = memnew(SiOPMChannelManager(CHANNEL_FM));
+	_channel_managers[CHANNEL_PCM]     = memnew(SiOPMChannelManager(CHANNEL_PCM));
+	_channel_managers[CHANNEL_SAMPLER] = memnew(SiOPMChannelManager(CHANNEL_SAMPLER));
+	_channel_managers[CHANNEL_KS]      = memnew(SiOPMChannelManager(CHANNEL_KS));
 }
 
 void SiOPMChannelManager::finalize() {
 	_sound_chip = nullptr;
 
-	memdelete(_channel_managers[CT_CHANNEL_FM]);
-	memdelete(_channel_managers[CT_CHANNEL_PCM]);
-	memdelete(_channel_managers[CT_CHANNEL_SAMPLER]);
-	memdelete(_channel_managers[CT_CHANNEL_KS]);
+	memdelete(_channel_managers[CHANNEL_FM]);
+	memdelete(_channel_managers[CHANNEL_PCM]);
+	memdelete(_channel_managers[CHANNEL_SAMPLER]);
+	memdelete(_channel_managers[CHANNEL_KS]);
 	_channel_managers.clear();
 }
 
@@ -72,16 +72,16 @@ SiOPMChannelBase *SiOPMChannelManager::_create_channel(SiOPMChannelBase *p_prev,
 		// Create new channel.
 
 		switch (_channel_type) {
-			case CT_CHANNEL_FM: {
+			case CHANNEL_FM: {
 				new_channel = memnew(SiOPMChannelFM(_sound_chip));
 			} break;
-			case CT_CHANNEL_PCM: {
+			case CHANNEL_PCM: {
 				new_channel = memnew(SiOPMChannelPCM(_sound_chip));
 			} break;
-			case CT_CHANNEL_SAMPLER: {
+			case CHANNEL_SAMPLER: {
 				new_channel = memnew(SiOPMChannelSampler(_sound_chip));
 			} break;
-			case CT_CHANNEL_KS: {
+			case CHANNEL_KS: {
 				new_channel = memnew(SiOPMChannelKS(_sound_chip));
 			} break;
 

@@ -18,6 +18,7 @@ class SiOPMWaveTable;
 class SiOPMWavePCMData;
 class SiOPMWaveSamplerData;
 class SiOPMWaveSamplerTable;
+enum SiONChipType : signed int;
 enum SiONModuleType : unsigned int;
 
 // Provides all of voice setting parameters of SiON.
@@ -30,16 +31,6 @@ protected:
 	static void _bind_methods();
 
 public:
-	static const char *CHIPTYPE_AUTO;
-	static const char *CHIPTYPE_SIOPM;
-	static const char *CHIPTYPE_OPL;
-	static const char *CHIPTYPE_OPM;
-	static const char *CHIPTYPE_OPN;
-	static const char *CHIPTYPE_OPX;
-	static const char *CHIPTYPE_MA3;
-	static const char *CHIPTYPE_PMS_GUITAR;
-	static const char *CHIPTYPE_ANALOG_LIKE;
-
 	// NOTE: Godot doesn't support exposing constructors to the API, so we make do with a static factory method. Hopefully this can be fixed at some point.
 	static Ref<SiONVoice> create(SiONModuleType p_module_type = (SiONModuleType)5, int p_channel_num = 0, int p_attack_rate = 63, int p_release_rate = 63, int p_pitch_shift = 0, int p_connection_type = -1, int p_wave_shape2 = 0, int p_pitch_shift2 = 0);
 
@@ -64,7 +55,7 @@ public:
 	TypedArray<int> get_params_ma3() const;
 	TypedArray<int> get_params_al() const;
 
-	String get_mml(int p_index, String p_chip_type = SiONVoice::CHIPTYPE_AUTO, bool p_append_postfix = true) const;
+	String get_mml(int p_index, SiONChipType p_chip_type = (SiONChipType)-1, bool p_append_postfix = true) const;
 	int set_by_mml(String p_mml);
 
 	SiOPMWaveTable *set_wave_table(Vector<double> *p_data);

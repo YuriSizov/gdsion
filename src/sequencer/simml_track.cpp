@@ -883,7 +883,7 @@ void SiMMLTrack::change_note_length(int p_length) {
 
 void SiMMLTrack::reset(int p_buffer_index) {
 	// Channel module settings.
-	_channel_settings = _table->channel_settings_map[MT_PSG];
+	_channel_settings = _table->channel_settings_map[SiONModuleType::MODULE_PSG];
 	_channel_number = 0;
 
 	// Initialize channel.

@@ -34,7 +34,7 @@
 		<method name="get_mml" qualifiers="const">
 			<return type="String" />
 			<param index="0" name="index" type="int" />
-			<param index="1" name="chip_type" type="String" default="&quot;&lt;autodetect&gt;&quot;" />
+			<param index="1" name="chip_type" type="int" enum="SiONChipType" default="-1" />
 			<param index="2" name="append_postfix" type="bool" default="true" />
 			<description>
 				Returns a configuration of this voice as an MML string. This string can be then passed back to the driver for playback, alongside a melody.

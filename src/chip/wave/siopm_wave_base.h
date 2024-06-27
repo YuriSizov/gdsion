@@ -19,7 +19,7 @@ using namespace godot;
 class SiOPMWaveBase : public Object {
 	GDCLASS(SiOPMWaveBase, Object)
 
-	SiONModuleType _module_type = MT_MAX;
+	SiONModuleType _module_type = SiONModuleType::MODULE_MAX;
 
 protected:
 	static void _bind_methods() {}
@@ -27,7 +27,7 @@ protected:
 public:
 	SiONModuleType get_module_type() const { return _module_type; }
 
-	SiOPMWaveBase(SiONModuleType p_module_type = MT_MAX);
+	SiOPMWaveBase(SiONModuleType p_module_type = SiONModuleType::MODULE_MAX);
 	~SiOPMWaveBase() {}
 };
 

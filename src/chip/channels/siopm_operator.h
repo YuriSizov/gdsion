@@ -84,8 +84,8 @@ private:
 
 	// Pulse generator.
 
-	int _pg_type = SiONPulseGeneratorType::PG_SINE;
-	SiONPitchTableType _pt_type = SiONPitchTableType::PT_OPM;
+	int _pg_type = SiONPulseGeneratorType::PULSE_SINE;
+	SiONPitchTableType _pt_type = SiONPitchTableType::PITCH_TABLE_OPM;
 	Vector<int> _wave_table;
 	// Phase shift.
 	int _wave_fixed_bits = 0;

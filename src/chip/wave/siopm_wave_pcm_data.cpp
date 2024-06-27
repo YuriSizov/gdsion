@@ -147,7 +147,7 @@ void SiOPMWavePCMData::loop_tail_samples(int p_sample_count, int p_tail_margin, 
 //
 
 SiOPMWavePCMData::SiOPMWavePCMData(const Variant &p_data, int p_sampling_pitch, int p_src_channel_count, int p_channel_count) :
-		SiOPMWaveBase(MT_PCM) {
+		SiOPMWaveBase(SiONModuleType::MODULE_PCM) {
 	if (!p_data) {
 		return;
 	}

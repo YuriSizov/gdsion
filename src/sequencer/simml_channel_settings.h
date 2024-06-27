@@ -31,7 +31,7 @@ private:
 
 	int _type = 0;
 	SelectToneType _select_tone_type = SELECT_TONE_NORMAL;
-	SiOPMChannelManager::ChannelType _channel_type = SiOPMChannelManager::CT_CHANNEL_FM;
+	SiOPMChannelManager::ChannelType _channel_type = SiOPMChannelManager::CHANNEL_FM;
 	bool _is_suitable_for_fm_voice = true;
 	int _default_operator_count = 1;
 

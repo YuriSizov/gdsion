@@ -21,13 +21,13 @@ class SiOPMWaveTable : public SiOPMWaveBase {
 
 	Vector<int> _wavelet;
 	int _fixed_bits = 0;
-	SiONPitchTableType _default_pitch_table_type = SiONPitchTableType::PT_OPM;
+	SiONPitchTableType _default_pitch_table_type = SiONPitchTableType::PITCH_TABLE_OPM;
 
 protected:
 	static void _bind_methods() {}
 
 public:
-	static SiOPMWaveTable *alloc(Vector<int> p_wavelet, SiONPitchTableType p_default_pitch_table_type = SiONPitchTableType::PT_OPM);
+	static SiOPMWaveTable *alloc(Vector<int> p_wavelet, SiONPitchTableType p_default_pitch_table_type = SiONPitchTableType::PITCH_TABLE_OPM);
 
 	Vector<int> get_wavelet() const { return _wavelet; }
 	int get_fixed_bits() const { return _fixed_bits; }
@@ -35,7 +35,7 @@ public:
 
 	//
 
-	void initialize(Vector<int> p_wavelet, SiONPitchTableType p_default_pt_type = SiONPitchTableType::PT_OPM);
+	void initialize(Vector<int> p_wavelet, SiONPitchTableType p_default_pt_type = SiONPitchTableType::PITCH_TABLE_OPM);
 	void copy_from(SiOPMWaveTable *p_source);
 	void free();
 

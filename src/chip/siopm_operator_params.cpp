@@ -54,8 +54,8 @@ String SiOPMOperatorParams::to_string() const {
 }
 
 void SiOPMOperatorParams::initialize() {
-	pulse_generator_type = PG_SINE;
-	pitch_table_type = PT_OPM;
+	pulse_generator_type = SiONPulseGeneratorType::PULSE_SINE;
+	pitch_table_type = SiONPitchTableType::PITCH_TABLE_OPM;
 
 	attack_rate = 63;
 	decay_rate = 0;

@@ -60,7 +60,7 @@ public:
 
 private:
 	bool _is_free = true;
-	SiOPMChannelManager::ChannelType _channel_type = SiOPMChannelManager::CT_MAX;
+	SiOPMChannelManager::ChannelType _channel_type = SiOPMChannelManager::CHANNEL_MAX;
 	SiOPMChannelBase *_next = nullptr;
 	SiOPMChannelBase *_prev = nullptr;
 

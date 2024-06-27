@@ -18,18 +18,18 @@ class SiOPMChannelManager {
 
 public:
 	enum ChannelType {
-		CT_CHANNEL_FM = 0,
-		CT_CHANNEL_PCM = 1,
-		CT_CHANNEL_SAMPLER = 2,
-		CT_CHANNEL_KS = 3,
-		CT_MAX = 4
+		CHANNEL_FM = 0,
+		CHANNEL_PCM = 1,
+		CHANNEL_SAMPLER = 2,
+		CHANNEL_KS = 3,
+		CHANNEL_MAX
 	};
 
 private:
 	static SiOPMSoundChip *_sound_chip;
 	static HashMap<ChannelType, SiOPMChannelManager *> _channel_managers;
 
-	ChannelType _channel_type = ChannelType::CT_MAX;
+	ChannelType _channel_type = ChannelType::CHANNEL_MAX;
 	SiOPMChannelBase *_terminator;
 	int _length = 0;
 

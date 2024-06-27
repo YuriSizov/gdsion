@@ -25,7 +25,7 @@
 using namespace godot;
 
 bool SiMMLVoice::is_fm_voice() const {
-	return module_type == MT_FM;
+	return module_type == SiONModuleType::MODULE_FM;
 }
 
 bool SiMMLVoice::is_pcm_voice() const {
@@ -69,12 +69,12 @@ bool SiMMLVoice::has_pitch_modulation() const {
 
 void SiMMLVoice::update_track_voice(SiMMLTrack *p_track) {
 	switch (module_type) {
-		case MT_FM: { // Registered FM voice (%6)
-			p_track->set_channel_module_type(MT_FM, channel_num);
+		case SiONModuleType::MODULE_FM: { // Registered FM voice (%6)
+			p_track->set_channel_module_type(SiONModuleType::MODULE_FM, channel_num);
 		} break;
 
-		case MT_KS: { // PMS Guitar (%11)
-			p_track->set_channel_module_type(MT_KS, 1);
+		case SiONModuleType::MODULE_KS: { // PMS Guitar (%11)
+			p_track->set_channel_module_type(SiONModuleType::MODULE_KS, 1);
 			p_track->get_channel()->set_channel_params(channel_params, false);
 			p_track->get_channel()->set_all_release_rate(pms_tension);
 			if (is_pcm_voice()) {
@@ -130,28 +130,27 @@ void SiMMLVoice::update_track_voice(SiMMLTrack *p_track) {
 Ref<SiMMLVoice> SiMMLVoice::create_blank_pcm_voice(int p_channel_num) {
 	Ref<SiMMLVoice> instance;
 	instance.instantiate();
-	instance->module_type = MT_PCM;
+	instance->module_type = SiONModuleType::MODULE_PCM;
 	instance->channel_num = p_channel_num;
-
-	SiOPMWavePCMTable *pcm_table = memnew(SiOPMWavePCMTable);
-	instance->wave_data = pcm_table;
+	instance->wave_data = memnew(SiOPMWavePCMTable);
 
 	return instance;
 }
 
 void SiMMLVoice::reset() {
-	chip_type = "";
-
 	update_track_parameters = false;
 	update_volumes = false;
 
-	module_type = MT_ALL;
+	chip_type = SiONChipType::CHIP_SIOPM;
+	module_type = SiONModuleType::MODULE_ANY_PG;
 	channel_num = -1;
 	tone_num = -1;
 	preferable_note = -1;
 
 	channel_params->initialize();
-	// FIXME: Memory leak?
+	if (wave_data) {
+		memdelete(wave_data);
+	}
 	wave_data = nullptr;
 	pms_tension = 8;
 
@@ -178,7 +177,6 @@ void SiMMLVoice::reset() {
 	pitch_modulation_delay = 0;
 	pitch_modulation_term = 0;
 
-	// FIXME: Memory leak?
 	note_on_tone_envelope = nullptr;
 	note_on_amplitude_envelope = nullptr;
 	note_on_filter_envelope = nullptr;
@@ -214,6 +212,9 @@ void SiMMLVoice::copy_from(const Ref<SiMMLVoice> &p_source) {
 	preferable_note = p_source->preferable_note;
 
 	channel_params->copy_from(p_source->channel_params);
+	if (wave_data) {
+		memdelete(wave_data);
+	}
 	wave_data = p_source->wave_data;
 	pms_tension = p_source->pms_tension;
 
@@ -240,7 +241,6 @@ void SiMMLVoice::copy_from(const Ref<SiMMLVoice> &p_source) {
 	pitch_modulation_delay = p_source->pitch_modulation_delay;
 	pitch_modulation_term = p_source->pitch_modulation_term;
 
-	// FIXME: Memory leak?
 #define COPY_NOTE_ENVELOPE(m_prop)            \
 	m_prop = nullptr;                         \
 	if (p_source->m_prop) {                   \
@@ -273,6 +273,20 @@ void SiMMLVoice::copy_from(const Ref<SiMMLVoice> &p_source) {
 }
 
 void SiMMLVoice::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("get_chip_type"), &SiMMLVoice::get_chip_type);
+	ClassDB::bind_method(D_METHOD("set_chip_type", "type"), &SiMMLVoice::set_chip_type);
+	ClassDB::bind_method(D_METHOD("get_module_type"), &SiMMLVoice::get_module_type);
+	ClassDB::bind_method(D_METHOD("set_module_type", "module_type", "channel_num", "tone_num"), &SiMMLVoice::set_module_type, DEFVAL(0), DEFVAL(-1));
+	ClassDB::bind_method(D_METHOD("get_channel_num"), &SiMMLVoice::get_channel_num);
+	ClassDB::bind_method(D_METHOD("set_channel_num", "num"), &SiMMLVoice::set_channel_num);
+	ClassDB::bind_method(D_METHOD("get_tone_num"), &SiMMLVoice::get_tone_num);
+	ClassDB::bind_method(D_METHOD("set_tone_num", "num"), &SiMMLVoice::set_tone_num);
+
+	ClassDB::bind_method(D_METHOD("is_fm_voice"), &SiMMLVoice::is_fm_voice);
+	ClassDB::bind_method(D_METHOD("is_pcm_voice"), &SiMMLVoice::is_pcm_voice);
+	ClassDB::bind_method(D_METHOD("is_sampler_voice"), &SiMMLVoice::is_sampler_voice);
+	ClassDB::bind_method(D_METHOD("is_wave_table_voice"), &SiMMLVoice::is_wave_table_voice);
+
 	ClassDB::bind_method(D_METHOD("get_channel_params"), &SiMMLVoice::get_channel_params);
 
 	ClassDB::bind_method(D_METHOD("get_velocity"), &SiMMLVoice::get_velocity);

@@ -8,10 +8,88 @@
 	<tutorials>
 	</tutorials>
 	<methods>
+		<method name="get_channel_num" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the number of channels used by this voice.
+			</description>
+		</method>
 		<method name="get_channel_params" qualifiers="const">
 			<return type="SiOPMChannelParams" />
 			<description>
 				Returns a reference to the [SiOPMChannelParams] instance used by this voice.
+			</description>
+		</method>
+		<method name="get_chip_type" qualifiers="const">
+			<return type="int" enum="SiONChipType" />
+			<description>
+				Returns the sound chip type used by this voice.
+			</description>
+		</method>
+		<method name="get_module_type" qualifiers="const">
+			<return type="int" enum="SiONModuleType" />
+			<description>
+				Returns the module type used by this voice.
+			</description>
+		</method>
+		<method name="get_tone_num" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the tone number used by modules like PSG and APU.
+			</description>
+		</method>
+		<method name="is_fm_voice" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns whether this is an FM voice.
+			</description>
+		</method>
+		<method name="is_pcm_voice" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns whether this is a PCM voice.
+			</description>
+		</method>
+		<method name="is_sampler_voice" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns whether this is a sampler voice.
+			</description>
+		</method>
+		<method name="is_wave_table_voice" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns whether this is a wave table voice.
+			</description>
+		</method>
+		<method name="set_channel_num">
+			<return type="void" />
+			<param index="0" name="num" type="int" />
+			<description>
+				Sets the number of channels for this voice.
+			</description>
+		</method>
+		<method name="set_chip_type">
+			<return type="void" />
+			<param index="0" name="type" type="int" enum="SiONChipType" />
+			<description>
+				Sets the sound chip type for this voice.
+			</description>
+		</method>
+		<method name="set_module_type">
+			<return type="void" />
+			<param index="0" name="module_type" type="int" enum="SiONModuleType" />
+			<param index="1" name="channel_num" type="int" default="0" />
+			<param index="2" name="tone_num" type="int" default="-1" />
+			<description>
+				Sets the module type for this voice.
+			</description>
+		</method>
+		<method name="set_tone_num">
+			<return type="void" />
+			<param index="0" name="num" type="int" />
+			<description>
+				Sets the tone number for this voice. Used by modules like PSG and APU.
 			</description>
 		</method>
 	</methods>

@@ -144,10 +144,10 @@ void SiMMLRefTable::_dump_ym2413_register(const Ref<SiMMLVoice> &p_voice, uint32
 	SiOPMOperatorParams *op_params0 = channel_params->get_operator_params(0);
 	SiOPMOperatorParams *op_params1 = channel_params->get_operator_params(1);
 
-	p_voice->set_module_type(MT_FM);
+	p_voice->set_module_type(SiONModuleType::MODULE_FM);
 	p_voice->set_channel_num(0);
 	p_voice->set_tone_num(-1);
-	p_voice->set_chip_type(SiONVoice::CHIPTYPE_OPL);
+	p_voice->set_chip_type(SiONChipType::CHIP_OPL);
 
 	channel_params->set_envelope_frequency_ratio(133);
 	channel_params->set_operator_count(2);
@@ -168,8 +168,8 @@ void SiMMLRefTable::_dump_ym2413_register(const Ref<SiMMLVoice> &p_voice, uint32
 
 	channel_params->set_feedback((p_u0 >> 0) & 7);
 
-	op_params0->set_pulse_generator_type(PG_MA3_WAVE + ((p_u0 >> 3)&1));
-	op_params1->set_pulse_generator_type(PG_MA3_WAVE + ((p_u0 >> 4)&1));
+	op_params0->set_pulse_generator_type(SiONPulseGeneratorType::PULSE_MA3_WAVE + ((p_u0 >> 3)&1));
+	op_params1->set_pulse_generator_type(SiONPulseGeneratorType::PULSE_MA3_WAVE + ((p_u0 >> 4)&1));
 
 	op_params0->set_attack_rate(((p_u1 >> 28) & 15) << 2);
 	op_params1->set_attack_rate(((p_u1 >> 20) & 15) << 2);
@@ -194,32 +194,32 @@ SiMMLRefTable::SiMMLRefTable() {
 
 	// Channel module settings map.
 	{
-		channel_settings_map[MT_PSG]    = memnew(SiMMLChannelSettings(MT_PSG,    PG_SQUARE,      3,   1, 4));
-		channel_settings_map[MT_APU]    = memnew(SiMMLChannelSettings(MT_APU,    PG_PULSE,       11,  2, 4));
-		channel_settings_map[MT_NOISE]  = memnew(SiMMLChannelSettings(MT_NOISE,  PG_NOISE_WHITE, 16,  1, 16));
-		channel_settings_map[MT_MA3]    = memnew(SiMMLChannelSettings(MT_MA3,    PG_MA3_WAVE,    32,  1, 32));
-		channel_settings_map[MT_CUSTOM] = memnew(SiMMLChannelSettings(MT_CUSTOM, PG_CUSTOM,      256, 1, 256));
-		channel_settings_map[MT_ALL]    = memnew(SiMMLChannelSettings(MT_ALL,    PG_SINE,        512, 1, 512));
-		channel_settings_map[MT_FM]     = memnew(SiMMLChannelSettings(MT_FM,     PG_SINE,        1,   1, 1));
-		channel_settings_map[MT_PCM]    = memnew(SiMMLChannelSettings(MT_PCM,    PG_PCM,         128, 1, 128));
-		channel_settings_map[MT_PULSE]  = memnew(SiMMLChannelSettings(MT_PULSE,  PG_PULSE,       32,  1, 32));
-		channel_settings_map[MT_RAMP]   = memnew(SiMMLChannelSettings(MT_RAMP,   PG_RAMP,        128, 1, 128));
-		channel_settings_map[MT_SAMPLE] = memnew(SiMMLChannelSettings(MT_SAMPLE, PG_SINE,        4,   1, 4));
-		channel_settings_map[MT_KS]     = memnew(SiMMLChannelSettings(MT_KS,     PG_SINE,        3,   1, 3));
-		channel_settings_map[MT_GB]     = memnew(SiMMLChannelSettings(MT_GB,     PG_PULSE,       11,  2, 4));
-		channel_settings_map[MT_VRC6]   = memnew(SiMMLChannelSettings(MT_VRC6,   PG_PULSE,       9,   1, 3));
-		channel_settings_map[MT_SID]    = memnew(SiMMLChannelSettings(MT_SID,    PG_PULSE,       12,  1, 3));
+		channel_settings_map[SiONModuleType::MODULE_PSG]    = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_PSG,    SiONPulseGeneratorType::PULSE_SQUARE,      3,   1, 4));
+		channel_settings_map[SiONModuleType::MODULE_APU]    = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_APU,    SiONPulseGeneratorType::PULSE_PULSE,       11,  2, 4));
+		channel_settings_map[SiONModuleType::MODULE_NOISE]  = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_NOISE,  SiONPulseGeneratorType::PULSE_NOISE_WHITE, 16,  1, 16));
+		channel_settings_map[SiONModuleType::MODULE_MA3]    = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_MA3,    SiONPulseGeneratorType::PULSE_MA3_WAVE,    32,  1, 32));
+		channel_settings_map[SiONModuleType::MODULE_CUSTOM] = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_CUSTOM, SiONPulseGeneratorType::PULSE_CUSTOM,      256, 1, 256));
+		channel_settings_map[SiONModuleType::MODULE_ANY_PG] = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_ANY_PG, SiONPulseGeneratorType::PULSE_SINE,        512, 1, 512));
+		channel_settings_map[SiONModuleType::MODULE_FM]     = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_FM,     SiONPulseGeneratorType::PULSE_SINE,        1,   1, 1));
+		channel_settings_map[SiONModuleType::MODULE_PCM]    = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_PCM,    SiONPulseGeneratorType::PULSE_PCM,         128, 1, 128));
+		channel_settings_map[SiONModuleType::MODULE_PULSE]  = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_PULSE,  SiONPulseGeneratorType::PULSE_PULSE,       32,  1, 32));
+		channel_settings_map[SiONModuleType::MODULE_RAMP]   = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_RAMP,   SiONPulseGeneratorType::PULSE_RAMP,        128, 1, 128));
+		channel_settings_map[SiONModuleType::MODULE_SAMPLE] = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_SAMPLE, SiONPulseGeneratorType::PULSE_SINE,        4,   1, 4));
+		channel_settings_map[SiONModuleType::MODULE_KS]     = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_KS,     SiONPulseGeneratorType::PULSE_SINE,        3,   1, 3));
+		channel_settings_map[SiONModuleType::MODULE_GB]     = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_GB,     SiONPulseGeneratorType::PULSE_PULSE,       11,  2, 4));
+		channel_settings_map[SiONModuleType::MODULE_VRC6]   = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_VRC6,   SiONPulseGeneratorType::PULSE_PULSE,       9,   1, 3));
+		channel_settings_map[SiONModuleType::MODULE_SID]    = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_SID,    SiONPulseGeneratorType::PULSE_PULSE,       12,  1, 3));
 
 		// PSG settings.
 		{
-			SiMMLChannelSettings *cs = channel_settings_map[MT_PSG];
-			cs->set_pg_type(0, PG_SQUARE);
-			cs->set_pg_type(1, PG_NOISE_PULSE);
-			cs->set_pg_type(2, PG_PC_NZ_16BIT);
+			SiMMLChannelSettings *cs = channel_settings_map[SiONModuleType::MODULE_PSG];
+			cs->set_pg_type(0, SiONPulseGeneratorType::PULSE_SQUARE);
+			cs->set_pg_type(1, SiONPulseGeneratorType::PULSE_NOISE_PULSE);
+			cs->set_pg_type(2, SiONPulseGeneratorType::PULSE_PC_NZ_16BIT);
 
-			cs->set_pt_type(0, PT_PSG);
-			cs->set_pt_type(1, PT_PSG_NOISE);
-			cs->set_pt_type(2, PT_PSG);
+			cs->set_pt_type(0, SiONPitchTableType::PITCH_TABLE_PSG);
+			cs->set_pt_type(1, SiONPitchTableType::PITCH_TABLE_PSG_NOISE);
+			cs->set_pt_type(2, SiONPitchTableType::PITCH_TABLE_PSG);
 
 			cs->set_voice_index(0, 0);
 			cs->set_voice_index(1, 0);
@@ -229,16 +229,16 @@ SiMMLRefTable::SiMMLRefTable() {
 
 		// APU settings.
 		{
-			SiMMLChannelSettings *cs = channel_settings_map[MT_APU];
-			cs->set_pg_type(8, PG_TRIANGLE_FC);
-			cs->set_pg_type(9, PG_NOISE_PULSE);
-			cs->set_pg_type(10, PG_NOISE_SHORT);
+			SiMMLChannelSettings *cs = channel_settings_map[SiONModuleType::MODULE_APU];
+			cs->set_pg_type(8, SiONPulseGeneratorType::PULSE_TRIANGLE_FC);
+			cs->set_pg_type(9, SiONPulseGeneratorType::PULSE_NOISE_PULSE);
+			cs->set_pg_type(10, SiONPulseGeneratorType::PULSE_NOISE_SHORT);
 
 			for (int i = 0; i < 9;  i++) {
-				cs->set_pt_type(i, PT_PSG);
+				cs->set_pt_type(i, SiONPitchTableType::PITCH_TABLE_PSG);
 			}
 			for (int i = 9; i < 11; i++) {
-				cs->set_pt_type(i, PT_APU_NOISE);
+				cs->set_pt_type(i, SiONPitchTableType::PITCH_TABLE_APU_NOISE);
 			}
 
 			cs->set_initial_voice_index(1);
@@ -250,16 +250,16 @@ SiMMLRefTable::SiMMLRefTable() {
 
 		// GB settings.
 		{
-			SiMMLChannelSettings *cs = channel_settings_map[MT_GB];
-			cs->set_pg_type(8, PG_CUSTOM);
-			cs->set_pg_type(9, PG_NOISE_PULSE);
-			cs->set_pg_type(10, PG_NOISE_GB_SHORT);
+			SiMMLChannelSettings *cs = channel_settings_map[SiONModuleType::MODULE_GB];
+			cs->set_pg_type(8, SiONPulseGeneratorType::PULSE_CUSTOM);
+			cs->set_pg_type(9, SiONPulseGeneratorType::PULSE_NOISE_PULSE);
+			cs->set_pg_type(10, SiONPulseGeneratorType::PULSE_NOISE_GB_SHORT);
 
 			for (int i = 0; i < 9;  i++) {
-				cs->set_pt_type(i, PT_PSG);
+				cs->set_pt_type(i, SiONPitchTableType::PITCH_TABLE_PSG);
 			}
 			for (int i = 9; i < 11; i++) {
-				cs->set_pt_type(i, PT_GB_NOISE);
+				cs->set_pt_type(i, SiONPitchTableType::PITCH_TABLE_GB_NOISE);
 			}
 
 			cs->set_initial_voice_index(1);
@@ -271,9 +271,9 @@ SiMMLRefTable::SiMMLRefTable() {
 
 		// VRC6 settings.
 		{
-			SiMMLChannelSettings *cs = channel_settings_map[MT_VRC6];
-			cs->set_pg_type(8, PG_SAW_VC6);
-			cs->set_pt_type(8, PT_PSG);
+			SiMMLChannelSettings *cs = channel_settings_map[SiONModuleType::MODULE_VRC6];
+			cs->set_pg_type(8, SiONPulseGeneratorType::PULSE_SAW_VC6);
+			cs->set_pt_type(8, SiONPitchTableType::PITCH_TABLE_PSG);
 
 			cs->set_initial_voice_index(1);
 			cs->set_voice_index(0, 7);
@@ -283,16 +283,16 @@ SiMMLRefTable::SiMMLRefTable() {
 
 		// SID settings.
 		{
-			SiMMLChannelSettings *cs = channel_settings_map[MT_SID];
-			cs->set_pg_type(8, PG_TRIANGLE);
-			cs->set_pg_type(9, PG_SAW_UP);
-			cs->set_pg_type(10, PG_SAW_VC6);
-			cs->set_pg_type(11, PG_NOISE_PULSE);
+			SiMMLChannelSettings *cs = channel_settings_map[SiONModuleType::MODULE_SID];
+			cs->set_pg_type(8, SiONPulseGeneratorType::PULSE_TRIANGLE);
+			cs->set_pg_type(9, SiONPulseGeneratorType::PULSE_SAW_UP);
+			cs->set_pg_type(10, SiONPulseGeneratorType::PULSE_SAW_VC6);
+			cs->set_pg_type(11, SiONPulseGeneratorType::PULSE_NOISE_PULSE);
 
 			for (int i = 0; i < 11;  i++) {
-				cs->set_pt_type(i, PT_PSG);
+				cs->set_pt_type(i, SiONPitchTableType::PITCH_TABLE_PSG);
 			}
-			cs->set_pt_type(11, PT_OPM_NOISE);
+			cs->set_pt_type(11, SiONPitchTableType::PITCH_TABLE_OPM_NOISE);
 
 			cs->set_initial_voice_index(1);
 			cs->set_voice_index(0, 7);
@@ -302,29 +302,29 @@ SiMMLRefTable::SiMMLRefTable() {
 
 		// FM settings.
 		{
-			SiMMLChannelSettings *cs = channel_settings_map[MT_FM];
+			SiMMLChannelSettings *cs = channel_settings_map[SiONModuleType::MODULE_FM];
 			cs->set_select_tone_type(SiMMLChannelSettings::SELECT_TONE_FM);
 			cs->set_suitable_for_fm_voice(false);
 		}
 
 		// PCM settings.
 		{
-			SiMMLChannelSettings *cs = channel_settings_map[MT_PCM];
-			cs->set_channel_type(SiOPMChannelManager::CT_CHANNEL_PCM);
+			SiMMLChannelSettings *cs = channel_settings_map[SiONModuleType::MODULE_PCM];
+			cs->set_channel_type(SiOPMChannelManager::CHANNEL_PCM);
 			cs->set_suitable_for_fm_voice(false);
 		}
 
 		// Sampler settings.
 		{
-			SiMMLChannelSettings *cs = channel_settings_map[MT_SAMPLE];
-			cs->set_channel_type(SiOPMChannelManager::CT_CHANNEL_SAMPLER);
+			SiMMLChannelSettings *cs = channel_settings_map[SiONModuleType::MODULE_SAMPLE];
+			cs->set_channel_type(SiOPMChannelManager::CHANNEL_SAMPLER);
 			cs->set_suitable_for_fm_voice(false);
 		}
 
 		// Karplus strong settings.
 		{
-			SiMMLChannelSettings *cs = channel_settings_map[MT_KS];
-			cs->set_channel_type(SiOPMChannelManager::CT_CHANNEL_KS);
+			SiMMLChannelSettings *cs = channel_settings_map[SiONModuleType::MODULE_KS];
+			cs->set_channel_type(SiOPMChannelManager::CHANNEL_KS);
 			cs->set_suitable_for_fm_voice(false);
 		}
 	}

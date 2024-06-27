@@ -121,7 +121,7 @@ void SiMMLChannelSettings::set_pg_type(int p_index, int p_type) {
 }
 
 SiONPitchTableType SiMMLChannelSettings::get_pt_type(int p_index) const {
-	ERR_FAIL_INDEX_V(p_index, _pt_type_list.size(), SiONPitchTableType::PT_OPM);
+	ERR_FAIL_INDEX_V(p_index, _pt_type_list.size(), SiONPitchTableType::PITCH_TABLE_OPM);
 	return _pt_type_list[p_index];
 }
 

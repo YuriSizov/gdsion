@@ -117,7 +117,7 @@ void SiOPMWavePCMTable::clear(SiOPMWavePCMData *p_pcm_data) {
 }
 
 SiOPMWavePCMTable::SiOPMWavePCMTable() :
-		SiOPMWaveBase(MT_PCM) {
+		SiOPMWaveBase(SiONModuleType::MODULE_PCM) {
 	_note_data_map.resize_zeroed(SiOPMRefTable::NOTE_TABLE_SIZE);
 	_note_volume_map.resize_zeroed(SiOPMRefTable::NOTE_TABLE_SIZE);
 	_note_pan_map.resize_zeroed(SiOPMRefTable::NOTE_TABLE_SIZE);

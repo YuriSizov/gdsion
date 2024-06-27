@@ -221,8 +221,8 @@ void SiOPMChannelFM::_set_by_opm_register(int p_address, int p_data) {
 		switch (p_address) {
 			case 15: { // NOIZE:7 FREQ:4-0 for channel#7
 				if (_register_map_channel == 7 && _operator_count == 4 && (p_data & 128)) {
-					_operators[3]->set_pulse_generator_type(PG_NOISE_PULSE);
-					_operators[3]->set_pitch_table_type(PT_OPM_NOISE);
+					_operators[3]->set_pulse_generator_type(SiONPulseGeneratorType::PULSE_NOISE_PULSE);
+					_operators[3]->set_pitch_table_type(SiONPitchTableType::PITCH_TABLE_OPM_NOISE);
 					_operators[3]->set_pitch_index(((p_data & 31) << 6) + 2048);
 				}
 			} break;
@@ -582,8 +582,8 @@ void SiOPMChannelFM::set_parameters(Vector<int> p_params) {
 }
 
 void SiOPMChannelFM::set_types(int p_pg_type, SiONPitchTableType p_pt_type) {
-	if (p_pg_type >= PG_PCM) {
-		SiOPMWavePCMTable *pcm_table = _table->get_pcm_data(p_pg_type - PG_PCM);
+	if (p_pg_type >= SiONPulseGeneratorType::PULSE_PCM) {
+		SiOPMWavePCMTable *pcm_table = _table->get_pcm_data(p_pg_type - SiONPulseGeneratorType::PULSE_PCM);
 		if (pcm_table) {
 			set_wave_data(pcm_table);
 		}

@@ -47,7 +47,7 @@ void SiOPMWaveSamplerTable::clear(SiOPMWaveSamplerData *p_sample) {
 }
 
 SiOPMWaveSamplerTable::SiOPMWaveSamplerTable() :
-		SiOPMWaveBase(MT_SAMPLE) {
+		SiOPMWaveBase(SiONModuleType::MODULE_SAMPLE) {
 	_table.resize_zeroed(SiOPMRefTable::SAMPLER_DATA_MAX);
 	clear();
 }
