@@ -74,7 +74,7 @@ class SiMMLSequencer : public MMLSequencer {
 
 	void _reset_parser_parameters();
 
-	void _parse_command_init_sequence(SiOPMChannelParams *p_params, String p_postfix);
+	void _parse_command_init_sequence(const Ref<SiOPMChannelParams> &p_params, String p_postfix);
 	void _parse_tmode_command(String p_mml);
 	void _parse_vmode_command(String p_mml);
 	bool _try_set_sampler_wave(int p_index, String p_mml);

@@ -140,7 +140,7 @@ Vector<Ref<SiMMLVoice>> SiMMLRefTable::_setup_ym2413_default_voices(uint32_t (&p
 }
 
 void SiMMLRefTable::_dump_ym2413_register(const Ref<SiMMLVoice> &p_voice, uint32_t p_u0, uint32_t p_u1) {
-	SiOPMChannelParams *channel_params = p_voice->get_channel_params();
+	Ref<SiOPMChannelParams> channel_params = p_voice->get_channel_params();
 	SiOPMOperatorParams *op_params0 = channel_params->get_operator_params(0);
 	SiOPMOperatorParams *op_params1 = channel_params->get_operator_params(1);
 

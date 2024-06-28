@@ -25,18 +25,18 @@ class SiOPMWaveSamplerTable;
 
 class TranslatorUtil {
 
-	static Vector<int> _split_data_string(SiOPMChannelParams *r_params, String p_data_string, int p_channel_param_count, int p_operator_param_count, const String &p_command);
-	static void _check_operator_count(SiOPMChannelParams *r_params, int p_data_length, int p_channel_param_count, int p_operator_param_count, const String &p_command);
+	static Vector<int> _split_data_string(const Ref<SiOPMChannelParams> &p_params, String p_data_string, int p_channel_param_count, int p_operator_param_count, const String &p_command);
+	static void _check_operator_count(const Ref<SiOPMChannelParams> &p_params, int p_data_length, int p_channel_param_count, int p_operator_param_count, const String &p_command);
 
 	static int _get_params_algorithm(int (&p_algorithms)[4][16], int p_operator_count, int p_data_value, const String &p_command);
 
-	static void _set_params_by_array(SiOPMChannelParams *r_params, Vector<int> p_data);
-	static void _set_opl_params_by_array(SiOPMChannelParams *r_params, Vector<int> p_data);
-	static void _set_opm_params_by_array(SiOPMChannelParams *r_params, Vector<int> p_data);
-	static void _set_opn_params_by_array(SiOPMChannelParams *r_params, Vector<int> p_data);
-	static void _set_opx_params_by_array(SiOPMChannelParams *r_params, Vector<int> p_data);
-	static void _set_ma3_params_by_array(SiOPMChannelParams *r_params, Vector<int> p_data);
-	static void _set_al_params_by_array(SiOPMChannelParams *r_params, Vector<int> p_data);
+	static void _set_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data);
+	static void _set_opl_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data);
+	static void _set_opm_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data);
+	static void _set_opn_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data);
+	static void _set_opx_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data);
+	static void _set_ma3_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data);
+	static void _set_al_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data);
 
 	static int _get_algorithm_index(int p_operator_count, int p_algorithm, int (&p_table)[4][16], const String &p_command);
 	static int _get_ma3_from_pg_type(int p_pulse_generator_type, const String &p_command);
@@ -53,42 +53,42 @@ class TranslatorUtil {
 
 	static String _format_mml_comment(const String &p_comment, const String &p_line_end);
 	static String _format_mml_digit(int p_value, int p_padded = 0);
-	static OperatorParamsSizes _get_operator_params_sizes(SiOPMChannelParams *p_params);
+	static OperatorParamsSizes _get_operator_params_sizes(const Ref<SiOPMChannelParams> &p_params);
 
 public:
 	// Channel params.
 
-	static void parse_params(SiOPMChannelParams *r_params, const String &p_data_string);
-	static void parse_opl_params(SiOPMChannelParams *r_params, const String &p_data_string);
-	static void parse_opm_params(SiOPMChannelParams *r_params, const String &p_data_string);
-	static void parse_opn_params(SiOPMChannelParams *r_params, const String &p_data_string);
-	static void parse_opx_params(SiOPMChannelParams *r_params, const String &p_data_string);
-	static void parse_ma3_params(SiOPMChannelParams *r_params, const String &p_data_string);
-	static void parse_al_params(SiOPMChannelParams *r_params, const String &p_data_string);
+	static void parse_params(const Ref<SiOPMChannelParams> &p_params, const String &p_data_string);
+	static void parse_opl_params(const Ref<SiOPMChannelParams> &p_params, const String &p_data_string);
+	static void parse_opm_params(const Ref<SiOPMChannelParams> &p_params, const String &p_data_string);
+	static void parse_opn_params(const Ref<SiOPMChannelParams> &p_params, const String &p_data_string);
+	static void parse_opx_params(const Ref<SiOPMChannelParams> &p_params, const String &p_data_string);
+	static void parse_ma3_params(const Ref<SiOPMChannelParams> &p_params, const String &p_data_string);
+	static void parse_al_params(const Ref<SiOPMChannelParams> &p_params, const String &p_data_string);
 
-	static void set_params(SiOPMChannelParams *r_params, Vector<int> p_data);
-	static void set_opl_params(SiOPMChannelParams *r_params, Vector<int> p_data);
-	static void set_opm_params(SiOPMChannelParams *r_params, Vector<int> p_data);
-	static void set_opn_params(SiOPMChannelParams *r_params, Vector<int> p_data);
-	static void set_opx_params(SiOPMChannelParams *r_params, Vector<int> p_data);
-	static void set_ma3_params(SiOPMChannelParams *r_params, Vector<int> p_data);
-	static void set_al_params(SiOPMChannelParams *r_params, Vector<int> p_data);
+	static void set_params(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data);
+	static void set_opl_params(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data);
+	static void set_opm_params(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data);
+	static void set_opn_params(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data);
+	static void set_opx_params(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data);
+	static void set_ma3_params(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data);
+	static void set_al_params(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data);
 
-	static Vector<int> get_params(SiOPMChannelParams *p_params);
-	static Vector<int> get_opl_params(SiOPMChannelParams *p_params);
-	static Vector<int> get_opm_params(SiOPMChannelParams *p_params);
-	static Vector<int> get_opn_params(SiOPMChannelParams *p_params);
-	static Vector<int> get_opx_params(SiOPMChannelParams *p_params);
-	static Vector<int> get_ma3_params(SiOPMChannelParams *p_params);
-	static Vector<int> get_al_params(SiOPMChannelParams *p_params);
+	static Vector<int> get_params(const Ref<SiOPMChannelParams> &p_params);
+	static Vector<int> get_opl_params(const Ref<SiOPMChannelParams> &p_params);
+	static Vector<int> get_opm_params(const Ref<SiOPMChannelParams> &p_params);
+	static Vector<int> get_opn_params(const Ref<SiOPMChannelParams> &p_params);
+	static Vector<int> get_opx_params(const Ref<SiOPMChannelParams> &p_params);
+	static Vector<int> get_ma3_params(const Ref<SiOPMChannelParams> &p_params);
+	static Vector<int> get_al_params(const Ref<SiOPMChannelParams> &p_params);
 
-	static String get_params_as_mml(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
-	static String get_opl_params_as_mml(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
-	static String get_opm_params_as_mml(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
-	static String get_opn_params_as_mml(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
-	static String get_opx_params_as_mml(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
-	static String get_ma3_params_as_mml(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
-	static String get_al_params_as_mml(SiOPMChannelParams *p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
+	static String get_params_as_mml(const Ref<SiOPMChannelParams> &p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
+	static String get_opl_params_as_mml(const Ref<SiOPMChannelParams> &p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
+	static String get_opm_params_as_mml(const Ref<SiOPMChannelParams> &p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
+	static String get_opn_params_as_mml(const Ref<SiOPMChannelParams> &p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
+	static String get_opx_params_as_mml(const Ref<SiOPMChannelParams> &p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
+	static String get_ma3_params_as_mml(const Ref<SiOPMChannelParams> &p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
+	static String get_al_params_as_mml(const Ref<SiOPMChannelParams> &p_params, String p_separator = " ", String p_line_end = "\n", String p_comment = String());
 
 	static void parse_voice_setting(const Ref<SiMMLVoice> &p_voice, String p_mml, Vector<SiMMLEnvelopeTable *> p_envelopes = Vector<SiMMLEnvelopeTable *>());
 	static String get_voice_setting_as_mml(const Ref<SiMMLVoice> &p_voice);

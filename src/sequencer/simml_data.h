@@ -48,8 +48,8 @@ public:
 
 	// Voices.
 
+	Ref<SiMMLVoice> initialize_voice(int p_index);
 	void set_voice(int p_index, const Ref<SiMMLVoice> &p_voice);
-	SiOPMChannelParams *get_channel_params(int p_index);
 	Ref<SiMMLVoice> get_pcm_voice(int p_index);
 
 	//

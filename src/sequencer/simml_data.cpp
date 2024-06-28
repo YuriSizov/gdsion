@@ -74,12 +74,14 @@ void SiMMLData::set_sampler_table(int p_index, SiOPMWaveSamplerTable *p_sampler)
 
 // Voices.
 
-SiOPMChannelParams *SiMMLData::get_channel_params(int p_index) {
+Ref<SiMMLVoice> SiMMLData::initialize_voice(int p_index) {
+	ERR_FAIL_INDEX_V(p_index, SiMMLRefTable::VOICE_MAX, Ref<SiMMLVoice>());
+
 	Ref<SiMMLVoice> voice;
 	voice.instantiate();
 	_fm_voices.write[p_index] = voice;
 
-	return voice->get_channel_params();
+	return voice;
 }
 
 void SiMMLData::set_voice(int p_index, const Ref<SiMMLVoice> &p_voice) {

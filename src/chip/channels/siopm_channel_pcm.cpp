@@ -13,31 +13,31 @@
 #include "chip/wave/siopm_wave_pcm_data.h"
 #include "chip/wave/siopm_wave_pcm_table.h"
 
-void SiOPMChannelPCM::get_channel_params(SiOPMChannelParams *r_params) const {
-	r_params->set_operator_count(1);
+void SiOPMChannelPCM::get_channel_params(const Ref<SiOPMChannelParams> &p_params) const {
+	p_params->set_operator_count(1);
 
-	r_params->set_algorithm(0);
-	r_params->set_envelope_frequency_ratio(_frequency_ratio);
+	p_params->set_algorithm(0);
+	p_params->set_envelope_frequency_ratio(_frequency_ratio);
 
-	r_params->set_feedback(0);
-	r_params->set_feedback_connection(0);
+	p_params->set_feedback(0);
+	p_params->set_feedback_connection(0);
 
-	r_params->set_lfo_wave_shape(_lfo_wave_shape);
-	r_params->set_lfo_frequency_step(_lfo_timer_step_buffer);
+	p_params->set_lfo_wave_shape(_lfo_wave_shape);
+	p_params->set_lfo_frequency_step(_lfo_timer_step_buffer);
 
-	r_params->set_amplitude_modulation_depth(_amplitude_modulation_depth);
-	r_params->set_pitch_modulation_depth(_pitch_modulation_depth);
+	p_params->set_amplitude_modulation_depth(_amplitude_modulation_depth);
+	p_params->set_pitch_modulation_depth(_pitch_modulation_depth);
 
 	for (int i = 0; i < SiOPMSoundChip::STREAM_SEND_SIZE; i++) {
-		r_params->set_master_volume(i, _volumes[i]);
+		p_params->set_master_volume(i, _volumes[i]);
 	}
-	r_params->set_pan(_pan);
+	p_params->set_pan(_pan);
 
-	_operator->get_operator_params(r_params->get_operator_params(0));
+	_operator->get_operator_params(p_params->get_operator_params(0));
 
 }
 
-void SiOPMChannelPCM::set_channel_params(SiOPMChannelParams *p_params, bool p_with_volume, bool p_with_modulation) {
+void SiOPMChannelPCM::set_channel_params(const Ref<SiOPMChannelParams> &p_params, bool p_with_volume, bool p_with_modulation) {
 	if (p_params->get_operator_count() == 0) {
 		return;
 	}

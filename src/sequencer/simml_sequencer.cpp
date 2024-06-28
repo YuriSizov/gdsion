@@ -539,7 +539,7 @@ void SiMMLSequencer::_reset_parser_parameters() {
 	}
 }
 
-void SiMMLSequencer::_parse_command_init_sequence(SiOPMChannelParams *p_params, String p_postfix) {
+void SiMMLSequencer::_parse_command_init_sequence(const Ref<SiOPMChannelParams> &p_params, String p_postfix) {
 	MMLSequence *sequence = p_params->get_init_sequence();
 
 	MMLParser::get_instance()->prepare_parse(_parser_settings, p_postfix);
@@ -696,12 +696,13 @@ bool SiMMLSequencer::_parse_system_command_before(String p_command, String p_par
 
 	// Tone settings.
 
-#define PARSE_TONE_PARAMS(m_func)                                         \
-	Ref<SiMMLData> simml_data = mml_data;                                 \
-	SiOPMChannelParams *params = simml_data->get_channel_params(number);  \
-	m_func(params, content);                                              \
-	if (!postfix.is_empty()) {                                            \
-		_parse_command_init_sequence(params, postfix);                    \
+#define PARSE_TONE_PARAMS(m_func)                                  \
+	Ref<SiMMLData> simml_data = mml_data;                          \
+	Ref<SiMMLVoice> voice = simml_data->initialize_voice(number);  \
+	Ref<SiOPMChannelParams> params = voice->get_channel_params();  \
+	m_func(params, content);                                       \
+	if (!postfix.is_empty()) {                                     \
+		_parse_command_init_sequence(params, postfix);             \
 	}
 
 	if (p_command == "#@") {

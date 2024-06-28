@@ -14,14 +14,14 @@
 #include "chip/wave/siopm_wave_sampler_data.h"
 #include "chip/wave/siopm_wave_sampler_table.h"
 
-void SiOPMChannelSampler::get_channel_params(SiOPMChannelParams *r_params) const {
+void SiOPMChannelSampler::get_channel_params(const Ref<SiOPMChannelParams> &p_params) const {
 	for (int i = 0; i < SiOPMSoundChip::STREAM_SEND_SIZE; i++) {
-		r_params->set_master_volume(i, _volumes[i]);
+		p_params->set_master_volume(i, _volumes[i]);
 	}
-	r_params->set_pan(_pan);
+	p_params->set_pan(_pan);
 }
 
-void SiOPMChannelSampler::set_channel_params(SiOPMChannelParams *p_params, bool p_with_volume, bool p_with_modulation) {
+void SiOPMChannelSampler::set_channel_params(const Ref<SiOPMChannelParams> &p_params, bool p_with_volume, bool p_with_modulation) {
 	if (p_params->get_operator_count() == 0) {
 		return;
 	}

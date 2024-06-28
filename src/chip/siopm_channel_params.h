@@ -7,7 +7,7 @@
 #ifndef SIOPM_CHANNEL_PARAMS_H
 #define SIOPM_CHANNEL_PARAMS_H
 
-#include <godot_cpp/core/object.hpp>
+#include <godot_cpp/classes/ref_counted.hpp>
 #include <godot_cpp/templates/list.hpp>
 #include <godot_cpp/templates/vector.hpp>
 #include <godot_cpp/variant/string.hpp>
@@ -18,8 +18,8 @@ class MMLSequence;
 class SiOPMOperatorParams;
 
 // Channel parameters for SiONVoice.
-class SiOPMChannelParams : public Object {
-	GDCLASS(SiOPMChannelParams, Object)
+class SiOPMChannelParams : public RefCounted {
+	GDCLASS(SiOPMChannelParams, RefCounted)
 
 	friend class TranslatorUtil;
 
@@ -125,7 +125,7 @@ public:
 	String to_string() const;
 
 	void initialize();
-	void copy_from(SiOPMChannelParams *p_params);
+	void copy_from(const Ref<SiOPMChannelParams> &p_params);
 
 	SiOPMChannelParams();
 	~SiOPMChannelParams() {}

@@ -22,9 +22,9 @@
 
 // Channel params.
 
-Vector<int> TranslatorUtil::_split_data_string(SiOPMChannelParams *r_params, String p_data_string, int p_channel_param_count, int p_operator_param_count, const String &p_command) {
+Vector<int> TranslatorUtil::_split_data_string(const Ref<SiOPMChannelParams> &p_params, String p_data_string, int p_channel_param_count, int p_operator_param_count, const String &p_command) {
 	if (p_data_string.is_empty()) {
-		r_params->operator_count = 0;
+		p_params->operator_count = 0;
 		return Vector<int>();
 	}
 
@@ -39,7 +39,7 @@ Vector<int> TranslatorUtil::_split_data_string(SiOPMChannelParams *r_params, Str
 
 	for (int i = 1; i < 5; i++) {
 		if (string_data.size() == (p_channel_param_count + p_operator_param_count * i)) {
-			r_params->operator_count = i;
+			p_params->operator_count = i;
 
 			Vector<int> data;
 			data.resize_zeroed(string_data.size());
@@ -53,12 +53,12 @@ Vector<int> TranslatorUtil::_split_data_string(SiOPMChannelParams *r_params, Str
 	ERR_FAIL_V_MSG(Vector<int>(), vformat("Translator: Invalid parameter count in '%s' (channel: %d, each operator: %d).", p_command, p_channel_param_count, p_operator_param_count));
 }
 
-void TranslatorUtil::_check_operator_count(SiOPMChannelParams *r_params, int p_data_length, int p_channel_param_count, int p_operator_param_count, const String &p_command) {
+void TranslatorUtil::_check_operator_count(const Ref<SiOPMChannelParams> &p_params, int p_data_length, int p_channel_param_count, int p_operator_param_count, const String &p_command) {
 	int op_count = (p_data_length - p_channel_param_count) / p_operator_param_count;
 	// FIXME: The second condition is seemingly impossible. Worth double checking.
 	ERR_FAIL_COND_MSG((op_count > 4 || (op_count * p_operator_param_count + p_channel_param_count) != p_data_length), vformat("Translator: Invalid parameter count in '%s' (channel: %d, each operator: %d).", p_command, p_channel_param_count, p_operator_param_count));
 
-	r_params->operator_count = op_count;
+	p_params->operator_count = op_count;
 }
 
 int TranslatorUtil::_get_params_algorithm(int (&p_algorithms)[4][16], int p_operator_count, int p_data_value, const String &p_command) {
@@ -77,18 +77,18 @@ int TranslatorUtil::_get_params_algorithm(int (&p_algorithms)[4][16], int p_oper
 // #@
 // alg[0-15], fb[0-7], fbc[0-3],
 // (ws[0-511], ar[0-63], dr[0-63], sr[0-63], rr[0-63], sl[0-15], tl[0-127], ksr[0-3], ksl[0-3], mul[], dt1[0-7], detune[], ams[0-3], phase[-1-255], fixedNote[0-127]) x operator_count
-void TranslatorUtil::_set_params_by_array(SiOPMChannelParams *r_params, Vector<int> p_data) {
-	if (r_params->operator_count == 0) {
+void TranslatorUtil::_set_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
+	if (p_params->operator_count == 0) {
 		return;
 	}
 
-	r_params->algorithm = p_data[0];
-	r_params->feedback = p_data[1];
-	r_params->feedback_connection = p_data[2];
+	p_params->algorithm = p_data[0];
+	p_params->feedback = p_data[1];
+	p_params->feedback_connection = p_data[2];
 
 	int data_index = 3;
-	for (int op_index = 0; op_index < r_params->operator_count; op_index++) {
-		SiOPMOperatorParams *op_params = r_params->operator_params[op_index];
+	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
+		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
 
 		op_params->set_pulse_generator_type    (p_data[data_index++] & 511);       // 1
 		op_params->attack_rate                = p_data[data_index++] & 63;         // 2
@@ -118,23 +118,23 @@ void TranslatorUtil::_set_params_by_array(SiOPMChannelParams *r_params, Vector<i
 // #OPL@
 // alg[0-5], fb[0-7],
 // (ws[0-7], ar[0-15], dr[0-15], rr[0-15], egt[0,1], sl[0-15], tl[0-63], ksr[0,1], ksl[0-3], mul[0-15], ams[0-3]) x operator_count
-void TranslatorUtil::_set_opl_params_by_array(SiOPMChannelParams *r_params, Vector<int> p_data) {
-	if (r_params->operator_count == 0) {
+void TranslatorUtil::_set_opl_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
+	if (p_params->operator_count == 0) {
 		return;
 	}
 
-	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opl, r_params->operator_count, p_data[0], "#OPL@");
+	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opl, p_params->operator_count, p_data[0], "#OPL@");
 	if (algorithm == -1) {
 		return;
 	}
 
-	r_params->envelope_frequency_ratio = 133;
-	r_params->algorithm = algorithm;
-	r_params->feedback = p_data[1];
+	p_params->envelope_frequency_ratio = 133;
+	p_params->algorithm = algorithm;
+	p_params->feedback = p_data[1];
 
 	int data_index = 2;
-	for (int op_index = 0; op_index < r_params->operator_count; op_index++) {
-		SiOPMOperatorParams *op_params = r_params->operator_params[op_index];
+	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
+		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
 
 		op_params->set_pulse_generator_type(SiONPulseGeneratorType::PULSE_MA3_WAVE + (p_data[data_index++] & 31)); // 1
 		op_params->attack_rate                                      = (p_data[data_index++] << 2) & 63;  // 2
@@ -158,22 +158,22 @@ void TranslatorUtil::_set_opl_params_by_array(SiOPMChannelParams *r_params, Vect
 // #OPM@
 // alg[0-7], fb[0-7],
 // (ar[0-31], dr[0-31], sr[0-31], rr[0-15], sl[0-15], tl[0-127], ks[0-3], mul[0-15], dt1[0-7], dt2[0-3], ams[0-3]) x operator_count
-void TranslatorUtil::_set_opm_params_by_array(SiOPMChannelParams *r_params, Vector<int> p_data) {
-	if (r_params->operator_count == 0) {
+void TranslatorUtil::_set_opm_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
+	if (p_params->operator_count == 0) {
 		return;
 	}
 
-	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opm, r_params->operator_count, p_data[0], "#OPM@");
+	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opm, p_params->operator_count, p_data[0], "#OPM@");
 	if (algorithm == -1) {
 		return;
 	}
 
-	r_params->algorithm = algorithm;
-	r_params->feedback = p_data[1];
+	p_params->algorithm = algorithm;
+	p_params->feedback = p_data[1];
 
 	int data_index = 2;
-	for (int op_index = 0; op_index < r_params->operator_count; op_index++) {
-		SiOPMOperatorParams *op_params = r_params->operator_params[op_index];
+	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
+		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
 
 		op_params->attack_rate               = (p_data[data_index++] << 1) & 63;       // 1
 		op_params->decay_rate                = (p_data[data_index++] << 1) & 63;       // 2
@@ -194,23 +194,23 @@ void TranslatorUtil::_set_opm_params_by_array(SiOPMChannelParams *r_params, Vect
 // #OPN@
 // alg[0-7], fb[0-7],
 // (ar[0-31], dr[0-31], sr[0-31], rr[0-15], sl[0-15], tl[0-127], ks[0-3], mul[0-15], dt1[0-7], ams[0-3]) x operator_count
-void TranslatorUtil::_set_opn_params_by_array(SiOPMChannelParams *r_params, Vector<int> p_data) {
-	if (r_params->operator_count == 0) {
+void TranslatorUtil::_set_opn_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
+	if (p_params->operator_count == 0) {
 		return;
 	}
 
 	// Note: OPM and OPN share the algo list.
-	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opm, r_params->operator_count, p_data[0], "#OPN@");
+	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opm, p_params->operator_count, p_data[0], "#OPN@");
 	if (algorithm == -1) {
 		return;
 	}
 
-	r_params->algorithm = algorithm;
-	r_params->feedback = p_data[1];
+	p_params->algorithm = algorithm;
+	p_params->feedback = p_data[1];
 
 	int data_index = 2;
-	for (int op_index = 0; op_index < r_params->operator_count; op_index++) {
-		SiOPMOperatorParams *op_params = r_params->operator_params[op_index];
+	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
+		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
 
 		op_params->attack_rate               = (p_data[data_index++] << 1) & 63;       // 1
 		op_params->decay_rate                = (p_data[data_index++] << 1) & 63;       // 2
@@ -229,23 +229,23 @@ void TranslatorUtil::_set_opn_params_by_array(SiOPMChannelParams *r_params, Vect
 // #OPX@
 // alg[0-15], fb[0-7],
 // (ws[0-7], ar[0-31], dr[0-31], sr[0-31], rr[0-15], sl[0-15], tl[0-127], ks[0-3], mul[0-15], dt1[0-7], detune[], ams[0-3]) x operator_count
-void TranslatorUtil::_set_opx_params_by_array(SiOPMChannelParams *r_params, Vector<int> p_data) {
-	if (r_params->operator_count == 0) {
+void TranslatorUtil::_set_opx_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
+	if (p_params->operator_count == 0) {
 		return;
 	}
 
-	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opx, r_params->operator_count, p_data[0], "#OPX@");
+	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opx, p_params->operator_count, p_data[0], "#OPX@");
 	if (algorithm == -1) {
 		return;
 	}
 
-	r_params->algorithm = (algorithm & 15);
-	r_params->feedback = p_data[1];
-	r_params->feedback_connection = (algorithm & 16) ? 1 : 0;
+	p_params->algorithm = (algorithm & 15);
+	p_params->feedback = p_data[1];
+	p_params->feedback_connection = (algorithm & 16) ? 1 : 0;
 
 	int data_index = 2;
-	for (int op_index = 0; op_index < r_params->operator_count; op_index++) {
-		SiOPMOperatorParams *op_params = r_params->operator_params[op_index];
+	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
+		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
 
 		int i = p_data[data_index++];
 		int i1 = SiONPulseGeneratorType::PULSE_MA3_WAVE + (i & 7);
@@ -268,23 +268,23 @@ void TranslatorUtil::_set_opx_params_by_array(SiOPMChannelParams *r_params, Vect
 // #MA@
 // alg[0-15], fb[0-7],
 // (ws[0-31], ar[0-15], dr[0-15], sr[0-15], rr[0-15], sl[0-15], tl[0-63], ksr[0,1], ksl[0-3], mul[0-15], dt1[0-7], ams[0-3]) x operator_count
-void TranslatorUtil::_set_ma3_params_by_array(SiOPMChannelParams *r_params, Vector<int> p_data) {
-	if (r_params->operator_count == 0) {
+void TranslatorUtil::_set_ma3_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
+	if (p_params->operator_count == 0) {
 		return;
 	}
 
-	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_ma3, r_params->operator_count, p_data[0], "#MA@");
+	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_ma3, p_params->operator_count, p_data[0], "#MA@");
 	if (algorithm == -1) {
 		return;
 	}
 
-	r_params->envelope_frequency_ratio = 133;
-	r_params->algorithm = algorithm;
-	r_params->feedback = p_data[1];
+	p_params->envelope_frequency_ratio = 133;
+	p_params->algorithm = algorithm;
+	p_params->feedback = p_data[1];
 
 	int data_index = 2;
-	for (int op_index = 0; op_index < r_params->operator_count; op_index++) {
-		SiOPMOperatorParams *op_params = r_params->operator_params[op_index];
+	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
+		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
 
 		int n = p_data[data_index++] & 31;
 		op_params->set_pulse_generator_type(SiONPulseGeneratorType::PULSE_MA3_WAVE + n);    // 1
@@ -307,14 +307,14 @@ void TranslatorUtil::_set_ma3_params_by_array(SiOPMChannelParams *r_params, Vect
 // #AL@
 // con[0-2], ws1[0-511], ws2[0-511], balance[-64-+64], vco2pitch[]
 // ar[0-63], dr[0-63], sl[0-15], rr[0-63]
-void TranslatorUtil::_set_al_params_by_array(SiOPMChannelParams *r_params, Vector<int> p_data) {
-	r_params->operator_count = 5;
+void TranslatorUtil::_set_al_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
+	p_params->operator_count = 5;
 
 	int connection_type = p_data[0];
-	r_params->algorithm = (connection_type >= 0 && connection_type <= 2) ? connection_type : 0;
+	p_params->algorithm = (connection_type >= 0 && connection_type <= 2) ? connection_type : 0;
 
-	SiOPMOperatorParams *op_params0 = r_params->operator_params[0];
-	SiOPMOperatorParams *op_params1 = r_params->operator_params[1];
+	SiOPMOperatorParams *op_params0 = p_params->operator_params[0];
+	SiOPMOperatorParams *op_params1 = p_params->operator_params[1];
 
 	op_params0->set_pulse_generator_type(p_data[1]);
 	op_params1->set_pulse_generator_type(p_data[2]);
@@ -334,68 +334,68 @@ void TranslatorUtil::_set_al_params_by_array(SiOPMChannelParams *r_params, Vecto
 	op_params0->sustain_level = p_data[7] & 63;
 }
 
-void TranslatorUtil::parse_params(SiOPMChannelParams *r_params, const String &p_data_string) {
-	return _set_params_by_array(r_params, _split_data_string(r_params, p_data_string, 3, 15, "#@"));
+void TranslatorUtil::parse_params(const Ref<SiOPMChannelParams> &p_params, const String &p_data_string) {
+	return _set_params_by_array(p_params, _split_data_string(p_params, p_data_string, 3, 15, "#@"));
 }
 
-void TranslatorUtil::parse_opl_params(SiOPMChannelParams *r_params, const String &p_data_string) {
-	return _set_opl_params_by_array(r_params, _split_data_string(r_params, p_data_string, 2, 11, "#OPL@"));
+void TranslatorUtil::parse_opl_params(const Ref<SiOPMChannelParams> &p_params, const String &p_data_string) {
+	return _set_opl_params_by_array(p_params, _split_data_string(p_params, p_data_string, 2, 11, "#OPL@"));
 }
 
-void TranslatorUtil::parse_opm_params(SiOPMChannelParams *r_params, const String &p_data_string) {
-	return _set_opm_params_by_array(r_params, _split_data_string(r_params, p_data_string, 2, 11, "#OPM@"));
+void TranslatorUtil::parse_opm_params(const Ref<SiOPMChannelParams> &p_params, const String &p_data_string) {
+	return _set_opm_params_by_array(p_params, _split_data_string(p_params, p_data_string, 2, 11, "#OPM@"));
 }
 
-void TranslatorUtil::parse_opn_params(SiOPMChannelParams *r_params, const String &p_data_string) {
-	return _set_opn_params_by_array(r_params, _split_data_string(r_params, p_data_string, 2, 10, "#OPN@"));
+void TranslatorUtil::parse_opn_params(const Ref<SiOPMChannelParams> &p_params, const String &p_data_string) {
+	return _set_opn_params_by_array(p_params, _split_data_string(p_params, p_data_string, 2, 10, "#OPN@"));
 }
 
-void TranslatorUtil::parse_opx_params(SiOPMChannelParams *r_params, const String &p_data_string) {
-	return _set_opx_params_by_array(r_params, _split_data_string(r_params, p_data_string, 2, 12, "#OPX@"));
+void TranslatorUtil::parse_opx_params(const Ref<SiOPMChannelParams> &p_params, const String &p_data_string) {
+	return _set_opx_params_by_array(p_params, _split_data_string(p_params, p_data_string, 2, 12, "#OPX@"));
 }
 
-void TranslatorUtil::parse_ma3_params(SiOPMChannelParams *r_params, const String &p_data_string) {
-	return _set_ma3_params_by_array(r_params, _split_data_string(r_params, p_data_string, 2, 12, "#MA@"));
+void TranslatorUtil::parse_ma3_params(const Ref<SiOPMChannelParams> &p_params, const String &p_data_string) {
+	return _set_ma3_params_by_array(p_params, _split_data_string(p_params, p_data_string, 2, 12, "#MA@"));
 }
 
-void TranslatorUtil::parse_al_params(SiOPMChannelParams *r_params, const String &p_data_string) {
-	return _set_al_params_by_array(r_params, _split_data_string(r_params, p_data_string, 9, 0, "#AL@"));
+void TranslatorUtil::parse_al_params(const Ref<SiOPMChannelParams> &p_params, const String &p_data_string) {
+	return _set_al_params_by_array(p_params, _split_data_string(p_params, p_data_string, 9, 0, "#AL@"));
 }
 
-void TranslatorUtil::set_params(SiOPMChannelParams *r_params, Vector<int> p_data) {
-	_check_operator_count(r_params, p_data.size(), 3, 15, "#@");
-	return _set_params_by_array(r_params, p_data);
+void TranslatorUtil::set_params(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
+	_check_operator_count(p_params, p_data.size(), 3, 15, "#@");
+	return _set_params_by_array(p_params, p_data);
 }
 
-void TranslatorUtil::set_opl_params(SiOPMChannelParams *r_params, Vector<int> p_data) {
-	_check_operator_count(r_params, p_data.size(), 2, 11, "#OPL@");
-	return _set_opl_params_by_array(r_params, p_data);
+void TranslatorUtil::set_opl_params(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
+	_check_operator_count(p_params, p_data.size(), 2, 11, "#OPL@");
+	return _set_opl_params_by_array(p_params, p_data);
 }
 
-void TranslatorUtil::set_opm_params(SiOPMChannelParams *r_params, Vector<int> p_data) {
-	_check_operator_count(r_params, p_data.size(), 2, 11, "#OPM@");
-	return _set_opm_params_by_array(r_params, p_data);
+void TranslatorUtil::set_opm_params(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
+	_check_operator_count(p_params, p_data.size(), 2, 11, "#OPM@");
+	return _set_opm_params_by_array(p_params, p_data);
 }
 
-void TranslatorUtil::set_opn_params(SiOPMChannelParams *r_params, Vector<int> p_data) {
-	_check_operator_count(r_params, p_data.size(), 2, 10, "#OPN@");
-	return _set_opn_params_by_array(r_params, p_data);
+void TranslatorUtil::set_opn_params(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
+	_check_operator_count(p_params, p_data.size(), 2, 10, "#OPN@");
+	return _set_opn_params_by_array(p_params, p_data);
 }
 
-void TranslatorUtil::set_opx_params(SiOPMChannelParams *r_params, Vector<int> p_data) {
-	_check_operator_count(r_params, p_data.size(), 2, 12, "#OPX@");
-	return _set_opx_params_by_array(r_params, p_data);
+void TranslatorUtil::set_opx_params(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
+	_check_operator_count(p_params, p_data.size(), 2, 12, "#OPX@");
+	return _set_opx_params_by_array(p_params, p_data);
 }
 
-void TranslatorUtil::set_ma3_params(SiOPMChannelParams *r_params, Vector<int> p_data) {
-	_check_operator_count(r_params, p_data.size(), 2, 12, "#MA@");
-	return _set_ma3_params_by_array(r_params, p_data);
+void TranslatorUtil::set_ma3_params(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
+	_check_operator_count(p_params, p_data.size(), 2, 12, "#MA@");
+	return _set_ma3_params_by_array(p_params, p_data);
 }
 
-void TranslatorUtil::set_al_params(SiOPMChannelParams *r_params, Vector<int> p_data) {
+void TranslatorUtil::set_al_params(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
 	ERR_FAIL_COND_MSG(p_data.size() != 9, vformat("Translator: Invalid parameter count in '%s' (channel: %d, each operator: %d).", "#AL@", 9, 0));
 
-	return _set_al_params_by_array(r_params, p_data);
+	return _set_al_params_by_array(p_params, p_data);
 }
 
 int TranslatorUtil::_get_algorithm_index(int p_operator_count, int p_algorithm, int (&p_table)[4][16], const String &p_command) {
@@ -461,7 +461,7 @@ int TranslatorUtil::_balance_total_levels(int p_level0, int p_level1) {
 	return 64;
 }
 
-Vector<int> TranslatorUtil::get_params(SiOPMChannelParams *p_params) {
+Vector<int> TranslatorUtil::get_params(const Ref<SiOPMChannelParams> &p_params) {
 	if (p_params->operator_count == 0) {
 		return Vector<int>();
 	}
@@ -492,7 +492,7 @@ Vector<int> TranslatorUtil::get_params(SiOPMChannelParams *p_params) {
 	return res;
 }
 
-Vector<int> TranslatorUtil::get_opl_params(SiOPMChannelParams *p_params) {
+Vector<int> TranslatorUtil::get_opl_params(const Ref<SiOPMChannelParams> &p_params) {
 	if (p_params->operator_count == 0) {
 		return Vector<int>();
 	}
@@ -533,7 +533,7 @@ Vector<int> TranslatorUtil::get_opl_params(SiOPMChannelParams *p_params) {
 	return res;
 }
 
-Vector<int> TranslatorUtil::get_opm_params(SiOPMChannelParams *p_params) {
+Vector<int> TranslatorUtil::get_opm_params(const Ref<SiOPMChannelParams> &p_params) {
 	if (p_params->operator_count == 0) {
 		return Vector<int>();
 	}
@@ -568,7 +568,7 @@ Vector<int> TranslatorUtil::get_opm_params(SiOPMChannelParams *p_params) {
 	return res;
 }
 
-Vector<int> TranslatorUtil::get_opn_params(SiOPMChannelParams *p_params) {
+Vector<int> TranslatorUtil::get_opn_params(const Ref<SiOPMChannelParams> &p_params) {
 	if (p_params->operator_count == 0) {
 		return Vector<int>();
 	}
@@ -601,7 +601,7 @@ Vector<int> TranslatorUtil::get_opn_params(SiOPMChannelParams *p_params) {
 	return res;
 }
 
-Vector<int> TranslatorUtil::get_opx_params(SiOPMChannelParams *p_params) {
+Vector<int> TranslatorUtil::get_opx_params(const Ref<SiOPMChannelParams> &p_params) {
 	if (p_params->operator_count == 0) {
 		return Vector<int>();
 	}
@@ -640,7 +640,7 @@ Vector<int> TranslatorUtil::get_opx_params(SiOPMChannelParams *p_params) {
 	return res;
 }
 
-Vector<int> TranslatorUtil::get_ma3_params(SiOPMChannelParams *p_params) {
+Vector<int> TranslatorUtil::get_ma3_params(const Ref<SiOPMChannelParams> &p_params) {
 	if (p_params->operator_count == 0) {
 		return Vector<int>();
 	}
@@ -681,7 +681,7 @@ Vector<int> TranslatorUtil::get_ma3_params(SiOPMChannelParams *p_params) {
 	return res;
 }
 
-Vector<int> TranslatorUtil::get_al_params(SiOPMChannelParams *p_params) {
+Vector<int> TranslatorUtil::get_al_params(const Ref<SiOPMChannelParams> &p_params) {
 	if (p_params->operator_count != 5) {
 		return Vector<int>();
 	}
@@ -731,7 +731,7 @@ String TranslatorUtil::_format_mml_digit(int p_value, int p_padded) {
 	return itos(p_value).pad_zeros(padded_length);
 }
 
-TranslatorUtil::OperatorParamsSizes TranslatorUtil::_get_operator_params_sizes(SiOPMChannelParams *p_params) {
+TranslatorUtil::OperatorParamsSizes TranslatorUtil::_get_operator_params_sizes(const Ref<SiOPMChannelParams> &p_params) {
 	OperatorParamsSizes sizes;
 
 #define MAX_PARAM_SIZE(m_key, m_value)              \
@@ -757,7 +757,7 @@ TranslatorUtil::OperatorParamsSizes TranslatorUtil::_get_operator_params_sizes(S
 	return sizes;
 }
 
-String TranslatorUtil::get_params_as_mml(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
+String TranslatorUtil::get_params_as_mml(const Ref<SiOPMChannelParams> &p_params, String p_separator, String p_line_end, String p_comment) {
 	if (p_params->get_operator_count() == 0) {
 		return "";
 	}
@@ -807,7 +807,7 @@ String TranslatorUtil::get_params_as_mml(SiOPMChannelParams *p_params, String p_
 	return mml;
 }
 
-String TranslatorUtil::get_opl_params_as_mml(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
+String TranslatorUtil::get_opl_params_as_mml(const Ref<SiOPMChannelParams> &p_params, String p_separator, String p_line_end, String p_comment) {
 	if (p_params->get_operator_count() == 0) {
 		return "";
 	}
@@ -863,7 +863,7 @@ String TranslatorUtil::get_opl_params_as_mml(SiOPMChannelParams *p_params, Strin
 	return mml;
 }
 
-String TranslatorUtil::get_opm_params_as_mml(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
+String TranslatorUtil::get_opm_params_as_mml(const Ref<SiOPMChannelParams> &p_params, String p_separator, String p_line_end, String p_comment) {
 	if (p_params->get_operator_count() == 0) {
 		return "";
 	}
@@ -916,7 +916,7 @@ String TranslatorUtil::get_opm_params_as_mml(SiOPMChannelParams *p_params, Strin
 	return mml;
 }
 
-String TranslatorUtil::get_opn_params_as_mml(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
+String TranslatorUtil::get_opn_params_as_mml(const Ref<SiOPMChannelParams> &p_params, String p_separator, String p_line_end, String p_comment) {
 	if (p_params->get_operator_count() == 0) {
 		return "";
 	}
@@ -966,7 +966,7 @@ String TranslatorUtil::get_opn_params_as_mml(SiOPMChannelParams *p_params, Strin
 	return mml;
 }
 
-String TranslatorUtil::get_opx_params_as_mml(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
+String TranslatorUtil::get_opx_params_as_mml(const Ref<SiOPMChannelParams> &p_params, String p_separator, String p_line_end, String p_comment) {
 	if (p_params->get_operator_count() == 0) {
 		return "";
 	}
@@ -1022,7 +1022,7 @@ String TranslatorUtil::get_opx_params_as_mml(SiOPMChannelParams *p_params, Strin
 	return mml;
 }
 
-String TranslatorUtil::get_ma3_params_as_mml(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
+String TranslatorUtil::get_ma3_params_as_mml(const Ref<SiOPMChannelParams> &p_params, String p_separator, String p_line_end, String p_comment) {
 	if (p_params->get_operator_count() == 0) {
 		return "";
 	}
@@ -1078,7 +1078,7 @@ String TranslatorUtil::get_ma3_params_as_mml(SiOPMChannelParams *p_params, Strin
 	return mml;
 }
 
-String TranslatorUtil::get_al_params_as_mml(SiOPMChannelParams *p_params, String p_separator, String p_line_end, String p_comment) {
+String TranslatorUtil::get_al_params_as_mml(const Ref<SiOPMChannelParams> &p_params, String p_separator, String p_line_end, String p_comment) {
 	if (p_params->get_operator_count() != 5) {
 		return "";
 	}
@@ -1119,7 +1119,7 @@ String TranslatorUtil::get_al_params_as_mml(SiOPMChannelParams *p_params, String
 }
 
 void TranslatorUtil::parse_voice_setting(const Ref<SiMMLVoice> &p_voice, String p_mml, Vector<SiMMLEnvelopeTable *> p_envelopes) {
-	SiOPMChannelParams *params = p_voice->channel_params;
+	Ref<SiOPMChannelParams> params = p_voice->channel_params;
 
 	String base_re_exp = "(%[fvx]|@[fpqv]|@er|@lfo|kt?|m[ap]|_?@@|_?n[aptf]|po|p|q|s|x|v)";
 	String args_re_exp = "(-?\\d*)" + String("(\\s*,\\s*(-?\\d*))?").repeat(10); // One mandatory and 10 optional arguments supported.
@@ -1315,7 +1315,7 @@ void TranslatorUtil::parse_voice_setting(const Ref<SiMMLVoice> &p_voice, String 
 }
 
 String TranslatorUtil::get_voice_setting_as_mml(const Ref<SiMMLVoice> &p_voice) {
-	SiOPMChannelParams *params = p_voice->channel_params;
+	Ref<SiOPMChannelParams> params = p_voice->channel_params;
 	String mml;
 
 	if (params->filter_type > 0) {

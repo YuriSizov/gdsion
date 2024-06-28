@@ -8,10 +8,10 @@
 #define SIMML_VOICE_H
 
 #include <godot_cpp/classes/ref_counted.hpp>
+#include "chip/siopm_channel_params.h"
 
 using namespace godot;
 
-class SiOPMChannelParams;
 class SiOPMWaveBase;
 class SiMMLEnvelopeTable;
 class SiMMLTrack;
@@ -76,7 +76,7 @@ protected:
 	int pms_tension = 8;
 
 	// Params for the FM sound channel.
-	SiOPMChannelParams *channel_params = nullptr;
+	Ref<SiOPMChannelParams> channel_params;
 	SiOPMWaveBase *wave_data = nullptr;
 
 	int pitch_shift = 0;
@@ -104,7 +104,7 @@ public:
 	int get_tone_num() const { return tone_num; }
 	void set_tone_num(int p_num) { tone_num = p_num; }
 
-	SiOPMChannelParams *get_channel_params() const { return channel_params; }
+	Ref<SiOPMChannelParams> get_channel_params() const { return channel_params; }
 	SiOPMWaveBase *get_wave_data() const { return wave_data; };
 	void set_wave_data(SiOPMWaveBase *p_data) { wave_data = p_data; }
 

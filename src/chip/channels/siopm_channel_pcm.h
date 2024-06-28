@@ -57,8 +57,8 @@ protected:
 	static void _bind_methods();
 
 public:
-	virtual void get_channel_params(SiOPMChannelParams *r_params) const override;
-	virtual void set_channel_params(SiOPMChannelParams *p_params, bool p_with_volume, bool p_with_modulation = true) override;
+	virtual void get_channel_params(const Ref<SiOPMChannelParams> &p_params) const override;
+	virtual void set_channel_params(const Ref<SiOPMChannelParams> &p_params, bool p_with_volume, bool p_with_modulation = true) override;
 	void set_params_by_value(int p_ar, int p_dr, int p_sr, int p_rr, int p_sl, int p_tl, int p_ksr, int p_ksl, int p_mul, int p_dt1, int p_detune, int p_ams, int p_phase, int p_fix_note);
 
 	virtual void set_wave_data(SiOPMWaveBase *p_wave_data) override;

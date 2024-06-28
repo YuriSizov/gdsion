@@ -63,39 +63,39 @@ void SiOPMChannelFM::_update_operator_count(int p_count) {
 
 //
 
-void SiOPMChannelFM::get_channel_params(SiOPMChannelParams *r_params) const {
-	r_params->set_operator_count(_operator_count);
+void SiOPMChannelFM::get_channel_params(const Ref<SiOPMChannelParams> &p_params) const {
+	p_params->set_operator_count(_operator_count);
 
-	r_params->set_algorithm(_algorithm);
-	r_params->set_envelope_frequency_ratio(_frequency_ratio);
+	p_params->set_algorithm(_algorithm);
+	p_params->set_envelope_frequency_ratio(_frequency_ratio);
 
-	r_params->set_feedback(0);
-	r_params->set_feedback_connection(0);
+	p_params->set_feedback(0);
+	p_params->set_feedback_connection(0);
 	for (int i = 0; i < _operator_count; i++) {
 		if (_in_pipe == _operators[i]->get_feed_pipe()) {
-			r_params->set_feedback(_input_level - 6);
-			r_params->set_feedback_connection(i);
+			p_params->set_feedback(_input_level - 6);
+			p_params->set_feedback_connection(i);
 			break;
 		}
 	}
 
-	r_params->set_lfo_wave_shape(_lfo_wave_shape);
-	r_params->set_lfo_frequency_step(_lfo_timer_step_buffer);
+	p_params->set_lfo_wave_shape(_lfo_wave_shape);
+	p_params->set_lfo_frequency_step(_lfo_timer_step_buffer);
 
-	r_params->set_amplitude_modulation_depth(_amplitude_modulation_depth);
-	r_params->set_pitch_modulation_depth(_pitch_modulation_depth);
+	p_params->set_amplitude_modulation_depth(_amplitude_modulation_depth);
+	p_params->set_pitch_modulation_depth(_pitch_modulation_depth);
 
 	for (int i = 0; i < SiOPMSoundChip::STREAM_SEND_SIZE; i++) {
-		r_params->set_master_volume(i, _volumes[i]);
+		p_params->set_master_volume(i, _volumes[i]);
 	}
-	r_params->set_pan(_pan);
+	p_params->set_pan(_pan);
 
 	for (int i = 0; i < _operator_count; i++) {
-		_operators[i]->get_operator_params(r_params->get_operator_params(i));
+		_operators[i]->get_operator_params(p_params->get_operator_params(i));
 	}
 }
 
-void SiOPMChannelFM::set_channel_params(SiOPMChannelParams *p_params, bool p_with_volume, bool p_with_modulation) {
+void SiOPMChannelFM::set_channel_params(const Ref<SiOPMChannelParams> &p_params, bool p_with_volume, bool p_with_modulation) {
 	if (p_params->get_operator_count() == 0) {
 		return;
 	}

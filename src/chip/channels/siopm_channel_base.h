@@ -139,8 +139,8 @@ protected:
 public:
 	SiOPMChannelManager::ChannelType get_channel_type() const { return _channel_type; }
 
-	virtual void get_channel_params(SiOPMChannelParams *r_params) const {}
-	virtual void set_channel_params(SiOPMChannelParams *p_params, bool p_with_volume, bool p_with_modulation = true) {}
+	virtual void get_channel_params(const Ref<SiOPMChannelParams> &p_params) const {}
+	virtual void set_channel_params(const Ref<SiOPMChannelParams> &p_params, bool p_with_volume, bool p_with_modulation = true) {}
 
 	virtual void set_wave_data(SiOPMWaveBase *p_wave_data) {}
 	virtual void set_channel_number(int p_value) {}

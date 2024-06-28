@@ -12,7 +12,6 @@
 
 #include "sion_enums.h"
 #include "chip/channels/siopm_channel_base.h"
-#include "chip/siopm_channel_params.h"
 #include "chip/siopm_operator_params.h"
 #include "chip/wave/siopm_wave_pcm_data.h"
 #include "chip/wave/siopm_wave_pcm_table.h"
@@ -315,6 +314,6 @@ void SiMMLVoice::_bind_methods() {
 }
 
 SiMMLVoice::SiMMLVoice() {
-	channel_params = memnew(SiOPMChannelParams);
+	channel_params.instantiate();
 	reset();
 }

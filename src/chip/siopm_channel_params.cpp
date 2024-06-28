@@ -209,7 +209,7 @@ void SiOPMChannelParams::initialize() {
 	init_sequence->free();
 }
 
-void SiOPMChannelParams::copy_from(SiOPMChannelParams *p_params) {
+void SiOPMChannelParams::copy_from(const Ref<SiOPMChannelParams> &p_params) {
 	operator_count = p_params->operator_count;
 
 	algorithm = p_params->algorithm;
