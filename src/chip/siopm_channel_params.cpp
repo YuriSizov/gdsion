@@ -354,3 +354,14 @@ SiOPMChannelParams::SiOPMChannelParams() {
 
 	initialize();
 }
+
+SiOPMChannelParams::~SiOPMChannelParams() {
+	memdelete(init_sequence);
+	init_sequence = nullptr;
+
+	for (int i = 0; i < 4; i++) {
+		memdelete(operator_params[i]);
+		operator_params[i] = nullptr;
+	}
+	operator_params.clear();
+}

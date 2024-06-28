@@ -11,11 +11,11 @@
 #include "sequencer/base/mml_sequence.h"
 
 MMLEvent *MMLExecutor::get_current_event() const {
-	return _pointer == _process_event ? _pointer->jump : _pointer;
+	return _pointer == _process_event ? _pointer->get_jump() : _pointer;
 }
 
 int MMLExecutor::get_waiting_note() const {
-	return _pointer == _note_event ? _note_event->data : -1;
+	return _pointer == _note_event ? _note_event->get_data() : -1;
 }
 
 // Execution.
@@ -25,7 +25,7 @@ void MMLExecutor::reset_pointer() {
 		return;
 	}
 
-	_pointer = _sequence->get_head_event()->next;
+	_pointer = _sequence->get_head_event()->get_next();
 
 	_repeat_end_counter = 0;
 	_repeat_point = nullptr;
@@ -43,16 +43,16 @@ void MMLExecutor::stop() {
 	}
 
 	if (_pointer == _process_event) {
-		_process_event->jump = MMLEvent::get_nop_event();
+		_process_event->set_jump(_nop_event);
 	} else {
 		_pointer = nullptr;
 	}
 }
 
 void MMLExecutor::execute_single_note(int p_note, int p_tick_length) {
-	_note_event->next = nullptr;
-	_note_event->data = p_note;
-	_note_event->length = p_tick_length;
+	_note_event->set_next(nullptr);
+	_note_event->set_data(p_note);
+	_note_event->set_length(p_tick_length);
 	_pointer = _note_event;
 
 	_sequence = nullptr;
@@ -71,33 +71,33 @@ bool MMLExecutor::pitch_bend_from(int p_note, int p_tick_length) {
 	}
 
 	int tick_length = p_tick_length;
-	if (_note_event->length != 0) {
+	if (_note_event->get_length() != 0) {
 		// TODO: This looks suspicious.
-		if (tick_length < _note_event->length) {
-			tick_length = _note_event->length - 1;
+		if (tick_length < _note_event->get_length()) {
+			tick_length = _note_event->get_length() - 1;
 		}
-		_note_event->length -= tick_length;
+		_note_event->set_length(_note_event->get_length() - tick_length);
 	}
 
-	_bend_from->length = 0;
-	_bend_from->data = p_note;
-	_bend_event->length = tick_length;
-	_pointer = _bend_from;
+	_bend_from_event->set_length(0);
+	_bend_from_event->set_data(p_note);
+	_bend_event->set_length(tick_length);
+	_pointer = _bend_from_event;
 
 	return true;
 }
 
 MMLEvent *MMLExecutor::publish_processing_event(MMLEvent *p_event) {
-	if (p_event->length > 0) {
-		_current_tick_count += p_event->length;
+	if (p_event->get_length() > 0) {
+		_current_tick_count += p_event->get_length();
 
-		_process_event->length = p_event->length;
-		_process_event->jump = p_event;
+		_process_event->set_length(p_event->get_length());
+		_process_event->set_jump(p_event);
 
 		return _process_event;
 	}
 
-	return p_event->next;
+	return p_event->get_next();
 }
 
 // Handlers.
@@ -113,17 +113,17 @@ void MMLExecutor::on_tempo_changed(double p_changing_ratio) {
 }
 
 MMLEvent *MMLExecutor::on_repeat_all(MMLEvent *p_event) {
-	_repeat_point = p_event->next;
+	_repeat_point = p_event->get_next();
 
-	return p_event->next;
+	return p_event->get_next();
 }
 
 MMLEvent *MMLExecutor::on_repeat_begin(MMLEvent *p_event) {
-	SinglyLinkedList<int> *counter = SinglyLinkedList<int>::alloc(p_event->data);
+	SinglyLinkedList<int> *counter = SinglyLinkedList<int>::alloc(p_event->get_data());
 	counter->next = _repeat_counters;
 	_repeat_counters = counter;
 
-	return p_event->next;
+	return p_event->get_next();
 }
 
 MMLEvent *MMLExecutor::on_repeat_break(MMLEvent *p_event) {
@@ -133,10 +133,10 @@ MMLEvent *MMLExecutor::on_repeat_break(MMLEvent *p_event) {
 		_repeat_counters = counter;
 
 		// Jump to repeat start -> repeat end -> next.
-		return p_event->jump->jump->next;
+		return p_event->get_jump()->get_jump()->get_next();
 	}
 
-	return p_event->next;
+	return p_event->get_next();
 }
 
 MMLEvent *MMLExecutor::on_repeat_end(MMLEvent *p_event) {
@@ -146,11 +146,11 @@ MMLEvent *MMLExecutor::on_repeat_end(MMLEvent *p_event) {
 		SinglyLinkedList<int>::free(_repeat_counters);
 		_repeat_counters = counter;
 
-		return p_event->next;
+		return p_event->get_next();
 	}
 
 	// Jump to repeat start -> next.
-	return p_event->jump->next;
+	return p_event->get_jump()->get_next();
 }
 
 MMLEvent *MMLExecutor::on_sequence_tail(MMLEvent *p_event) {
@@ -166,7 +166,7 @@ void MMLExecutor::initialize(MMLSequence *p_sequence) {
 
 	if (p_sequence) {
 		_sequence = p_sequence;
-		_pointer = _sequence->get_head_event()->next;
+		_pointer = _sequence->get_head_event()->get_next();
 	}
 }
 
@@ -185,22 +185,26 @@ void MMLExecutor::clear() {
 }
 
 MMLExecutor::MMLExecutor() {
+	_nop_event = MMLParser::get_instance()->alloc_event(MMLEvent::NO_OP, 0);
 	_process_event = MMLParser::get_instance()->alloc_event(MMLEvent::PROCESS, 0);
 	_note_event = MMLParser::get_instance()->alloc_event(MMLEvent::DRIVER_NOTE, 0);
-	_bend_from = MMLParser::get_instance()->alloc_event(MMLEvent::NOTE, 0);
+	_bend_from_event = MMLParser::get_instance()->alloc_event(MMLEvent::NOTE, 0);
 	_bend_event = MMLParser::get_instance()->alloc_event(MMLEvent::PITCHBEND, 0);
-	_bend_from->next = _bend_event;
-	_bend_event->next = _note_event;
+
+	_bend_from_event->set_next(_bend_event);
+	_bend_event->set_next(_note_event);
 }
 
 MMLExecutor::~MMLExecutor() {
+	MMLParser::get_instance()->free_event(_nop_event);
 	MMLParser::get_instance()->free_event(_process_event);
 	MMLParser::get_instance()->free_event(_note_event);
-	MMLParser::get_instance()->free_event(_bend_from);
+	MMLParser::get_instance()->free_event(_bend_from_event);
 	MMLParser::get_instance()->free_event(_bend_event);
 
+	_nop_event = nullptr;
 	_process_event = nullptr;
 	_note_event = nullptr;
-	_bend_from = nullptr;
+	_bend_from_event = nullptr;
 	_bend_event = nullptr;
 }

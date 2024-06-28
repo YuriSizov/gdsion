@@ -335,7 +335,7 @@ void SiMMLSequencer::_on_beat(int p_delay_samples, int p_beat_counter) {
 }
 
 void SiMMLSequencer::_on_table_parse(MMLEvent *p_prev, String p_table) {
-	ERR_FAIL_COND_MSG(p_prev->id < _envelope_event_id || p_prev->id > _envelope_event_id + 10, "SiMMLSequencer : Internal table is available only for envelope commands.");
+	ERR_FAIL_COND_MSG(p_prev->get_id() < _envelope_event_id || p_prev->get_id() > _envelope_event_id + 10, "SiMMLSequencer : Internal table is available only for envelope commands.");
 
 	// Godot's RegEx implementation doesn't support passing global flags, but PCRE2 allows local flags, which we can abuse.
 	// (?s) enables single line mode (dot matches newline) for the entire expression.
@@ -354,7 +354,7 @@ void SiMMLSequencer::_on_table_parse(MMLEvent *p_prev, String p_table) {
 	Ref<SiMMLData> simml_data = mml_data;
 	simml_data->set_envelope_table(_internal_table_index, env_table);
 
-	p_prev->data = _internal_table_index;
+	p_prev->set_data(_internal_table_index);
 	_internal_table_index--;
 }
 
@@ -544,18 +544,18 @@ void SiMMLSequencer::_parse_command_init_sequence(const Ref<SiOPMChannelParams> 
 
 	MMLParser::get_instance()->prepare_parse(_parser_settings, p_postfix);
 	MMLEvent *event = MMLParser::get_instance()->parse();
-	if (!event || !event->next) {
+	if (!event || !event->get_next()) {
 		return;
 	}
 	sequence->cutout(event);
 
 	MMLEvent *prev = sequence->get_head_event();
-	while (prev->next) {
-		MMLEvent *next = prev->next;
-		ERR_FAIL_COND_MSG(next->length != 0, vformat("SiMMLSequencer: Initializing sequence cannot contain processing events, '%s'.", p_postfix));
-		ERR_FAIL_COND_MSG(next->id == MMLEvent::MOD_TYPE || next->id == MMLEvent::MOD_PARAM, vformat("SiMMLSequencer: Initializing sequence cannot contain '%%' or '@', '%s'.", p_postfix));
+	while (prev->get_next()) {
+		MMLEvent *next = prev->get_next();
+		ERR_FAIL_COND_MSG(next->get_length() != 0, vformat("SiMMLSequencer: Initializing sequence cannot contain processing events, '%s'.", p_postfix));
+		ERR_FAIL_COND_MSG(next->get_id() == MMLEvent::MOD_TYPE || next->get_id() == MMLEvent::MOD_PARAM, vformat("SiMMLSequencer: Initializing sequence cannot contain '%%' or '@', '%s'.", p_postfix));
 
-		if (next->id == MMLEvent::TABLE_EVENT) {
+		if (next->get_id() == MMLEvent::TABLE_EVENT) {
 			// Parse table events and keep the pointer.
 			parse_table_event(prev);
 		} else {
@@ -912,18 +912,18 @@ MMLEvent *SiMMLSequencer::_on_mml_rest(MMLEvent *p_event) {
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_note(MMLEvent *p_event) {
-	_current_track->handle_note_event(p_event->data, calculate_sample_count(p_event->length));
+	_current_track->handle_note_event(p_event->get_data(), calculate_sample_count(p_event->get_length()));
 	return _current_executor->publish_processing_event(p_event);
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_driver_note_on(MMLEvent *p_event) {
-	_current_track->set_note_immediately(p_event->data, calculate_sample_count(p_event->length));
+	_current_track->set_note_immediately(p_event->get_data(), calculate_sample_count(p_event->get_length()));
 	return _current_executor->publish_processing_event(p_event);
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_slur(MMLEvent *p_event) {
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_SLUR) {
-		_current_track->change_note_length(calculate_sample_count(p_event->length));
+		_current_track->change_note_length(calculate_sample_count(p_event->get_length()));
 	} else {
 		_current_track->handle_slur();
 	}
@@ -932,7 +932,7 @@ MMLEvent *SiMMLSequencer::_on_mml_slur(MMLEvent *p_event) {
 
 MMLEvent *SiMMLSequencer::_on_mml_slur_weak(MMLEvent *p_event) {
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_SLUR) {
-		_current_track->change_note_length(calculate_sample_count(p_event->length));
+		_current_track->change_note_length(calculate_sample_count(p_event->get_length()));
 	} else {
 		_current_track->handle_slur_weak();
 	}
@@ -941,14 +941,14 @@ MMLEvent *SiMMLSequencer::_on_mml_slur_weak(MMLEvent *p_event) {
 
 MMLEvent *SiMMLSequencer::_on_mml_pitch_bend(MMLEvent *p_event) {
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_SLUR) {
-		_current_track->change_note_length(calculate_sample_count(p_event->length));
+		_current_track->change_note_length(calculate_sample_count(p_event->get_length()));
 	} else {
-		if (!p_event->next || p_event->next->id != MMLEvent::NOTE) {
-			return p_event->next; // Check the next note.
+		if (!p_event->get_next() || p_event->get_next()->get_id() != MMLEvent::NOTE) {
+			return p_event->get_next(); // Check the next note.
 		}
 
-		int term = calculate_sample_count(p_event->length);
-		_current_track->handle_pitch_bend(p_event->next->data, term);
+		int term = calculate_sample_count(p_event->get_length());
+		_current_track->handle_pitch_bend(p_event->get_next()->get_data(), term);
 	}
 	return _current_executor->publish_processing_event(p_event);
 }
@@ -957,11 +957,11 @@ MMLEvent *SiMMLSequencer::_on_mml_pitch_bend(MMLEvent *p_event) {
 
 MMLEvent *SiMMLSequencer::_on_mml_quant_ratio(MMLEvent *p_event) {
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_QUANTIZE) {
-		return p_event->next; // Check the mask.
+		return p_event->get_next(); // Check the mask.
 	}
 
-	_current_track->set_quantize_ratio((double)p_event->data / _parser_settings->max_quant_ratio);
-	return p_event->next;
+	_current_track->set_quantize_ratio((double)p_event->get_data() / _parser_settings->max_quant_ratio);
+	return p_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_quant_count(MMLEvent *p_event) {
@@ -973,44 +973,44 @@ MMLEvent *SiMMLSequencer::_on_mml_quant_count(MMLEvent *p_event) {
 	key_delay *= _parser_settings->resolution / _parser_settings->max_quant_count;
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_QUANTIZE) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	_current_track->set_quantize_count(calculate_sample_count(quant_count));
 	_current_track->set_key_on_delay(calculate_sample_count(key_delay));
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_event_mask(MMLEvent *p_event) {
-	_current_track->set_event_mask(p_event->data == INT32_MIN ? 0 : p_event->data);
-	return p_event->next;
+	_current_track->set_event_mask(p_event->get_data() == INT32_MIN ? 0 : p_event->get_data());
+	return p_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_detune(MMLEvent *p_event) {
-	_current_track->set_pitch_shift(p_event->data == INT32_MIN ? 0 : p_event->data);
-	return p_event->next;
+	_current_track->set_pitch_shift(p_event->get_data() == INT32_MIN ? 0 : p_event->get_data());
+	return p_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_key_transition(MMLEvent *p_event) {
-	_current_track->set_note_shift(p_event->data == INT32_MIN ? 0 : p_event->data);
-	return p_event->next;
+	_current_track->set_note_shift(p_event->get_data() == INT32_MIN ? 0 : p_event->get_data());
+	return p_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_relative_detune(MMLEvent *p_event) {
-	_current_track->set_pitch_shift(_current_track->get_pitch_shift() + (p_event->data == INT32_MIN ? 0 : p_event->data));
-	return p_event->next;
+	_current_track->set_pitch_shift(_current_track->get_pitch_shift() + (p_event->get_data() == INT32_MIN ? 0 : p_event->get_data()));
+	return p_event->get_next();
 }
 
 // Envelope events.
 
 MMLEvent *SiMMLSequencer::_on_mml_envelope_fps(MMLEvent *p_event) {
-	int frame = (p_event->data == INT32_MIN || p_event->data == 0) ? 60 : p_event->data;
+	int frame = (p_event->get_data() == INT32_MIN || p_event->get_data() == 0) ? 60 : p_event->get_data();
 	if (frame > 1000) {
 		frame = 1000;
 	}
 
 	_current_track->set_envelope_fps(frame);
-	return p_event->next;
+	return p_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_tone_envelope(MMLEvent *p_event) {
@@ -1019,11 +1019,11 @@ MMLEvent *SiMMLSequencer::_on_mml_tone_envelope(MMLEvent *p_event) {
 	BIND_EV_PARAM(step, 1, 1);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_ENVELOPE) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	_current_track->set_tone_envelope(1, _table->get_envelope_table(idx), step);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_amplitude_envelope(MMLEvent *p_event) {
@@ -1032,11 +1032,11 @@ MMLEvent *SiMMLSequencer::_on_mml_amplitude_envelope(MMLEvent *p_event) {
 	BIND_EV_PARAM(step, 1, 1);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_ENVELOPE) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	_current_track->set_amplitude_envelope(1, _table->get_envelope_table(idx), step);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_amplitude_envelope_tsscp(MMLEvent *p_event) {
@@ -1045,11 +1045,11 @@ MMLEvent *SiMMLSequencer::_on_mml_amplitude_envelope_tsscp(MMLEvent *p_event) {
 	BIND_EV_PARAM(step, 1, 1);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_ENVELOPE) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	_current_track->set_amplitude_envelope(1, _table->get_envelope_table(idx), step, true);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_pitch_envelope(MMLEvent *p_event) {
@@ -1058,11 +1058,11 @@ MMLEvent *SiMMLSequencer::_on_mml_pitch_envelope(MMLEvent *p_event) {
 	BIND_EV_PARAM(step, 1, 1);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_ENVELOPE) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	_current_track->set_pitch_envelope(1, _table->get_envelope_table(idx), step);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_note_envelope(MMLEvent *p_event) {
@@ -1071,10 +1071,10 @@ MMLEvent *SiMMLSequencer::_on_mml_note_envelope(MMLEvent *p_event) {
 	BIND_EV_PARAM(step, 1, 1);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_ENVELOPE) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 	_current_track->set_note_envelope(1, _table->get_envelope_table(idx), step);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_filter_envelope(MMLEvent *p_event) {
@@ -1083,11 +1083,11 @@ MMLEvent *SiMMLSequencer::_on_mml_filter_envelope(MMLEvent *p_event) {
 	BIND_EV_PARAM(step, 1, 1);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_ENVELOPE) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	_current_track->set_filter_envelope(1, _table->get_envelope_table(idx), step);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_tone_release_envelope(MMLEvent *p_event) {
@@ -1096,11 +1096,11 @@ MMLEvent *SiMMLSequencer::_on_mml_tone_release_envelope(MMLEvent *p_event) {
 	BIND_EV_PARAM(step, 1, 1);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_ENVELOPE) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	_current_track->set_tone_envelope(0, _table->get_envelope_table(idx), step);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_amplitude_release_envelope(MMLEvent *p_event) {
@@ -1109,11 +1109,11 @@ MMLEvent *SiMMLSequencer::_on_mml_amplitude_release_envelope(MMLEvent *p_event) 
 	BIND_EV_PARAM(step, 1, 1);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_ENVELOPE) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	_current_track->set_amplitude_envelope(0, _table->get_envelope_table(idx), step);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_pitch_release_envelope(MMLEvent *p_event) {
@@ -1122,11 +1122,11 @@ MMLEvent *SiMMLSequencer::_on_mml_pitch_release_envelope(MMLEvent *p_event) {
 	BIND_EV_PARAM(step, 1, 1);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_ENVELOPE) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	_current_track->set_pitch_envelope(0, _table->get_envelope_table(idx), step);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_note_release_envelope(MMLEvent *p_event) {
@@ -1135,11 +1135,11 @@ MMLEvent *SiMMLSequencer::_on_mml_note_release_envelope(MMLEvent *p_event) {
 	BIND_EV_PARAM(step, 1, 1);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_ENVELOPE) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	_current_track->set_note_envelope(0, _table->get_envelope_table(idx), step);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_filter_release_envelope(MMLEvent *p_event) {
@@ -1148,11 +1148,11 @@ MMLEvent *SiMMLSequencer::_on_mml_filter_release_envelope(MMLEvent *p_event) {
 	BIND_EV_PARAM(step, 1, 1);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_ENVELOPE) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	_current_track->set_filter_envelope(0, _table->get_envelope_table(idx), step);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 // Internal table envelope events.
@@ -1171,12 +1171,12 @@ MMLEvent *SiMMLSequencer::_on_mml_filter(MMLEvent *p_event) {
 	BIND_EV_PARAM(rc,  9, 128);
 
 	_current_track->get_channel()->set_sv_filter(cut, res, ar, dr1, dr2, rr, dc1, dc2, sc, rc);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_filter_mode(MMLEvent *p_event) {
-	_current_track->get_channel()->set_filter_type(p_event->data);
-	return p_event->next;
+	_current_track->get_channel()->set_filter_type(p_event->get_data());
+	return p_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_lf_oscillator(MMLEvent *p_event) {
@@ -1200,7 +1200,7 @@ MMLEvent *SiMMLSequencer::_on_mml_lf_oscillator(MMLEvent *p_event) {
 	}
 
 	_current_track->get_channel()->set_lfo_cycle_time(cycle_time);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_pitch_modulation(MMLEvent *p_event) {
@@ -1211,11 +1211,11 @@ MMLEvent *SiMMLSequencer::_on_mml_pitch_modulation(MMLEvent *p_event) {
 	BIND_EV_PARAM(term,      3, 0);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_MODULATE) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	_current_track->set_modulation_envelope(true, depth, end_depth, delay, term);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_amplitude_modulation(MMLEvent *p_event) {
@@ -1226,38 +1226,38 @@ MMLEvent *SiMMLSequencer::_on_mml_amplitude_modulation(MMLEvent *p_event) {
 	BIND_EV_PARAM(term,      3, 0);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_MODULATE) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	_current_track->set_modulation_envelope(false, depth, end_depth, delay, term);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_portament(MMLEvent *p_event) {
-	int frame = (p_event->data == INT32_MIN ? 0 : p_event->data);
+	int frame = (p_event->get_data() == INT32_MIN ? 0 : p_event->get_data());
 
 	_current_track->set_portament(frame);
-	return p_event->next;
+	return p_event->get_next();
 }
 
 // IO events.
 
 MMLEvent *SiMMLSequencer::_on_mml_volume(MMLEvent *p_event) {
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_VOLUME) {
-		return p_event->next; // Check the mask.
+		return p_event->get_next(); // Check the mask.
 	}
 
-	_current_track->handle_velocity(p_event->data); // velocity (data << 3 = 16->128)
-	return p_event->next;
+	_current_track->handle_velocity(p_event->get_data()); // velocity (data << 3 = 16->128)
+	return p_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_volume_shift(MMLEvent *p_event) {
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_VOLUME) {
-		return p_event->next; // Check the mask.
+		return p_event->get_next(); // Check the mask.
 	}
 
-	_current_track->handle_velocity_shift(p_event->data); // velocity (data << 3 = 16->128)
-	return p_event->next;
+	_current_track->handle_velocity_shift(p_event->get_data()); // velocity (data << 3 = 16->128)
+	return p_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_volume_setting(MMLEvent *p_event) {
@@ -1266,61 +1266,61 @@ MMLEvent *SiMMLSequencer::_on_mml_volume_setting(MMLEvent *p_event) {
 	BIND_EV_PARAM(velocity_shift, 1, 4);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_VOLUME) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	_current_track->set_velocity_mode(velocity_mode);
 	_current_track->set_velocity_shift(velocity_shift);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_expression(MMLEvent *p_event) {
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_VOLUME) {
-		return p_event->next; // Check the mask.
+		return p_event->get_next(); // Check the mask.
 	}
 
-	_current_track->set_expression(p_event->data == INT32_MIN ? 128 : p_event->data);
-	return p_event->next;
+	_current_track->set_expression(p_event->get_data() == INT32_MIN ? 128 : p_event->get_data());
+	return p_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_expression_setting(MMLEvent *p_event) {
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_VOLUME) {
-		return p_event->next; // Check the mask.
+		return p_event->get_next(); // Check the mask.
 	}
 
-	_current_track->set_expression_mode(p_event->data == INT32_MIN ? 0 : p_event->data);
-	return p_event->next;
+	_current_track->set_expression_mode(p_event->get_data() == INT32_MIN ? 0 : p_event->get_data());
+	return p_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_master_volume(MMLEvent *p_event) {
 	GET_EV_PARAMS(SiOPMSoundChip::STREAM_SEND_SIZE);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_VOLUME) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	_current_track->get_channel()->set_all_stream_send_levels(ev_params);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_pan(MMLEvent *p_event) {
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_PAN) {
-		return p_event->next; // Check the mask.
+		return p_event->get_next(); // Check the mask.
 	}
 
-	int pan = p_event->data == INT32_MIN ? 0 : ((p_event->data << 4) - 64);
+	int pan = p_event->get_data() == INT32_MIN ? 0 : ((p_event->get_data() << 4) - 64);
 
 	_current_track->get_channel()->set_pan(pan);
-	return p_event->next;
+	return p_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_fine_pan(MMLEvent *p_event) {
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_PAN) {
-		return p_event->next; // Check the mask.
+		return p_event->get_next(); // Check the mask.
 	}
 
-	_current_track->get_channel()->set_pan(p_event->data == INT32_MIN ? 0 : p_event->data);
-	return p_event->next;
+	_current_track->get_channel()->set_pan(p_event->get_data() == INT32_MIN ? 0 : p_event->get_data());
+	return p_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_input(MMLEvent *p_event) {
@@ -1329,7 +1329,7 @@ MMLEvent *SiMMLSequencer::_on_mml_input(MMLEvent *p_event) {
 	BIND_EV_PARAM(index, 1, 0);
 
 	_current_track->get_channel()->set_input(level, index);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_output(MMLEvent *p_event) {
@@ -1338,7 +1338,7 @@ MMLEvent *SiMMLSequencer::_on_mml_output(MMLEvent *p_event) {
 	BIND_EV_PARAM(index, 1, 0);
 
 	_current_track->get_channel()->set_output((SiOPMChannelBase::OutputMode)mode, index);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_ring_modulation(MMLEvent *p_event) {
@@ -1347,7 +1347,7 @@ MMLEvent *SiMMLSequencer::_on_mml_ring_modulation(MMLEvent *p_event) {
 	BIND_EV_PARAM(index, 1, 0);
 
 	_current_track->get_channel()->set_ring_modulation(level, index);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 // Sound channel events.
@@ -1358,7 +1358,7 @@ MMLEvent *SiMMLSequencer::_on_mml_module_type(MMLEvent *p_event) {
 	BIND_EV_PARAM(channel_num, 1, INT32_MIN);
 
 	_current_track->set_channel_module_type((SiONModuleType)type, channel_num);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_event_trigger(MMLEvent *p_event) {
@@ -1368,7 +1368,7 @@ MMLEvent *SiMMLSequencer::_on_mml_event_trigger(MMLEvent *p_event) {
 	BIND_EV_PARAM(type_off, 2, 1);
 
 	_current_track->set_event_trigger_callbacks(id, (SiMMLTrack::EventTriggerType)type_on, (SiMMLTrack::EventTriggerType)type_off);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_dispatch_event(MMLEvent *p_event) {
@@ -1377,12 +1377,12 @@ MMLEvent *SiMMLSequencer::_on_mml_dispatch_event(MMLEvent *p_event) {
 	BIND_EV_PARAM(type_on, 1, 1);
 
 	_current_track->trigger_note_on_event(id, (SiMMLTrack::EventTriggerType)type_on);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_clock(MMLEvent *p_event) {
-	_current_track->get_channel()->set_frequency_ratio(p_event->data == INT32_MIN ? 100 : p_event->data);
-	return p_event->next;
+	_current_track->get_channel()->set_frequency_ratio(p_event->get_data() == INT32_MIN ? 100 : p_event->get_data());
+	return p_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_algorithm(MMLEvent *p_event) {
@@ -1391,27 +1391,27 @@ MMLEvent *SiMMLSequencer::_on_mml_algorithm(MMLEvent *p_event) {
 	BIND_EV_PARAM(algorithm, 1, _table->algorithm_init[op_count]);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_OPERATOR) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	_current_track->get_channel()->set_algorithm(op_count, algorithm);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_operator_parameter(MMLEvent *p_event) {
 	GET_EV_PARAMS(MAX_PARAM_COUNT);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_OPERATOR) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	MMLSequence *sequence = _current_track->set_channel_parameters(ev_params);
 	if (sequence) {
-		sequence->connect_before(next_event->next);
-		return sequence->get_head_event()->next;
+		sequence->connect_before(next_event->get_next());
+		return sequence->get_head_event()->get_next();
 	}
 
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_feedback(MMLEvent *p_event) {
@@ -1420,20 +1420,20 @@ MMLEvent *SiMMLSequencer::_on_mml_feedback(MMLEvent *p_event) {
 	BIND_EV_PARAM(connection, 1, 0);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_OPERATOR) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	_current_track->get_channel()->set_feedback(level, connection);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_slot_index(MMLEvent *p_event) {
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_OPERATOR) {
-		return p_event->next; // Check the mask.
+		return p_event->get_next(); // Check the mask.
 	}
 
-	_current_track->get_channel()->set_active_operator_index(p_event->data == INT32_MIN ? 4 : p_event->data);
-	return p_event->next;
+	_current_track->get_channel()->set_active_operator_index(p_event->get_data() == INT32_MIN ? 4 : p_event->get_data());
+	return p_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_operator_release_rate(MMLEvent *p_event) {
@@ -1442,7 +1442,7 @@ MMLEvent *SiMMLSequencer::_on_mml_operator_release_rate(MMLEvent *p_event) {
 	BIND_EV_PARAM(release_sweep, 1, 0);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_OPERATOR) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	if (release_rate != INT32_MIN) {
@@ -1450,16 +1450,16 @@ MMLEvent *SiMMLSequencer::_on_mml_operator_release_rate(MMLEvent *p_event) {
 	}
 
 	_current_track->set_release_sweep(release_sweep);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_operator_total_level(MMLEvent *p_event) {
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_OPERATOR) {
-		return p_event->next; // Check the mask.
+		return p_event->get_next(); // Check the mask.
 	}
 
-	_current_track->get_channel()->set_total_level(p_event->data == INT32_MIN ? 0 : p_event->data);
-	return p_event->next;
+	_current_track->get_channel()->set_total_level(p_event->get_data() == INT32_MIN ? 0 : p_event->get_data());
+	return p_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_operator_multiple(MMLEvent *p_event) {
@@ -1468,29 +1468,29 @@ MMLEvent *SiMMLSequencer::_on_mml_operator_multiple(MMLEvent *p_event) {
 	BIND_EV_PARAM(value_offset, 1, 0);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_OPERATOR) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	_current_track->get_channel()->set_fine_multiple((value_base << 7) + value_offset);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_operator_detune(MMLEvent *p_event) {
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_OPERATOR) {
-		return p_event->next; // Check the mask.
+		return p_event->get_next(); // Check the mask.
 	}
 
-	_current_track->get_channel()->set_detune(p_event->data == INT32_MIN ? 0 : p_event->data);
-	return p_event->next;
+	_current_track->get_channel()->set_detune(p_event->get_data() == INT32_MIN ? 0 : p_event->get_data());
+	return p_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_operator_phase(MMLEvent *p_event) {
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_OPERATOR) {
-		return p_event->next; // Check the mask.
+		return p_event->get_next(); // Check the mask.
 	}
 
-	_current_track->get_channel()->set_phase(p_event->data == INT32_MIN ? 0 : p_event->data);
-	return p_event->next;
+	_current_track->get_channel()->set_phase(p_event->get_data() == INT32_MIN ? 0 : p_event->get_data());
+	return p_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_operator_fixed_note(MMLEvent *p_event) {
@@ -1499,29 +1499,29 @@ MMLEvent *SiMMLSequencer::_on_mml_operator_fixed_note(MMLEvent *p_event) {
 	BIND_EV_PARAM(value_offset, 1, 0);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_OPERATOR) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	_current_track->get_channel()->set_fixed_pitch((value_base << 6) + value_offset);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_operator_ssg_envelope(MMLEvent *p_event) {
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_OPERATOR) {
-		return p_event->next; // Check the mask.
+		return p_event->get_next(); // Check the mask.
 	}
 
-	_current_track->get_channel()->set_ssg_envelope_control(p_event->data == INT32_MIN ? 0 : p_event->data);
-	return p_event->next;
+	_current_track->get_channel()->set_ssg_envelope_control(p_event->get_data() == INT32_MIN ? 0 : p_event->get_data());
+	return p_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_operator_envelope_reset(MMLEvent *p_event) {
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_OPERATOR) {
-		return p_event->next; // Check the mask.
+		return p_event->get_next(); // Check the mask.
 	}
 
-	_current_track->get_channel()->set_envelope_reset(p_event->data == 1);
-	return p_event->next;
+	_current_track->get_channel()->set_envelope_reset(p_event->get_data() == 1);
+	return p_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_sustain(MMLEvent *p_event) {
@@ -1530,7 +1530,7 @@ MMLEvent *SiMMLSequencer::_on_mml_sustain(MMLEvent *p_event) {
 	BIND_EV_PARAM(release_sweep, 1, 0);
 
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_OPERATOR) {
-		return next_event->next; // Check the mask.
+		return next_event->get_next(); // Check the mask.
 	}
 
 	if (release_rate != INT32_MIN) {
@@ -1538,14 +1538,14 @@ MMLEvent *SiMMLSequencer::_on_mml_sustain(MMLEvent *p_event) {
 	}
 
 	_current_track->set_release_sweep(release_sweep);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 MMLEvent *SiMMLSequencer::_on_mml_register_update(MMLEvent *p_event) {
 	GET_EV_PARAMS(2);
 
 	_current_track->call_update_register(ev_params[0], ev_params[1]);
-	return next_event->next;
+	return next_event->get_next();
 }
 
 #undef GET_EV_PARAMS
@@ -1555,7 +1555,7 @@ MMLEvent *SiMMLSequencer::_on_mml_register_update(MMLEvent *p_event) {
 //
 
 void SiMMLSequencer::_register_process_events() {
-	_set_mml_event_listener(MMLEvent::NOP,       Callable((MMLSequencer *)this, "_default_on_no_operation"));
+	_set_mml_event_listener(MMLEvent::NO_OP,     Callable((MMLSequencer *)this, "_default_on_no_operation"));
 	_set_mml_event_listener(MMLEvent::PROCESS,   Callable((MMLSequencer *)this, "_default_on_process"));
 	_set_mml_event_listener(MMLEvent::REST,      Callable(this, "_on_mml_rest"));
 	_set_mml_event_listener(MMLEvent::NOTE,      Callable(this, "_on_mml_note"));
@@ -1565,7 +1565,7 @@ void SiMMLSequencer::_register_process_events() {
 }
 
 void SiMMLSequencer::_register_dummy_process_events() {
-	_set_mml_event_listener(MMLEvent::NOP,       Callable((MMLSequencer *)this, "_no_process"));
+	_set_mml_event_listener(MMLEvent::NO_OP,     Callable((MMLSequencer *)this, "_no_process"));
 	_set_mml_event_listener(MMLEvent::PROCESS,   Callable((MMLSequencer *)this, "_dummy_on_process"));
 	_set_mml_event_listener(MMLEvent::REST,      Callable((MMLSequencer *)this, "_dummy_on_process_event"));
 	_set_mml_event_listener(MMLEvent::NOTE,      Callable((MMLSequencer *)this, "_dummy_on_process_event"));

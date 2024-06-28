@@ -105,7 +105,7 @@ public:
 	void free();
 
 	MMLSequence(bool p_terminal = false);
-	~MMLSequence() {}
+	~MMLSequence();
 };
 
 #endif // MML_SEQUENCE_H

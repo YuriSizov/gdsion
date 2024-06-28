@@ -7,6 +7,7 @@
 #ifndef MML_EVENT_H
 #define MML_EVENT_H
 
+#include <godot_cpp/core/binder_common.hpp>
 #include <godot_cpp/core/object.hpp>
 #include <godot_cpp/templates/vector.hpp>
 
@@ -15,15 +16,10 @@ using namespace godot;
 class MMLEvent : public Object {
 	GDCLASS(MMLEvent, Object)
 
-	static MMLEvent *_nop_event;
-
-protected:
-	static void _bind_methods() {}
-
 public:
 	enum EventID {
 		// Default MML commands
-		NOP           = 0,
+		NO_OP         = 0,
 		PROCESS       = 1,
 		REST          = 2,
 		NOTE          = 3,
@@ -69,10 +65,8 @@ public:
 		COMMAND_MAX   = 128
 	};
 
-	static MMLEvent *get_nop_event();
-	static int get_event_id(String p_mml);
-
-	int id = EventID::NOP;
+private:
+	int id = EventID::NO_OP;
 	int data = 0;
 	int length = 0;
 
@@ -80,15 +74,34 @@ public:
 	// Repeating event.
 	MMLEvent *jump = nullptr;
 
-	MMLEvent *get_parameters(Vector<int> *r_params, int p_length) const;
+protected:
+	static void _bind_methods();
 
+public:
+	static int get_id_from_mml(String p_mml);
+
+	int get_id() const { return id; }
+	void set_id(int p_value) { id = p_value; }
+	int get_data() const { return data; }
+	void set_data(int p_value) { data = p_value; }
+	int get_length() const { return length; }
+	void set_length(int p_value) { length = p_value; }
+
+	MMLEvent *get_next() const { return next; }
+	void set_next(MMLEvent *p_event) { next = p_event; }
+	MMLEvent *get_jump() const { return jump; }
+	void set_jump(MMLEvent *p_event) { jump = p_event; }
+
+	MMLEvent *get_parameters(Vector<int> *r_params, int p_length) const;
 	String to_string() const;
 
 	void initialize(int p_id, int p_data, int p_length);
 	void free();
 
 	MMLEvent(int p_id = 0, int p_data = 0, int p_length = 0);
-	~MMLEvent() {}
+	~MMLEvent();
 };
+
+VARIANT_ENUM_CAST(MMLEvent::EventID);
 
 #endif // MML_EVENT_H

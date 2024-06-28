@@ -95,3 +95,8 @@ MMLData::MMLData() {
 	_sequence_group = memnew(MMLSequenceGroup(this));
 	_global_sequence = memnew(MMLSequence);
 }
+
+MMLData::~MMLData() {
+	memdelete(_sequence_group);
+	memdelete(_global_sequence);
+}

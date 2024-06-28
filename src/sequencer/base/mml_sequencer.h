@@ -51,7 +51,7 @@ class MMLSequencer : public Object {
 	MMLEvent *_dummy_on_process(MMLEvent *p_event);       // MMLEvent::PROCESS
 	MMLEvent *_dummy_on_process_event(MMLEvent *p_event); // Other process events.
 
-	MMLEvent *_default_on_no_operation(MMLEvent *p_event);  // MMLEvent::NOP
+	MMLEvent *_default_on_no_operation(MMLEvent *p_event);  // MMLEvent::NO_OP
 	MMLEvent *_default_on_global_wait(MMLEvent *p_event);   // MMLEvent::GLOBAL_WAIT
 	MMLEvent *_default_on_process(MMLEvent *p_event);       // MMLEvent::PROCESS
 	MMLEvent *_default_on_repeat_all(MMLEvent *p_event);    // MMLEvent::REPEAT_ALL
@@ -121,6 +121,7 @@ public:
 	static const int FIXED_FILTER = (1 << FIXED_BITS) - 1;
 
 	static void initialize();
+	static void finalize();
 	static MMLExecutor *get_temp_executor() { return _temp_executor; }
 
 	MMLParserSettings *get_parser_settings() const { return _parser_settings; }

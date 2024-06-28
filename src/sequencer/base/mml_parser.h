@@ -170,7 +170,7 @@ class MMLParser {
 public:
 	static MMLParser *get_instance() { return _instance; }
 	static void initialize();
-	static void finalize() {}
+	static void finalize();
 
 	// Settings.
 
@@ -201,7 +201,7 @@ public:
 
 	//
 	MMLParser();
-	~MMLParser() {}
+	~MMLParser();
 };
 
 #endif // MML_PARSER_H

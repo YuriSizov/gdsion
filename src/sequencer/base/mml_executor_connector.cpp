@@ -69,7 +69,7 @@ void MMLExecutorConnector::_connect(MECElement *p_element, bool p_first_oscillat
 		prep_sequence->append_new_event(MMLEvent::PARAMETER,  0);
 	}
 
-	prep_sequence->connect_before(_connecting_sequence_list[p_element->number]->get_head_event()->next);
+	prep_sequence->connect_before(_connecting_sequence_list[p_element->number]->get_head_event()->get_next());
 	prep_sequence->insert_after(_connecting_sequence);
 	_connecting_sequence = prep_sequence;
 

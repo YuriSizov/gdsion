@@ -4,8 +4,137 @@
 		Container for event information of the internal sequencer.
 	</brief_description>
 	<description>
+		These events are normally produced by internal routines when streaming and rendering sound. Event types map to MML commands available in GDSiON.
+		Events can also be created manually and submitted to [method SiONDriver.sequence_on] via [SiONData], although this functionality is not fully exposed yet.
 		[b]Warning:[/b] This class currently has no intended use in the API. If you need this class and its unexposed methods in your project, please [b][url=https://github.com/YuriSizov/gdsion/issues]create a feature request with your use case[/url][/b]!
 	</description>
 	<tutorials>
 	</tutorials>
+	<members>
+		<member name="data" type="int" setter="set_data" getter="get_data">
+			Data associated with this event.
+		</member>
+		<member name="id" type="int" setter="set_id" getter="get_id">
+			Type ID of this event. Typically it's one of the [enum EventID] values, but custom user defined IDs are also supported.
+		</member>
+		<member name="jump" type="MMLEvent" setter="set_jump" getter="get_jump">
+			Reference to another event in the chain which can be jumped too. Used only by certain event types, such as loop/repeat events.
+		</member>
+		<member name="length" type="int" setter="set_length" getter="get_length">
+			Length of this event in units of synthesizer's resolution.
+		</member>
+		<member name="next" type="MMLEvent" setter="set_next" getter="get_next">
+			Reference to the next event in the chain, if there is one.
+		</member>
+	</members>
+	<constants>
+		<constant name="NO_OP" value="0" enum="EventID">
+			Default event type that has no specific meaning.
+		</constant>
+		<constant name="PROCESS" value="1" enum="EventID">
+			Processing event.
+		</constant>
+		<constant name="REST" value="2" enum="EventID">
+			Rest event.
+		</constant>
+		<constant name="NOTE" value="3" enum="EventID">
+			Note event.
+		</constant>
+		<constant name="KEY_ON_DELAY" value="8" enum="EventID">
+			Key on delay event.
+		</constant>
+		<constant name="QUANT_RATIO" value="9" enum="EventID">
+			Quantization ratio event.
+		</constant>
+		<constant name="QUANT_COUNT" value="10" enum="EventID">
+			Quantization count event.
+		</constant>
+		<constant name="VOLUME" value="11" enum="EventID">
+			Volume/velocity event.
+		</constant>
+		<constant name="VOLUME_SHIFT" value="12" enum="EventID">
+			Volume/velocity shift event.
+		</constant>
+		<constant name="FINE_VOLUME" value="13" enum="EventID">
+			Fine-tuned volume event.
+		</constant>
+		<constant name="SLUR" value="14" enum="EventID">
+			Note slurring event.
+		</constant>
+		<constant name="SLUR_WEAK" value="15" enum="EventID">
+			Weak note slurring event.
+		</constant>
+		<constant name="PITCHBEND" value="16" enum="EventID">
+			Pitch bending event.
+		</constant>
+		<constant name="REPEAT_BEGIN" value="17" enum="EventID">
+			Loop/repeat starting point event.
+		</constant>
+		<constant name="REPEAT_BREAK" value="18" enum="EventID">
+			Loop/repeat break point event.
+		</constant>
+		<constant name="REPEAT_END" value="19" enum="EventID">
+			Loop/repeat end point event.
+		</constant>
+		<constant name="MOD_TYPE" value="20" enum="EventID">
+			Modulation type event.
+		</constant>
+		<constant name="MOD_PARAM" value="21" enum="EventID">
+			Modulation parameter event.
+		</constant>
+		<constant name="INPUT_PIPE" value="22" enum="EventID">
+			Input pipe change event.
+		</constant>
+		<constant name="OUTPUT_PIPE" value="23" enum="EventID">
+			Output pipe change event.
+		</constant>
+		<constant name="REPEAT_ALL" value="24" enum="EventID">
+			Global loop/repeat event.
+		</constant>
+		<constant name="PARAMETER" value="25" enum="EventID">
+			Generic parameter event. Used by other events for configuration.
+		</constant>
+		<constant name="SEQUENCE_HEAD" value="26" enum="EventID">
+			Sequence head/starting point event.
+		</constant>
+		<constant name="SEQUENCE_TAIL" value="27" enum="EventID">
+			Sequence tail/end point event.
+		</constant>
+		<constant name="SYSTEM_EVENT" value="28" enum="EventID">
+			Generic system event.
+		</constant>
+		<constant name="TABLE_EVENT" value="29" enum="EventID">
+			Table event.
+		</constant>
+		<constant name="GLOBAL_WAIT" value="30" enum="EventID">
+			Global wait event.
+		</constant>
+		<constant name="TEMPO" value="31" enum="EventID">
+			Tempo change event.
+		</constant>
+		<constant name="TIMER" value="32" enum="EventID">
+			Timer change event.
+		</constant>
+		<constant name="REGISTER" value="33" enum="EventID">
+			Register change event.
+		</constant>
+		<constant name="DEBUG_INFO" value="34" enum="EventID">
+			Debug information event.
+		</constant>
+		<constant name="INTERNAL_CALL" value="35" enum="EventID">
+			Internal call event.
+		</constant>
+		<constant name="INTERNAL_WAIT" value="36" enum="EventID">
+			Internal wait event.
+		</constant>
+		<constant name="DRIVER_NOTE" value="37" enum="EventID">
+			Driver note event.
+		</constant>
+		<constant name="USER_DEFINED" value="64" enum="EventID">
+			Start of user defined events.
+		</constant>
+		<constant name="COMMAND_MAX" value="128" enum="EventID">
+			Total number of allowed commands.
+		</constant>
+	</constants>
 </class>

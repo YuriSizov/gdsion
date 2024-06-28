@@ -43,7 +43,7 @@ public:
 	void free();
 
 	MMLSequenceGroup(const Ref<MMLData> &p_owner);
-	~MMLSequenceGroup() {}
+	~MMLSequenceGroup();
 };
 
 #endif // MML_SEQUENCE_GROUP_H

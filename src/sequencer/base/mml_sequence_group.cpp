@@ -79,8 +79,8 @@ MMLSequence *MMLSequenceGroup::get_sequence(int p_index) const {
 
 void MMLSequenceGroup::alloc(MMLEvent *p_head_event) {
 	MMLEvent *event = p_head_event;
-	while (event && event->jump) {
-		ERR_FAIL_COND_MSG(event->id != MMLEvent::SEQUENCE_HEAD, vformat("MMLSequenceGroup: Invalid event in the head event sequence (%s).", event->to_string()));
+	while (event && event->get_jump()) {
+		ERR_FAIL_COND_MSG(event->get_id() != MMLEvent::SEQUENCE_HEAD, vformat("MMLSequenceGroup: Invalid event in the head event sequence (%s).", event->to_string()));
 
 		MMLSequence *sequence = append_new_sequence();
 		event = sequence->cutout(event);
@@ -102,4 +102,18 @@ void MMLSequenceGroup::free() {
 MMLSequenceGroup::MMLSequenceGroup(const Ref<MMLData> &p_owner) {
 	_owner = p_owner;
 	_term = memnew(MMLSequence(true));
+}
+
+MMLSequenceGroup::~MMLSequenceGroup() {
+	for (MMLSequence *sequence : _sequences) {
+		memdelete(sequence);
+	}
+	_sequences.clear();
+
+	for (MMLSequence *sequence : _free_list) {
+		memdelete(sequence);
+	}
+	_free_list.clear();
+
+	memdelete(_term);
 }

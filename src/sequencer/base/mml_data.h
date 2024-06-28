@@ -94,7 +94,7 @@ public:
 	virtual void clear();
 
 	MMLData();
-	~MMLData() {}
+	~MMLData();
 };
 
 #endif // MML_DATA_H

@@ -27,6 +27,13 @@ void MMLParser::initialize() {
 	memnew(MMLParser);
 }
 
+void MMLParser::finalize() {
+	if (_instance) {
+		memdelete(_instance);
+		_instance = nullptr;
+	}
+}
+
 // Methods.
 
 #define OP_ERR_FAIL_RANGE(m_value, m_min, m_max, m_cmd)                                                                                                            \
@@ -135,9 +142,9 @@ int MMLParser::_register_system_event_string(String p_event) {
 }
 
 String MMLParser::get_system_event_string(MMLEvent *p_event) {
-	ERR_FAIL_INDEX_V(p_event->data, _system_event_strings.size(), "");
+	ERR_FAIL_INDEX_V(p_event->get_data(), _system_event_strings.size(), "");
 
-	return _system_event_strings[p_event->data];
+	return _system_event_strings[p_event->get_data()];
 }
 
 int MMLParser::_register_sequence_mml_strings(String p_mml) {
@@ -151,12 +158,12 @@ int MMLParser::_register_sequence_mml_strings(String p_mml) {
 }
 
 String MMLParser::get_sequence_mml(MMLEvent *p_event) {
-	if (p_event->length == -1) {
+	if (p_event->get_length() == -1) {
 		return "";
 	}
-	ERR_FAIL_INDEX_V(p_event->length, _sequence_mml_strings.size(), "");
+	ERR_FAIL_INDEX_V(p_event->get_length(), _sequence_mml_strings.size(), "");
 
-	return _sequence_mml_strings[p_event->length];
+	return _sequence_mml_strings[p_event->get_length()];
 }
 
 // Key.
@@ -268,8 +275,8 @@ void MMLParser::set_key_signature(String p_sign) {
 // Parsing and events.
 
 MMLEvent *MMLParser::_push_mml_event(int p_event_id, int p_data, int p_length) {
-	_last_event->next = alloc_event(p_event_id, p_data, p_length);
-	_last_event = _last_event->next;
+	_last_event->set_next(alloc_event(p_event_id, p_data, p_length));
+	_last_event = _last_event->get_next();
 
 	return _last_event;
 }
@@ -277,27 +284,27 @@ MMLEvent *MMLParser::_push_mml_event(int p_event_id, int p_data, int p_length) {
 MMLEvent *MMLParser::_add_mml_event(int p_event_id, int p_data, int p_length, bool p_note_option) {
 	if (p_note_option) {
 		// Note option events are inserted after NOTE.
-		ERR_FAIL_COND_V_MSG(_last_event->id != MMLEvent::NOTE, nullptr, "MMLParser: Commands '*' and '&' can only come after a note.");
-		int length = _last_event->length;
-		_last_event->length = 0;
+		ERR_FAIL_COND_V_MSG(_last_event->get_id() != MMLEvent::NOTE, nullptr, "MMLParser: Commands '*' and '&' can only come after a note.");
+		int length = _last_event->get_length();
+		_last_event->set_length(0);
 		_push_mml_event(p_event_id, p_data, length);
 	} else {
 		// Create channel data chain.
 		if (p_event_id == MMLEvent::SEQUENCE_HEAD) {
-			_last_sequence_head->jump = _last_event;
+			_last_sequence_head->set_jump(_last_event);
 			_last_sequence_head = _push_mml_event(p_event_id, p_data, p_length);
 			_reset_state_track();
 
 		// Concatenate REST events.
-		} else if (p_event_id == MMLEvent::REST && _last_event->id == MMLEvent::REST) {
-			_last_event->length += p_length;
+		} else if (p_event_id == MMLEvent::REST && _last_event->get_id() == MMLEvent::REST) {
+			_last_event->set_length(_last_event->get_length() + p_length);
 
 		// Handle normally.
 		} else {
 			_push_mml_event(p_event_id, p_data, p_length);
 			// Data is the count of global events.
 			if (_event_global_flags[p_event_id]) {
-				_last_sequence_head->data++;
+				_last_sequence_head->set_data(_last_sequence_head->get_data() + 1);
 			}
 		}
 	}
@@ -307,7 +314,7 @@ MMLEvent *MMLParser::_add_mml_event(int p_event_id, int p_data, int p_length, bo
 }
 
 void MMLParser::_reset_state() {
-	MMLEvent *event = _terminator->next;
+	MMLEvent *event = _terminator->get_next();
 	while (event) {
 		event = free_event(event);
 	}
@@ -528,7 +535,7 @@ MMLEvent *MMLParser::parse(int p_interrupt) {
 
 		// System events.
 		} else if (!res->get_string(REX_SYSTEM).is_empty()) {
-			ERR_FAIL_COND_V_MSG(_last_event->id != MMLEvent::SEQUENCE_HEAD, nullptr, "MMLParser: System commands are only allowed at the top of the channel sequence.");
+			ERR_FAIL_COND_V_MSG(_last_event->get_id() != MMLEvent::SEQUENCE_HEAD, nullptr, "MMLParser: System commands are only allowed at the top of the channel sequence.");
 
 			_add_mml_event(MMLEvent::SYSTEM_EVENT, _register_system_event_string(res->get_string(REX_SYSTEM)));
 
@@ -550,14 +557,14 @@ MMLEvent *MMLParser::parse(int p_interrupt) {
 
 	ERR_FAIL_COND_V_MSG(_repeat_stack.size() != 0, nullptr, "MMLParser: Too many items in the repeat stack for command '['.");
 
-	if (_last_event->id != MMLEvent::SEQUENCE_HEAD) {
-		_last_sequence_head->jump = _last_event;
+	if (_last_event->get_id() != MMLEvent::SEQUENCE_HEAD) {
+		_last_sequence_head->set_jump(_last_event);
 	}
 
 	_parsing_time = Time::get_singleton()->get_ticks_msec() - _parsing_time;
 
-	MMLEvent *head_event = _terminator->next;
-	_terminator->next = nullptr;
+	MMLEvent *head_event = _terminator->get_next();
+	_terminator->set_next(nullptr);
 
 	return head_event;
 }
@@ -575,7 +582,7 @@ MMLEvent *MMLParser::alloc_event(int p_event_id, int p_data, int p_length) {
 
 	if (_free_event_chain) {
 		event = _free_event_chain;
-		_free_event_chain = _free_event_chain->next;
+		_free_event_chain = _free_event_chain->get_next();
 	} else {
 		event = memnew(MMLEvent(0));
 	}
@@ -585,8 +592,8 @@ MMLEvent *MMLParser::alloc_event(int p_event_id, int p_data, int p_length) {
 }
 
 MMLEvent *MMLParser::free_event(MMLEvent *p_event) {
-	MMLEvent *next = p_event->next;
-	p_event->next = _free_event_chain;
+	MMLEvent *next = p_event->get_next();
+	p_event->set_next(_free_event_chain);
 	_free_event_chain = p_event;
 
 	return next;
@@ -597,7 +604,7 @@ void MMLParser::free_all_events(MMLSequence *p_sequence) {
 		return;
 	}
 
-	p_sequence->get_tail_event()->next = _free_event_chain;
+	p_sequence->get_tail_event()->set_next(_free_event_chain);
 	_free_event_chain = p_sequence->get_head_event();
 
 	p_sequence->set_head_event(nullptr);
@@ -645,8 +652,8 @@ void MMLParser::_op_length(int p_length, int p_period) {
 void MMLParser::_op_tie(int p_length, int p_period) {
 	if (_is_last_event_length) {
 		_static_length += _calculate_length(p_length, p_period);
-	} else if (_last_event->id == MMLEvent::REST || _last_event->id == MMLEvent::NOTE) {
-		_last_event->length += _calculate_length(p_length, p_period);
+	} else if (_last_event->get_id() == MMLEvent::REST || _last_event->get_id() == MMLEvent::NOTE) {
+		_last_event->set_length(_last_event->get_length() + _calculate_length(p_length, p_period));
 	} else {
 		ERR_FAIL_MSG("MMLParser: Invalid tie command syntax.");
 	}
@@ -702,8 +709,8 @@ void MMLParser::_op_at_volume(int p_value) {
 void MMLParser::_op_volume_shift(int p_value) {
 	int value = p_value * _settings->volume_polarization;
 
-	if (_last_event->id == MMLEvent::VOLUME_SHIFT || _last_event->id == MMLEvent::VOLUME) {
-		_last_event->data += value;
+	if (_last_event->get_id() == MMLEvent::VOLUME_SHIFT || _last_event->get_id() == MMLEvent::VOLUME) {
+		_last_event->set_data(_last_event->get_data() + value);
 	} else {
 		_add_mml_event(MMLEvent::VOLUME_SHIFT, value);
 	}
@@ -724,7 +731,7 @@ void MMLParser::_op_repeat_begin(int p_count) {
 void MMLParser::_op_repeat_break() {
 	ERR_FAIL_COND_MSG(_repeat_stack.size() == 0, "MMLParser: Not enough items in the repeat stack for command '|'.");
 	_add_mml_event(MMLEvent::REPEAT_BREAK);
-	_last_event->jump = _repeat_stack[0];
+	_last_event->set_jump(_repeat_stack[0]);
 }
 
 void MMLParser::_op_repeat_end(int p_count) {
@@ -734,12 +741,12 @@ void MMLParser::_op_repeat_end(int p_count) {
 	MMLEvent *begin_event = _repeat_stack.front()->get();
 	_repeat_stack.pop_front();
 
-	_last_event->jump = begin_event;
-	begin_event->jump = _last_event;
+	_last_event->set_jump(begin_event);
+	begin_event->set_jump(_last_event);
 
 	if (p_count != INT32_MIN) {
 		OP_ERR_FAIL_RANGE(p_count, 1, 65535, "]");
-		begin_event->data = p_count;
+		begin_event->set_data(p_count);
 	}
 }
 
@@ -770,9 +777,10 @@ void MMLParser::_op_tempo(int p_tempo) {
 }
 
 bool MMLParser::_op_end_sequence() {
-	if (_last_event->id != MMLEvent::SEQUENCE_HEAD) {
-		if (_last_sequence_head->next && _last_sequence_head->next->id == MMLEvent::DEBUG_INFO) {
-			_last_sequence_head->next->data = _register_sequence_mml_strings(_mml_string.substr(_head_mml_index, _head_mml_index + _mml_regex_last_index));
+	if (_last_event->get_id() != MMLEvent::SEQUENCE_HEAD) {
+		MMLEvent *next_event = _last_sequence_head->get_next();
+		if (next_event && next_event->get_id() == MMLEvent::DEBUG_INFO) {
+			next_event->set_data(_register_sequence_mml_strings(_mml_string.substr(_head_mml_index, _head_mml_index + _mml_regex_last_index)));
 		}
 
 		_add_mml_event(MMLEvent::SEQUENCE_HEAD, 0);
@@ -802,4 +810,27 @@ MMLParser::MMLParser() {
 	_key_signature_custom.resize_zeroed(7);
 
 	_terminator = memnew(MMLEvent(0));
+}
+
+MMLParser::~MMLParser() {
+	_last_event = nullptr;
+	_last_sequence_head = nullptr;
+	_repeat_stack.clear();
+
+	MMLEvent *event = _terminator->get_next();
+	while (event) {
+		event = free_event(event);
+	}
+	memdelete(_terminator);
+	_terminator = nullptr;
+
+	MMLEvent *next_event = _free_event_chain->get_next();
+	while (next_event) {
+		MMLEvent *freed_event = next_event;
+		next_event = next_event->get_next();
+
+		memdelete(freed_event);
+	}
+	memdelete(_free_event_chain);
+	_free_event_chain = nullptr;
 }

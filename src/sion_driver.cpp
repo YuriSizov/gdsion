@@ -898,7 +898,7 @@ void SiONDriver::_prepare_process(const Variant &p_data, bool p_reset_effector) 
 		_start_background_sound();
 	}
 
-	if (_timer_interval_event->length > 0) {
+	if (_timer_interval_event->get_length() > 0) {
 		sequencer->set_global_sequence(_timer_sequence);
 	}
 }
@@ -1144,7 +1144,7 @@ void SiONDriver::_timer_callback() {
 void SiONDriver::set_timer_interval(double p_length) {
 	ERR_FAIL_COND_MSG(p_length < 0, "SiONDriver: Timer interval value cannot be less than zero.");
 
-	_timer_interval_event->length = _convert_event_length(p_length);
+	_timer_interval_event->set_length(_convert_event_length(p_length));
 
 	if (p_length > 0) {
 		sequencer->set_timer_callback(Callable(this, "_timer_callback"));

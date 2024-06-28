@@ -21,7 +21,7 @@ class SiMMLChannelSettings {
 
 public:
 	enum SelectToneType {
-		SELECT_TONE_NOP    = 0,
+		SELECT_TONE_NONE   = 0,
 		SELECT_TONE_NORMAL = 1,
 		SELECT_TONE_FM     = 2,
 	};

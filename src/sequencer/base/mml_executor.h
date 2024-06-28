@@ -21,8 +21,10 @@ class MMLExecutor {
 
 	int _repeat_end_counter = 0;
 	MMLEvent *_repeat_point = nullptr;
+
+	MMLEvent *_nop_event = nullptr;
 	MMLEvent *_process_event = nullptr;
-	MMLEvent *_bend_from = nullptr;
+	MMLEvent *_bend_from_event = nullptr;
 	MMLEvent *_bend_event = nullptr;
 	MMLEvent *_note_event = nullptr;
 
@@ -33,6 +35,8 @@ class MMLExecutor {
 	int _decimal_fraction_sample_count = 0;
 
 public:
+	MMLEvent *get_nop_event() const { return _nop_event; }
+
 	MMLSequence *get_sequence() const { return _sequence; }
 	MMLEvent *get_pointer() const { return _pointer; }
 	void set_pointer(MMLEvent *p_event) { _pointer = p_event; }

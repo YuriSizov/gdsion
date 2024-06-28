@@ -51,9 +51,9 @@ MMLSequence *MMLSequence::remove_from_chain() {
 void MMLSequence::connect_before(MMLEvent *p_second_head) {
 	// Simply connect first tail to second head.
 	if (p_second_head) {
-		_head_event->jump->next = p_second_head;
+		_head_event->get_jump()->set_next(p_second_head);
 	} else {
-		_head_event->jump->next = _tail_event;
+		_head_event->get_jump()->set_next(_tail_event);
 	}
 }
 
@@ -64,11 +64,11 @@ bool MMLSequence::is_empty() const {
 }
 
 bool MMLSequence::is_system_command() const {
-	return _head_event->next->id == MMLEvent::SYSTEM_EVENT;
+	return _head_event->get_next()->get_id() == MMLEvent::SYSTEM_EVENT;
 }
 
 String MMLSequence::get_system_command() const {
-	return MMLParser::get_instance()->get_system_event_string(_head_event->next);
+	return MMLParser::get_instance()->get_system_event_string(_head_event->get_next());
 }
 
 MMLEvent *MMLSequence::append_new_event(int p_event_id, int p_data, int p_length) {
@@ -94,62 +94,62 @@ MMLEvent *MMLSequence::prepend_new_event(int p_event_id, int p_data, int p_lengt
 }
 
 void MMLSequence::push_back(MMLEvent *p_event) {
-	_head_event->jump->next = p_event;
-	p_event->next = _tail_event;
+	_head_event->get_jump()->set_next(p_event);
+	p_event->set_next(_tail_event);
 
-	_head_event->jump = p_event;
+	_head_event->set_jump(p_event);
 }
 
 void MMLSequence::push_front(MMLEvent *p_event) {
-	p_event->next = _head_event->next;
-	_head_event->next = p_event;
+	p_event->set_next(_head_event->get_next());
+	_head_event->set_next(p_event);
 
-	if (_head_event->jump == _head_event) {
-		_head_event->jump = p_event;
+	if (_head_event->get_jump() == _head_event) {
+		_head_event->set_jump(p_event);
 	}
 }
 
 MMLEvent *MMLSequence::pop_back() {
-	if (_head_event->jump == _head_event) {
+	if (_head_event->get_jump() == _head_event) {
 		return nullptr;
 	}
 
-	MMLEvent *event = _head_event->next;
+	MMLEvent *event = _head_event->get_next();
 	while (event) {
-		if (event->next == _head_event->jump) {
-			MMLEvent *ret = event->next;
-			event->next = _tail_event;
-			_head_event->jump = event;
+		if (event->get_next() == _head_event->get_jump()) {
+			MMLEvent *ret = event->get_next();
+			event->set_next(_tail_event);
+			_head_event->set_jump(event);
 
-			ret->next = nullptr;
+			ret->set_next(nullptr);
 			return ret;
 		}
 
-		event = event->next;
+		event = event->get_next();
 	}
 
 	return nullptr;
 }
 
 MMLEvent *MMLSequence::pop_front() {
-	if (_head_event->jump == _head_event) {
+	if (_head_event->get_jump() == _head_event) {
 		return nullptr;
 	}
 
-	MMLEvent *ret = _head_event->next;
-	_head_event->next = ret->next;
+	MMLEvent *ret = _head_event->get_next();
+	_head_event->set_next(ret->get_next());
 
-	ret->next = nullptr;
+	ret->set_next(nullptr);
 	return ret;
 }
 
 MMLEvent *MMLSequence::cutout(MMLEvent *p_head) {
-	MMLEvent *last = p_head->jump; // Last event of this sequence.
-	MMLEvent *next = last->next; // Head of next sequence.
+	MMLEvent *last = p_head->get_jump(); // Last event of this sequence.
+	MMLEvent *next = last->get_next(); // Head of next sequence.
 
 	_head_event = p_head;
 	_tail_event = MMLParser::get_instance()->alloc_event(MMLEvent::SEQUENCE_TAIL, 0);
-	last->next = _tail_event;
+	last->set_next(_tail_event);
 
 	return next;
 }
@@ -163,17 +163,17 @@ void MMLSequence::_update_mml_length() {
 	_has_repeat_all = false;
 	int length = 0;
 
-	MMLEvent *event = _head_event->next;
+	MMLEvent *event = _head_event->get_next();
 	while (event) {
 		// Note or rest.
-		if (event->length != 0) {
-			length += event->length;
-			event = event->next;
+		if (event->get_length() != 0) {
+			length += event->get_length();
+			event = event->get_next();
 			continue;
 		}
 
 		// Everything else.
-		switch (event->id) {
+		switch (event->get_id()) {
 			case MMLEvent::REPEAT_BEGIN: {
 				event = exec->on_repeat_begin(event);
 			} break;
@@ -196,7 +196,7 @@ void MMLSequence::_update_mml_length() {
 			} break;
 
 			default: {
-				event = event->next;
+				event = event->get_next();
 			} break;
 		}
 	}
@@ -219,12 +219,12 @@ bool MMLSequence::has_repeat_all() {
 }
 
 void MMLSequence::update_mml_string() {
-	if (_head_event->next->id != MMLEvent::DEBUG_INFO) {
+	if (_head_event->get_next()->get_id() != MMLEvent::DEBUG_INFO) {
 		return;
 	}
 
-	_mml_string = MMLParser::get_instance()->get_sequence_mml(_head_event->next);
-	_head_event->length = 0;
+	_mml_string = MMLParser::get_instance()->get_sequence_mml(_head_event->get_next());
+	_head_event->set_length(0);
 }
 
 //
@@ -234,12 +234,12 @@ String MMLSequence::to_string() const {
 		return "terminator";
 	}
 
-	MMLEvent *event = _head_event->next;
+	MMLEvent *event = _head_event->get_next();
 	String str;
 
 	for (int i = 0; i < 32 && event; i++) {
-		str += itos(event->id) + " ";
-		event = event->next;
+		str += itos(event->get_id()) + " ";
+		event = event->get_next();
 	}
 
 	return str;
@@ -253,9 +253,9 @@ List<MMLEvent *> MMLSequence::to_vector(int p_max_length, int p_offset, int p_ev
 	List<MMLEvent *> result;
 
 	int i = 0;
-	MMLEvent *event = _head_event->next;
-	while (event && event->id != MMLEvent::SEQUENCE_TAIL) {
-		if (p_event_id == -1 || p_event_id == event->id) {
+	MMLEvent *event = _head_event->get_next();
+	while (event && event->get_id() != MMLEvent::SEQUENCE_TAIL) {
+		if (p_event_id == -1 || p_event_id == event->get_id()) {
 			if (i >= p_offset) {
 				result.push_back(event);
 			}
@@ -266,7 +266,7 @@ List<MMLEvent *> MMLSequence::to_vector(int p_max_length, int p_offset, int p_ev
 			i++;
 		}
 
-		event = event->next;
+		event = event->get_next();
 	}
 
 	return result;
@@ -282,21 +282,21 @@ void MMLSequence::from_vector(List<MMLEvent *> p_events) {
 
 void MMLSequence::initialize() {
 	if (!is_empty()) {
-		_head_event->jump->next = _tail_event;
+		_head_event->get_jump()->set_next(_tail_event);
 		MMLParser::get_instance()->free_all_events(this);
 		_callbacks_for_internal_call.clear();
 	}
 
 	_head_event = MMLParser::get_instance()->alloc_event(MMLEvent::SEQUENCE_HEAD, 0);
 	_tail_event = MMLParser::get_instance()->alloc_event(MMLEvent::SEQUENCE_TAIL, 0);
-	_head_event->next = _tail_event;
-	_head_event->jump = _head_event;
+	_head_event->set_next(_tail_event);
+	_head_event->set_jump(_head_event);
 	_is_active = true;
 }
 
 void MMLSequence::free() {
 	if (_head_event) {
-		_head_event->jump->next = _tail_event;
+		_head_event->get_jump()->set_next(_tail_event);
 		MMLParser::get_instance()->free_all_events(this);
 
 		_prev_sequence = nullptr;
@@ -313,4 +313,14 @@ MMLSequence::MMLSequence(bool p_terminal) {
 	_prev_sequence = p_terminal ? this : nullptr;
 	_next_sequence = p_terminal ? this : nullptr;
 	_is_terminal = p_terminal;
+}
+
+MMLSequence::~MMLSequence() {
+	if (_head_event) {
+		_head_event->get_jump()->set_next(_tail_event);
+		MMLParser::get_instance()->free_all_events(this);
+	}
+
+	_prev_sequence = nullptr;
+	_next_sequence = nullptr;
 }

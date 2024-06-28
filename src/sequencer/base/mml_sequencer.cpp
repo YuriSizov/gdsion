@@ -23,6 +23,12 @@ void MMLSequencer::initialize() {
 	_temp_executor = memnew(MMLExecutor);
 }
 
+void MMLSequencer::finalize() {
+	if (_temp_executor) {
+		memdelete(_temp_executor);
+	}
+}
+
 // Properties.
 
 double MMLSequencer::get_default_bpm() const {
@@ -63,7 +69,7 @@ int MMLSequencer::_create_mml_event_listener(String p_letter, const Callable &p_
 }
 
 int MMLSequencer::get_event_id(String p_mml_command) {
-	int event_id = MMLEvent::get_event_id(p_mml_command);
+	int event_id = MMLEvent::get_id_from_mml(p_mml_command);
 	if (event_id != 0) {
 		return event_id;
 	}
@@ -83,13 +89,13 @@ String MMLSequencer::get_event_letter(int p_event_id) {
 // Event handlers.
 
 MMLEvent *MMLSequencer::_no_process(MMLEvent *p_event) {
-	return p_event->next;
+	return p_event->get_next();
 }
 
 MMLEvent *MMLSequencer::_dummy_on_process(MMLEvent *p_event) {
 	// Set processing length.
 	if (_current_executor->get_residue_sample_count() == 0) {
-		int sample_count_fixed = p_event->length * _bpm->get_sample_per_tick() + _current_executor->get_decimal_fraction_sample_count();
+		int sample_count_fixed = p_event->get_length() * _bpm->get_sample_per_tick() + _current_executor->get_decimal_fraction_sample_count();
 		_current_executor->set_residue_sample_count(sample_count_fixed >> FIXED_BITS);
 		_current_executor->set_decimal_fraction_sample_count(sample_count_fixed & FIXED_FILTER);
 	}
@@ -99,7 +105,7 @@ MMLEvent *MMLSequencer::_dummy_on_process(MMLEvent *p_event) {
 		_process_buffer_sample_count -= _current_executor->get_residue_sample_count();
 		_current_executor->set_residue_sample_count(0);
 		// Go to the next command.
-		return p_event->jump->next;
+		return p_event->get_jump()->get_next();
 	} else {
 		_current_executor->adjust_residue_sample_count(-_process_buffer_sample_count);
 		_process_buffer_sample_count = 0;
@@ -121,7 +127,7 @@ MMLEvent *MMLSequencer::_default_on_no_operation(MMLEvent *p_event) {
 MMLEvent *MMLSequencer::_default_on_global_wait(MMLEvent *p_event) {
 	// Set processing length.
 	if (_current_executor->get_residue_sample_count() == 0) {
-		int sample_count_fixed = p_event->length * _bpm->get_sample_per_tick() + _current_executor->get_decimal_fraction_sample_count();
+		int sample_count_fixed = p_event->get_length() * _bpm->get_sample_per_tick() + _current_executor->get_decimal_fraction_sample_count();
 		_current_executor->set_residue_sample_count(sample_count_fixed >> FIXED_BITS);
 		_current_executor->set_decimal_fraction_sample_count(sample_count_fixed & FIXED_FILTER);
 	}
@@ -132,7 +138,7 @@ MMLEvent *MMLSequencer::_default_on_global_wait(MMLEvent *p_event) {
 		_global_buffer_sample_count -= _global_execute_sample_count;
 		_current_executor->set_residue_sample_count(0);
 		// Go to the next command.
-		return p_event->next;
+		return p_event->get_next();
 	} else {
 		_global_execute_sample_count =  _global_buffer_sample_count;
 		_current_executor->adjust_residue_sample_count(-_global_execute_sample_count);
@@ -145,20 +151,20 @@ MMLEvent *MMLSequencer::_default_on_global_wait(MMLEvent *p_event) {
 MMLEvent *MMLSequencer::_default_on_process(MMLEvent *p_event) {
 	// Set processing length.
 	if (_current_executor->get_residue_sample_count() == 0) {
-		int sample_count_fixed = p_event->length * _bpm->get_sample_per_tick() + _current_executor->get_decimal_fraction_sample_count();
+		int sample_count_fixed = p_event->get_length() * _bpm->get_sample_per_tick() + _current_executor->get_decimal_fraction_sample_count();
 		_current_executor->set_residue_sample_count(sample_count_fixed >> FIXED_BITS);
 		_current_executor->set_decimal_fraction_sample_count(sample_count_fixed & FIXED_FILTER);
 	}
 
 	// Process.
 	if (_current_executor->get_residue_sample_count() <= _process_buffer_sample_count) {
-		_on_process(_current_executor->get_residue_sample_count(), p_event->jump);
+		_on_process(_current_executor->get_residue_sample_count(), p_event->get_jump());
 		_process_buffer_sample_count -= _current_executor->get_residue_sample_count();
 		_current_executor->set_residue_sample_count(0);
 		// Go to the next command.
-		return p_event->jump->next;
+		return p_event->get_jump()->get_next();
 	} else {
-		_on_process(_process_buffer_sample_count, p_event->jump);
+		_on_process(_process_buffer_sample_count, p_event->get_jump());
 		_current_executor->adjust_residue_sample_count(-_process_buffer_sample_count);
 		_process_buffer_sample_count = 0;
 		// Stay on this command.
@@ -187,14 +193,14 @@ MMLEvent *MMLSequencer::_default_on_sequence_tail(MMLEvent *p_event) {
 }
 
 MMLEvent *MMLSequencer::_default_on_tempo(MMLEvent *p_event) {
-	double bpm = mml_data.is_valid() ? mml_data->get_bpm_from_tcommand(p_event->data) : p_event->data;
+	double bpm = mml_data.is_valid() ? mml_data->get_bpm_from_tcommand(p_event->get_data()) : p_event->get_data();
 	set_bpm(bpm);
-	return p_event->next;
+	return p_event->get_next();
 }
 
 MMLEvent *MMLSequencer::_default_on_timer(MMLEvent *p_event) {
 	_on_timer_interruption();
-	return p_event->next;
+	return p_event->get_next();
 }
 
 MMLEvent *MMLSequencer::_default_on_internal_wait(MMLEvent *p_event) {
@@ -203,27 +209,27 @@ MMLEvent *MMLSequencer::_default_on_internal_wait(MMLEvent *p_event) {
 
 MMLEvent *MMLSequencer::_default_on_internal_call(MMLEvent *p_event) {
 	List<Callable> callbacks = _current_executor->get_sequence()->get_callbacks_for_internal_call();
-	int callback_idx = p_event->data;
+	int callback_idx = p_event->get_data();
 
 	MMLEvent *next = nullptr;
 	if (callback_idx >= 0 && callback_idx < callbacks.size()) {
 		Callable cb = callbacks[callback_idx];
 		if (cb.is_valid()) {
-			next = Object::cast_to<MMLEvent>(cb.call(p_event->length));
+			next = Object::cast_to<MMLEvent>(cb.call(p_event->get_length()));
 		}
 	}
 
 	if (next) {
 		return next;
 	}
-	return p_event->next;
+	return p_event->get_next();
 }
 
 // Compilation and processing.
 
 struct EventComparator {
 	_FORCE_INLINE_ bool operator()(const MMLEvent *e1, const MMLEvent *e2) const {
-		return e1->length < e2->length;
+		return e1->get_length() < e2->get_length();
 	}
 };
 
@@ -234,7 +240,7 @@ void MMLSequencer::_extract_global_sequence() {
 
 	MMLSequence *sequence = seq_group->get_head_sequence();
 	while (sequence) {
-		int count = sequence->get_head_event()->data;
+		int count = sequence->get_head_event()->get_data();
 		if (count == 0) {
 			sequence = sequence->get_next_sequence();
 			continue;
@@ -242,7 +248,7 @@ void MMLSequencer::_extract_global_sequence() {
 
 		_temp_executor->initialize(sequence);
 		MMLEvent *prev = sequence->get_head_event();
-		MMLEvent *event = prev->next;
+		MMLEvent *event = prev->get_next();
 
 		int position = 0;
 		bool has_no_event = true;
@@ -250,57 +256,57 @@ void MMLSequencer::_extract_global_sequence() {
 		// Calculate position and pick global events.
 		while (event && (count > 0 || has_no_event)) {
 			// Global or table event.
-			if (_event_global_flags[event->id]) {
-				if (event->id == MMLEvent::TABLE_EVENT) {
+			if (_event_global_flags[event->get_id()]) {
+				if (event->get_id() == MMLEvent::TABLE_EVENT) {
 					// Well, table event then.
 					parse_table_event(prev);
 				} else {
 					// And here it's a global one.
-					if (sequence->get_head_event()->jump == event) {
-						sequence->get_head_event()->jump = prev;
+					if (sequence->get_head_event()->get_jump() == event) {
+						sequence->get_head_event()->set_jump(prev);
 					}
 
-					prev->next = event->next;
-					event->next = nullptr;
-					event->length = position;
+					prev->set_next(event->get_next());
+					event->set_next(nullptr);
+					event->set_length(position);
 					list.push_back(event);
 				}
 
-				event = prev->next;
+				event = prev->get_next();
 				count--;
 				continue;
 			}
 
 			// Note or rest.
-			if (event->length != 0) {
-				position += event->length;
-				if (event->id != MMLEvent::REST) {
+			if (event->get_length() != 0) {
+				position += event->get_length();
+				if (event->get_id() != MMLEvent::REST) {
 					has_no_event = false;
 				}
 				prev = event;
-				event = event->next;
+				event = event->get_next();
 				continue;
 			}
 
 			// Everything else.
 			prev = event;
 
-			switch (event->id) {
+			switch (event->get_id()) {
 				case MMLEvent::REPEAT_BEGIN: {
 					event = _temp_executor->on_repeat_begin(event);
 				} break;
 
 				case MMLEvent::REPEAT_BREAK: {
 					event = _temp_executor->on_repeat_break(event);
-					if (prev->next != event) {
-						prev = prev->jump->jump;
+					if (prev->get_next() != event) {
+						prev = prev->get_jump()->get_jump();
 					}
 				} break;
 
 				case MMLEvent::REPEAT_END: {
 					event = _temp_executor->on_repeat_end(event);
-					if (prev->next != event) {
-						prev = prev->jump;
+					if (prev->get_next() != event) {
+						prev = prev->get_jump();
 					}
 				} break;
 
@@ -313,7 +319,7 @@ void MMLSequencer::_extract_global_sequence() {
 				} break;
 
 				default: {
-					event = event->next;
+					event = event->get_next();
 					has_no_event = true;
 				} break;
 			}
@@ -334,13 +340,13 @@ void MMLSequencer::_extract_global_sequence() {
 	int initial_bpm = 0;
 
 	for (MMLEvent *event : list) {
-		if (event->length == 0 && event->id == MMLEvent::TEMPO) {
+		if (event->get_length() == 0 && event->get_id() == MMLEvent::TEMPO) {
 			// First tempo command is default BPM.
-			initial_bpm = mml_data->get_bpm_from_tcommand(event->data);
+			initial_bpm = mml_data->get_bpm_from_tcommand(event->get_data());
 		} else {
-			int count = event->length - position;
-			position = event->length;
-			event->length = 0;
+			int count = event->get_length() - position;
+			position = event->get_length();
+			event->set_length(0);
 
 			if (count > 0) {
 				glob_sequence->append_new_event(MMLEvent::GLOBAL_WAIT, 0, count);
@@ -438,7 +444,7 @@ int MMLSequencer::execute_global_sequence() {
 			_global_buffer_sample_count = 0;
 		} else {
 			// Update global execute sample count in some event handlers.
-			Callable cb = _event_handlers[event->id];
+			Callable cb = _event_handlers[event->get_id()];
 			if (cb.is_valid()) {
 				event = Object::cast_to<MMLEvent>(cb.call(event));
 				_current_executor->set_pointer(event);
@@ -486,15 +492,15 @@ bool MMLSequencer::process_executor(MMLExecutor *p_executor, int p_buffer_sample
 	_process_buffer_sample_count = p_buffer_sample_count;
 	while (_process_buffer_sample_count > 0) {
 		if (event == nullptr) {
-			Callable cb = _event_handlers[MMLEvent::NOP];
+			Callable cb = _event_handlers[MMLEvent::NO_OP];
 			if (cb.is_valid()) {
-				cb.call(MMLEvent::get_nop_event());
+				cb.call(_current_executor->get_nop_event());
 			}
 			return true;
 		}
 
 		// Update process buffer sample count in some event handlers.
-		Callable cb = _event_handlers[event->id];
+		Callable cb = _event_handlers[event->get_id()];
 		if (cb.is_valid()) {
 			event = Object::cast_to<MMLEvent>(cb.call(event));
 			_current_executor->set_pointer(event);
@@ -533,9 +539,10 @@ int MMLSequencer::get_current_tick_count() {
 }
 
 void MMLSequencer::parse_table_event(MMLEvent *p_prev) {
-	MMLEvent *table_event = p_prev->next;
+	MMLEvent *table_event = p_prev->get_next();
 	_on_table_parse(p_prev, MMLParser::get_instance()->get_system_event_string(table_event));
-	p_prev->next = table_event->next;
+
+	p_prev->set_next(table_event->get_next());
 	MMLParser::get_instance()->free_event(table_event);
 }
 
@@ -571,7 +578,7 @@ MMLSequencer::MMLSequencer() {
 		_event_handlers.write[i] = Callable(this, "_no_process");
 	}
 
-	_set_mml_event_listener(MMLEvent::NOP,           Callable(this, "_default_on_no_operation"),  false);
+	_set_mml_event_listener(MMLEvent::NO_OP,         Callable(this, "_default_on_no_operation"),  false);
 	_set_mml_event_listener(MMLEvent::PROCESS,       Callable(this, "_default_on_process"),       false);
 	_set_mml_event_listener(MMLEvent::REPEAT_ALL,    Callable(this, "_default_on_repeat_all"),    false);
 	_set_mml_event_listener(MMLEvent::REPEAT_BEGIN,  Callable(this, "_default_on_repeat_begin"),  false);

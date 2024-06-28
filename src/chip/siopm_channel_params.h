@@ -128,7 +128,7 @@ public:
 	void copy_from(const Ref<SiOPMChannelParams> &p_params);
 
 	SiOPMChannelParams();
-	~SiOPMChannelParams() {}
+	~SiOPMChannelParams();
 };
 
 #endif // SIOPM_CHANNEL_PARAMS_H

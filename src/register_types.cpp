@@ -170,6 +170,10 @@ void uninitialize_sion_module(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
+
+	// Finalize singletons after the execution.
+	MMLSequencer::finalize();
+	MMLParser::finalize();
 }
 
 extern "C" {
