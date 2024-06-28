@@ -41,7 +41,7 @@ class SiOPMWaveSamplerTable;
 
 // SiONDriver class provides the driver of SiON's digital signal processor emulator. All SiON's basic operations are
 // provided as driver's properties, methods, and signals. Only one instance must exist at a time.
-// TODO: Mostly implemented, aside from MIDI support, background sound, and panning. Refer to FIXMEs and TODOs.
+// TODO: Mostly implemented, aside from MIDI support, audio stream sampling, and background sound. Refer to FIXMEs and TODOs.
 class SiONDriver : public Node {
 	GDCLASS(SiONDriver, Node)
 
@@ -113,14 +113,14 @@ private:
 
 	// Sound and output properties.
 
+	// Module and streaming buffer size (8192, 4096 or 2048).
+	int _buffer_length = 2048;
 	// Output channels (1 or 2).
-	int _channel_count = 2;
+	int _channel_num = 2;
 	// Output frequency ratio (44100 or 22050).
 	double _sample_rate = 44100;
 	// Output bitrate. Value of 0 means that the wave is represented by a float in [-1,+1].
 	int _bitrate = 0;
-	// Module and streaming buffer size (8192, 4096 or 2048).
-	int _buffer_length = 2048;
 
 	// Streaming and rendering.
 
@@ -140,14 +140,14 @@ private:
 	bool _is_finish_sequence_dispatched = false;
 
 	Vector<double> _render_buffer;
-	int _render_buffer_channel_count = 0;
+	int _render_buffer_channel_num = 0;
 	int _render_buffer_index = 0;
 	int _render_buffer_size_max = 0;
 
 	bool _parse_system_command(const List<Ref<MMLSystemCommand>> &p_system_commands);
 
 	void _prepare_compile(String p_mml, const Ref<SiONData> &p_data);
-	void _prepare_render(const Variant &p_data, Vector<double> p_render_buffer, int p_render_buffer_channel_count, bool p_reset_effector);
+	void _prepare_render(const Variant &p_data, Vector<double> p_render_buffer, int p_render_buffer_channel_num, bool p_reset_effector);
 	bool _rendering();
 	void _streaming();
 
@@ -164,6 +164,7 @@ private:
 	// Send the CHANGE_BPM event when position changes.
 	bool _notify_change_bpm_on_position_changed = true;
 
+	void _update_volume();
 	void _fade_callback(double p_value);
 
 	// Processing.
@@ -190,10 +191,10 @@ private:
 		String mml;
 		Vector<double> buffer;
 		Ref<SiONData> data;
-		int channel_count = 0;
+		int channel_num = 0;
 		bool reset_effector = false;
 
-		SiONDriverJob(String p_mml, Vector<double> p_buffer, const Ref<SiONData> &p_data, int p_channel_count, bool p_reset_effector);
+		SiONDriverJob(String p_mml, Vector<double> p_buffer, const Ref<SiONData> &p_data, int p_channel_num, bool p_reset_effector);
 		~SiONDriverJob() {}
 	};
 
@@ -274,7 +275,7 @@ public:
 	// The singleton instance.
 	static SiONDriver *get_mutex() { return _mutex; }
 	// NOTE: Godot doesn't support exposing constructors to the API, so we make do with a static factory method. Hopefully this can be fixed at some point.
-	static SiONDriver *create(int p_buffer_length = 2048, int p_channel_count = 2, int p_sample_rate = 44100, int p_bitrate = 0);
+	static SiONDriver *create(int p_buffer_length = 2048, int p_channel_num = 2, int p_sample_rate = 44100, int p_bitrate = 0);
 
 	// Original code marks this as experimental and notes that each driver has a large memory footprint.
 	// Some static classes can also be stateful, leading to conflicts if multiple drivers exist at the same time.
@@ -293,8 +294,8 @@ public:
 	Ref<SiONData> get_data() const { return _data; }
 
 	SiOPMWaveTable *set_wave_table(int p_index, Vector<double> p_table);
-	SiOPMWavePCMData *set_pcm_wave(int p_index, const Variant &p_data, double p_sampling_note = 69, int p_key_range_from = 0, int p_key_range_to = 127, int p_src_channel_count = 2, int p_channel_count = 0);
-	SiOPMWaveSamplerData *set_sampler_wave(int p_index, const Variant &p_data, bool p_ignore_note_off = false, int p_pan = 0, int p_src_channel_count = 2, int p_channel_count = 0);
+	SiOPMWavePCMData *set_pcm_wave(int p_index, const Variant &p_data, double p_sampling_note = 69, int p_key_range_from = 0, int p_key_range_to = 127, int p_src_channel_num = 2, int p_channel_num = 0);
+	SiOPMWaveSamplerData *set_sampler_wave(int p_index, const Variant &p_data, bool p_ignore_note_off = false, int p_pan = 0, int p_src_channel_num = 2, int p_channel_num = 0);
 	void set_pcm_voice(int p_index, const Ref<SiONVoice> &p_voice);
 	void set_sampler_table(int p_bank, SiOPMWaveSamplerTable *p_table);
 	void set_envelope_table(int p_index, Vector<int> p_table, int p_loop_point = -1);
@@ -333,14 +334,12 @@ public:
 	void set_max_track_count(int p_value);
 
 	int get_buffer_length() const { return _buffer_length; }
+	int get_channel_num() const { return _channel_num; }
 	double get_sample_rate() const { return _sample_rate; }
 	double get_bitrate() const { return _bitrate; }
 
 	double get_volume() const;
 	void set_volume(double p_value);
-	double get_pan() const;
-	void set_pan(double p_value);
-
 	double get_bpm() const;
 	void set_bpm(double p_value);
 
@@ -371,8 +370,8 @@ public:
 	Ref<SiONData> compile(String p_mml, const Ref<SiONData> &p_data = Ref<SiONData>());
 	int queue_compile(String p_mml, const Ref<SiONData> &p_data);
 
-	Vector<double> render(const Variant &p_data, Vector<double> p_render_buffer = Vector<double>(), int p_render_buffer_channel_count = 2, bool p_reset_effector = true);
-	int queue_render(const Variant &p_data, Vector<double> p_render_buffer, int p_render_buffer_channel_count = 2, bool p_reset_effector = false);
+	Vector<double> render(const Variant &p_data, Vector<double> p_render_buffer = Vector<double>(), int p_render_buffer_channel_num = 2, bool p_reset_effector = true);
+	int queue_render(const Variant &p_data, Vector<double> p_render_buffer, int p_render_buffer_channel_num = 2, bool p_reset_effector = false);
 
 	// Playback.
 
@@ -421,7 +420,7 @@ public:
 
 	//
 
-	SiONDriver(int p_buffer_length = 2048, int p_channel_count = 2, int p_sample_rate = 44100, int p_bitrate = 0);
+	SiONDriver(int p_buffer_length = 2048, int p_channel_num = 2, int p_sample_rate = 44100, int p_bitrate = 0);
 	~SiONDriver();
 };
 

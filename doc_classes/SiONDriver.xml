@@ -27,14 +27,56 @@
 				Creates a new instance of [SiONDriver]. Prefer using this method instead of the class constructor.
 				Use [param buffer_size] to control the size of the generated buffer. Bigger size is more demanding on your hardware. Supported values are [code]2048[/code], [code]4096[/code], [code]8192[/code].
 				Use [param channel_num] to configure the number of output channels. Can only be [code]1[/code] for mono and [code]2[/code] for stereo.
-				Use [param sample_rate] to control the sample rate. Only [code]44100[/code] is supported at this time.
+				Use [param sample_rate] to control the sampling rate. Only [code]44100[/code] is supported at this time.
 				Use [param bitrate] to enable quantization.
+			</description>
+		</method>
+		<method name="get_audio_playback" qualifiers="const">
+			<return type="AudioStreamGeneratorPlayback" />
+			<description>
+				Returns the internal [AudioStreamGeneratorPlayback] instance. Only available during streaming (after calling [method play]).
+			</description>
+		</method>
+		<method name="get_audio_player" qualifiers="const">
+			<return type="AudioStreamPlayer" />
+			<description>
+				Returns the internal [AudioStreamPlayer] instance. The player instance can be used to change the audio bus used by the synthesizer.
+			</description>
+		</method>
+		<method name="get_audio_stream" qualifiers="const">
+			<return type="AudioStreamGenerator" />
+			<description>
+				Returns the internal [AudioStreamGenerator] instance.
+			</description>
+		</method>
+		<method name="get_bitrate" qualifiers="const">
+			<return type="float" />
+			<description>
+				Returns the bitrate value used for quantization. See also [method create].
+			</description>
+		</method>
+		<method name="get_buffer_length" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the target size of the generated buffer. See also [method create].
+			</description>
+		</method>
+		<method name="get_channel_num" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the number of output channels. See also [method create].
 			</description>
 		</method>
 		<method name="get_effector" qualifiers="const">
 			<return type="SiEffector" />
 			<description>
 				Returns a reference to the [SiEffector] instance. You can use it to control global effects and filters.
+			</description>
+		</method>
+		<method name="get_sample_rate" qualifiers="const">
+			<return type="float" />
+			<description>
+				Returns the sampling rate. See also [method create].
 			</description>
 		</method>
 		<method name="get_sequencer" qualifiers="const">
@@ -47,6 +89,12 @@
 			<return type="SiOPMSoundChip" />
 			<description>
 				Returns a reference to the [SiOPMSoundChip] instance.
+			</description>
+		</method>
+		<method name="get_track_count" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the number of active tracks in the sequencer.
 			</description>
 		</method>
 		<method name="get_version" qualifiers="static">
@@ -174,13 +222,6 @@
 				Enables or disables reporting of the beat track event. Beat events are fired at a quick pace, so handling of them can become a performance bottleneck.
 			</description>
 		</method>
-		<method name="set_bpm">
-			<return type="void" />
-			<param index="0" name="bpm" type="float" />
-			<description>
-				Sets the beats per minute tempo.
-			</description>
-		</method>
 		<method name="set_fading_event_enabled">
 			<return type="void" />
 			<param index="0" name="enabled" type="bool" />
@@ -209,6 +250,17 @@
 			</description>
 		</method>
 	</methods>
+	<members>
+		<member name="bpm" type="float" setter="set_bpm" getter="get_bpm" default="120.0">
+			Beats per minute, or tempo, of the output. Values between [code]1[/code] and [code]4000[/code] are allowed.
+		</member>
+		<member name="max_track_count" type="int" setter="set_max_track_count" getter="get_max_track_count" default="128">
+			Maximum number of tracks that can exist at the same time.
+		</member>
+		<member name="volume" type="float" setter="set_volume" getter="get_volume" default="1.0">
+			Base volume of the output, before fading is applied. The volume is set as a linear value between [code]0.0[/code] and [code]1[/code].
+		</member>
+	</members>
 	<signals>
 		<signal name="bpm_changed">
 			<param index="0" name="event" type="SiONTrackEvent" />

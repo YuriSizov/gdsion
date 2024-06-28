@@ -7,6 +7,7 @@
 #include "sion_driver.h"
 
 #include <godot_cpp/classes/time.hpp>
+#include <godot_cpp/core/math.hpp>
 #include <godot_cpp/variant/packed_vector2_array.hpp>
 
 #include "sion_data.h"
@@ -46,7 +47,7 @@ bool SiONDriver::_allow_multiple_drivers = false;
 
 //
 
-SiONDriver::SiONDriverJob::SiONDriverJob(String p_mml, Vector<double> p_buffer, const Ref<SiONData> &p_data, int p_channel_count, bool p_reset_effector) {
+SiONDriver::SiONDriverJob::SiONDriverJob(String p_mml, Vector<double> p_buffer, const Ref<SiONData> &p_data, int p_channel_num, bool p_reset_effector) {
 	mml = p_mml;
 	buffer = p_buffer;
 
@@ -58,7 +59,7 @@ SiONDriver::SiONDriverJob::SiONDriverJob(String p_mml, Vector<double> p_buffer, 
 		data = new_data;
 	}
 
-	channel_count = p_channel_count;
+	channel_num = p_channel_num;
 	reset_effector = p_reset_effector;
 }
 
@@ -82,17 +83,17 @@ SiOPMWaveTable *SiONDriver::set_wave_table(int p_index, Vector<double> p_table) 
 	return wave_table;
 }
 
-SiOPMWavePCMData *SiONDriver::set_pcm_wave(int p_index, const Variant &p_data, double p_sampling_note, int p_key_range_from, int p_key_range_to, int p_src_channel_count, int p_channel_count) {
+SiOPMWavePCMData *SiONDriver::set_pcm_wave(int p_index, const Variant &p_data, double p_sampling_note, int p_key_range_from, int p_key_range_to, int p_src_channel_num, int p_channel_num) {
 	Ref<SiMMLVoice> pcm_voice = SiOPMRefTable::get_instance()->get_global_pcm_voice(p_index & (SiOPMRefTable::PCM_DATA_MAX - 1));
 	SiOPMWavePCMTable *pcm_table = Object::cast_to<SiOPMWavePCMTable>(pcm_voice->get_wave_data());
-	SiOPMWavePCMData *pcm_data = memnew(SiOPMWavePCMData(p_data, (int)(p_sampling_note * 64), p_src_channel_count, p_channel_count));
+	SiOPMWavePCMData *pcm_data = memnew(SiOPMWavePCMData(p_data, (int)(p_sampling_note * 64), p_src_channel_num, p_channel_num));
 
 	pcm_table->set_sample(pcm_data, p_key_range_from, p_key_range_to);
 	return pcm_data;
 }
 
-SiOPMWaveSamplerData *SiONDriver::set_sampler_wave(int p_index, const Variant &p_data, bool p_ignore_note_off, int p_pan, int p_src_channel_count, int p_channel_count) {
-	return SiOPMRefTable::get_instance()->register_sampler_data(p_index, p_data, p_ignore_note_off, p_pan, p_src_channel_count, p_channel_count);
+SiOPMWaveSamplerData *SiONDriver::set_sampler_wave(int p_index, const Variant &p_data, bool p_ignore_note_off, int p_pan, int p_src_channel_num, int p_channel_num) {
+	return SiOPMRefTable::get_instance()->register_sampler_data(p_index, p_data, p_ignore_note_off, p_pan, p_src_channel_num, p_channel_num);
 }
 
 void SiONDriver::set_pcm_voice(int p_index, const Ref<SiONVoice> &p_voice) {
@@ -279,7 +280,14 @@ int SiONDriver::get_max_track_count() const {
 }
 
 void SiONDriver::set_max_track_count(int p_value) {
+	ERR_FAIL_COND_MSG(p_value < 1, "SiONDriver: Max track limit cannot be lower than 1.");
+
 	sequencer->set_max_track_count(p_value);
+}
+
+void SiONDriver::_update_volume() {
+	double db_volume = Math::linear2db(_master_volume * _fader_volume);
+	_audio_player->set_volume_db(db_volume);
 }
 
 double SiONDriver::get_volume() const {
@@ -287,19 +295,10 @@ double SiONDriver::get_volume() const {
 }
 
 void SiONDriver::set_volume(double p_value) {
+	ERR_FAIL_COND_MSG(p_value < 0 || p_value > 1, "SiONDriver: Volume must be between 0.0 and 1.0 (inclusive).");
+
 	_master_volume = p_value;
-	_audio_player->set_volume_db(_master_volume * _fader_volume);
-}
-
-double SiONDriver::get_pan() const {
-	// TODO: Add panning support for Godot types.
-	//return _sound_transform->pan;
-	return 0;
-}
-
-void SiONDriver::set_pan(double p_value) {
-	// TODO: Add panning support for Godot types.
-	//_sound_transform->pan = p_value;
+	_update_volume();
 }
 
 double SiONDriver::get_bpm() const {
@@ -307,6 +306,12 @@ double SiONDriver::get_bpm() const {
 }
 
 void SiONDriver::set_bpm(double p_value) {
+	// Scholars debate whether BPM even has the upper limit. At some point it definitely turns into tone for most people,
+	// with no discernible beat in earshot. But having no limit at all for the API feels strange. Besides, we don't have
+	// infinitely scalable performance. So as a compromise you can set the BPM to up to 4000 beats per minute.
+	// You're welcome!
+	ERR_FAIL_COND_MSG(p_value < 1 || p_value > 4000, "SiONDriver: BPM must be between 1 and 4000 (inclusive).");
+
 	sequencer->set_effective_bpm(p_value);
 }
 
@@ -364,11 +369,11 @@ void SiONDriver::_prepare_compile(String p_mml, const Ref<SiONData> &p_data) {
 	_current_job_type = JobType::COMPILE;
 }
 
-void SiONDriver::_prepare_render(const Variant &p_data, Vector<double> p_render_buffer, int p_render_buffer_channel_count, bool p_reset_effector) {
+void SiONDriver::_prepare_render(const Variant &p_data, Vector<double> p_render_buffer, int p_render_buffer_channel_num, bool p_reset_effector) {
 	_prepare_process(p_data, p_reset_effector);
 
 	_render_buffer = p_render_buffer;
-	_render_buffer_channel_count = (p_render_buffer_channel_count == 2 ? 2 : 1);
+	_render_buffer_channel_num = (p_render_buffer_channel_num == 2 ? 2 : 1);
 	_render_buffer_size_max = _render_buffer.size();
 	_render_buffer_index = 0;
 
@@ -389,7 +394,7 @@ bool SiONDriver::_rendering() {
 
 	// Limit the rendering length.
 	int rendering_length = _buffer_length << 1;
-	int buffer_extension = _buffer_length << (_render_buffer_channel_count - 1);
+	int buffer_extension = _buffer_length << (_render_buffer_channel_num - 1);
 
 	if (_render_buffer_size_max != 9 && _render_buffer_size_max < (_render_buffer_index + buffer_extension)) {
 		buffer_extension = _render_buffer_size_max - _render_buffer_index;
@@ -404,7 +409,7 @@ bool SiONDriver::_rendering() {
 	// Read the output.
 	Vector<double> *output_buffer = sound_chip->get_output_buffer_ptr();
 
-	if (_render_buffer_channel_count == 2) {
+	if (_render_buffer_channel_num == 2) {
 		for (int i = 0, j = _render_buffer_index; i < rendering_length; i++, j++) {
 			_render_buffer.write[j] = (*output_buffer)[i];
 		}
@@ -520,11 +525,11 @@ int SiONDriver::queue_compile(String p_mml, const Ref<SiONData> &p_data) {
 	return _job_queue.size();
 }
 
-Vector<double> SiONDriver::render(const Variant &p_data, Vector<double> p_render_buffer, int p_render_buffer_channel_count, bool p_reset_effector) {
+Vector<double> SiONDriver::render(const Variant &p_data, Vector<double> p_render_buffer, int p_render_buffer_channel_num, bool p_reset_effector) {
 	stop();
 
 	int start_time = Time::get_singleton()->get_ticks_msec();
-	_prepare_render(p_data, p_render_buffer, p_render_buffer_channel_count, p_reset_effector);
+	_prepare_render(p_data, p_render_buffer, p_render_buffer_channel_num, p_reset_effector);
 
 	while (true) { // Render everything.
 		if (_rendering()) {
@@ -536,7 +541,7 @@ Vector<double> SiONDriver::render(const Variant &p_data, Vector<double> p_render
 	return _render_buffer;
 }
 
-int SiONDriver::queue_render(const Variant &p_data, Vector<double> p_render_buffer, int p_render_buffer_channel_count, bool p_reset_effector) {
+int SiONDriver::queue_render(const Variant &p_data, Vector<double> p_render_buffer, int p_render_buffer_channel_num, bool p_reset_effector) {
 	if (p_data.get_type() == Variant::NIL || p_render_buffer.is_empty()) {
 		return _job_queue.size();
 	}
@@ -550,7 +555,7 @@ int SiONDriver::queue_render(const Variant &p_data, Vector<double> p_render_buff
 			// Queue compilation first.
 			_job_queue.push_back(memnew(SiONDriverJob(mml_string, Vector<double>(), sion_data, 2, false)));
 			// Then queue the render.
-			_job_queue.push_back(memnew(SiONDriverJob(String(), p_render_buffer, sion_data, p_render_buffer_channel_count, p_reset_effector)));
+			_job_queue.push_back(memnew(SiONDriverJob(String(), p_render_buffer, sion_data, p_render_buffer_channel_num, p_reset_effector)));
 
 			return _job_queue.size();
 		} break;
@@ -558,7 +563,7 @@ int SiONDriver::queue_render(const Variant &p_data, Vector<double> p_render_buff
 		case Variant::OBJECT: {
 			Ref<SiONData> sion_data = p_data;
 			if (sion_data.is_valid()) {
-				_job_queue.push_back(memnew(SiONDriverJob(String(), p_render_buffer, sion_data, p_render_buffer_channel_count, p_reset_effector)));
+				_job_queue.push_back(memnew(SiONDriverJob(String(), p_render_buffer, sion_data, p_render_buffer_channel_num, p_reset_effector)));
 
 				return _job_queue.size();
 			}
@@ -567,7 +572,7 @@ int SiONDriver::queue_render(const Variant &p_data, Vector<double> p_render_buff
 		default: break; // Silences enum warnings.
 	}
 
-	ERR_FAIL_V_MSG(_job_queue.size(), "SiONDriver: Unsupported data type.");
+	ERR_FAIL_V_MSG(_job_queue.size(), "SiONDriver: Data type is unsupported by the render.");
 }
 
 // Playback.
@@ -621,7 +626,7 @@ void SiONDriver::stop() {
 	_fader_volume = 1;
 	_audio_playback = Ref<AudioStreamGeneratorPlayback>();
 	_audio_player->stop();
-	_audio_player->set_volume_db(_master_volume);
+	_update_volume();
 	sequencer->stop_sequence();
 
 	_dispatch_event(memnew(SiONEvent(SiONEvent::STREAM_STOPPED, this)));
@@ -796,7 +801,7 @@ TypedArray<SiMMLTrack> SiONDriver::sequence_off(int p_track_id, double p_delay, 
 
 void SiONDriver::_fade_callback(double p_value) {
 	_fader_volume = p_value;
-	_audio_player->set_volume_db(_master_volume * _fader_volume);
+	_update_volume();
 
 	if (!_fading_event_enabled) {
 		return;
@@ -865,7 +870,7 @@ void SiONDriver::_prepare_process(const Variant &p_data, bool p_reset_effector) 
 
 	// Order of operations below is critical.
 
-	sound_chip->initialize(_channel_count, _bitrate, _buffer_length);    // Initialize DSP.
+	sound_chip->initialize(_channel_num, _bitrate, _buffer_length);    // Initialize DSP.
 	sound_chip->reset();                                                 // Reset all channels.
 
 	if (p_reset_effector) {                                          // Initialize or reset effectors.
@@ -1002,7 +1007,7 @@ bool SiONDriver::_prepare_next_job() {
 	_job_queue.pop_front();
 
 	if (job->mml.is_empty()) {
-		_prepare_render(job->data, job->buffer, job->channel_count, job->reset_effector);
+		_prepare_render(job->data, job->buffer, job->channel_num, job->reset_effector);
 	} else {
 		_prepare_compile(job->mml, job->data);
 	}
@@ -1169,8 +1174,8 @@ void SiONDriver::_notification(int p_what) {
 
 //
 
-SiONDriver *SiONDriver::create(int p_buffer_length, int p_channel_count, int p_sample_rate, int p_bitrate) {
-	return memnew(SiONDriver(p_buffer_length, p_channel_count, p_sample_rate, p_bitrate));
+SiONDriver *SiONDriver::create(int p_buffer_length, int p_channel_num, int p_sample_rate, int p_bitrate) {
+	return memnew(SiONDriver(p_buffer_length, p_channel_num, p_sample_rate, p_bitrate));
 }
 
 void SiONDriver::_bind_methods() {
@@ -1197,7 +1202,28 @@ void SiONDriver::_bind_methods() {
 
 	// Public API.
 
+	ClassDB::bind_method(D_METHOD("get_audio_player"), &SiONDriver::get_audio_player);
+	ClassDB::bind_method(D_METHOD("get_audio_stream"), &SiONDriver::get_audio_stream);
+	ClassDB::bind_method(D_METHOD("get_audio_playback"), &SiONDriver::get_audio_playback);
+
+	ClassDB::bind_method(D_METHOD("get_track_count"), &SiONDriver::get_track_count);
+	ClassDB::bind_method(D_METHOD("get_max_track_count"), &SiONDriver::get_max_track_count);
+	ClassDB::bind_method(D_METHOD("set_max_track_count", "value"), &SiONDriver::set_max_track_count);
+
+	ClassDB::add_property("SiONDriver", PropertyInfo(Variant::INT, "max_track_count"), "set_max_track_count", "get_max_track_count");
+
+	ClassDB::bind_method(D_METHOD("get_buffer_length"), &SiONDriver::get_buffer_length);
+	ClassDB::bind_method(D_METHOD("get_channel_num"), &SiONDriver::get_channel_num);
+	ClassDB::bind_method(D_METHOD("get_sample_rate"), &SiONDriver::get_sample_rate);
+	ClassDB::bind_method(D_METHOD("get_bitrate"), &SiONDriver::get_bitrate);
+
+	ClassDB::bind_method(D_METHOD("get_volume"), &SiONDriver::get_volume);
+	ClassDB::bind_method(D_METHOD("set_volume", "value"), &SiONDriver::set_volume);
+	ClassDB::bind_method(D_METHOD("get_bpm"), &SiONDriver::get_bpm);
 	ClassDB::bind_method(D_METHOD("set_bpm", "bpm"), &SiONDriver::set_bpm);
+
+	ClassDB::add_property("SiONDriver", PropertyInfo(Variant::FLOAT, "volume"), "set_volume", "get_volume");
+	ClassDB::add_property("SiONDriver", PropertyInfo(Variant::FLOAT, "bpm"), "set_bpm", "get_bpm");
 
 	ClassDB::bind_method(D_METHOD("set_beat_callback_interval", "length_16th"), &SiONDriver::set_beat_callback_interval);
 	ClassDB::bind_method(D_METHOD("set_timer_interval", "length_16th"), &SiONDriver::set_timer_interval);
@@ -1321,12 +1347,12 @@ void SiONDriver::_bind_methods() {
 	BIND_ENUM_CONSTANT(PULSE_USER_PCM);
 }
 
-SiONDriver::SiONDriver(int p_buffer_length, int p_channel_count, int p_sample_rate, int p_bitrate) {
+SiONDriver::SiONDriver(int p_buffer_length, int p_channel_num, int p_sample_rate, int p_bitrate) {
 	ERR_FAIL_COND_MSG(!_allow_multiple_drivers && _mutex, "SiONDriver: Only one driver instance is allowed.");
 	_mutex = this;
 
 	ERR_FAIL_COND_MSG((p_buffer_length != 2048 && p_buffer_length != 4096 && p_buffer_length != 8192), "SiONDriver: Buffer length can only be 2048, 4096, or 8192.");
-	ERR_FAIL_COND_MSG((p_channel_count != 1 && p_channel_count != 2), "SiONDriver: Channel count can only be 1 (mono) or 2 (stereo).");
+	ERR_FAIL_COND_MSG((p_channel_num != 1 && p_channel_num != 2), "SiONDriver: Channel number can only be 1 (mono) or 2 (stereo).");
 	ERR_FAIL_COND_MSG((p_sample_rate != 44100), "SiONDriver: Sampling rate can only be 44100.");
 
 	sound_chip = memnew(SiOPMSoundChip);
@@ -1339,11 +1365,9 @@ SiONDriver::SiONDriver(int p_buffer_length, int p_channel_count, int p_sample_ra
 
 	// Main sound.
 	{
-		// TODO: Add panning support for Godot types.
-
 		_audio_player = memnew(AudioStreamPlayer);
 		add_child(_audio_player);
-		_audio_player->set_volume_db(_master_volume * _fader_volume);
+		_update_volume();
 
 		_audio_stream.instantiate();
 		_audio_stream->set_mix_rate(p_sample_rate);
@@ -1369,7 +1393,7 @@ SiONDriver::SiONDriver(int p_buffer_length, int p_channel_count, int p_sample_ra
 
 	{
 		_buffer_length = p_buffer_length;
-		_channel_count = p_channel_count;
+		_channel_num = p_channel_num;
 		_sample_rate = p_sample_rate;
 		_bitrate = p_bitrate;
 	}
