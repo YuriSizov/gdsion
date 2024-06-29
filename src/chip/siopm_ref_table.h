@@ -12,14 +12,13 @@
 #include <godot_cpp/templates/vector.hpp>
 #include <godot_cpp/variant/variant.hpp>
 #include "sion_enums.h"
+#include "chip/wave/siopm_wave_pcm_table.h"
+#include "chip/wave/siopm_wave_sampler_data.h"
+#include "chip/wave/siopm_wave_sampler_table.h"
+#include "chip/wave/siopm_wave_table.h"
 #include "sequencer/simml_voice.h"
 
 using namespace godot;
-
-class SiOPMWavePCMTable;
-class SiOPMWaveSamplerData;
-class SiOPMWaveSamplerTable;
-class SiOPMWaveTable;
 
 // Reference data object for the processor and related operations.
 class SiOPMRefTable {
@@ -29,9 +28,9 @@ class SiOPMRefTable {
 	// Wave samples.
 
 	// Custom wave tables.
-	Vector<SiOPMWaveTable *> _custom_wave_tables;
+	Vector<Ref<SiOPMWaveTable>> _custom_wave_tables;
 	// Overriding custom wave tables.
-	Vector<SiOPMWaveTable *> _stencil_custom_wave_tables;
+	Vector<Ref<SiOPMWaveTable>> _stencil_custom_wave_tables;
 	// PCM voices.
 	Vector<Ref<SiMMLVoice>> _pcm_voices;
 	// Overriding PCM voices.
@@ -51,7 +50,7 @@ class SiOPMRefTable {
 public:
 	static SiOPMRefTable *get_instance() { return _instance; }
 	static void initialize();
-	static void finalize() {}
+	static void finalize();
 
 	static int calculate_log_table_index(double p_number);
 
@@ -255,31 +254,31 @@ public:
 	// Wave samples.
 
 	// PG wave tables.
-	Vector<SiOPMWaveTable *> wave_tables;
+	Vector<Ref<SiOPMWaveTable>> wave_tables;
 	// PG wave tables without any waves.
-	SiOPMWaveTable *no_wave_table = nullptr;
-	SiOPMWaveTable *no_wave_table_opm = nullptr;
+	Ref<SiOPMWaveTable> no_wave_table;
+	Ref<SiOPMWaveTable> no_wave_table_opm;
 	// PG sampler table.
-	Vector<SiOPMWaveSamplerTable *> sampler_tables;
+	Vector<Ref<SiOPMWaveSamplerTable>> sampler_tables;
 
 	void reset_all_user_tables();
-	void register_wave_table(int p_index, SiOPMWaveTable *p_table);
-	SiOPMWaveSamplerData *register_sampler_data(int p_index, const Variant &p_data, bool p_ignore_note_off, int p_pan, int p_src_channel_count, int p_channel_count);
+	void register_wave_table(int p_index, const Ref<SiOPMWaveTable> &p_table);
+	Ref<SiOPMWaveSamplerData> register_sampler_data(int p_index, const Variant &p_data, bool p_ignore_note_off, int p_pan, int p_src_channel_count, int p_channel_count);
 
-	SiOPMWaveTable *get_wave_table(int p_index);
-	SiOPMWavePCMTable *get_pcm_data(int p_index);
+	Ref<SiOPMWaveTable> get_wave_table(int p_index);
+	Ref<SiOPMWavePCMTable> get_pcm_data(int p_index);
 
 	Ref<SiMMLVoice> get_global_pcm_voice(int p_index);
 	Ref<SiMMLVoice> set_global_pcm_voice(int p_index, const Ref<SiMMLVoice> &p_from_voice);
 
-	void set_stencil_custom_wave_tables(Vector<SiOPMWaveTable *> p_tables) { _stencil_custom_wave_tables = p_tables; }
+	void set_stencil_custom_wave_tables(Vector<Ref<SiOPMWaveTable>> p_tables) { _stencil_custom_wave_tables = p_tables; }
 	void set_stencil_pcm_voices(Vector<Ref<SiMMLVoice>> p_tables) { _stencil_pcm_voices = p_tables; }
 
 	//
 
 	// TODO: Define parameters as constants?
 	SiOPMRefTable(int p_fm_clock = 3580000, double p_psg_clock = 1789772.5, int p_sampling_rate = 44100);
-	~SiOPMRefTable() {}
+	~SiOPMRefTable();
 };
 
 #endif // SIOPM_REF_TABLE_H

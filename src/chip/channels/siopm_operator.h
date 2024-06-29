@@ -303,8 +303,8 @@ public:
 
 	void set_operator_params(SiOPMOperatorParams *p_params);
 	void get_operator_params(SiOPMOperatorParams *r_params);
-	void set_wave_table(SiOPMWaveTable *p_wave_table);
-	void set_pcm_data(SiOPMWavePCMData *p_pcm_data);
+	void set_wave_table(const Ref<SiOPMWaveTable> &p_wave_table);
+	void set_pcm_data(const Ref<SiOPMWavePCMData> &p_pcm_data);
 
 	void note_on();
 	void note_off();

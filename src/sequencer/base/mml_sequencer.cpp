@@ -26,6 +26,7 @@ void MMLSequencer::initialize() {
 void MMLSequencer::finalize() {
 	if (_temp_executor) {
 		memdelete(_temp_executor);
+		_temp_executor = nullptr;
 	}
 }
 

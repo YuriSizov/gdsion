@@ -42,12 +42,12 @@ void SiMMLData::set_envelope_table(int p_index, SiMMLEnvelopeTable *p_envelope) 
 	_envelope_tables.write[p_index] = p_envelope;
 }
 
-SiOPMWaveTable *SiMMLData::get_wave_table(int p_index) const {
+Ref<SiOPMWaveTable> SiMMLData::get_wave_table(int p_index) const {
 	int index = p_index & (SiOPMRefTable::WAVE_TABLE_MAX - 1);
 	return _wave_tables[index];
 }
 
-SiOPMWaveTable *SiMMLData::set_wave_table(int p_index, Vector<double> *p_data) {
+Ref<SiOPMWaveTable> SiMMLData::set_wave_table(int p_index, Vector<double> *p_data) {
 	int index = p_index & (SiOPMRefTable::WAVE_TABLE_MAX - 1);
 
 	Vector<int> log_table;
@@ -56,17 +56,17 @@ SiOPMWaveTable *SiMMLData::set_wave_table(int p_index, Vector<double> *p_data) {
 		log_table.write[i] = SiOPMRefTable::calculate_log_table_index((*p_data)[i]);
 	}
 
-	_wave_tables.write[index] = SiOPMWaveTable::alloc(log_table);
+	_wave_tables.write[index] = Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(log_table)));
 	return _wave_tables[index];
 }
 
-SiOPMWaveSamplerTable *SiMMLData::get_sampler_table(int p_index) const {
+Ref<SiOPMWaveSamplerTable> SiMMLData::get_sampler_table(int p_index) const {
 	ERR_FAIL_INDEX_V(p_index, SiOPMRefTable::SAMPLER_TABLE_MAX, nullptr);
 
 	return _sampler_tables[p_index];
 }
 
-void SiMMLData::set_sampler_table(int p_index, SiOPMWaveSamplerTable *p_sampler) {
+void SiMMLData::set_sampler_table(int p_index, const Ref<SiOPMWaveSamplerTable> &p_sampler) {
 	ERR_FAIL_INDEX(p_index, SiOPMRefTable::SAMPLER_TABLE_MAX);
 
 	_sampler_tables.write[p_index] = p_sampler;
@@ -107,23 +107,25 @@ void SiMMLData::clear() {
 	MMLData::clear();
 
 	for (int i = 0; i < SiMMLRefTable::ENVELOPE_TABLE_MAX; i++) {
-		_envelope_tables.write[i] = nullptr;
+		if (_envelope_tables[i]) {
+			memdelete(_envelope_tables[i]);
+			_envelope_tables.write[i] = nullptr;
+		}
 	}
+
 	for (int i = 0; i < SiMMLRefTable::VOICE_MAX; i++) {
 		_fm_voices.write[i] = Ref<SiMMLVoice>();
 	}
 
 	for (int i = 0; i < SiOPMRefTable::WAVE_TABLE_MAX; i++) {
-		if (_wave_tables[i]) {
-			_wave_tables[i]->free();
-			_wave_tables.write[i] = nullptr;
-		}
+		_wave_tables.write[i] = Ref<SiOPMWaveTable>();
 	}
+
 	for (int i = 0; i < SiOPMRefTable::PCM_DATA_MAX; i++) {
 		if (_pcm_voices[i].is_valid()) {
-			SiOPMWavePCMTable *pcm_table = Object::cast_to<SiOPMWavePCMTable>(_pcm_voices[i]->get_wave_data());
-			if (pcm_table) {
-				pcm_table->free();
+			Ref<SiOPMWavePCMTable> pcm_table = _pcm_voices[i]->get_wave_data();
+			if (pcm_table.is_valid()) {
+				pcm_table->clear();
 			}
 
 			_pcm_voices.write[i] = Ref<SiMMLVoice>();
@@ -131,7 +133,7 @@ void SiMMLData::clear() {
 	}
 
 	for (int i = 0; i < SiOPMRefTable::SAMPLER_TABLE_MAX; i++) {
-		_sampler_tables[i]->free();
+		_sampler_tables.write[i] = Ref<SiOPMWaveSamplerTable>();
 	}
 }
 
@@ -144,6 +146,18 @@ SiMMLData::SiMMLData() {
 	_pcm_voices.resize_zeroed(SiOPMRefTable::PCM_DATA_MAX);
 
 	for (int i = 0; i < SiOPMRefTable::SAMPLER_TABLE_MAX; i++) {
-		_sampler_tables.write[i] = memnew(SiOPMWaveSamplerTable);
+		_sampler_tables.write[i] = Ref<SiOPMWaveSamplerTable>(memnew(SiOPMWaveSamplerTable));
 	}
+}
+
+SiMMLData::~SiMMLData() {
+	for (int i = 0; i < SiMMLRefTable::ENVELOPE_TABLE_MAX; i++) {
+		if (_envelope_tables[i]) {
+			memdelete(_envelope_tables[i]);
+			_envelope_tables.write[i] = nullptr;
+		}
+	}
+
+	_wave_tables.clear();
+	_sampler_tables.clear();
 }

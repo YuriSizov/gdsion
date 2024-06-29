@@ -9,7 +9,7 @@
 #include "sion_enums.h"
 #include "chip/siopm_ref_table.h"
 
-SiOPMWavePCMData *SiOPMWavePCMTable::get_note_data(int p_note) const {
+Ref<SiOPMWavePCMData> SiOPMWavePCMTable::get_note_data(int p_note) const {
 	ERR_FAIL_INDEX_V_MSG(p_note, _note_data_map.size(), nullptr, vformat("SiOPMWavePCMData: Trying to access note data for a note that doesn't exist (%d).", p_note));
 	return _note_data_map[p_note];
 }
@@ -24,7 +24,7 @@ int SiOPMWavePCMTable::get_note_pan(int p_note) const {
 	return _note_pan_map[p_note];
 }
 
-void SiOPMWavePCMTable::set_sample(SiOPMWavePCMData *p_pcm_data, int p_key_range_from, int p_key_range_to) {
+void SiOPMWavePCMTable::set_key_range_data(const Ref<SiOPMWavePCMData> &p_pcm_data, int p_key_range_from, int p_key_range_to) {
 	int key_from = MAX(0, p_key_range_from);
 	int key_to = MIN(SiOPMRefTable::NOTE_TABLE_SIZE - 1, p_key_range_to);
 
@@ -102,15 +102,9 @@ void SiOPMWavePCMTable::set_key_scale_pan(int p_center_note, double p_key_range,
 	}
 }
 
-void SiOPMWavePCMTable::free() {
+void SiOPMWavePCMTable::clear() {
 	for (int i = 0; i < SiOPMRefTable::NOTE_TABLE_SIZE; i++) {
-		_note_data_map.write[i] = nullptr;
-	}
-}
-
-void SiOPMWavePCMTable::clear(SiOPMWavePCMData *p_pcm_data) {
-	for (int i = 0; i < SiOPMRefTable::NOTE_TABLE_SIZE; i++) {
-		_note_data_map.write[i] = p_pcm_data;
+		_note_data_map.write[i] = Ref<SiOPMWavePCMData>();
 		_note_volume_map.write[i] = 1;
 		_note_pan_map.write[i] = 0;
 	}
@@ -123,4 +117,8 @@ SiOPMWavePCMTable::SiOPMWavePCMTable() :
 	_note_pan_map.resize_zeroed(SiOPMRefTable::NOTE_TABLE_SIZE);
 
 	clear();
+}
+
+SiOPMWavePCMTable::~SiOPMWavePCMTable() {
+	_note_data_map.clear();
 }

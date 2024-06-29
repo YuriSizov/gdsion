@@ -31,6 +31,13 @@ void SiMMLRefTable::initialize() {
 	memnew(SiMMLRefTable);
 }
 
+void SiMMLRefTable::finalize() {
+	if (_instance) {
+		memdelete(_instance);
+		_instance = nullptr;
+	}
+}
+
 //
 
 void SiMMLRefTable::reset_all_user_tables() {
@@ -352,4 +359,28 @@ SiMMLRefTable::SiMMLRefTable() {
 		_fill_tss_log_table(tss_scmd_to_sustain_rate, 9,  5,  0, 63);
 		_fill_tss_log_table(tss_scmd_to_release_rate, 12,  4, 63, 63);
 	}
+}
+
+SiMMLRefTable::~SiMMLRefTable() {
+	for (SiMMLEnvelopeTable *env_table : _master_envelopes) {
+		if (env_table) {
+			memdelete(env_table);
+		}
+	}
+	_master_envelopes.clear();
+
+	for (SiMMLEnvelopeTable *env_table : _stencil_envelopes) {
+		if (env_table) {
+			memdelete(env_table);
+		}
+	}
+	_stencil_envelopes.clear();
+
+	_master_voices.clear();
+	_stencil_voices.clear();
+
+	for (const KeyValue<SiONModuleType, SiMMLChannelSettings *> &kv : channel_settings_map) {
+		memdelete(kv.value);
+	}
+	channel_settings_map.clear();
 }

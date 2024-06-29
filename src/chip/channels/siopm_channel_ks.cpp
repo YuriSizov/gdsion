@@ -28,7 +28,7 @@ void SiOPMChannelKS::set_karplus_strong_params(int p_attack_rate, int p_decay_ra
 	set_params_by_value(p_attack_rate, p_decay_rate, 0, 63, 15, p_total_level, 0, 0, 1, 0, 0, 0, 0, p_fixed_pitch);
 
 	_active_operator->set_pulse_generator_type(p_wave_shape);
-	SiOPMWaveTable *wave_table = _table->get_wave_table(_active_operator->get_pulse_generator_type());
+	Ref<SiOPMWaveTable> wave_table = _table->get_wave_table(_active_operator->get_pulse_generator_type());
 	_active_operator->set_pitch_table_type(wave_table->get_default_pitch_table_type());
 
 	set_all_release_rate(p_tension);
@@ -51,8 +51,8 @@ void SiOPMChannelKS::set_parameters(Vector<int> p_params) {
 		case KS_SEED_PCM: {
 			ERR_FAIL_INDEX(_ks_seed_index, SiOPMRefTable::PCM_DATA_MAX);
 
-			SiOPMWavePCMTable *pcm_table = _table->get_pcm_data(_ks_seed_index);
-			if (pcm_table) {
+			Ref<SiOPMWavePCMTable> pcm_table = _table->get_pcm_data(_ks_seed_index);
+			if (pcm_table.is_valid()) {
 				set_wave_data(pcm_table);
 			}
 		} break;
@@ -62,7 +62,7 @@ void SiOPMChannelKS::set_parameters(Vector<int> p_params) {
 			set_params_by_value(p_params[1], p_params[2], 0, 63, 15, p_params[3], 0, 0, 1, 0, 0, 0, 0, p_params[4]);
 
 			_active_operator->set_pulse_generator_type(p_params[5] == INT32_MIN ? SiONPulseGeneratorType::PULSE_NOISE_PINK : p_params[5]);
-			SiOPMWaveTable *wave_table = _table->get_wave_table(_active_operator->get_pulse_generator_type());
+			Ref<SiOPMWaveTable> wave_table = _table->get_wave_table(_active_operator->get_pulse_generator_type());
 			_active_operator->set_pitch_table_type(wave_table->get_default_pitch_table_type());
 		} break;
 	}

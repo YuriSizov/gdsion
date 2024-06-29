@@ -96,7 +96,7 @@ private:
 	double _background_loop_point = -1; // sec
 
 	Ref<SiONVoice> _background_voice;
-	SiOPMWaveSamplerData *_background_sample = nullptr;
+	Ref<SiOPMWaveSamplerData> _background_sample;
 	SiMMLTrack *_background_track = nullptr;
 	SiMMLTrack *_background_fade_out_track = nullptr;
 
@@ -293,11 +293,11 @@ public:
 	String get_mml_string() const { return _mml_string; }
 	Ref<SiONData> get_data() const { return _data; }
 
-	SiOPMWaveTable *set_wave_table(int p_index, Vector<double> p_table);
-	SiOPMWavePCMData *set_pcm_wave(int p_index, const Variant &p_data, double p_sampling_note = 69, int p_key_range_from = 0, int p_key_range_to = 127, int p_src_channel_num = 2, int p_channel_num = 0);
-	SiOPMWaveSamplerData *set_sampler_wave(int p_index, const Variant &p_data, bool p_ignore_note_off = false, int p_pan = 0, int p_src_channel_num = 2, int p_channel_num = 0);
+	Ref<SiOPMWaveTable> set_wave_table(int p_index, Vector<double> p_table);
+	Ref<SiOPMWavePCMData> set_pcm_wave(int p_index, const Variant &p_data, double p_sampling_note = 69, int p_key_range_from = 0, int p_key_range_to = 127, int p_src_channel_num = 2, int p_channel_num = 0);
+	Ref<SiOPMWaveSamplerData> set_sampler_wave(int p_index, const Variant &p_data, bool p_ignore_note_off = false, int p_pan = 0, int p_src_channel_num = 2, int p_channel_num = 0);
 	void set_pcm_voice(int p_index, const Ref<SiONVoice> &p_voice);
-	void set_sampler_table(int p_bank, SiOPMWaveSamplerTable *p_table);
+	void set_sampler_table(int p_bank, const Ref<SiOPMWaveSamplerTable> &p_table);
 	void set_envelope_table(int p_index, Vector<int> p_table, int p_loop_point = -1);
 	void set_voice(int p_index, const Ref<SiONVoice> &p_voice);
 	void clear_all_user_tables();

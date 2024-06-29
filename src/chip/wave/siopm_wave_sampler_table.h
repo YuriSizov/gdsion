@@ -17,24 +17,23 @@ class SiOPMWaveSamplerTable : public SiOPMWaveBase {
 	GDCLASS(SiOPMWaveSamplerTable, SiOPMWaveBase)
 
 	// Stencil table; search sample in stencil table before seaching in this instance's own table.
-	SiOPMWaveSamplerTable *_stencil = nullptr;
-
-	Vector<SiOPMWaveSamplerData *> _table;
+	Ref<SiOPMWaveSamplerTable> _stencil;
+	Vector<Ref<SiOPMWaveSamplerData>> _table;
 
 protected:
 	static void _bind_methods() {}
 
 public:
-	SiOPMWaveSamplerTable *get_stencil() const { return _stencil; }
-	void set_stencil(SiOPMWaveSamplerTable *p_table) { _stencil = p_table; }
+	Ref<SiOPMWaveSamplerTable> get_stencil() const { return _stencil; }
+	void set_stencil(const Ref<SiOPMWaveSamplerTable> &p_table) { _stencil = p_table; }
 
-	SiOPMWaveSamplerData *get_sample(int p_sample_number) const;
-	void set_sample(SiOPMWaveSamplerData *p_sample, int p_key_range_from = 0, int p_key_range_to = -1);
+	Ref<SiOPMWaveSamplerData> get_sample(int p_sample_number) const;
+	void set_sample(const Ref<SiOPMWaveSamplerData> &p_sample, int p_key_range_from = 0, int p_key_range_to = -1);
 
-	void free();
-	void clear(SiOPMWaveSamplerData *p_sample = nullptr);
+	void clear();
 
 	SiOPMWaveSamplerTable();
+	~SiOPMWaveSamplerTable();
 };
 
 #endif // SIOPM_WAVE_SAMPLER_TABLE_H

@@ -30,7 +30,7 @@ class SiONVoicePresetUtil : public Object {
 	List<Ref<SiONVoice>> _current_category;
 	HashMap<String, List<Ref<SiONVoice>>> _category_map;
 
-	List<SiOPMWaveTable *> _wave_tables;
+	List<Ref<SiOPMWaveTable>> _wave_tables;
 	List<String> _wave_table_hexes;
 
 	void _generate_default_voices();
@@ -72,7 +72,7 @@ public:
 	Ref<SiONVoice> get_voice_preset(const String &p_key) const;
 
 	SiONVoicePresetUtil(uint32_t p_flags = GeneratorFlags::INCLUDE_ALL);
-	~SiONVoicePresetUtil() {}
+	~SiONVoicePresetUtil();
 };
 
 VARIANT_ENUM_CAST(SiONVoicePresetUtil::GeneratorFlags);

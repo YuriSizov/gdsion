@@ -886,7 +886,7 @@ void SiONVoicePresetUtil::_register_voice(const String &p_key, const Ref<SiONVoi
 
 void SiONVoicePresetUtil::_register_wave_table(const String &p_hex, Vector<int> p_wavelet) {
 	_wave_table_hexes.push_back(p_hex);
-	_wave_tables.push_back(SiOPMWaveTable::alloc(p_wavelet));
+	_wave_tables.push_back(memnew(SiOPMWaveTable(p_wavelet)));
 }
 
 void SiONVoicePresetUtil::generate_voices(uint32_t p_flags) {
@@ -944,4 +944,8 @@ void SiONVoicePresetUtil::_bind_methods() {
 
 SiONVoicePresetUtil::SiONVoicePresetUtil(uint32_t p_flags) {
 	generate_voices(p_flags);
+}
+
+SiONVoicePresetUtil::~SiONVoicePresetUtil() {
+	_wave_tables.clear();
 }

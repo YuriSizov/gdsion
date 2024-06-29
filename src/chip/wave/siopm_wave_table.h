@@ -17,8 +17,6 @@ using namespace godot;
 class SiOPMWaveTable : public SiOPMWaveBase {
 	GDCLASS(SiOPMWaveTable, SiOPMWaveBase)
 
-	static List<SiOPMWaveTable *> _free_list;
-
 	Vector<int> _wavelet;
 	int _fixed_bits = 0;
 	SiONPitchTableType _default_pitch_table_type = SiONPitchTableType::PITCH_TABLE_OPM;
@@ -27,8 +25,6 @@ protected:
 	static void _bind_methods() {}
 
 public:
-	static SiOPMWaveTable *alloc(Vector<int> p_wavelet, SiONPitchTableType p_default_pitch_table_type = SiONPitchTableType::PITCH_TABLE_OPM);
-
 	Vector<int> get_wavelet() const { return _wavelet; }
 	int get_fixed_bits() const { return _fixed_bits; }
 	SiONPitchTableType get_default_pitch_table_type() const { return _default_pitch_table_type; }
@@ -36,10 +32,9 @@ public:
 	//
 
 	void initialize(Vector<int> p_wavelet, SiONPitchTableType p_default_pt_type = SiONPitchTableType::PITCH_TABLE_OPM);
-	void copy_from(SiOPMWaveTable *p_source);
-	void free();
+	void copy_from(const Ref<SiOPMWaveTable> &p_source);
 
-	SiOPMWaveTable();
+	SiOPMWaveTable(Vector<int> p_wavelet = Vector<int>(), SiONPitchTableType p_default_pitch_table_type = SiONPitchTableType::PITCH_TABLE_OPM);
 	~SiOPMWaveTable() {}
 };
 

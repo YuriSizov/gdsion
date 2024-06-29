@@ -12,21 +12,6 @@
 
 using namespace godot;
 
-List<SiOPMWaveTable *> SiOPMWaveTable::_free_list;
-
-SiOPMWaveTable *SiOPMWaveTable::alloc(Vector<int> p_wavelet, SiONPitchTableType p_default_pt_type) {
-	SiOPMWaveTable *instance = nullptr;
-	if (!_free_list.is_empty()) {
-		instance = _free_list.back()->get();
-		_free_list.pop_back();
-	} else {
-		instance = memnew(SiOPMWaveTable);
-	}
-	instance->initialize(p_wavelet, p_default_pt_type);
-
-	return instance;
-}
-
 void SiOPMWaveTable::initialize(Vector<int> p_wavelet, SiONPitchTableType p_default_pitch_table_type) {
 	_wavelet = p_wavelet;
 	_default_pitch_table_type = p_default_pitch_table_type;
@@ -38,7 +23,7 @@ void SiOPMWaveTable::initialize(Vector<int> p_wavelet, SiONPitchTableType p_defa
 	_fixed_bits = SiOPMRefTable::PHASE_BITS - bits;
 }
 
-void SiOPMWaveTable::copy_from(SiOPMWaveTable *p_source) {
+void SiOPMWaveTable::copy_from(const Ref<SiOPMWaveTable> &p_source) {
 	_fixed_bits = p_source->_fixed_bits;
 	_default_pitch_table_type = p_source->_default_pitch_table_type;
 	_wavelet.clear();
@@ -49,11 +34,7 @@ void SiOPMWaveTable::copy_from(SiOPMWaveTable *p_source) {
 	}
 }
 
-void SiOPMWaveTable::free() {
-	_free_list.push_back(this);
-}
-
-SiOPMWaveTable::SiOPMWaveTable() :
+SiOPMWaveTable::SiOPMWaveTable(Vector<int> p_wavelet, SiONPitchTableType p_default_pitch_table_type) :
 		SiOPMWaveBase(SiONModuleType::MODULE_CUSTOM) {
-	// Empty.
+	initialize(p_wavelet, p_default_pitch_table_type);
 }

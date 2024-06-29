@@ -23,8 +23,8 @@ class SiOPMChannelSampler : public SiOPMChannelBase {
 	int _wave_number = -1;
 	double _expression = 1;
 
-	SiOPMWaveSamplerTable *_sampler_table = nullptr;
-	SiOPMWaveSamplerData *_sample_data = nullptr;
+	Ref<SiOPMWaveSamplerTable> _sampler_table;
+	Ref<SiOPMWaveSamplerData> _sample_data;
 	int _sample_start_phase = 0;
 	int _sample_index = 0;
 	// Pan of the current note.
@@ -37,7 +37,7 @@ public:
 	virtual void get_channel_params(const Ref<SiOPMChannelParams> &p_params) const override;
 	virtual void set_channel_params(const Ref<SiOPMChannelParams> &p_params, bool p_with_volume, bool p_with_modulation = true) override;
 
-	virtual void set_wave_data(SiOPMWaveBase *p_wave_data) override;
+	virtual void set_wave_data(const Ref<SiOPMWaveBase> &p_wave_data) override;
 
 	virtual void set_types(int p_pg_type, SiONPitchTableType p_pt_type) override;
 

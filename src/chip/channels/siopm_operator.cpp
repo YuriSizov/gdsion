@@ -181,7 +181,7 @@ void SiOPMOperator::_update_phase_step(int p_step) {
 void SiOPMOperator::set_pulse_generator_type(int p_type) {
 	_pg_type = p_type & SiOPMRefTable::PG_FILTER;
 
-	SiOPMWaveTable *wave_table = _table->get_wave_table(_pg_type);
+	Ref<SiOPMWaveTable> wave_table = _table->get_wave_table(_pg_type);
 	_wave_table = wave_table->get_wavelet();
 	_wave_fixed_bits = wave_table->get_fixed_bits();
 }
@@ -505,7 +505,7 @@ void SiOPMOperator::get_operator_params(SiOPMOperatorParams *r_params) {
 	r_params->set_frequency_modulation_level(get_fm_level());
 }
 
-void SiOPMOperator::set_wave_table(SiOPMWaveTable *p_wave_table) {
+void SiOPMOperator::set_wave_table(const Ref<SiOPMWaveTable> &p_wave_table) {
 	_pg_type = SiONPulseGeneratorType::PULSE_USER_CUSTOM;
 	_pt_type = p_wave_table->get_default_pitch_table_type();
 
@@ -513,8 +513,8 @@ void SiOPMOperator::set_wave_table(SiOPMWaveTable *p_wave_table) {
 	_wave_fixed_bits = p_wave_table->get_fixed_bits();
 }
 
-void SiOPMOperator::set_pcm_data(SiOPMWavePCMData *p_pcm_data) {
-	if (p_pcm_data && !p_pcm_data->get_wavelet().is_empty()) {
+void SiOPMOperator::set_pcm_data(const Ref<SiOPMWavePCMData> &p_pcm_data) {
+	if (p_pcm_data.is_valid() && !p_pcm_data->get_wavelet().is_empty()) {
 		_pg_type = SiONPulseGeneratorType::PULSE_USER_PCM;
 		_pt_type = SiONPitchTableType::PITCH_TABLE_PCM;
 

@@ -113,7 +113,7 @@ public:
 
 	static SiMMLRefTable *get_instance() { return _instance; }
 	static void initialize();
-	static void finalize() {}
+	static void finalize();
 
 	//
 
@@ -133,6 +133,7 @@ public:
 	//
 
 	SiMMLRefTable();
+	~SiMMLRefTable();
 };
 
 #endif // SIMML_REF_TABLE_H

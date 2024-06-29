@@ -28,15 +28,29 @@ bool SiMMLVoice::is_fm_voice() const {
 }
 
 bool SiMMLVoice::is_pcm_voice() const {
-	return (Object::cast_to<SiOPMWavePCMTable>(wave_data) || Object::cast_to<SiOPMWavePCMData>(wave_data));
+	Ref<SiOPMWavePCMTable> pcm_table = wave_data;
+	if (pcm_table.is_valid()) {
+		return true;
+	}
+
+	Ref<SiOPMWavePCMData> pcm_data = wave_data;
+	if (pcm_data.is_valid()) {
+		return true;
+	}
+
+	return false;
 }
 
 bool SiMMLVoice::is_sampler_voice() const {
-	return Object::cast_to<SiOPMWaveSamplerTable>(wave_data);
+	Ref<SiOPMWaveSamplerTable> sampler_table = wave_data;
+
+	return sampler_table.is_valid();
 }
 
 bool SiMMLVoice::is_wave_table_voice() const {
-	return Object::cast_to<SiOPMWaveTable>(wave_data);
+	Ref<SiOPMWaveTable> wave_table = wave_data;
+
+	return wave_table.is_valid();
 }
 
 bool SiMMLVoice::is_suitable_for_fm_voice() const {
@@ -82,7 +96,7 @@ void SiMMLVoice::update_track_voice(SiMMLTrack *p_track) {
 		} break;
 
 		default: { // Other sound modules.
-			if (wave_data) {
+			if (wave_data.is_valid()) {
 				p_track->set_channel_module_type(wave_data->get_module_type(), -1);
 				p_track->get_channel()->set_channel_params(channel_params, update_volumes);
 				p_track->get_channel()->set_wave_data(wave_data);
@@ -131,7 +145,7 @@ Ref<SiMMLVoice> SiMMLVoice::create_blank_pcm_voice(int p_channel_num) {
 	instance.instantiate();
 	instance->module_type = SiONModuleType::MODULE_PCM;
 	instance->channel_num = p_channel_num;
-	instance->wave_data = memnew(SiOPMWavePCMTable);
+	instance->wave_data = Ref<SiOPMWavePCMTable>(memnew(SiOPMWavePCMTable));
 
 	return instance;
 }
@@ -147,10 +161,7 @@ void SiMMLVoice::reset() {
 	preferable_note = -1;
 
 	channel_params->initialize();
-	if (wave_data) {
-		memdelete(wave_data);
-	}
-	wave_data = nullptr;
+	wave_data = Ref<SiOPMWaveBase>();
 	pms_tension = 8;
 
 	default_gate_time = NAN;
@@ -176,16 +187,46 @@ void SiMMLVoice::reset() {
 	pitch_modulation_delay = 0;
 	pitch_modulation_term = 0;
 
-	note_on_tone_envelope = nullptr;
-	note_on_amplitude_envelope = nullptr;
-	note_on_filter_envelope = nullptr;
-	note_on_pitch_envelope = nullptr;
-	note_on_note_envelope = nullptr;
-	note_off_tone_envelope = nullptr;
-	note_off_amplitude_envelope = nullptr;
-	note_off_filter_envelope = nullptr;
-	note_off_pitch_envelope = nullptr;
-	note_off_note_envelope = nullptr;
+	if (note_on_tone_envelope) {
+		memdelete(note_on_tone_envelope);
+		note_on_tone_envelope = nullptr;
+	}
+	if (note_on_amplitude_envelope) {
+		memdelete(note_on_amplitude_envelope);
+		note_on_amplitude_envelope = nullptr;
+	}
+	if (note_on_filter_envelope) {
+		memdelete(note_on_filter_envelope);
+		note_on_filter_envelope = nullptr;
+	}
+	if (note_on_pitch_envelope) {
+		memdelete(note_on_pitch_envelope);
+		note_on_pitch_envelope = nullptr;
+	}
+	if (note_on_note_envelope) {
+		memdelete(note_on_note_envelope);
+		note_on_note_envelope = nullptr;
+	}
+	if (note_off_tone_envelope) {
+		memdelete(note_off_tone_envelope);
+		note_off_tone_envelope = nullptr;
+	}
+	if (note_off_amplitude_envelope) {
+		memdelete(note_off_amplitude_envelope);
+		note_off_amplitude_envelope = nullptr;
+	}
+	if (note_off_filter_envelope) {
+		memdelete(note_off_filter_envelope);
+		note_off_filter_envelope = nullptr;
+	}
+	if (note_off_pitch_envelope) {
+		memdelete(note_off_pitch_envelope);
+		note_off_pitch_envelope = nullptr;
+	}
+	if (note_off_note_envelope) {
+		memdelete(note_off_note_envelope);
+		note_off_note_envelope = nullptr;
+	}
 
 	note_on_tone_envelope_step = 1;
 	note_on_amplitude_envelope_step = 1;
@@ -211,9 +252,6 @@ void SiMMLVoice::copy_from(const Ref<SiMMLVoice> &p_source) {
 	preferable_note = p_source->preferable_note;
 
 	channel_params->copy_from(p_source->channel_params);
-	if (wave_data) {
-		memdelete(wave_data);
-	}
 	wave_data = p_source->wave_data;
 	pms_tension = p_source->pms_tension;
 
@@ -241,7 +279,10 @@ void SiMMLVoice::copy_from(const Ref<SiMMLVoice> &p_source) {
 	pitch_modulation_term = p_source->pitch_modulation_term;
 
 #define COPY_NOTE_ENVELOPE(m_prop)            \
-	m_prop = nullptr;                         \
+	if (m_prop) {                             \
+		memdelete(m_prop);                    \
+		m_prop = nullptr;                     \
+	}                                         \
 	if (p_source->m_prop) {                   \
 		m_prop = memnew(SiMMLEnvelopeTable);  \
 		m_prop->copy_from(p_source->m_prop);  \
@@ -316,4 +357,47 @@ void SiMMLVoice::_bind_methods() {
 SiMMLVoice::SiMMLVoice() {
 	channel_params.instantiate();
 	reset();
+}
+
+SiMMLVoice::~SiMMLVoice() {
+	if (note_on_tone_envelope) {
+		memdelete(note_on_tone_envelope);
+		note_on_tone_envelope = nullptr;
+	}
+	if (note_on_amplitude_envelope) {
+		memdelete(note_on_amplitude_envelope);
+		note_on_amplitude_envelope = nullptr;
+	}
+	if (note_on_filter_envelope) {
+		memdelete(note_on_filter_envelope);
+		note_on_filter_envelope = nullptr;
+	}
+	if (note_on_pitch_envelope) {
+		memdelete(note_on_pitch_envelope);
+		note_on_pitch_envelope = nullptr;
+	}
+	if (note_on_note_envelope) {
+		memdelete(note_on_note_envelope);
+		note_on_note_envelope = nullptr;
+	}
+	if (note_off_tone_envelope) {
+		memdelete(note_off_tone_envelope);
+		note_off_tone_envelope = nullptr;
+	}
+	if (note_off_amplitude_envelope) {
+		memdelete(note_off_amplitude_envelope);
+		note_off_amplitude_envelope = nullptr;
+	}
+	if (note_off_filter_envelope) {
+		memdelete(note_off_filter_envelope);
+		note_off_filter_envelope = nullptr;
+	}
+	if (note_off_pitch_envelope) {
+		memdelete(note_off_pitch_envelope);
+		note_off_pitch_envelope = nullptr;
+	}
+	if (note_off_note_envelope) {
+		memdelete(note_off_note_envelope);
+		note_off_note_envelope = nullptr;
+	}
 }

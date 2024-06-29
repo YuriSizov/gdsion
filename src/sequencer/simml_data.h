@@ -26,8 +26,8 @@ protected:
 	static void _bind_methods() {}
 
 	Vector<SiMMLEnvelopeTable *> _envelope_tables;
-	Vector<SiOPMWaveTable *> _wave_tables;
-	Vector<SiOPMWaveSamplerTable *> _sampler_tables;
+	Vector<Ref<SiOPMWaveTable>> _wave_tables;
+	Vector<Ref<SiOPMWaveSamplerTable>> _sampler_tables;
 
 	Vector<Ref<SiMMLVoice>> _fm_voices;
 	Vector<Ref<SiMMLVoice>> _pcm_voices;
@@ -41,10 +41,10 @@ public:
 
 	SiMMLEnvelopeTable *get_envelope_table(int p_index) const;
 	void set_envelope_table(int p_index, SiMMLEnvelopeTable *p_envelope);
-	SiOPMWaveTable *get_wave_table(int p_index) const;
-	SiOPMWaveTable *set_wave_table(int p_index, Vector<double> *p_data);
-	SiOPMWaveSamplerTable *get_sampler_table(int p_index) const;
-	void set_sampler_table(int p_index, SiOPMWaveSamplerTable *p_sampler);
+	Ref<SiOPMWaveTable> get_wave_table(int p_index) const;
+	Ref<SiOPMWaveTable> set_wave_table(int p_index, Vector<double> *p_data);
+	Ref<SiOPMWaveSamplerTable> get_sampler_table(int p_index) const;
+	void set_sampler_table(int p_index, const Ref<SiOPMWaveSamplerTable> &p_sampler);
 
 	// Voices.
 
@@ -57,7 +57,7 @@ public:
 	virtual void clear() override;
 
 	SiMMLData();
-	~SiMMLData() {}
+	~SiMMLData();
 };
 
 #endif // SIMML_DATA_H

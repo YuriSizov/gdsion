@@ -18,7 +18,7 @@ class SiOPMChannelPCM : public SiOPMChannelBase {
 	static const int IDLING_THRESHOLD = 5120; // = 256(resolution)*10(2^10=1024)*2(p/n) = volume<1/1024
 
 	SiOPMOperator *_operator = nullptr;
-	SiOPMWavePCMTable *_pcm_table = nullptr;
+	Ref<SiOPMWavePCMTable> _pcm_table;
 	// Second set of variables for stereo.
 	double _filter_variables2[3] = { 0, 0, 0 };
 
@@ -61,7 +61,7 @@ public:
 	virtual void set_channel_params(const Ref<SiOPMChannelParams> &p_params, bool p_with_volume, bool p_with_modulation = true) override;
 	void set_params_by_value(int p_ar, int p_dr, int p_sr, int p_rr, int p_sl, int p_tl, int p_ksr, int p_ksl, int p_mul, int p_dt1, int p_detune, int p_ams, int p_phase, int p_fix_note);
 
-	virtual void set_wave_data(SiOPMWaveBase *p_wave_data) override;
+	virtual void set_wave_data(const Ref<SiOPMWaveBase> &p_wave_data) override;
 
 	virtual void set_parameters(Vector<int> p_params) override;
 	virtual void set_types(int p_pg_type, SiONPitchTableType p_pt_type) override;

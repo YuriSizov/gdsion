@@ -65,34 +65,34 @@ SiONDriver::SiONDriverJob::SiONDriverJob(String p_mml, Vector<double> p_buffer, 
 
 // Data.
 
-SiOPMWaveTable *SiONDriver::set_wave_table(int p_index, Vector<double> p_table) {
+Ref<SiOPMWaveTable> SiONDriver::set_wave_table(int p_index, Vector<double> p_table) {
 	int bits = -1;
 	for (int i = p_table.size(); i > 0; i >>= 1) {
 		bits += 1;
 	}
 
 	if (bits < 2) {
-		return nullptr;
+		return Ref<SiOPMWaveTable>();
 	}
 
 	Vector<int> wave_data = TransformerUtil::transform_pcm_data(p_table, 1);
 	wave_data.resize_zeroed(1 << bits);
 
-	SiOPMWaveTable *wave_table = SiOPMWaveTable::alloc(wave_data);
+	Ref<SiOPMWaveTable> wave_table = memnew(SiOPMWaveTable(wave_data));
 	SiOPMRefTable::get_instance()->register_wave_table(p_index, wave_table);
 	return wave_table;
 }
 
-SiOPMWavePCMData *SiONDriver::set_pcm_wave(int p_index, const Variant &p_data, double p_sampling_note, int p_key_range_from, int p_key_range_to, int p_src_channel_num, int p_channel_num) {
+Ref<SiOPMWavePCMData> SiONDriver::set_pcm_wave(int p_index, const Variant &p_data, double p_sampling_note, int p_key_range_from, int p_key_range_to, int p_src_channel_num, int p_channel_num) {
 	Ref<SiMMLVoice> pcm_voice = SiOPMRefTable::get_instance()->get_global_pcm_voice(p_index & (SiOPMRefTable::PCM_DATA_MAX - 1));
-	SiOPMWavePCMTable *pcm_table = Object::cast_to<SiOPMWavePCMTable>(pcm_voice->get_wave_data());
-	SiOPMWavePCMData *pcm_data = memnew(SiOPMWavePCMData(p_data, (int)(p_sampling_note * 64), p_src_channel_num, p_channel_num));
+	Ref<SiOPMWavePCMTable> pcm_table = pcm_voice->get_wave_data();
+	Ref<SiOPMWavePCMData> pcm_data = memnew(SiOPMWavePCMData(p_data, (int)(p_sampling_note * 64), p_src_channel_num, p_channel_num));
 
-	pcm_table->set_sample(pcm_data, p_key_range_from, p_key_range_to);
+	pcm_table->set_key_range_data(pcm_data, p_key_range_from, p_key_range_to);
 	return pcm_data;
 }
 
-SiOPMWaveSamplerData *SiONDriver::set_sampler_wave(int p_index, const Variant &p_data, bool p_ignore_note_off, int p_pan, int p_src_channel_num, int p_channel_num) {
+Ref<SiOPMWaveSamplerData> SiONDriver::set_sampler_wave(int p_index, const Variant &p_data, bool p_ignore_note_off, int p_pan, int p_src_channel_num, int p_channel_num) {
 	return SiOPMRefTable::get_instance()->register_sampler_data(p_index, p_data, p_ignore_note_off, p_pan, p_src_channel_num, p_channel_num);
 }
 
@@ -100,7 +100,7 @@ void SiONDriver::set_pcm_voice(int p_index, const Ref<SiONVoice> &p_voice) {
 	SiOPMRefTable::get_instance()->set_global_pcm_voice(p_index & (SiOPMRefTable::PCM_DATA_MAX - 1), p_voice);
 }
 
-void SiONDriver::set_sampler_table(int p_bank, SiOPMWaveSamplerTable *p_table) {
+void SiONDriver::set_sampler_table(int p_bank, const Ref<SiOPMWaveSamplerTable> &p_table) {
 	SiOPMRefTable::get_instance()->sampler_tables.write[p_bank & (SiOPMRefTable::SAMPLER_TABLE_MAX - 1)] = p_table;
 }
 
@@ -169,7 +169,7 @@ void SiONDriver::_start_background_sound() {
 
 	// Play sound with fade in.
 	if (_background_sound) {
-		_background_sample = memnew(SiOPMWaveSamplerData(_background_sound, true, 0, 2, 2));
+		_background_sample = Ref<SiOPMWaveSamplerData>(memnew(SiOPMWaveSamplerData(_background_sound, true, 0, 2, 2)));
 		_background_voice->set_wave_data(_background_sample);
 
 		if (_background_loop_point != -1) {
@@ -183,8 +183,8 @@ void SiONDriver::_start_background_sound() {
 
 		end_frame = _background_total_fade_frames;
 	} else {
-		_background_sample = nullptr;
-		_background_voice->set_wave_data(nullptr);
+		_background_sample = Ref<SiOPMWaveSamplerData>();
+		_background_voice->set_wave_data(Ref<SiOPMWaveBase>());
 		_background_loop_point = -1;
 		end_frame = _background_fade_out_frames + _background_fade_gap_frames;
 	}

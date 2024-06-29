@@ -192,7 +192,7 @@ int SiONVoice::set_by_mml(String p_mml) {
 	return voice_index;
 }
 
-SiOPMWaveTable *SiONVoice::set_wave_table(Vector<double> *p_data) {
+Ref<SiOPMWaveTable> SiONVoice::set_wave_table(Vector<double> *p_data) {
 	module_type = SiONModuleType::MODULE_CUSTOM;
 
 	Vector<int> table;
@@ -200,81 +200,68 @@ SiOPMWaveTable *SiONVoice::set_wave_table(Vector<double> *p_data) {
 		int table_index = SiOPMRefTable::calculate_log_table_index((*p_data)[i]);
 		table.append(table_index);
 	}
-	if (wave_data) {
-		memdelete(wave_data);
-	}
-	wave_data = SiOPMWaveTable::alloc(table);
 
-	return (SiOPMWaveTable *)wave_data;
+	Ref<SiOPMWaveTable> wave_table = memnew(SiOPMWaveTable(table));
+	wave_data = wave_table;
+
+	return wave_data;
 }
 
-SiOPMWavePCMData *SiONVoice::set_pcm_voice(const Variant &p_data, int p_sampling_note, int p_src_channel_count, int p_channel_count) {
+Ref<SiOPMWavePCMData> SiONVoice::set_pcm_voice(const Variant &p_data, int p_sampling_note, int p_src_channel_count, int p_channel_count) {
 	module_type = SiONModuleType::MODULE_PCM;
 
-	if (wave_data) {
-		memdelete(wave_data);
-	}
-	wave_data = memnew(SiOPMWavePCMData(p_data, p_sampling_note * 64, p_src_channel_count, p_channel_count));
-	return (SiOPMWavePCMData *)wave_data;
+	Ref<SiOPMWavePCMData> pcm_data = memnew(SiOPMWavePCMData(p_data, p_sampling_note * 64, p_src_channel_count, p_channel_count));
+	wave_data = pcm_data;
+
+	return wave_data;
 }
 
-SiOPMWaveSamplerData *SiONVoice::set_mp3_voice(Object *p_wave, bool p_ignore_note_off, int p_channel_count) {
+Ref<SiOPMWaveSamplerData> SiONVoice::set_mp3_voice(Object *p_wave, bool p_ignore_note_off, int p_channel_count) {
 	// FIXME: This method originally only supports Flash Sound objects. It needs to either be removed or adapted.
-
 	module_type = SiONModuleType::MODULE_SAMPLE;
 
-	if (wave_data) {
-		memdelete(wave_data);
-	}
-	wave_data = memnew(SiOPMWaveSamplerData(Variant(p_wave), p_ignore_note_off, 0, 2, p_channel_count));
-	return (SiOPMWaveSamplerData *)wave_data;
+	Ref<SiOPMWaveSamplerData> sampler_data = memnew(SiOPMWaveSamplerData(Variant(p_wave), p_ignore_note_off, 0, 2, p_channel_count));
+	wave_data = sampler_data;
+
+	return wave_data;
 }
 
-SiOPMWavePCMData *SiONVoice::set_pcm_wave(int p_index, const Variant &p_data, int p_sampling_note, int p_key_range_from, int p_key_range_to, int p_src_channel_count, int p_channel_count) {
+Ref<SiOPMWavePCMData> SiONVoice::set_pcm_wave(int p_index, const Variant &p_data, int p_sampling_note, int p_key_range_from, int p_key_range_to, int p_src_channel_count, int p_channel_count) {
 	if (module_type != SiONModuleType::MODULE_PCM || channel_num != p_index) {
-		if (wave_data) {
-			memdelete(wave_data);
-		}
-		wave_data = nullptr;
+		wave_data = Ref<SiOPMWaveBase>();
 	}
 
 	module_type = SiONModuleType::MODULE_PCM;
 	channel_num = p_index;
 
-	SiOPMWavePCMTable *pcm_table = Object::cast_to<SiOPMWavePCMTable>(wave_data);
-	if (!pcm_table) {
-		pcm_table = memnew(SiOPMWavePCMTable);
-		if (wave_data) {
-			memdelete(wave_data);
-		}
+	Ref<SiOPMWavePCMTable> pcm_table = wave_data;
+	if (pcm_table.is_null()) {
+		pcm_table = Ref<SiOPMWavePCMTable>(memnew(SiOPMWavePCMTable));
 		wave_data = pcm_table;
 	}
 
-	SiOPMWavePCMData *pcm_data = memnew(SiOPMWavePCMData(p_data, int(p_sampling_note * 64), p_src_channel_count, p_channel_count));
-	pcm_table->set_sample(pcm_data, p_key_range_from, p_key_range_to);
+	Ref<SiOPMWavePCMData> pcm_data = memnew(SiOPMWavePCMData(p_data, int(p_sampling_note * 64), p_src_channel_count, p_channel_count));
+	pcm_table->set_key_range_data(pcm_data, p_key_range_from, p_key_range_to);
 
 	return pcm_data;
 }
 
-SiOPMWaveSamplerData *SiONVoice::set_sampler_wave(int p_index, const Variant &p_data, bool p_ignore_note_off, int p_pan, int p_src_channel_count, int p_channel_count) {
+Ref<SiOPMWaveSamplerData> SiONVoice::set_sampler_wave(int p_index, const Variant &p_data, bool p_ignore_note_off, int p_pan, int p_src_channel_count, int p_channel_count) {
 	module_type = SiONModuleType::MODULE_SAMPLE;
 
-	SiOPMWaveSamplerTable *sampler_table = Object::cast_to<SiOPMWaveSamplerTable>(wave_data);
-	if (!sampler_table) {
-		sampler_table = memnew(SiOPMWaveSamplerTable);
+	Ref<SiOPMWaveSamplerTable> sampler_table = wave_data;
+	if (sampler_table.is_null()) {
+		sampler_table = Ref<SiOPMWaveSamplerTable>(memnew(SiOPMWaveSamplerTable));
 	}
-	SiOPMWaveSamplerData *sampler_data = memnew(SiOPMWaveSamplerData(p_data, p_ignore_note_off, p_pan, p_src_channel_count, p_channel_count));
+	Ref<SiOPMWaveSamplerData> sampler_data = memnew(SiOPMWaveSamplerData(p_data, p_ignore_note_off, p_pan, p_src_channel_count, p_channel_count));
 	sampler_table->set_sample(sampler_data, p_index & (SiOPMRefTable::NOTE_TABLE_SIZE - 1));
 
 	return sampler_data;
 }
 
-void SiONVoice::set_sampler_table(SiOPMWaveSamplerTable *p_table) {
+void SiONVoice::set_sampler_table(const Ref<SiOPMWaveSamplerTable> &p_table) {
 	module_type = SiONModuleType::MODULE_SAMPLE;
 
-	if (wave_data) {
-		memdelete(wave_data);
-	}
 	wave_data = p_table;
 }
 

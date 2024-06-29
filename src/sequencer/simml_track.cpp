@@ -496,7 +496,7 @@ int SiMMLTrack::prepare_buffer(int p_buffer_length) {
 	} else {
 		SiOPMRefTable::get_instance()->sampler_tables[0]->set_stencil(nullptr);
 
-		SiOPMRefTable::get_instance()->set_stencil_custom_wave_tables(Vector<SiOPMWaveTable *>());
+		SiOPMRefTable::get_instance()->set_stencil_custom_wave_tables(Vector<Ref<SiOPMWaveTable>>());
 		SiOPMRefTable::get_instance()->set_stencil_pcm_voices(Vector<Ref<SiMMLVoice>>());
 
 		_table->set_stencil_envelopes(Vector<SiMMLEnvelopeTable *>());

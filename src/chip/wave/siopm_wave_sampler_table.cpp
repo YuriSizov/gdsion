@@ -9,15 +9,15 @@
 #include "sion_enums.h"
 #include "chip/siopm_ref_table.h"
 
-SiOPMWaveSamplerData *SiOPMWaveSamplerTable::get_sample(int p_sample_number) const {
-	if (_stencil && _stencil->_table[p_sample_number]) {
+Ref<SiOPMWaveSamplerData> SiOPMWaveSamplerTable::get_sample(int p_sample_number) const {
+	if (_stencil.is_valid() && _stencil->_table[p_sample_number].is_valid()) {
 		return _stencil->_table[p_sample_number];
 	}
 
 	return _table[p_sample_number];
 }
 
-void SiOPMWaveSamplerTable::set_sample(SiOPMWaveSamplerData *p_sample, int p_key_range_from, int p_key_range_to) {
+void SiOPMWaveSamplerTable::set_sample(const Ref<SiOPMWaveSamplerData> &p_sample, int p_key_range_from, int p_key_range_to) {
 	int key_from = MAX(0, p_key_range_from);
 	int key_to = MIN(SiOPMRefTable::SAMPLER_DATA_MAX - 1, p_key_range_to);
 
@@ -34,20 +34,19 @@ void SiOPMWaveSamplerTable::set_sample(SiOPMWaveSamplerData *p_sample, int p_key
 	}
 }
 
-void SiOPMWaveSamplerTable::free() {
+void SiOPMWaveSamplerTable::clear() {
 	for (int i = 0; i < SiOPMRefTable::SAMPLER_DATA_MAX; i++) {
-		_table.write[i] = nullptr;
-	}
-}
-
-void SiOPMWaveSamplerTable::clear(SiOPMWaveSamplerData *p_sample) {
-	for (int i = 0; i < SiOPMRefTable::SAMPLER_DATA_MAX; i++) {
-		_table.write[i] = p_sample;
+		_table.write[i] = Ref<SiOPMWaveSamplerData>();
 	}
 }
 
 SiOPMWaveSamplerTable::SiOPMWaveSamplerTable() :
 		SiOPMWaveBase(SiONModuleType::MODULE_SAMPLE) {
 	_table.resize_zeroed(SiOPMRefTable::SAMPLER_DATA_MAX);
+
 	clear();
+}
+
+SiOPMWaveSamplerTable::~SiOPMWaveSamplerTable() {
+	_table.clear();
 }

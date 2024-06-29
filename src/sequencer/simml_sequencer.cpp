@@ -630,7 +630,7 @@ bool SiMMLSequencer::_try_set_sampler_wave(int p_index, String p_mml) {
 	int index = p_index & (SiOPMRefTable::NOTE_TABLE_SIZE - 1);
 
 	Ref<SiMMLData> simml_data = mml_data;
-	SiOPMWaveSamplerTable *table = simml_data->get_sampler_table(bank);
+	Ref<SiOPMWaveSamplerTable> table = simml_data->get_sampler_table(bank);
 	return TranslatorUtil::parse_sampler_wave(table, index, p_mml, SiOPMRefTable::get_instance()->sound_reference);
 }
 
@@ -641,8 +641,8 @@ bool SiMMLSequencer::_try_set_pcm_wave(int p_index, String p_mml) {
 
 	Ref<SiMMLData> simml_data = mml_data;
 	Ref<SiMMLVoice> voice = simml_data->get_pcm_voice(p_index);
-	SiOPMWavePCMTable *table = Object::cast_to<SiOPMWavePCMTable>(voice->get_wave_data());
-	if (!table) {
+	Ref<SiOPMWavePCMTable> table = voice->get_wave_data();
+	if (table.is_null()) {
 		return false;
 	}
 

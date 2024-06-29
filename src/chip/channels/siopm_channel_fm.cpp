@@ -175,14 +175,14 @@ void SiOPMChannelFM::set_params_by_value(int p_ar, int p_dr, int p_sr, int p_rr,
 #undef SET_OP_PARAM
 }
 
-void SiOPMChannelFM::set_wave_data(SiOPMWaveBase *p_wave_data) {
-	SiOPMWavePCMData *pcm_data = Object::cast_to<SiOPMWavePCMData>(p_wave_data);
-	SiOPMWavePCMTable *pcm_table = Object::cast_to<SiOPMWavePCMTable>(p_wave_data);
-	if (pcm_table) {
+void SiOPMChannelFM::set_wave_data(const Ref<SiOPMWaveBase> &p_wave_data) {
+	Ref<SiOPMWavePCMData> pcm_data = p_wave_data;
+	Ref<SiOPMWavePCMTable> pcm_table = p_wave_data;
+	if (pcm_table.is_valid()) {
 		pcm_data = pcm_table->get_note_data(60);
 	}
 
-	if (pcm_data && !pcm_data->get_wavelet().is_empty()) {
+	if (pcm_data.is_valid() && !pcm_data->get_wavelet().is_empty()) {
 		_update_operator_count(1);
 		_process_function_type = PROCESS_PCM;
 		_update_process_function();
@@ -192,8 +192,8 @@ void SiOPMChannelFM::set_wave_data(SiOPMWaveBase *p_wave_data) {
 		return;
 	}
 
-	SiOPMWaveTable *wave_table = Object::cast_to<SiOPMWaveTable>(p_wave_data);
-	if (wave_table && !wave_table->get_wavelet().is_empty()) {
+	Ref<SiOPMWaveTable> wave_table = p_wave_data;
+	if (wave_table.is_valid() && !wave_table->get_wavelet().is_empty()) {
 		_operators[0]->set_wave_table(wave_table);
 		if (_operators[1]) {
 			_operators[1]->set_wave_table(wave_table);
@@ -583,8 +583,8 @@ void SiOPMChannelFM::set_parameters(Vector<int> p_params) {
 
 void SiOPMChannelFM::set_types(int p_pg_type, SiONPitchTableType p_pt_type) {
 	if (p_pg_type >= SiONPulseGeneratorType::PULSE_PCM) {
-		SiOPMWavePCMTable *pcm_table = _table->get_pcm_data(p_pg_type - SiONPulseGeneratorType::PULSE_PCM);
-		if (pcm_table) {
+		Ref<SiOPMWavePCMTable> pcm_table = _table->get_pcm_data(p_pg_type - SiONPulseGeneratorType::PULSE_PCM);
+		if (pcm_table.is_valid()) {
 			set_wave_data(pcm_table);
 		}
 	} else {

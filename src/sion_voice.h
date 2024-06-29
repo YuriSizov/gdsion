@@ -58,15 +58,15 @@ public:
 	String get_mml(int p_index, SiONChipType p_chip_type = (SiONChipType)-1, bool p_append_postfix = true) const;
 	int set_by_mml(String p_mml);
 
-	SiOPMWaveTable *set_wave_table(Vector<double> *p_data);
+	Ref<SiOPMWaveTable> set_wave_table(Vector<double> *p_data);
 
-	SiOPMWavePCMData *set_pcm_voice(const Variant &p_data, int p_sampling_note = 69, int p_src_channel_count = 2, int p_channel_count = 0);
-	SiOPMWaveSamplerData *set_mp3_voice(Object *p_wave, bool p_ignore_note_off = false, int p_channel_count = 2);
+	Ref<SiOPMWavePCMData> set_pcm_voice(const Variant &p_data, int p_sampling_note = 69, int p_src_channel_count = 2, int p_channel_count = 0);
+	Ref<SiOPMWaveSamplerData> set_mp3_voice(Object *p_wave, bool p_ignore_note_off = false, int p_channel_count = 2);
 
-	SiOPMWavePCMData *set_pcm_wave(int p_index, const Variant &p_data, int p_sampling_note = 69, int p_key_range_from = 0, int p_key_range_to = 127, int p_src_channel_count = 2, int p_channel_count = 0);
-	SiOPMWaveSamplerData *set_sampler_wave(int p_index, const Variant &p_data, bool p_ignore_note_off = false, int p_pan = 0, int p_src_channel_count = 2, int p_channel_count = 0);
+	Ref<SiOPMWavePCMData> set_pcm_wave(int p_index, const Variant &p_data, int p_sampling_note = 69, int p_key_range_from = 0, int p_key_range_to = 127, int p_src_channel_count = 2, int p_channel_count = 0);
+	Ref<SiOPMWaveSamplerData> set_sampler_wave(int p_index, const Variant &p_data, bool p_ignore_note_off = false, int p_pan = 0, int p_src_channel_count = 2, int p_channel_count = 0);
 
-	void set_sampler_table(SiOPMWaveSamplerTable *p_table);
+	void set_sampler_table(const Ref<SiOPMWaveSamplerTable> &p_table);
 
 	void set_pms_guitar(int p_attack_rate = 48, int p_decay_rate = 48, int p_total_level = 0, int p_fixed_pitch = 69, int p_wave_shape = 20, int p_tension = 8);
 	void set_analog_like(int p_connection_type, int p_wave_shape1 = 1, int p_wave_shape2 = 1, int p_balance = 0, int p_pitch_difference = 0);

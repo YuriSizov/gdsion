@@ -7,7 +7,7 @@
 #ifndef SIOPM_WAVE_BASE_H
 #define SIOPM_WAVE_BASE_H
 
-#include <godot_cpp/core/object.hpp>
+#include <godot_cpp/classes/ref_counted.hpp>
 #include "sion_enums.h"
 
 using namespace godot;
@@ -16,8 +16,8 @@ using namespace godot;
 // This is naturally not relevant here, but it may make sense to support Godot's
 // native audio stream objects.
 
-class SiOPMWaveBase : public Object {
-	GDCLASS(SiOPMWaveBase, Object)
+class SiOPMWaveBase : public RefCounted {
+	GDCLASS(SiOPMWaveBase, RefCounted)
 
 	SiONModuleType _module_type = SiONModuleType::MODULE_MAX;
 

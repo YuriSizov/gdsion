@@ -115,14 +115,14 @@ void SiOPMChannelPCM::set_params_by_value(int p_ar, int p_dr, int p_sr, int p_rr
 #undef SET_OP_PARAM
 }
 
-void SiOPMChannelPCM::set_wave_data(SiOPMWaveBase *p_wave_data) {
-	SiOPMWavePCMData *pcm_data = Object::cast_to<SiOPMWavePCMData>(p_wave_data);
-	_pcm_table = Object::cast_to<SiOPMWavePCMTable>(p_wave_data);
-	if (_pcm_table) {
+void SiOPMChannelPCM::set_wave_data(const Ref<SiOPMWaveBase> &p_wave_data) {
+	Ref<SiOPMWavePCMData> pcm_data = p_wave_data;
+	_pcm_table = p_wave_data;
+	if (_pcm_table.is_valid()) {
 		pcm_data = _pcm_table->get_note_data(60);
 	}
 
-	if (pcm_data) {
+	if (pcm_data.is_valid()) {
 		_sample_pitch_shift = pcm_data->get_sampling_pitch() - 4416; // 69*64
 	}
 
@@ -138,8 +138,8 @@ void SiOPMChannelPCM::set_parameters(Vector<int> p_params) {
 }
 
 void SiOPMChannelPCM::set_types(int p_pg_type, SiONPitchTableType p_pt_type) {
-	SiOPMWavePCMTable *pcm_table = _table->get_pcm_data(p_pg_type);
-	if (pcm_table) {
+	Ref<SiOPMWavePCMTable> pcm_table = _table->get_pcm_data(p_pg_type);
+	if (pcm_table.is_valid()) {
 		set_wave_data(pcm_table);
 	} else {
 		_sample_pitch_shift = 0;
@@ -160,11 +160,11 @@ int SiOPMChannelPCM::get_pitch() const {
 }
 
 void SiOPMChannelPCM::set_pitch(int p_value) {
-	if (_pcm_table) {
+	if (_pcm_table.is_valid()) {
 		int note = p_value >> 6;
-		SiOPMWavePCMData *pcm_data = _pcm_table->get_note_data(note);
+		Ref<SiOPMWavePCMData> pcm_data = _pcm_table->get_note_data(note);
 
-		if (pcm_data) {
+		if (pcm_data.is_valid()) {
 			_sample_pitch_shift = pcm_data->get_sampling_pitch() - 4416; // 69*64
 			_sample_volume = _pcm_table->get_note_volume(note);
 			_sample_pan = _pcm_table->get_note_pan(note);
@@ -248,7 +248,7 @@ void SiOPMChannelPCM::initialize_lfo(int p_waveform, Vector<int> p_custom_wave_t
 	_amplitude_modulation_output_level = 0;
 	_pitch_modulation_output_level = 0;
 
-	_pcm_table = nullptr;
+	_pcm_table = Ref<SiOPMWavePCMTable>();
 	_operator->set_detune2(0);
 }
 

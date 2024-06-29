@@ -119,7 +119,7 @@ Vector<double> TransformerUtil::wave_color_to_vector(uint32_t p_color, int p_wav
 
 	int barr[7] = { 1,2,3,4,5,6,8 };
 	int (&log_table)[SiOPMRefTable::LOG_TABLE_SIZE * 3] = SiOPMRefTable::get_instance()->log_table;
-	SiOPMWaveTable *wave_table = SiOPMRefTable::get_instance()->get_wave_table(p_wave_type + (color >> 28));
+	Ref<SiOPMWaveTable> wave_table = SiOPMRefTable::get_instance()->get_wave_table(p_wave_type + (color >> 28));
 	int envelope_top = (-SiOPMRefTable::ENV_TOP) << 3;
 
 	double value_max = 0;

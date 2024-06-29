@@ -174,6 +174,8 @@ void uninitialize_sion_module(ModuleInitializationLevel p_level) {
 	// Finalize singletons after the execution.
 	MMLSequencer::finalize();
 	MMLParser::finalize();
+	SiOPMRefTable::finalize();
+	SiMMLRefTable::finalize();
 }
 
 extern "C" {

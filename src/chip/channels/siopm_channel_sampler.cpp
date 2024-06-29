@@ -43,9 +43,9 @@ void SiOPMChannelSampler::set_channel_params(const Ref<SiOPMChannelParams> &p_pa
 	}
 }
 
-void SiOPMChannelSampler::set_wave_data(SiOPMWaveBase *p_wave_data) {
-	_sampler_table = Object::cast_to<SiOPMWaveSamplerTable>(p_wave_data);
-	_sample_data = Object::cast_to<SiOPMWaveSamplerData>(p_wave_data);
+void SiOPMChannelSampler::set_wave_data(const Ref<SiOPMWaveBase> &p_wave_data) {
+	_sampler_table = p_wave_data;
+	_sample_data = p_wave_data;
 }
 
 void SiOPMChannelSampler::set_types(int p_pg_type, SiONPitchTableType p_pt_type) {
@@ -77,10 +77,10 @@ void SiOPMChannelSampler::note_on() {
 		return;
 	}
 
-	if (_sampler_table) {
+	if (_sampler_table.is_valid()) {
 		_sample_data = _sampler_table->get_sample(_wave_number & 127);
 	}
-	if (_sample_data && _sample_start_phase != 255) {
+	if (_sample_data.is_valid() && _sample_start_phase != 255) {
 		_sample_index = _sample_data->get_initial_sample_index(_sample_start_phase * 0.00390625); // 1/256
 		_sample_pan = CLAMP(_pan + _sample_data->get_pan(), 0, 128);
 	}
@@ -90,15 +90,15 @@ void SiOPMChannelSampler::note_on() {
 }
 
 void SiOPMChannelSampler::note_off() {
-	if (!_sample_data || _sample_data->is_ignoring_note_off()) {
+	if (_sample_data.is_null() || _sample_data->is_ignoring_note_off()) {
 		return;
 	}
 
 	_is_note_on = false;
 	_is_idling = true;
 
-	if (_sampler_table) {
-		_sample_data = nullptr;
+	if (_sampler_table.is_valid()) {
+		_sample_data = Ref<SiOPMWaveSamplerData>();
 	}
 }
 
@@ -146,8 +146,8 @@ void SiOPMChannelSampler::buffer(int p_length) {
 				}
 			} else {
 				_is_idling = true;
-				if (_sampler_table) {
-					_sample_data = nullptr;
+				if (_sampler_table.is_valid()) {
+					_sample_data = Ref<SiOPMWaveSamplerData>();
 					break;
 				}
 			}
@@ -185,7 +185,7 @@ void SiOPMChannelSampler::reset() {
 	_expression = 1;
 
 	_sampler_table = _table->sampler_tables[0];
-	_sample_data = nullptr;
+	_sample_data = Ref<SiOPMWaveSamplerData>();
 
 	_sample_start_phase = 0;
 	_sample_index = 0;

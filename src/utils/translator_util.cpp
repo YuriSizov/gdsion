@@ -1621,7 +1621,7 @@ void TranslatorUtil::parse_wavb(String p_hex, Vector<double> *r_data) {
 #define PARSE_ARGUMENT(m_index, m_default)                                                     \
 	((m_index < args.size() && !args[m_index].is_empty()) ? args[m_index].to_int() : m_default)
 
-bool TranslatorUtil::parse_sampler_wave(SiOPMWaveSamplerTable *p_table, int p_note_number, String p_mml, HashMap<String, Variant> p_sound_ref_table) {
+bool TranslatorUtil::parse_sampler_wave(const Ref<SiOPMWaveSamplerTable> &p_table, int p_note_number, String p_mml, HashMap<String, Variant> p_sound_ref_table) {
 	PackedStringArray args = split_string_by_regex(p_mml, "\\s*,\\s*");
 	ERR_FAIL_COND_V(args.size() == 0, false);
 
@@ -1637,14 +1637,14 @@ bool TranslatorUtil::parse_sampler_wave(SiOPMWaveSamplerTable *p_table, int p_no
 	int end_point        = PARSE_ARGUMENT(5, -1);
 	int loop_point       = PARSE_ARGUMENT(6, -1);
 
-	SiOPMWaveSamplerData *sampler_data = memnew(SiOPMWaveSamplerData(p_sound_ref_table[wave_id], ignore_note_off, pan, 2, channel_count));
+	Ref<SiOPMWaveSamplerData> sampler_data = memnew(SiOPMWaveSamplerData(p_sound_ref_table[wave_id], ignore_note_off, pan, 2, channel_count));
 	sampler_data->slice(start_point, end_point, loop_point);
 	p_table->set_sample(sampler_data, p_note_number);
 
 	return true;
 }
 
-bool TranslatorUtil::parse_pcm_wave(SiOPMWavePCMTable *p_table, String p_mml, HashMap<String, Variant> p_sound_ref_table) {
+bool TranslatorUtil::parse_pcm_wave(const Ref<SiOPMWavePCMTable> &p_table, String p_mml, HashMap<String, Variant> p_sound_ref_table) {
 	PackedStringArray args = split_string_by_regex(p_mml, "\\s*,\\s*");
 	ERR_FAIL_COND_V(args.size() == 0, false);
 
@@ -1661,16 +1661,16 @@ bool TranslatorUtil::parse_pcm_wave(SiOPMWavePCMTable *p_table, String p_mml, Ha
 	int end_point      = PARSE_ARGUMENT(6, -1);
 	int loop_point     = PARSE_ARGUMENT(7, -1);
 
-	SiOPMWavePCMData *pcm_data = memnew(SiOPMWavePCMData(p_sound_ref_table[wave_id], sampling_pitch, 2, channel_count));
+	Ref<SiOPMWavePCMData> pcm_data = memnew(SiOPMWavePCMData(p_sound_ref_table[wave_id], sampling_pitch, 2, channel_count));
 	pcm_data->slice(start_point, end_point, loop_point);
-	p_table->set_sample(pcm_data, key_range_from, key_range_to);
+	p_table->set_key_range_data(pcm_data, key_range_from, key_range_to);
 
 	return true;
 }
 
 bool TranslatorUtil::parse_pcm_voice(const Ref<SiMMLVoice> &p_voice, String p_mml, String p_postfix, Vector<SiMMLEnvelopeTable *> p_envelopes) {
-	SiOPMWavePCMTable *table = Object::cast_to<SiOPMWavePCMTable>(p_voice->get_wave_data());
-	if (!table) {
+	Ref<SiOPMWavePCMTable> table = p_voice->get_wave_data();
+	if (table.is_null()) {
 		return false;
 	}
 

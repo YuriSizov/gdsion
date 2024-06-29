@@ -9,10 +9,10 @@
 
 #include <godot_cpp/classes/ref_counted.hpp>
 #include "chip/siopm_channel_params.h"
+#include "chip/wave/siopm_wave_base.h"
 
 using namespace godot;
 
-class SiOPMWaveBase;
 class SiMMLEnvelopeTable;
 class SiMMLTrack;
 enum SiONChipType : signed int;
@@ -77,7 +77,7 @@ protected:
 
 	// Params for the FM sound channel.
 	Ref<SiOPMChannelParams> channel_params;
-	SiOPMWaveBase *wave_data = nullptr;
+	Ref<SiOPMWaveBase> wave_data;
 
 	int pitch_shift = 0;
 
@@ -105,8 +105,8 @@ public:
 	void set_tone_num(int p_num) { tone_num = p_num; }
 
 	Ref<SiOPMChannelParams> get_channel_params() const { return channel_params; }
-	SiOPMWaveBase *get_wave_data() const { return wave_data; };
-	void set_wave_data(SiOPMWaveBase *p_data) { wave_data = p_data; }
+	Ref<SiOPMWaveBase> get_wave_data() const { return wave_data; }
+	void set_wave_data(const Ref<SiOPMWaveBase> &p_data) { wave_data = p_data; }
 
 	bool is_fm_voice() const;
 	bool is_pcm_voice() const;
@@ -144,7 +144,7 @@ public:
 	virtual void copy_from(const Ref<SiMMLVoice> &p_source);
 
 	SiMMLVoice();
-	~SiMMLVoice() {}
+	~SiMMLVoice();
 };
 
 #endif // SIMML_VOICE_H
