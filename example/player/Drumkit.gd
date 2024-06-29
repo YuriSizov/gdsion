@@ -5,7 +5,7 @@
 ###################################################
 
 ## An object representing a drumkit.
-class_name Drumkit extends Object
+class_name Drumkit extends RefCounted
 
 var kit_name: String = ""
 var size: int = 0

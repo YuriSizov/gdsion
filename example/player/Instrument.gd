@@ -5,7 +5,7 @@
 ###################################################
 
 ## An object representing a musical instrument.
-class_name Instrument extends Object
+class_name Instrument extends RefCounted
 
 var category: String = ""
 var name: String = ""

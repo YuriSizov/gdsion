@@ -21,6 +21,11 @@ func _init() -> void:
 	_register_drumkits()
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PREDELETE:
+		_preset_util.free()
+
+
 func _register_voices() -> void:
 	_register_voice("MIDI", "Grand Piano", "midi.piano1", 0)
 	_register_voice("MIDI", "Bright Piano", "midi.piano2", 1)

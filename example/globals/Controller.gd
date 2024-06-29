@@ -20,6 +20,12 @@ func _init() -> void:
 	music_player = MusicPlayer.new(self)
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PREDELETE:
+		voice_manager.free()
+		music_player.free()
+
+
 func _ready() -> void:
 	# Driver must be ready by this time.
 

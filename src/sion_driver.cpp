@@ -1169,6 +1169,10 @@ void SiONDriver::_notification(int p_what) {
 				_process_frame();
 			}
 		} break;
+
+		case NOTIFICATION_EXIT_TREE: {
+			stop();
+		} break;
 	}
 }
 
