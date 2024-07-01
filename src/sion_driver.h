@@ -78,7 +78,6 @@ private:
 	// Data.
 
 	Ref<SiONData> _data;
-	Ref<SiONData> _temp_data;
 	// MML string from previous compilation.
 	String _mml_string;
 
@@ -147,7 +146,7 @@ private:
 	bool _parse_system_command(const List<Ref<MMLSystemCommand>> &p_system_commands);
 
 	void _prepare_compile(String p_mml, const Ref<SiONData> &p_data);
-	void _prepare_render(const Variant &p_data, Vector<double> p_render_buffer, int p_render_buffer_channel_num, bool p_reset_effector);
+	void _prepare_render(const Variant &p_data, int p_buffer_size, int p_buffer_channel_num, bool p_reset_effector);
 	bool _rendering();
 	void _streaming();
 
@@ -188,21 +187,20 @@ private:
 	};
 
 	struct SiONDriverJob {
-		String mml;
-		Vector<double> buffer;
+		JobType type = JobType::NO_JOB;
 		Ref<SiONData> data;
+
+		String mml_string;
+		int buffer_size = 0;
 		int channel_num = 0;
 		bool reset_effector = false;
-
-		SiONDriverJob(String p_mml, Vector<double> p_buffer, const Ref<SiONData> &p_data, int p_channel_num, bool p_reset_effector);
-		~SiONDriverJob() {}
 	};
 
 	int _queue_interval = 500;
 	int _queue_length = 0;
 	double _job_progress = 0;
 	JobType _current_job_type = JobType::NO_JOB;
-	List<SiONDriverJob *> _job_queue;
+	List<SiONDriverJob> _job_queue;
 	List<Ref<SiONTrackEvent>> _track_event_queue;
 
 	bool _prepare_next_job();
@@ -367,11 +365,11 @@ public:
 	void set_stream_event_enabled(bool p_enabled) { _stream_event_enabled = p_enabled; }
 	void set_fading_event_enabled(bool p_enabled) { _fading_event_enabled = p_enabled; }
 
-	Ref<SiONData> compile(String p_mml, const Ref<SiONData> &p_data = Ref<SiONData>());
-	int queue_compile(String p_mml, const Ref<SiONData> &p_data);
+	Ref<SiONData> compile(String p_mml);
+	int queue_compile(String p_mml);
 
-	Vector<double> render(const Variant &p_data, Vector<double> p_render_buffer = Vector<double>(), int p_render_buffer_channel_num = 2, bool p_reset_effector = true);
-	int queue_render(const Variant &p_data, Vector<double> p_render_buffer, int p_render_buffer_channel_num = 2, bool p_reset_effector = false);
+	PackedFloat64Array render(const Variant &p_data, int p_buffer_size, int p_buffer_channel_num = 2, bool p_reset_effector = true);
+	int queue_render(const Variant &p_data, int p_buffer_size, int p_buffer_channel_num = 2, bool p_reset_effector = false);
 
 	// Playback.
 
@@ -392,10 +390,10 @@ public:
 
 	// Processing.
 
-	double get_job_progress() const { return _job_progress; }
-	double get_job_queue_progress() const;
-	int get_job_queue_length() const;
-	bool is_job_executing() const;
+	double get_queue_job_progress() const { return _job_progress; }
+	double get_queue_total_progress() const;
+	int get_queue_length() const;
+	bool is_queue_executing() const;
 
 	int start_queue(int p_interval = 500);
 

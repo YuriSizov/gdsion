@@ -177,8 +177,9 @@ func start_driver() -> void:
 
 
 func play_tune(mml_command: String) -> void:
-	print("Playing MML tune: '%s'" % mml_command)
+	print("Playing MML tune: '%s'" % [ mml_command ])
 	_driver.play(mml_command)
+	print("MML compiled in %d msec." % [ _driver.get_compiling_time() ])
 
 
 func play_note(note: int, length: int) -> void:

@@ -23,7 +23,8 @@ const char *SiONEvent::FADE_IN_COMPLETED = "fade_in_completed";
 const char *SiONEvent::FADE_OUT_COMPLETED = "fade_out_completed";
 
 Ref<SiONData> SiONEvent::get_data() const {
-	ERR_FAIL_NULL_V(_driver, nullptr);
+	ERR_FAIL_NULL_V_MSG(_driver, Ref<SiONData>(), "SiONEvent: Driver doesn't exist.");
+
 	return _driver->get_data();
 }
 

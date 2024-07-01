@@ -17,6 +17,13 @@
 	<tutorials>
 	</tutorials>
 	<methods>
+		<method name="compile">
+			<return type="SiONData" />
+			<param index="0" name="mml" type="String" />
+			<description>
+				Compiles the given MML string into a [SiONData] instance. This instance can then be used to render the melody out into a buffer via [method render], or to play it via [method play].
+			</description>
+		</method>
 		<method name="create" qualifiers="static">
 			<return type="SiONDriver" />
 			<param index="0" name="buffer_size" type="int" default="2048" />
@@ -67,10 +74,46 @@
 				Returns the number of output channels. See also [method create].
 			</description>
 		</method>
+		<method name="get_compiling_time" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the time it took to perform the last compile task (including calls to [method play]).
+			</description>
+		</method>
 		<method name="get_effector" qualifiers="const">
 			<return type="SiEffector" />
 			<description>
 				Returns a reference to the [SiEffector] instance. You can use it to control global effects and filters.
+			</description>
+		</method>
+		<method name="get_processing_time" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the average processing time during streaming.
+			</description>
+		</method>
+		<method name="get_queue_job_progress" qualifiers="const">
+			<return type="float" />
+			<description>
+				Returns the progress of the current job item in the execution queue, as a value between [code]0.0[/code] and [code]1.0[/code].
+			</description>
+		</method>
+		<method name="get_queue_length" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the remaining size of the execution queue.
+			</description>
+		</method>
+		<method name="get_queue_total_progress" qualifiers="const">
+			<return type="float" />
+			<description>
+				Returns the total progress between all jobs in the execution queue, as a value between [code]0.0[/code] and [code]1.0[/code]. The progress is calculated against the queue size at the time of the last [method start_queue] call.
+			</description>
+		</method>
+		<method name="get_rendering_time" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the time it took to perform the last render task.
 			</description>
 		</method>
 		<method name="get_sample_rate" qualifiers="const">
@@ -107,6 +150,11 @@
 			<return type="String" />
 			<description>
 				Returns the flavor of the current version, e.g. "stable" or "beta1".
+			</description>
+		</method>
+		<method name="is_queue_executing" qualifiers="const">
+			<return type="bool" />
+			<description>
 			</description>
 		</method>
 		<method name="note_off">
@@ -151,6 +199,11 @@
 			<description>
 				Starts streaming using the data provided, which is played immediately. Stops existing streaming, if it exists (see [method stop]). Does nothing when streaming is paused (see [method pause]).
 				Empty data can be provided to this method to simply initialize streaming without playing anything immediately. See also [method note_on], [method note_off], [method sequence_on], and [method sequence_off].
+				[codeblocks]
+				[gdscript]
+					driver.play("t100 l8 [ ccggaag4 ffeeddc4 | [ggffeed4]2 ]2")
+				[/gdscript]
+				[/codeblocks]
 			</description>
 		</method>
 		<method name="play_sound">
@@ -166,6 +219,35 @@
 				[param length], [param delay], and [param quantize] must be in 1/16th of a beat.
 				Use [param disposable] to control whether the track can be freed after being used. Making a track non-disposable must be treated with care as it can lead to performance penalties.
 				[b]Note:[/b] Streaming must be initialized before this method is called (see [method play]).
+			</description>
+		</method>
+		<method name="queue_compile">
+			<return type="int" />
+			<param index="0" name="mml" type="String" />
+			<description>
+				Adds a compile task to the execution queue instead of compiling immediately. See also [method compile] and [method start_queue].
+				Compiled data can be retrieved via the [signal compilation_finished] signal.
+			</description>
+		</method>
+		<method name="queue_render">
+			<return type="int" />
+			<param index="0" name="data" type="Variant" />
+			<param index="1" name="buffer_size" type="int" />
+			<param index="2" name="buffer_channel_num" type="int" default="2" />
+			<param index="3" name="reset_effector" type="bool" default="false" />
+			<description>
+				Adds a render task to the execution queue instead of rendering immediately. See also [method render] and [method start_queue].
+				Rendered buffer can be retrieved via the [signal render_finished] signal.
+			</description>
+		</method>
+		<method name="render">
+			<return type="PackedFloat64Array" />
+			<param index="0" name="data" type="Variant" />
+			<param index="1" name="buffer_size" type="int" />
+			<param index="2" name="buffer_channel_num" type="int" default="2" />
+			<param index="3" name="reset_effector" type="bool" default="true" />
+			<description>
+				Renders the given data into an audio buffer. The buffer can be converted into a stereo [PackedVector2Array] buffer and passed to [AudioStreamGeneratorPlayback] or saved as a wave file.
 			</description>
 		</method>
 		<method name="reset">
@@ -243,6 +325,13 @@
 				Sets an interval for the integrated timer, in 1/16ths of a beat. This can be used as a metronome for the purposes of synchronizing note on/off events. Setting this interval to [code]0[/code] disables the timer.
 			</description>
 		</method>
+		<method name="start_queue">
+			<return type="int" />
+			<param index="0" name="interval" type="int" default="500" />
+			<description>
+				Starts executing tasks in the execution queue. Use [param interval] to space the tasks out a bit.
+			</description>
+		</method>
 		<method name="stop">
 			<return type="void" />
 			<description>
@@ -268,22 +357,28 @@
 				Emitted when tempo/beats per minute changes in the sequencer. This can be triggered by a command in the parsed MML string.
 			</description>
 		</signal>
+		<signal name="compilation_finished">
+			<param index="0" name="data" type="SiONData" />
+			<description>
+				Emitted when when a compilation task, either queued via [method queue_compile] or executed immediately via [method compile], finishes. The compiled data is passed as the sole argument.
+			</description>
+		</signal>
 		<signal name="fade_in_completed">
 			<param index="0" name="event" type="SiONEvent" />
 			<description>
-				Emitted if the fader is used and after the fading in has finished.
+				Emitted if the fader is used and after the fading in has finished. This signal is emitted after the [signal streaming] signal. Contains a [SiONDriver] instance, a [SiONData] instance (unless [method play] was called without data), and the streaming buffer as a byte array.
 			</description>
 		</signal>
 		<signal name="fade_out_completed">
 			<param index="0" name="event" type="SiONEvent" />
 			<description>
-				Emitted if the fader is used and after the fading out has finished.
+				Emitted if the fader is used and after the fading out has finished. This signal is emitted after the [signal streaming] signal. Contains a [SiONDriver] instance, a [SiONData] instance (unless [method play] was called without data), and the streaming buffer as a byte array.
 			</description>
 		</signal>
 		<signal name="fading">
 			<param index="0" name="event" type="SiONEvent" />
 			<description>
-				Emitted if the fader is used and while the fading is happening.
+				Emitted if the fader is used and while the fading is happening. This signal is emitted after the [signal streaming] signal. Contains a [SiONDriver] instance and a [SiONData] instance (unless [method play] was called without data).
 			</description>
 		</signal>
 		<signal name="note_off_frame">
@@ -313,43 +408,50 @@
 		<signal name="queue_cancelled">
 			<param index="0" name="event" type="SiONEvent" />
 			<description>
-				Emitted when the execution/rendering queue is cancelled.
+				Emitted when the execution/rendering queue is cancelled. Contains a [SiONDriver] instance.
 			</description>
 		</signal>
 		<signal name="queue_completed">
 			<param index="0" name="event" type="SiONEvent" />
 			<description>
-				Emitted when the execution/rendering queue is completed.
+				Emitted when the execution/rendering queue is completed. Contains a [SiONDriver] instance (with the processed MML string when compiling) and a [SiONData] instance.
 			</description>
 		</signal>
 		<signal name="queue_executing">
 			<param index="0" name="event" type="SiONEvent" />
 			<description>
-				Emitted when the execution/rendering queue is being processed.
+				Emitted when the execution/rendering queue is being processed. Contains a [SiONDriver] instance (with the processed MML string when compiling) and a [SiONData] instance (only when rendering).
+			</description>
+		</signal>
+		<signal name="render_finished">
+			<param index="0" name="buffer" type="PackedFloat64Array" />
+			<description>
+				Emitted when when a render task, either queued via [method queue_render] or executed immediately via [method render], finishes. The rendered buffer is passed as the sole argument.
 			</description>
 		</signal>
 		<signal name="sequence_finished">
 			<param index="0" name="event" type="SiONEvent" />
 			<description>
-				Emitted when an individual sequence has finished during streaming.
+				Emitted when an individual sequence has finished during streaming. Contains a [SiONDriver] instance and a [SiONData] instance.
 			</description>
 		</signal>
 		<signal name="stream_started">
 			<param index="0" name="event" type="SiONEvent" />
 			<description>
-				Emitted after streaming has started.
+				Emitted after streaming has started. This signal is emitted before the first [signal streaming] signal. Contains a [SiONDriver] instance and a [SiONData] instance (unless [method play] was called without data).
 			</description>
 		</signal>
 		<signal name="stream_stopped">
 			<param index="0" name="event" type="SiONEvent" />
 			<description>
-				Emitted after streaming has stopped.
+				Emitted after streaming has stopped. Contains a [SiONDriver] instance and a [SiONData] instance (unless [method play] was called without data).
 			</description>
 		</signal>
 		<signal name="streaming">
 			<param index="0" name="event" type="SiONEvent" />
 			<description>
-				Emitted during streaming when a portion of the buffer is ready. See also [method set_stream_event_enabled].
+				Emitted during streaming when a portion of the buffer is ready. Contains a [SiONDriver] instance, a [SiONData] instance (unless [method play] was called without data), and the streaming buffer as a byte array.
+				See also [method set_stream_event_enabled].
 			</description>
 		</signal>
 		<signal name="streaming_beat">

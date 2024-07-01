@@ -45,24 +45,6 @@ const char *SiONDriver::VERSION_FLAVOR = "beta1";
 SiONDriver *SiONDriver::_mutex = nullptr;
 bool SiONDriver::_allow_multiple_drivers = false;
 
-//
-
-SiONDriver::SiONDriverJob::SiONDriverJob(String p_mml, Vector<double> p_buffer, const Ref<SiONData> &p_data, int p_channel_num, bool p_reset_effector) {
-	mml = p_mml;
-	buffer = p_buffer;
-
-	if (p_data.is_valid()) {
-		data = p_data;
-	} else {
-		Ref<SiONData> new_data;
-		new_data.instantiate();
-		data = new_data;
-	}
-
-	channel_num = p_channel_num;
-	reset_effector = p_reset_effector;
-}
-
 // Data.
 
 Ref<SiOPMWaveTable> SiONDriver::set_wave_table(int p_index, Vector<double> p_table) {
@@ -352,15 +334,10 @@ bool SiONDriver::_parse_system_command(const List<Ref<MMLSystemCommand>> &p_syst
 }
 
 void SiONDriver::_prepare_compile(String p_mml, const Ref<SiONData> &p_data) {
-	if (p_data.is_valid()) {
-		p_data->clear();
-		_data = p_data;
-	} else {
-		Ref<SiONData> new_data;
-		new_data.instantiate();
-		_data = new_data;
-	}
+	ERR_FAIL_COND(p_data.is_null());
 
+	p_data->clear();
+	_data = p_data;
 	_mml_string = p_mml;
 	sequencer->prepare_compile(_data, _mml_string);
 
@@ -369,12 +346,14 @@ void SiONDriver::_prepare_compile(String p_mml, const Ref<SiONData> &p_data) {
 	_current_job_type = JobType::COMPILE;
 }
 
-void SiONDriver::_prepare_render(const Variant &p_data, Vector<double> p_render_buffer, int p_render_buffer_channel_num, bool p_reset_effector) {
+void SiONDriver::_prepare_render(const Variant &p_data, int p_buffer_size, int p_buffer_channel_num, bool p_reset_effector) {
 	_prepare_process(p_data, p_reset_effector);
 
-	_render_buffer = p_render_buffer;
-	_render_buffer_channel_num = (p_render_buffer_channel_num == 2 ? 2 : 1);
-	_render_buffer_size_max = _render_buffer.size();
+	_render_buffer.clear();
+	_render_buffer.resize_zeroed(p_buffer_size);
+
+	_render_buffer_channel_num = (p_buffer_channel_num == 2 ? 2 : 1);
+	_render_buffer_size_max = p_buffer_size;
 	_render_buffer_index = 0;
 
 	_job_progress = 0.01;
@@ -503,33 +482,44 @@ void SiONDriver::_streaming() {
 	_in_streaming_process = false;
 }
 
-Ref<SiONData> SiONDriver::compile(String p_mml, const Ref<SiONData> &p_data) {
+Ref<SiONData> SiONDriver::compile(String p_mml) {
 	stop();
 
 	int start_time = Time::get_singleton()->get_ticks_msec();
-	_prepare_compile(p_mml, p_data);
+	Ref<SiONData> temp_data;
+	temp_data.instantiate();
+	_prepare_compile(p_mml, temp_data);
 
-	_job_progress = sequencer->compile(0);
+	_job_progress = sequencer->compile(0); // 0 ensures that the process is completed within the same frame.
 	_performance_stats.compiling_time = Time::get_singleton()->get_ticks_msec() - start_time;
 	_mml_string = "";
 
+	static const StringName compilation_finished = StringName("compilation_finished");
+	emit_signal(compilation_finished, _data);
 	return _data;
 }
 
-int SiONDriver::queue_compile(String p_mml, const Ref<SiONData> &p_data) {
-	if (p_mml.is_empty() || p_data.is_null()) {
-		return _job_queue.size();
-	}
+int SiONDriver::queue_compile(String p_mml) {
+	ERR_FAIL_COND_V_MSG(p_mml.is_empty(), _job_queue.size(), "SiONDriver: Cannot queue a compile task, the MML string is empty.");
 
-	_job_queue.push_back(memnew(SiONDriverJob(p_mml, Vector<double>(), p_data, 2, false)));
+	Ref<SiONData> sion_data;
+	sion_data.instantiate();
+
+	SiONDriverJob compile_job;
+	compile_job.type = JobType::COMPILE;
+	compile_job.data = sion_data;
+	compile_job.mml_string = p_mml;
+	compile_job.channel_num = 2;
+
+	_job_queue.push_back(compile_job);
 	return _job_queue.size();
 }
 
-Vector<double> SiONDriver::render(const Variant &p_data, Vector<double> p_render_buffer, int p_render_buffer_channel_num, bool p_reset_effector) {
+PackedFloat64Array SiONDriver::render(const Variant &p_data, int p_buffer_size, int p_buffer_channel_num, bool p_reset_effector) {
 	stop();
 
 	int start_time = Time::get_singleton()->get_ticks_msec();
-	_prepare_render(p_data, p_render_buffer, p_render_buffer_channel_num, p_reset_effector);
+	_prepare_render(p_data, p_buffer_size, p_buffer_channel_num, p_reset_effector);
 
 	while (true) { // Render everything.
 		if (_rendering()) {
@@ -538,33 +528,61 @@ Vector<double> SiONDriver::render(const Variant &p_data, Vector<double> p_render
 	}
 	_performance_stats.rendering_time = Time::get_singleton()->get_ticks_msec() - start_time;
 
-	return _render_buffer;
+	PackedFloat64Array buffer;
+	for (double value : _render_buffer) {
+		buffer.push_back(value);
+	}
+
+	static const StringName render_finished = StringName("render_finished");
+	emit_signal(render_finished, buffer);
+	return buffer;
 }
 
-int SiONDriver::queue_render(const Variant &p_data, Vector<double> p_render_buffer, int p_render_buffer_channel_num, bool p_reset_effector) {
-	if (p_data.get_type() == Variant::NIL || p_render_buffer.is_empty()) {
-		return _job_queue.size();
-	}
+int SiONDriver::queue_render(const Variant &p_data, int p_buffer_size, int p_buffer_channel_num, bool p_reset_effector) {
+	ERR_FAIL_COND_V_MSG(p_data.get_type() == Variant::NIL, _job_queue.size(), "SiONDriver: Cannot queue a render task, the data object is empty.");
+	ERR_FAIL_COND_V_MSG(p_buffer_size <= 0, _job_queue.size(), "SiONDriver: Cannot queue a render task, the buffer size must be a positive number.");
 
 	Variant::Type data_type = p_data.get_type();
 	switch (data_type) {
 		case Variant::STRING: {
-			Ref<SiONData> sion_data = memnew(SiONData);
 			String mml_string = p_data;
 
-			// Queue compilation first.
-			_job_queue.push_back(memnew(SiONDriverJob(mml_string, Vector<double>(), sion_data, 2, false)));
-			// Then queue the render.
-			_job_queue.push_back(memnew(SiONDriverJob(String(), p_render_buffer, sion_data, p_render_buffer_channel_num, p_reset_effector)));
+			// Data is shared between the two tasks.
+			Ref<SiONData> sion_data = memnew(SiONData);
+			sion_data.instantiate();
 
+			// Queue compilation first.
+			SiONDriverJob compile_job;
+			compile_job.type = JobType::COMPILE;
+			compile_job.data = sion_data;
+			compile_job.mml_string = mml_string;
+			compile_job.channel_num = 2;
+
+			_job_queue.push_back(compile_job);
+
+			// Then queue the render.
+			SiONDriverJob render_job;
+			render_job.type = JobType::RENDER;
+			render_job.data = sion_data;
+			render_job.buffer_size = p_buffer_size;
+			render_job.channel_num = p_buffer_channel_num;
+			render_job.reset_effector = p_reset_effector;
+
+			_job_queue.push_back(render_job);
 			return _job_queue.size();
 		} break;
 
 		case Variant::OBJECT: {
 			Ref<SiONData> sion_data = p_data;
 			if (sion_data.is_valid()) {
-				_job_queue.push_back(memnew(SiONDriverJob(String(), p_render_buffer, sion_data, p_render_buffer_channel_num, p_reset_effector)));
+				SiONDriverJob render_job;
+				render_job.type = JobType::RENDER;
+				render_job.data = sion_data;
+				render_job.buffer_size = p_buffer_size;
+				render_job.channel_num = p_buffer_channel_num;
+				render_job.reset_effector = p_reset_effector;
 
+				_job_queue.push_back(render_job);
 				return _job_queue.size();
 			}
 		} break;
@@ -848,7 +866,7 @@ void SiONDriver::_prepare_process(const Variant &p_data, bool p_reset_effector) 
 
 		case Variant::STRING: { // MML string.
 			String mml_string = p_data;
-			_data = compile(mml_string, _temp_data);
+			compile(mml_string); // Populates _data inside.
 		} break;
 
 		case Variant::OBJECT: {
@@ -946,8 +964,29 @@ void SiONDriver::_process_frame_queue() {
 	}
 
 	// Finish the job and prepare the next one.
-	if (_job_progress == 1 && _prepare_next_job()) {
-		return;
+	if (_job_progress == 1) {
+		switch (_current_job_type) {
+			case JobType::COMPILE: {
+				static const StringName compilation_finished = StringName("compilation_finished");
+				emit_signal(compilation_finished, _data);
+			} break;
+
+			case JobType::RENDER: {
+				static const StringName render_finished = StringName("render_finished");
+
+				PackedFloat64Array buffer;
+				for (double value : _render_buffer) {
+					buffer.push_back(value);
+				}
+				emit_signal(render_finished, buffer);
+			} break;
+
+			default: break; // Silences enum warnings.
+		}
+
+		if (_prepare_next_job()) {
+			return; // Queue is finished.
+		}
 	}
 
 	_dispatch_event(memnew(SiONEvent(SiONEvent::QUEUE_EXECUTING, this)));
@@ -1000,19 +1039,38 @@ bool SiONDriver::_prepare_next_job() {
 		_clear_processing();
 
 		_dispatch_event(memnew(SiONEvent(SiONEvent::QUEUE_COMPLETED, this)));
-		return true;
+		return true; // Finished.
 	}
 
-	SiONDriverJob *job = _job_queue.front()->get();
+	SiONDriverJob job = _job_queue.front()->get();
 	_job_queue.pop_front();
 
-	if (job->mml.is_empty()) {
-		_prepare_render(job->data, job->buffer, job->channel_num, job->reset_effector);
-	} else {
-		_prepare_compile(job->mml, job->data);
+	switch (job.type) {
+		case JobType::COMPILE: {
+			if (job.mml_string.is_empty()) {
+				WARN_PRINT("SiONDriver: Invalid compile job queued up, missing MML string.");
+				return _prepare_next_job(); // Skip this job.
+			}
+
+			_prepare_compile(job.mml_string, job.data);
+		} break;
+
+		case JobType::RENDER: {
+			if (job.buffer_size <= 0) {
+				WARN_PRINT("SiONDriver: Invalid render job queued up, buffer size must be a positive number.");
+				return _prepare_next_job(); // Skip this job.
+			}
+
+			_prepare_render(job.data, job.buffer_size, job.channel_num, job.reset_effector);
+		} break;
+
+		default: {
+			WARN_PRINT("SiONDriver: Unknown job queued up.");
+			return _prepare_next_job(); // Skip this job.
+		} break;
 	}
 
-	return false;
+	return false; // Not finished yet.
 }
 
 void SiONDriver::_cancel_all_jobs() {
@@ -1028,18 +1086,22 @@ void SiONDriver::_cancel_all_jobs() {
 	_dispatch_event(memnew(SiONEvent(SiONEvent::QUEUE_CANCELLED, this)));
 }
 
-double SiONDriver::get_job_queue_progress() const {
+double SiONDriver::get_queue_total_progress() const {
 	if (_queue_length == 0) {
-		return 1;
+		return 1.0;
 	}
+	if (_queue_length == _job_queue.size()) {
+		return 0.0;
+	}
+
 	return (_queue_length - _job_queue.size() - 1.0 + _job_progress) / _queue_length;
 }
 
-int SiONDriver::get_job_queue_length() const {
+int SiONDriver::get_queue_length() const {
 	return _job_queue.size();
 }
 
-bool SiONDriver::is_job_executing() const {
+bool SiONDriver::is_queue_executing() const {
 	return (_job_progress > 0 && _job_progress < 1);
 }
 
@@ -1195,7 +1257,7 @@ void SiONDriver::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_fade_callback", "value"), &SiONDriver::_fade_callback);
 	ClassDB::bind_method(D_METHOD("_fade_background_callback", "value"), &SiONDriver::_fade_callback);
 
-	//
+	// Meta information.
 
 	ClassDB::bind_static_method("SiONDriver", D_METHOD("get_version"), &SiONDriver::get_version);
 	ClassDB::bind_static_method("SiONDriver", D_METHOD("get_version_flavor"), &SiONDriver::get_version_flavor);
@@ -1204,11 +1266,17 @@ void SiONDriver::_bind_methods() {
 
 	ClassDB::bind_static_method("SiONDriver", D_METHOD("create", "buffer_size", "channel_num", "sample_rate", "bitrate"), &SiONDriver::create, DEFVAL(2048), DEFVAL(2), DEFVAL(44100), DEFVAL(0));
 
-	// Public API.
+	// Internal components.
+
+	ClassDB::bind_method(D_METHOD("get_sound_chip"), &SiONDriver::get_sound_chip);
+	ClassDB::bind_method(D_METHOD("get_effector"), &SiONDriver::get_effector);
+	ClassDB::bind_method(D_METHOD("get_sequencer"), &SiONDriver::get_sequencer);
 
 	ClassDB::bind_method(D_METHOD("get_audio_player"), &SiONDriver::get_audio_player);
 	ClassDB::bind_method(D_METHOD("get_audio_stream"), &SiONDriver::get_audio_stream);
 	ClassDB::bind_method(D_METHOD("get_audio_playback"), &SiONDriver::get_audio_playback);
+
+	// Configuration.
 
 	ClassDB::bind_method(D_METHOD("get_track_count"), &SiONDriver::get_track_count);
 	ClassDB::bind_method(D_METHOD("get_max_track_count"), &SiONDriver::get_max_track_count);
@@ -1229,12 +1297,22 @@ void SiONDriver::_bind_methods() {
 	ClassDB::add_property("SiONDriver", PropertyInfo(Variant::FLOAT, "volume"), "set_volume", "get_volume");
 	ClassDB::add_property("SiONDriver", PropertyInfo(Variant::FLOAT, "bpm"), "set_bpm", "get_bpm");
 
+	// Events.
+
 	ClassDB::bind_method(D_METHOD("set_beat_callback_interval", "length_16th"), &SiONDriver::set_beat_callback_interval);
 	ClassDB::bind_method(D_METHOD("set_timer_interval", "length_16th"), &SiONDriver::set_timer_interval);
 
 	ClassDB::bind_method(D_METHOD("set_beat_event_enabled", "enabled"), &SiONDriver::set_beat_event_enabled);
 	ClassDB::bind_method(D_METHOD("set_stream_event_enabled", "enabled"), &SiONDriver::set_stream_event_enabled);
 	ClassDB::bind_method(D_METHOD("set_fading_event_enabled", "enabled"), &SiONDriver::set_fading_event_enabled);
+
+	// Processing, compiling, rendering.
+
+	ClassDB::bind_method(D_METHOD("compile", "mml"), &SiONDriver::compile);
+	ClassDB::bind_method(D_METHOD("queue_compile", "mml"), &SiONDriver::queue_compile);
+
+	ClassDB::bind_method(D_METHOD("render", "data", "buffer_size", "buffer_channel_num", "reset_effector"), &SiONDriver::render, DEFVAL(2), DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("queue_render", "data", "buffer_size", "buffer_channel_num", "reset_effector"), &SiONDriver::queue_render, DEFVAL(2), DEFVAL(false));
 
 	ClassDB::bind_method(D_METHOD("play", "data", "reset_effector"), &SiONDriver::play, DEFVAL(Variant()), DEFVAL(true));
 	ClassDB::bind_method(D_METHOD("stop"), &SiONDriver::stop);
@@ -1248,13 +1326,25 @@ void SiONDriver::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("sequence_on", "data", "voice", "length", "delay", "quantize", "track_id", "disposable"), &SiONDriver::sequence_on, DEFVAL((Object *)nullptr), DEFVAL(0), DEFVAL(0), DEFVAL(1), DEFVAL(0), DEFVAL(true));
 	ClassDB::bind_method(D_METHOD("sequence_off", "track_id", "delay", "quantize", "stop_with_reset"), &SiONDriver::sequence_off, DEFVAL(0), DEFVAL(1), DEFVAL(false));
 
-	// Sub-module access.
+	// Execution queue.
 
-	ClassDB::bind_method(D_METHOD("get_sound_chip"), &SiONDriver::get_sound_chip);
-	ClassDB::bind_method(D_METHOD("get_effector"), &SiONDriver::get_effector);
-	ClassDB::bind_method(D_METHOD("get_sequencer"), &SiONDriver::get_sequencer);
+	ClassDB::bind_method(D_METHOD("get_queue_job_progress"), &SiONDriver::get_queue_job_progress);
+	ClassDB::bind_method(D_METHOD("get_queue_total_progress"), &SiONDriver::get_queue_total_progress);
+	ClassDB::bind_method(D_METHOD("get_queue_length"), &SiONDriver::get_queue_length);
+	ClassDB::bind_method(D_METHOD("is_queue_executing"), &SiONDriver::is_queue_executing);
+	ClassDB::bind_method(D_METHOD("start_queue", "interval"), &SiONDriver::start_queue, DEFVAL(500));
+
+	// Performance and stats.
+
+	ClassDB::bind_method(D_METHOD("get_compiling_time"), &SiONDriver::get_compiling_time);
+	ClassDB::bind_method(D_METHOD("get_rendering_time"), &SiONDriver::get_rendering_time);
+	ClassDB::bind_method(D_METHOD("get_processing_time"), &SiONDriver::get_processing_time);
+
+	//
 
 	ADD_SIGNAL(MethodInfo("timer_interval"));
+	ADD_SIGNAL(MethodInfo("compilation_finished", PropertyInfo(Variant::OBJECT, "data", PROPERTY_HINT_RESOURCE_TYPE, "SiONData")));
+	ADD_SIGNAL(MethodInfo("render_finished", PropertyInfo(Variant::PACKED_FLOAT64_ARRAY, "buffer")));
 
 	ADD_SIGNAL(MethodInfo(SiONEvent::QUEUE_EXECUTING, PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "SiONEvent")));
 	ADD_SIGNAL(MethodInfo(SiONEvent::QUEUE_COMPLETED, PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "SiONEvent")));
