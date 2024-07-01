@@ -116,12 +116,6 @@ void MMLEvent::initialize(int p_id, int p_data, int p_length) {
 	jump = nullptr;
 }
 
-void MMLEvent::free() {
-	if (next == nullptr) {
-		MMLParser::get_instance()->free_event(this);
-	}
-}
-
 void MMLEvent::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_id"), &MMLEvent::get_id);
 	ClassDB::bind_method(D_METHOD("set_id", "value"), &MMLEvent::set_id);

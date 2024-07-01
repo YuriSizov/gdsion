@@ -34,7 +34,7 @@ public:
 
 	MMLSequence *get_new_sequence();
 	MMLSequence *append_new_sequence();
-	void populate_sequences(MMLEvent *p_head_event);
+	MMLEvent *populate_sequences(MMLEvent *p_head_event);
 	MMLSequence *get_sequence(int p_index) const;
 
 	void clear();

@@ -282,7 +282,6 @@ void MMLSequence::from_vector(List<MMLEvent *> p_events) {
 
 void MMLSequence::initialize() {
 	if (!is_empty()) {
-		_head_event->get_jump()->set_next(_tail_event);
 		MMLParser::get_instance()->free_all_events(this);
 		_callbacks_for_internal_call.clear();
 	}
@@ -296,7 +295,6 @@ void MMLSequence::initialize() {
 
 void MMLSequence::clear() {
 	if (_head_event) {
-		_head_event->get_jump()->set_next(_tail_event);
 		MMLParser::get_instance()->free_all_events(this);
 
 		_prev_sequence = nullptr;
@@ -317,7 +315,6 @@ MMLSequence::MMLSequence(bool p_terminal) {
 
 MMLSequence::~MMLSequence() {
 	if (_head_event) {
-		_head_event->get_jump()->set_next(_tail_event);
 		MMLParser::get_instance()->free_all_events(this);
 	}
 

@@ -600,15 +600,18 @@ MMLEvent *MMLParser::free_event(MMLEvent *p_event) {
 }
 
 void MMLParser::free_all_events(MMLSequence *p_sequence) {
-	if (!p_sequence->get_head_event()) {
+	if (p_sequence->is_empty()) {
 		return;
 	}
 
-	p_sequence->get_tail_event()->set_next(_free_event_chain);
-	_free_event_chain = p_sequence->get_head_event();
-
+	MMLEvent *head_event = p_sequence->get_head_event();
+	MMLEvent *tail_event = p_sequence->get_tail_event();
 	p_sequence->set_head_event(nullptr);
 	p_sequence->set_tail_event(nullptr);
+
+	head_event->get_jump()->set_next(tail_event);
+	tail_event->set_next(_free_event_chain);
+	_free_event_chain = head_event;
 }
 
 // Parsing operations.
@@ -777,21 +780,24 @@ void MMLParser::_op_tempo(int p_tempo) {
 }
 
 bool MMLParser::_op_end_sequence() {
-	if (_last_event->get_id() != MMLEvent::SEQUENCE_HEAD) {
-		MMLEvent *next_event = _last_sequence_head->get_next();
-		if (next_event && next_event->get_id() == MMLEvent::DEBUG_INFO) {
-			next_event->set_data(_register_sequence_mml_strings(_mml_string.substr(_head_mml_index, _head_mml_index + _mml_regex_last_index)));
-		}
+	// This method returns true when it's a good moment to split parsing into different frames. Setting
+	// _interrupt_interval to 0 disables this behavior.
 
-		_add_mml_event(MMLEvent::SEQUENCE_HEAD, 0);
-		// Returns true when it has to interrupt.
-		if (_interrupt_interval == 0) {
-			return false;
-		}
-		return _interrupt_interval < (Time::get_singleton()->get_ticks_msec() - _start_time);
+	if (_last_event->get_id() == MMLEvent::SEQUENCE_HEAD) {
+		return false; // Last sequence was empty, continue parsing the next one immediately.
 	}
 
-	return false;
+	MMLEvent *next_event = _last_sequence_head->get_next();
+	if (next_event && next_event->get_id() == MMLEvent::DEBUG_INFO) {
+		next_event->set_data(_register_sequence_mml_strings(_mml_string.substr(_head_mml_index, _head_mml_index + _mml_regex_last_index)));
+	}
+
+	_add_mml_event(MMLEvent::SEQUENCE_HEAD, 0);
+
+	if (_interrupt_interval == 0) {
+		return false;
+	}
+	return _interrupt_interval < (Time::get_singleton()->get_ticks_msec() - _start_time);
 }
 
 #undef OP_ERR_FAIL_RANGE
@@ -817,20 +823,21 @@ MMLParser::~MMLParser() {
 	_last_sequence_head = nullptr;
 	_repeat_stack.clear();
 
-	MMLEvent *event = _terminator->get_next();
-	while (event) {
-		event = free_event(event);
+	MMLEvent *term_event = _terminator;
+	while (term_event) {
+		MMLEvent *event = term_event;
+		term_event = term_event->get_next();
+
+		memdelete(event);
 	}
-	memdelete(_terminator);
 	_terminator = nullptr;
 
-	MMLEvent *next_event = _free_event_chain->get_next();
-	while (next_event) {
-		MMLEvent *freed_event = next_event;
-		next_event = next_event->get_next();
+	MMLEvent *freed_event = _free_event_chain;
+	while (freed_event) {
+		MMLEvent *event = freed_event;
+		freed_event = freed_event->get_next();
 
-		memdelete(freed_event);
+		memdelete(event);
 	}
-	memdelete(_free_event_chain);
 	_free_event_chain = nullptr;
 }

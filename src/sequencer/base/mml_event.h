@@ -96,7 +96,6 @@ public:
 	String to_string() const;
 
 	void initialize(int p_id, int p_data, int p_length);
-	void free();
 
 	MMLEvent(int p_id = 0, int p_data = 0, int p_length = 0);
 	~MMLEvent();

@@ -72,16 +72,26 @@ MMLSequence *MMLSequenceGroup::append_new_sequence() {
 	return sequence;
 }
 
-void MMLSequenceGroup::populate_sequences(MMLEvent *p_head_event) {
+MMLEvent *MMLSequenceGroup::populate_sequences(MMLEvent *p_head_event) {
 	MMLEvent *event = p_head_event;
 	while (event && event->get_jump()) {
-		ERR_FAIL_COND_MSG(event->get_id() != MMLEvent::SEQUENCE_HEAD, vformat("MMLSequenceGroup: Invalid event in the head event sequence (%s).", event->to_string()));
+		ERR_FAIL_COND_V_MSG(event->get_id() != MMLEvent::SEQUENCE_HEAD, event, vformat("MMLSequenceGroup: Invalid event in the head event sequence (%s).", event->to_string()));
 
 		MMLSequence *sequence = append_new_sequence();
 		event = sequence->cutout(event);
 		sequence->update_mml_string();
 		sequence->set_active(true);
 	}
+
+	if (event) {
+		// This can happen normally, as we always add an extra head after finishing previous sequence. But anything else
+		// is a problem with data or a bug.
+		ERR_FAIL_COND_V_MSG(event->get_id() != MMLEvent::SEQUENCE_HEAD, event, vformat("MMLSequenceGroup: Invalid events at the end of the sequence (starting with %s).", event->to_string()));
+		ERR_FAIL_COND_V_MSG(event->get_next(), event, vformat("MMLSequenceGroup: Invalid events at the end of the sequence (starting with %s).", event->get_next()->to_string()));
+	}
+
+	// Return the remainder, if any, so the caller can decide what to do with it.
+	return event;
 }
 
 //

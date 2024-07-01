@@ -237,7 +237,7 @@ struct EventComparator {
 void MMLSequencer::_extract_global_sequence() {
 	MMLSequenceGroup *seq_group = mml_data->get_sequence_group();
 
-	List<MMLEvent *> list;
+	List<MMLEvent *> global_list;
 
 	MMLSequence *sequence = seq_group->get_head_sequence();
 	while (sequence) {
@@ -259,10 +259,11 @@ void MMLSequencer::_extract_global_sequence() {
 			// Global or table event.
 			if (_event_global_flags[event->get_id()]) {
 				if (event->get_id() == MMLEvent::TABLE_EVENT) {
-					// Well, table event then.
+					// It's a table event, parse it in its own special way.
+					// Once consumed, table events are automatically removed from the chain and freed.
 					parse_table_event(prev);
 				} else {
-					// And here it's a global one.
+					// And here it's a global event. We cut them from the chain to further process below.
 					if (sequence->get_head_event()->get_jump() == event) {
 						sequence->get_head_event()->set_jump(prev);
 					}
@@ -270,7 +271,7 @@ void MMLSequencer::_extract_global_sequence() {
 					prev->set_next(event->get_next());
 					event->set_next(nullptr);
 					event->set_length(position);
-					list.push_back(event);
+					global_list.push_back(event);
 				}
 
 				event = prev->get_next();
@@ -333,26 +334,28 @@ void MMLSequencer::_extract_global_sequence() {
 		sequence = sequence->get_next_sequence();
 	}
 
-	list.sort_custom<EventComparator>();
+	global_list.sort_custom<EventComparator>();
 
 	// Create global sequence.
 	MMLSequence *glob_sequence = mml_data->get_global_sequence();
 	int position = 0;
 	int initial_bpm = 0;
 
-	for (MMLEvent *event : list) {
-		if (event->get_length() == 0 && event->get_id() == MMLEvent::TEMPO) {
+	for (MMLEvent *global_event : global_list) {
+		if (global_event->get_length() == 0 && global_event->get_id() == MMLEvent::TEMPO) {
 			// First tempo command is default BPM.
-			initial_bpm = mml_data->get_bpm_from_tcommand(event->get_data());
+			initial_bpm = mml_data->get_bpm_from_tcommand(global_event->get_data());
+
+			MMLParser::get_instance()->free_event(global_event); // Free after consumption.
 		} else {
-			int count = event->get_length() - position;
-			position = event->get_length();
-			event->set_length(0);
+			int count = global_event->get_length() - position;
+			position = global_event->get_length();
+			global_event->set_length(0);
 
 			if (count > 0) {
 				glob_sequence->append_new_event(MMLEvent::GLOBAL_WAIT, 0, count);
 			}
-			glob_sequence->push_back(event);
+			glob_sequence->push_back(global_event);
 		}
 	}
 
@@ -396,7 +399,11 @@ double MMLSequencer::compile(int p_interval) {
 	}
 
 	// Create the main sequence group.
-	mml_data->get_sequence_group()->populate_sequences(event);
+	MMLEvent *unhandled_event = mml_data->get_sequence_group()->populate_sequences(event);
+	while (unhandled_event) {
+		unhandled_event = MMLParser::get_instance()->free_event(unhandled_event);
+	}
+
 	_extract_global_sequence();
 	_on_after_compile(mml_data->get_sequence_group());
 
@@ -544,7 +551,7 @@ void MMLSequencer::parse_table_event(MMLEvent *p_prev) {
 	_on_table_parse(p_prev, MMLParser::get_instance()->get_system_event_string(table_event));
 
 	p_prev->set_next(table_event->get_next());
-	MMLParser::get_instance()->free_event(table_event);
+	MMLParser::get_instance()->free_event(table_event); // Free after consumption.
 }
 
 //
