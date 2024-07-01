@@ -836,14 +836,12 @@ void SiMMLTrack::key_off(int p_sample_delay, bool p_with_reset) {
 	}
 }
 
-void SiMMLTrack::sequence_on(MMLSequence *p_sequence, int p_sample_length, int p_sample_delay) {
+void SiMMLTrack::sequence_on(const Ref<SiMMLData> &p_data, MMLSequence *p_sequence, int p_sample_length, int p_sample_delay) {
+	ERR_FAIL_NULL(p_sequence);
+
+	_mml_data = p_data;
 	_track_start_delay = p_sample_delay;
 	_track_stop_delay = p_sample_length;
-
-	_mml_data = Ref<SiMMLData>();
-	if (p_sequence) {
-		_mml_data = p_sequence->get_owner();
-	}
 
 	_executor->initialize(p_sequence);
 }
@@ -984,7 +982,9 @@ void SiMMLTrack::reset(int p_buffer_index) {
 	_executor->reset_pointer();
 }
 
-void SiMMLTrack::initialize(MMLSequence *p_sequence, int p_fps, int p_internal_track_id, const Callable &p_event_trigger_on, const Callable &p_event_trigger_off, bool p_disposable) {
+void SiMMLTrack::initialize(const Ref<SiMMLData> &p_data, MMLSequence *p_sequence, int p_fps, int p_internal_track_id, const Callable &p_event_trigger_on, const Callable &p_event_trigger_off, bool p_disposable) {
+	_mml_data = p_data;
+
 	_default_fps = p_fps;
 	_internal_track_id = p_internal_track_id;
 	_is_disposable = p_disposable;
@@ -994,11 +994,6 @@ void SiMMLTrack::initialize(MMLSequence *p_sequence, int p_fps, int p_internal_t
 	_event_trigger_id = -1;
 	_event_trigger_type_on = EventTriggerType::NO_EVENTS;
 	_event_trigger_type_off = EventTriggerType::NO_EVENTS;
-
-	_mml_data = Ref<SiMMLData>();
-	if (p_sequence) {
-		_mml_data = p_sequence->get_owner();
-	}
 
 	_executor->initialize(p_sequence);
 }

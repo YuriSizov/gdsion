@@ -18,8 +18,6 @@ class MMLEvent;
 // Sequence of 1 sound channel. MMLData > MMLSequenceGroup > MMLSequence > MMLEvent (">" means "has a").
 class MMLSequence {
 
-	Ref<MMLData> _owner;
-
 	// Chain of sequences.
 
 	MMLSequence *_prev_sequence = nullptr;
@@ -48,9 +46,6 @@ class MMLSequence {
 	void _update_mml_length();
 
 public:
-	Ref<MMLData> get_owner() const { return _owner; }
-	void set_owner(const Ref<MMLData> &p_owner) { _owner = p_owner; }
-
 	// Chain of sequences.
 
 	void insert_before(MMLSequence *p_next);
@@ -102,7 +97,7 @@ public:
 	void from_vector(List<MMLEvent *> p_events);
 
 	void initialize();
-	void free();
+	void clear();
 
 	MMLSequence(bool p_terminal = false);
 	~MMLSequence();

@@ -13,8 +13,6 @@
 
 using namespace godot;
 
-List<MMLSequence *> MMLSequenceGroup::_free_list;
-
 int MMLSequenceGroup::get_sequence_count() const {
 	return _sequences.size();
 }
@@ -48,6 +46,12 @@ bool MMLSequenceGroup::has_repeat_all() {
 
 //
 
+MMLSequence *MMLSequenceGroup::get_sequence(int p_index) const {
+	ERR_FAIL_INDEX_V(p_index, _sequences.size(), nullptr);
+
+	return _sequences[p_index];
+}
+
 MMLSequence *MMLSequenceGroup::get_new_sequence() {
 	MMLSequence *sequence = nullptr;
 	if (!_free_list.is_empty()) {
@@ -57,7 +61,6 @@ MMLSequence *MMLSequenceGroup::get_new_sequence() {
 		sequence = memnew(MMLSequence);
 	}
 
-	sequence->set_owner(_owner);
 	_sequences.push_back(sequence);
 	return sequence;
 }
@@ -69,15 +72,7 @@ MMLSequence *MMLSequenceGroup::append_new_sequence() {
 	return sequence;
 }
 
-MMLSequence *MMLSequenceGroup::get_sequence(int p_index) const {
-	ERR_FAIL_INDEX_V(p_index, _sequences.size(), nullptr);
-
-	return _sequences[p_index];
-}
-
-//
-
-void MMLSequenceGroup::alloc(MMLEvent *p_head_event) {
+void MMLSequenceGroup::populate_sequences(MMLEvent *p_head_event) {
 	MMLEvent *event = p_head_event;
 	while (event && event->get_jump()) {
 		ERR_FAIL_COND_MSG(event->get_id() != MMLEvent::SEQUENCE_HEAD, vformat("MMLSequenceGroup: Invalid event in the head event sequence (%s).", event->to_string()));
@@ -89,18 +84,18 @@ void MMLSequenceGroup::alloc(MMLEvent *p_head_event) {
 	}
 }
 
-void MMLSequenceGroup::free() {
+//
+
+void MMLSequenceGroup::clear() {
 	for (MMLSequence *sequence : _sequences) {
-		sequence->free();
+		sequence->clear();
 		_free_list.push_back(sequence);
 	}
-
 	_sequences.clear();
-	_term->free();
+	_term->clear();
 }
 
-MMLSequenceGroup::MMLSequenceGroup(const Ref<MMLData> &p_owner) {
-	_owner = p_owner;
+MMLSequenceGroup::MMLSequenceGroup() {
 	_term = memnew(MMLSequence(true));
 }
 

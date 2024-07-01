@@ -70,7 +70,7 @@ void SiMMLSequencer::reset_all_tracks() {
 }
 
 void SiMMLSequencer::_initialize_track(SiMMLTrack *p_track, int p_internal_track_id, bool p_disposable) {
-	p_track->initialize(nullptr, 60, (p_internal_track_id >= 0 ? p_internal_track_id : 0), _callback_event_note_on, _callback_event_note_off, p_disposable);
+	p_track->initialize(Ref<SiMMLData>(), nullptr, 60, (p_internal_track_id >= 0 ? p_internal_track_id : 0), _callback_event_note_on, _callback_event_note_off, p_disposable);
 	p_track->reset(_global_buffer_index);
 	p_track->get_channel()->set_master_volume(_parser_settings->default_fine_volume);
 }
@@ -417,7 +417,7 @@ void SiMMLSequencer::prepare_process(const Ref<MMLData> &p_data, int p_sample_ra
 				}
 
 				int internal_track_id = index | SiMMLTrack::MML_TRACK;
-				track->initialize(sequence, mml_data->get_default_fps(), internal_track_id, _callback_event_note_on, _callback_event_note_off, true);
+				track->initialize(p_data, sequence, mml_data->get_default_fps(), internal_track_id, _callback_event_note_on, _callback_event_note_off, true);
 				track->set_track_number(index);
 				_tracks.push_back(track);
 

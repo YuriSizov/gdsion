@@ -206,7 +206,7 @@ void SiOPMChannelParams::initialize() {
 		operator_params[i]->initialize();
 	}
 
-	init_sequence->free();
+	init_sequence->clear();
 }
 
 void SiOPMChannelParams::copy_from(const Ref<SiOPMChannelParams> &p_params) {
@@ -244,7 +244,7 @@ void SiOPMChannelParams::copy_from(const Ref<SiOPMChannelParams> &p_params) {
 		operator_params[i]->copy_from(p_params->operator_params[i]);
 	}
 
-	init_sequence->free();
+	init_sequence->clear();
 }
 
 void SiOPMChannelParams::_bind_methods() {

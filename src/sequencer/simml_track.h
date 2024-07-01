@@ -370,7 +370,7 @@ public:
 	void key_on(int p_note, int p_tick_length = 0, int p_sample_delay = 0);
 	void key_off(int p_sample_delay = 0, bool p_with_reset = false);
 
-	void sequence_on(MMLSequence *p_sequence, int p_sample_length = 0, int p_sample_delay = 0);
+	void sequence_on(const Ref<SiMMLData> &p_data, MMLSequence *p_sequence, int p_sample_length = 0, int p_sample_delay = 0);
 	void sequence_off(int p_sample_delay = 0, bool p_with_reset = false);
 
 	void limit_key_length(int p_stop_delay);
@@ -380,7 +380,7 @@ public:
 	//
 
 	void reset(int p_buffer_index);
-	void initialize(MMLSequence *p_sequence, int p_fps, int p_internal_track_id, const Callable &p_event_trigger_on, const Callable &p_event_trigger_off, bool p_disposable);
+	void initialize(const Ref<SiMMLData> &p_data, MMLSequence *p_sequence, int p_fps, int p_internal_track_id, const Callable &p_event_trigger_on, const Callable &p_event_trigger_off, bool p_disposable);
 
 	SiMMLTrack();
 	~SiMMLTrack();

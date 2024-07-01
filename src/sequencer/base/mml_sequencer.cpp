@@ -396,7 +396,7 @@ double MMLSequencer::compile(int p_interval) {
 	}
 
 	// Create the main sequence group.
-	mml_data->get_sequence_group()->alloc(event);
+	mml_data->get_sequence_group()->populate_sequences(event);
 	_extract_global_sequence();
 	_on_after_compile(mml_data->get_sequence_group());
 

@@ -18,10 +18,7 @@ class MMLSequence;
 // Group of MMLSequences. MMLData > MMLSequenceGroup > MMLSequence > MMLEvent (">" means "has a").
 class MMLSequenceGroup {
 
-	static List<MMLSequence *> _free_list;
-
-	// Owner data.
-	Ref<MMLData> _owner;
+	List<MMLSequence *> _free_list;
 
 	// Terminator.
 	List<MMLSequence *> _sequences;
@@ -37,12 +34,12 @@ public:
 
 	MMLSequence *get_new_sequence();
 	MMLSequence *append_new_sequence();
+	void populate_sequences(MMLEvent *p_head_event);
 	MMLSequence *get_sequence(int p_index) const;
 
-	void alloc(MMLEvent *p_head_event);
-	void free();
+	void clear();
 
-	MMLSequenceGroup(const Ref<MMLData> &p_owner);
+	MMLSequenceGroup();
 	~MMLSequenceGroup();
 };
 

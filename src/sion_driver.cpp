@@ -785,7 +785,7 @@ TypedArray<SiMMLTrack> SiONDriver::sequence_on(const Ref<SiONData> &p_data, cons
 	while (sequence) {
 		if (sequence->is_active()) {
 			SiMMLTrack *track =	sequencer->create_controllable_track(internal_track_id, p_disposable);
-			track->sequence_on(sequence, length_samples, delay_samples);
+			track->sequence_on(p_data, sequence, length_samples, delay_samples);
 			if (p_voice.is_valid()) {
 				p_voice->update_track_voice(track);
 			}

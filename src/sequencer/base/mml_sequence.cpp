@@ -294,7 +294,7 @@ void MMLSequence::initialize() {
 	_is_active = true;
 }
 
-void MMLSequence::free() {
+void MMLSequence::clear() {
 	if (_head_event) {
 		_head_event->get_jump()->set_next(_tail_event);
 		MMLParser::get_instance()->free_all_events(this);

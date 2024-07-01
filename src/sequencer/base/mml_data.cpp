@@ -69,8 +69,8 @@ MMLSequence *MMLData::get_sequence(int p_index) {
 //
 
 void MMLData::clear() {
-	_sequence_group->free();
-	_global_sequence->free();
+	_sequence_group->clear();
+	_global_sequence->clear();
 
 	_title = "";
 	_author = "";
@@ -92,7 +92,7 @@ void MMLData::clear() {
 }
 
 MMLData::MMLData() {
-	_sequence_group = memnew(MMLSequenceGroup(this));
+	_sequence_group = memnew(MMLSequenceGroup);
 	_global_sequence = memnew(MMLSequence);
 }
 
