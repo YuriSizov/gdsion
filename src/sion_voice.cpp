@@ -111,18 +111,25 @@ String SiONVoice::get_mml(int p_index, SiONChipType p_chip_type, bool p_append_p
 	switch (type) {
 		case SiONChipType::CHIP_SIOPM:
 			mml = "#@"    + itos(p_index) + TranslatorUtil::get_params_as_mml(channel_params, " ", "\n", _name);
+			break;
 		case SiONChipType::CHIP_OPL:
 			mml = "#OPL@" + itos(p_index) + TranslatorUtil::get_opl_params_as_mml(channel_params, " ", "\n", _name);
+			break;
 		case SiONChipType::CHIP_OPM:
 			mml = "#OPM@" + itos(p_index) + TranslatorUtil::get_opm_params_as_mml(channel_params, " ", "\n", _name);
+			break;
 		case SiONChipType::CHIP_OPN:
 			mml = "#OPN@" + itos(p_index) + TranslatorUtil::get_opn_params_as_mml(channel_params, " ", "\n", _name);
+			break;
 		case SiONChipType::CHIP_OPX:
 			mml = "#OPX@" + itos(p_index) + TranslatorUtil::get_opx_params_as_mml(channel_params, " ", "\n", _name);
+			break;
 		case SiONChipType::CHIP_MA3:
 			mml = "#MA@"  + itos(p_index) + TranslatorUtil::get_ma3_params_as_mml(channel_params, " ", "\n", _name);
+			break;
 		case SiONChipType::CHIP_ANALOG_LIKE:
 			mml = "#AL@"  + itos(p_index) + TranslatorUtil::get_al_params_as_mml(channel_params, " ", "\n", _name);
+			break;
 		default:
 			ERR_FAIL_V_MSG("", vformat("SiONVoice: Chip type %d is unsupported for MML strings.", type));
 	}
