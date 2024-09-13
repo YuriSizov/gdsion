@@ -27,28 +27,12 @@ String SiOPMOperatorParams::to_string() const {
 	// so keeping the old name here.
 	String str = "SiOPMOperatorParam : ";
 
-	str += itos(pulse_generator_type) + "(";
-	str += itos(pitch_table_type) + ") : ";
-	str += itos(attack_rate) + "/";
-	str += itos(decay_rate) + "/";
-	str += itos(sustain_rate) + "/";
-	str += itos(release_rate) + "/";
-	str += itos(sustain_level) + "/";
-	str += itos(total_level) + " : ";
-	str += itos(key_scaling_rate) + "/";
-	str += itos(key_scaling_level) + " : ";
-	str += itos(fine_multiple) + "/";
-	str += itos(detune1) + "/";
-	str += itos(detune) + " : ";
-	str += itos(amplitude_modulation_shift) + "/";
-	str += itos(initial_phase)  + "/";
-	str += itos(fixed_pitch) + " : ";
-	str += itos(ssg_type_envelope_control) + "/";
-
-	// FIXME: These are boolean flags, which can technically be interpreted as ints and converted.
-	// But original code was probably generating some strings of "true" and "false". Needs testing.
-	str += itos(mute) + "/";
-	str += itos(envelope_reset_on_attack);
+	str += vformat("%d(%d) : ", pulse_generator_type, pitch_table_type);
+	str += vformat("%d/%d/%d/%d/%d/%d : ", attack_rate, decay_rate, sustain_rate, release_rate, sustain_level, total_level);
+	str += vformat("%d/%d : ", key_scaling_rate, key_scaling_level);
+	str += vformat("%d/%d/%d : ", fine_multiple, detune1, detune);
+	str += vformat("%d/%d/%d : ", amplitude_modulation_shift, initial_phase, fixed_pitch);
+	str += vformat("%d/%s/%s", ssg_type_envelope_control, mute, envelope_reset_on_attack);
 
 	return str;
 }

@@ -53,10 +53,6 @@ int SiOPMRefTable::calculate_log_table_index(double p_number) {
 //
 
 void SiOPMRefTable::reset_all_user_tables() {
-	// FIXME: As original code suggests, and is true everywhere else in the project,
-	// this leaks because we do not properly dispose of allocated memory. Original
-	// implementation relies on GC, which is not a thing for us.
-
 	for (int i = 0; i < WAVE_TABLE_MAX; i++) {
 		_custom_wave_tables.write[i] = Ref<SiOPMWaveTable>();
 	}

@@ -32,7 +32,7 @@ class SiMMLVoice : public RefCounted {
 	int tone_num = -1;
 	int preferable_note = -1;
 
-	// FIXME: Is NAN a good idea?
+	// Setting to NAN disables the feature, tracks can still have their quantization ratios adjusted.
 	double default_gate_time = NAN;
 	int default_gate_ticks = -1;
 	int default_key_on_delay_ticks = -1;

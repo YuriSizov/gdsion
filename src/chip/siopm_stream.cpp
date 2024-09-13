@@ -29,11 +29,7 @@ void SiOPMStream::quantize(int p_bitrate) {
 	double r = 1 << p_bitrate;
 	double ir = 2.0 / r;
 	for (int i = 0; i < buffer.size(); i++) {
-		// FIXME: This is fishy. Original code uses Number which is a double precision float in AS3.
-		// This port uses double as an equivalent, however, bit shifting floating points numbers isn't possible.
-		// Throughout the codebase it's an open question if Number/double is used intentionally. Here it's
-		// even more questionable.
-		int n = buffer[i] * r;
+		int n = buffer[i] * r; // Truncate the double-precision value before shifting.
 		buffer.write[i] = (n >> 1) * ir;
 	}
 }

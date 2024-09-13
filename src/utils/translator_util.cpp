@@ -1179,7 +1179,6 @@ void TranslatorUtil::parse_voice_setting(const Ref<SiMMLVoice> &p_voice, String 
 			p_voice->portament = EXTRACT_ARGUMENT(0, 30);
 
 		} else if (command == "q") {
-			// FIXME: Is NAN a good idea?
 			p_voice->default_gate_time = EXTRACT_ARGUMENT_MOD(0, 0.125, NAN);
 
 		} else if (command == "s") {
