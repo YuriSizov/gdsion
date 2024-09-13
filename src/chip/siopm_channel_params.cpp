@@ -16,10 +16,15 @@
 using namespace godot;
 
 SiOPMOperatorParams *SiOPMChannelParams::get_operator_params(int p_index) {
-	// TODO: Check against operator_count? It can be bigger than the list size.
-	ERR_FAIL_INDEX_V(p_index, operator_params.size(), nullptr);
+	ERR_FAIL_INDEX_V(p_index, operator_count, nullptr);
 
 	return operator_params[p_index];
+}
+
+void SiOPMChannelParams::set_operator_count(int p_value) {
+	ERR_FAIL_COND(p_value > MAX_OPERATORS);
+
+	operator_count = p_value;
 }
 
 bool SiOPMChannelParams::has_amplitude_modulation() const {
@@ -202,7 +207,7 @@ void SiOPMChannelParams::initialize() {
 	filter_sustain_offset = 32;
 	filter_release_offset = 128;
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < MAX_OPERATORS; i++) {
 		operator_params[i]->initialize();
 	}
 
@@ -240,7 +245,7 @@ void SiOPMChannelParams::copy_from(const Ref<SiOPMChannelParams> &p_params) {
 	filter_sustain_offset = p_params->filter_sustain_offset;
 	filter_release_offset = p_params->filter_release_offset;
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < MAX_OPERATORS; i++) {
 		operator_params[i]->copy_from(p_params->operator_params[i]);
 	}
 
@@ -250,6 +255,9 @@ void SiOPMChannelParams::copy_from(const Ref<SiOPMChannelParams> &p_params) {
 void SiOPMChannelParams::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_operator_count"), &SiOPMChannelParams::get_operator_count);
 	ClassDB::bind_method(D_METHOD("set_operator_count", "value"), &SiOPMChannelParams::set_operator_count);
+
+	ClassDB::bind_method(D_METHOD("is_analog_like"), &SiOPMChannelParams::is_analog_like);
+	ClassDB::bind_method(D_METHOD("set_analog_like", "value"), &SiOPMChannelParams::set_analog_like);
 
 	ClassDB::bind_method(D_METHOD("get_algorithm"), &SiOPMChannelParams::get_algorithm);
 	ClassDB::bind_method(D_METHOD("set_algorithm", "value"), &SiOPMChannelParams::set_algorithm);
@@ -315,6 +323,7 @@ void SiOPMChannelParams::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_filter_release_offset", "value"), &SiOPMChannelParams::set_filter_release_offset);
 
 	ClassDB::add_property("SiOPMChannelParams", PropertyInfo(Variant::INT, "operator_count"), "set_operator_count", "get_operator_count");
+	ClassDB::add_property("SiOPMChannelParams", PropertyInfo(Variant::BOOL, "analog_like"), "set_analog_like", "is_analog_like");
 
 	ClassDB::add_property("SiOPMChannelParams", PropertyInfo(Variant::INT, "algorithm"), "set_algorithm", "get_algorithm");
 	ClassDB::add_property("SiOPMChannelParams", PropertyInfo(Variant::INT, "feedback"), "set_feedback", "get_feedback");
@@ -340,6 +349,8 @@ void SiOPMChannelParams::_bind_methods() {
 	ClassDB::add_property("SiOPMChannelParams", PropertyInfo(Variant::INT, "filter_decay_offset2"), "set_filter_decay_offset2", "get_filter_decay_offset2");
 	ClassDB::add_property("SiOPMChannelParams", PropertyInfo(Variant::INT, "filter_sustain_offset"), "set_filter_sustain_offset", "get_filter_sustain_offset");
 	ClassDB::add_property("SiOPMChannelParams", PropertyInfo(Variant::INT, "filter_release_offset"), "set_filter_release_offset", "get_filter_release_offset");
+
+	BIND_CONSTANT(MAX_OPERATORS);
 }
 
 SiOPMChannelParams::SiOPMChannelParams() {
@@ -348,7 +359,7 @@ SiOPMChannelParams::SiOPMChannelParams() {
 	master_volumes.resize_zeroed(SiOPMSoundChip::STREAM_SEND_SIZE);
 
 	operator_params.clear();
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < MAX_OPERATORS; i++) {
 		operator_params.push_back(memnew(SiOPMOperatorParams));
 	}
 
@@ -359,7 +370,7 @@ SiOPMChannelParams::~SiOPMChannelParams() {
 	memdelete(init_sequence);
 	init_sequence = nullptr;
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < MAX_OPERATORS; i++) {
 		memdelete(operator_params[i]);
 		operator_params[i] = nullptr;
 	}

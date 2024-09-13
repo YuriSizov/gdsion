@@ -52,7 +52,7 @@ int SiMMLChannelSettings::initialize_tone(SiMMLTrack *p_track, int p_channel_num
 	p_track->set_channel_number(p_channel_num < 0 ? -1 : p_channel_num);
 	// Channel requires restricted number.
 	p_track->get_channel()->set_channel_number(channel_num_restricted);
-	p_track->get_channel()->set_algorithm(_default_operator_count, 0);
+	p_track->get_channel()->set_algorithm(_default_operator_count, false, 0);
 
 	select_tone(p_track, voice_index);
 

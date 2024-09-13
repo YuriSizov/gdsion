@@ -31,6 +31,9 @@
 		<member name="amplitude_modulation_depth" type="int" setter="set_amplitude_modulation_depth" getter="get_amplitude_modulation_depth">
 			Amplitude modulation depth. Value of [code]0[/code] disables amplitude modulation.
 		</member>
+		<member name="analog_like" type="bool" setter="set_analog_like" getter="is_analog_like">
+			Analog-like mode flag. Enables analog-like processing for the channel. The expected number of operators for analog-like processing is [code]2[/code]. See [member operator_count].
+		</member>
 		<member name="envelope_frequency_ratio" type="int" setter="set_envelope_frequency_ratio" getter="get_envelope_frequency_ratio">
 			Frequency ratio used in envelopes.
 		</member>
@@ -80,7 +83,7 @@
 			Wave shape of the low-frequency oscillator.
 		</member>
 		<member name="operator_count" type="int" setter="set_operator_count" getter="get_operator_count">
-			Number of processing operators used by the channel. Valid values are between [code]0[/code] and [code]5[/code]. Setting it to [code]0[/code] disables all operator parameters. The value of [code]5[/code] sets an analog-like mode.
+			Number of processing operators used by the channel. There can be no more than [constant MAX_OPERATORS]. Setting this value to [code]0[/code] disables all operator parameters.
 		</member>
 		<member name="pan" type="int" setter="set_pan" getter="get_pan">
 			Panning strength. Can be set by a pan MML command ([code]p[/code] or [code]@p[/code])
@@ -89,4 +92,9 @@
 			Pitch modulation depth. Value of [code]0[/code] disables pitch modulation.
 		</member>
 	</members>
+	<constants>
+		<constant name="MAX_OPERATORS" value="4">
+			Max number of operators that the channel can have. See [member operator_count].
+		</constant>
+	</constants>
 </class>

@@ -1394,7 +1394,7 @@ MMLEvent *SiMMLSequencer::_on_mml_algorithm(MMLEvent *p_event) {
 		return next_event->get_next(); // Check the mask.
 	}
 
-	_current_track->get_channel()->set_algorithm(op_count, algorithm);
+	_current_track->get_channel()->set_algorithm(op_count, false, algorithm);
 	return next_event->get_next();
 }
 

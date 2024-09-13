@@ -42,7 +42,7 @@ void SiOPMChannelPCM::set_channel_params(const Ref<SiOPMChannelParams> &p_params
 		return;
 	}
 
-	set_algorithm(p_params->get_operator_count(), p_params->get_algorithm());
+	set_algorithm(p_params->get_operator_count(), p_params->is_analog_like(), p_params->get_algorithm());
 	set_frequency_ratio(p_params->get_envelope_frequency_ratio());
 	//set_feedback(p_params->get_feedback(), p_params->get_feedback_connection()); // Commented out in the original code.
 

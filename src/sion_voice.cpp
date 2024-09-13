@@ -283,7 +283,8 @@ void SiONVoice::set_pms_guitar(int p_attack_rate, int p_decay_rate, int p_total_
 }
 
 void SiONVoice::set_analog_like(int p_connection_type, int p_wave_shape1, int p_wave_shape2, int p_balance, int p_pitch_difference) {
-	channel_params->set_operator_count(5);
+	channel_params->set_operator_count(2);
+	channel_params->set_analog_like(true);
 	channel_params->set_algorithm((p_connection_type >= 0 && p_connection_type <= 3) ? p_connection_type : 0);
 	channel_params->get_operator_params(0)->set_pulse_generator_type(p_wave_shape1);
 	channel_params->get_operator_params(1)->set_pulse_generator_type(p_wave_shape2);
@@ -300,7 +301,7 @@ void SiONVoice::set_analog_like(int p_connection_type, int p_wave_shape1, int p_
 }
 
 void SiONVoice::set_envelope(int p_attack_rate, int p_decay_rate, int p_sustain_rate, int p_release_rate, int p_sustain_level, int p_total_level) {
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < channel_params->get_operator_count(); i++) {
 		SiOPMOperatorParams *op_params = channel_params->get_operator_params(i);
 		op_params->set_attack_rate(p_attack_rate);
 		op_params->set_decay_rate(p_decay_rate);
@@ -413,7 +414,8 @@ SiONVoice::SiONVoice(SiONModuleType p_module_type, int p_channel_num, int p_atta
 	pitch_shift = p_pitch_shift;
 
 	if (p_connection_type >= 0) {
-		channel_params->set_operator_count(5);
+		channel_params->set_operator_count(2);
+		channel_params->set_analog_like(true);
 		channel_params->set_algorithm(p_connection_type <= 2 ? p_connection_type : 0);
 		channel_params->get_operator_params(0)->set_pulse_generator_type(p_channel_num);
 		channel_params->get_operator_params(1)->set_pulse_generator_type(p_wave_shape2);

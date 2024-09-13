@@ -100,7 +100,7 @@ void SiOPMChannelFM::set_channel_params(const Ref<SiOPMChannelParams> &p_params,
 		return;
 	}
 
-	set_algorithm(p_params->get_operator_count(), p_params->get_algorithm());
+	set_algorithm(p_params->get_operator_count(), p_params->is_analog_like(), p_params->get_algorithm());
 	set_frequency_ratio(p_params->get_envelope_frequency_ratio());
 	set_feedback(p_params->get_feedback(), p_params->get_feedback_connection());
 
@@ -248,7 +248,7 @@ void SiOPMChannelFM::_set_by_opm_register(int p_address, int p_data) {
 		if (p_address < 0x40) { // Channel parameter
 			switch ((p_address - 0x20) >> 3) {
 				case 0: { // L:7 R:6 FB:5-3 ALG:2-0
-					set_algorithm(4, p_data & 7);
+					set_algorithm(4, false, p_data & 7);
 					set_feedback((p_data >> 3) & 7, 0);
 
 					int value = p_data >> 6;
@@ -534,8 +534,16 @@ void SiOPMChannelFM::_set_algorithm_analog_like(int p_algorithm) {
 	_update_process_function();
 }
 
-void SiOPMChannelFM::set_algorithm(int p_operator_count, int p_algorithm) {
+void SiOPMChannelFM::set_algorithm(int p_operator_count, bool p_analog_like, int p_algorithm) {
+	if (p_analog_like) {
+		_set_algorithm_analog_like(p_algorithm);
+		return;
+	}
+
 	switch (p_operator_count) {
+		case 1:
+			_set_algorithm_operator1(p_algorithm);
+			break;
 		case 2:
 			_set_algorithm_operator2(p_algorithm);
 			break;
@@ -545,12 +553,8 @@ void SiOPMChannelFM::set_algorithm(int p_operator_count, int p_algorithm) {
 		case 4:
 			_set_algorithm_operator4(p_algorithm);
 			break;
-		case 5:
-			_set_algorithm_analog_like(p_algorithm);
-			break;
 		default:
-			_set_algorithm_operator1(p_algorithm);
-			break;
+			ERR_FAIL_MSG("SiOPMChannelFM: Invalid number of operators.");
 	}
 }
 

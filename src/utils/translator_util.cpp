@@ -24,7 +24,7 @@
 
 Vector<int> TranslatorUtil::_split_data_string(const Ref<SiOPMChannelParams> &p_params, String p_data_string, int p_channel_param_count, int p_operator_param_count, const String &p_command) {
 	if (p_data_string.is_empty()) {
-		p_params->operator_count = 0;
+		p_params->set_operator_count(0);
 		return Vector<int>();
 	}
 
@@ -37,9 +37,9 @@ Vector<int> TranslatorUtil::_split_data_string(const Ref<SiOPMChannelParams> &p_
 	sanitized_string = re_cleanup->sub(sanitized_string, "", true);
 	PackedStringArray string_data = split_string_by_regex(sanitized_string, "[^\\d\\-.]+");
 
-	for (int i = 1; i < 5; i++) {
+	for (int i = 1; i <= SiOPMChannelParams::MAX_OPERATORS; i++) {
 		if (string_data.size() == (p_channel_param_count + p_operator_param_count * i)) {
-			p_params->operator_count = i;
+			p_params->set_operator_count(i);
 
 			Vector<int> data;
 			data.resize_zeroed(string_data.size());
@@ -55,10 +55,10 @@ Vector<int> TranslatorUtil::_split_data_string(const Ref<SiOPMChannelParams> &p_
 
 void TranslatorUtil::_check_operator_count(const Ref<SiOPMChannelParams> &p_params, int p_data_length, int p_channel_param_count, int p_operator_param_count, const String &p_command) {
 	int op_count = (p_data_length - p_channel_param_count) / p_operator_param_count;
-	// FIXME: The second condition is seemingly impossible. Worth double checking.
-	ERR_FAIL_COND_MSG((op_count > 4 || (op_count * p_operator_param_count + p_channel_param_count) != p_data_length), vformat("Translator: Invalid parameter count in '%s' (channel: %d, each operator: %d).", p_command, p_channel_param_count, p_operator_param_count));
+	ERR_FAIL_COND_MSG(op_count > SiOPMChannelParams::MAX_OPERATORS, vformat("Translator: Invalid operator count in '%s' (parameters for: %d, max: %d).", p_command, op_count, SiOPMChannelParams::MAX_OPERATORS));
+	ERR_FAIL_COND_MSG((op_count * p_operator_param_count + p_channel_param_count) != p_data_length, vformat("Translator: Invalid parameter count in '%s' (total: %d, channel: %d, each operator: %d).", p_command, p_data_length, p_channel_param_count, p_operator_param_count));
 
-	p_params->operator_count = op_count;
+	p_params->set_operator_count(op_count);
 }
 
 int TranslatorUtil::_get_params_algorithm(int (&p_algorithms)[4][16], int p_operator_count, int p_data_value, const String &p_command) {
@@ -308,7 +308,8 @@ void TranslatorUtil::_set_ma3_params_by_array(const Ref<SiOPMChannelParams> &p_p
 // con[0-2], ws1[0-511], ws2[0-511], balance[-64-+64], vco2pitch[]
 // ar[0-63], dr[0-63], sl[0-15], rr[0-63]
 void TranslatorUtil::_set_al_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
-	p_params->operator_count = 5;
+	p_params->set_operator_count(2);
+	p_params->set_analog_like(true);
 
 	int connection_type = p_data[0];
 	p_params->algorithm = (connection_type >= 0 && connection_type <= 2) ? connection_type : 0;

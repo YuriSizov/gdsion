@@ -23,7 +23,7 @@ void SiOPMChannelKS::set_karplus_strong_params(int p_attack_rate, int p_decay_ra
 
 	_ks_seed_type = KS_SEED_DEFAULT;
 
-	set_algorithm(1, 0);
+	set_algorithm(1, false, 0);
 	set_feedback(0, 0);
 	set_params_by_value(p_attack_rate, p_decay_rate, 0, 63, 15, p_total_level, 0, 0, 1, 0, 0, 0, 0, p_fixed_pitch);
 

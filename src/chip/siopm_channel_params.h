@@ -23,12 +23,16 @@ class SiOPMChannelParams : public RefCounted {
 
 	friend class TranslatorUtil;
 
+public:
+	static const int MAX_OPERATORS = 4;
+
+private:
 	MMLSequence *init_sequence = nullptr;
 
-	// There are 4 sets.
+	// This list is exactly MAX_OPERATORS at all times, use operator_count to read only valid values.
 	List<SiOPMOperatorParams *> operator_params;
-	// 0 ignores all operator params, 5 sets an analog-like mode.
 	int operator_count = 0;
+	bool analog_like = false;
 
 	int algorithm = 0;
 	int feedback = 0;
@@ -62,7 +66,9 @@ public:
 
 	SiOPMOperatorParams *get_operator_params(int p_index);
 	int get_operator_count() const { return operator_count; }
-	void set_operator_count(int p_value) { operator_count = p_value; }
+	void set_operator_count(int p_value);
+	bool is_analog_like() const { return analog_like; }
+	void set_analog_like(bool p_value) { analog_like = p_value; }
 
 	int get_algorithm() const { return algorithm; }
 	void set_algorithm(int p_value) { algorithm = p_value; }

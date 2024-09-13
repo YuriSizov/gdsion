@@ -25,6 +25,7 @@ const AVAILABLE_INSTRUMENTS := [
 	{ "category": "BELL", "name": "Glocken 1" },
 
 	{ "category": "CHIPTUNE", "name": "Square Wave" },
+	{ "category": "CHIPTUNE", "name": "Dual Saw" },
 	{ "category": "CHIPTUNE", "name": "Triangle LO-FI" },
 
 	{ "category": "DRUMKIT", "name": "Simple Drumkit" },

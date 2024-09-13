@@ -148,8 +148,6 @@ Vector<Ref<SiMMLVoice>> SiMMLRefTable::_setup_ym2413_default_voices(uint32_t (&p
 
 void SiMMLRefTable::_dump_ym2413_register(const Ref<SiMMLVoice> &p_voice, uint32_t p_u0, uint32_t p_u1) {
 	Ref<SiOPMChannelParams> channel_params = p_voice->get_channel_params();
-	SiOPMOperatorParams *op_params0 = channel_params->get_operator_params(0);
-	SiOPMOperatorParams *op_params1 = channel_params->get_operator_params(1);
 
 	p_voice->set_module_type(SiONModuleType::MODULE_FM);
 	p_voice->set_channel_num(0);
@@ -159,6 +157,9 @@ void SiMMLRefTable::_dump_ym2413_register(const Ref<SiMMLVoice> &p_voice, uint32
 	channel_params->set_envelope_frequency_ratio(133);
 	channel_params->set_operator_count(2);
 	channel_params->set_algorithm(0);
+
+	SiOPMOperatorParams *op_params0 = channel_params->get_operator_params(0);
+	SiOPMOperatorParams *op_params1 = channel_params->get_operator_params(1);
 
 	op_params0->set_amplitude_modulation_shift(((p_u0 >> 31) & 1) << 1);
 	op_params1->set_amplitude_modulation_shift(((p_u0 >> 23) & 1) << 1);

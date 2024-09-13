@@ -146,7 +146,7 @@ public:
 	virtual void set_channel_number(int p_value) {}
 	virtual void set_register(int p_address, int p_data) {}
 
-	virtual void set_algorithm(int p_operator_count, int p_algorithm) {}
+	virtual void set_algorithm(int p_operator_count, bool p_analog_like, int p_algorithm) {}
 	virtual void set_feedback(int p_level, int p_connection) {}
 	virtual void set_parameters(Vector<int> p_params) {}
 	virtual void set_types(int p_pg_type, SiONPitchTableType p_pt_type) {}

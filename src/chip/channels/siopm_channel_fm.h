@@ -126,7 +126,7 @@ public:
 	virtual void set_channel_number(int p_value) override;
 	virtual void set_register(int p_address, int p_data) override;
 
-	virtual void set_algorithm(int p_operator_count, int p_algorithm) override;
+	virtual void set_algorithm(int p_operator_count, bool p_analog_like, int p_algorithm) override;
 	virtual void set_feedback(int p_level, int p_connection) override;
 	virtual void set_parameters(Vector<int> p_params) override;
 	virtual void set_types(int p_pg_type, SiONPitchTableType p_pt_type) override;
