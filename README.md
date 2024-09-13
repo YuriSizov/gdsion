@@ -14,7 +14,7 @@ This project is in the _beta_ phase. This means it's feature complete, but still
 The project is compatible with **Godot 4.3**.
 
 > [!NOTE]
-> As _Godot 4.3_ is still being developed, there might be compatibility issues between _GDSiON_ and available builds of the engine. The project has been developed and tested with the [4.3-beta2](https://godotengine.org/download/archive/4.3-beta2/) release, so this is the minimum recommended version for now.
+> As _Godot 4.3_ is still being developed, there might be compatibility issues between _GDSiON_ and available builds of the engine. The project has been developed and tested with the [4.3-stable](https://godotengine.org/download/archive/4.3-stable/) release, so this is the minimum recommended version for now.
 
 ### Current release: 0.7-beta3
 
