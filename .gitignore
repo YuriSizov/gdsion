@@ -4,6 +4,7 @@ bin/*
 !bin/*.gdextension
 example/bin/
 example/export/
+tests/bin/
 src/**/*.gen.cpp
 
 ### Godot project development ###
