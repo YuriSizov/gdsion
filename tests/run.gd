@@ -20,7 +20,7 @@ func _init():
 	await process_frame
 
 	print("")
-	print("=========== RUNNING GDSION TESTS ===========")
+	print_rich("[color=gray]=========== RUNNING GDSION TESTS ===========[/color]")
 	print("")
 
 	var fs := DirAccess.open(RUN_ROOT)
@@ -49,9 +49,13 @@ func _init():
 		script_instance.prepare()
 		await script_instance.run(self)
 
+		script_instance.print_output()
+		print_rich("[color=blue]TOTAL[/color]: [b]%d[/b] / [b]%d[/b]" % [ script_instance.asserts_success, script_instance.asserts_total ])
+		print_verbose("")
+
 		asserts_total += script_instance.asserts_total
 		asserts_success += script_instance.asserts_success
-		if asserts_total == asserts_success:
+		if script_instance.asserts_total == script_instance.asserts_success:
 			tests_success += 1
 
 	fs.list_dir_end()
@@ -60,7 +64,7 @@ func _init():
 
 func _quit_fatal(message: String) -> void:
 	print("")
-	print("=========== FAILED GDSION TESTS ===========")
+	print_rich("[color=gray]=========== FAILED GDSION TESTS ===========[/color]")
 	printerr(message)
 	print("")
 
@@ -69,17 +73,17 @@ func _quit_fatal(message: String) -> void:
 
 func _quit_with_status() -> void:
 	print("")
-	print("=========== FINISHED GDSION TESTS ===========")
+	print_rich("[color=gray]=========== FINISHED GDSION TESTS ===========[/color]")
 	print("")
 
 	var success := tests_success == tests_total
 
-	print("Tests run:\t\t%d" % [ tests_total ])
-	print("Tests successful:\t%d" % [ tests_success ])
-	print("Asserts made:\t\t%d" % [ asserts_total ])
-	print("Asserts successful:\t%d" % [ asserts_success ])
+	print_rich("[color=blue]Tests run[/color]:\t\t[b]%d[/b]" % [ tests_total ])
+	print_rich("[color=blue]Tests successful[/color]:\t[b]%d[/b]" % [ tests_success ])
+	print_rich("[color=blue]Asserts made[/color]:\t\t[b]%d[/b]" % [ asserts_total ])
+	print_rich("[color=blue]Asserts successful[/color]:\t[b]%d[/b]" % [ asserts_success ])
 
-	print("Status:\t\t\t%s" % [ "SUCCESS" if success else "FAILURE" ])
+	print_rich("[color=blue]Status:[/color]\t\t\t[b]%s[/b]" % [ "[color=green]SUCCESS[/color]" if success else "[color=red]FAILURE[/color]" ])
 
 	print("")
 	quit(0 if success else 1)
