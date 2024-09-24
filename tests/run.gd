@@ -13,6 +13,7 @@ var tests_total: int = 0
 var tests_success: int = 0
 var asserts_total: int = 0
 var asserts_success: int = 0
+var start_time: int = -1
 
 
 func _init():
@@ -33,6 +34,8 @@ func _init():
 		_quit_fatal("Fatal Error: Unable to list files at '%s' (code %d)." % [ RUN_ROOT, DirAccess.get_open_error() ])
 		return
 
+	start_time = Time.get_ticks_msec()
+
 	var file_name := fs.get_next()
 	while not file_name.is_empty():
 		var script_name := RUN_ROOT.path_join(file_name)
@@ -50,7 +53,6 @@ func _init():
 		await script_instance.run(self)
 
 		script_instance.print_output()
-		print_rich("[color=blue]TOTAL[/color]: [b]%d[/b] / [b]%d[/b]" % [ script_instance.asserts_success, script_instance.asserts_total ])
 		print_verbose("")
 
 		asserts_total += script_instance.asserts_total
@@ -76,14 +78,17 @@ func _quit_with_status() -> void:
 	print_rich("[color=gray]=========== FINISHED GDSION TESTS ===========[/color]")
 	print("")
 
-	var success := tests_success == tests_total
-
 	print_rich("[color=blue]Tests run[/color]:\t\t[b]%d[/b]" % [ tests_total ])
 	print_rich("[color=blue]Tests successful[/color]:\t[b]%d[/b]" % [ tests_success ])
 	print_rich("[color=blue]Asserts made[/color]:\t\t[b]%d[/b]" % [ asserts_total ])
 	print_rich("[color=blue]Asserts successful[/color]:\t[b]%d[/b]" % [ asserts_success ])
+	print("")
+
+	var success := tests_success == tests_total
+	var execution_time := Time.get_ticks_msec() - start_time
 
 	print_rich("[color=blue]Status:[/color]\t\t\t[b]%s[/b]" % [ "[color=green]SUCCESS[/color]" if success else "[color=red]FAILURE[/color]" ])
+	print_rich("[color=gray]Time:\t\t\t[b]%.3f sec[/b][/color]" % [ execution_time / 1000.0 ])
 
 	print("")
 	quit(0 if success else 1)

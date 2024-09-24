@@ -5,6 +5,7 @@ bin/*
 example/bin/
 example/export/
 tests/bin/
+tests/voice_graphs/
 src/**/*.gen.cpp
 
 ### Godot project development ###

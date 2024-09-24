@@ -11,6 +11,8 @@ static var test_counter: int = 0
 var asserts_total: int = 0
 var asserts_success: int = 0
 
+var _start_time: int = -1
+
 class OutputBufferRecord:
 	var success: bool = true
 	var label: String = ""
@@ -33,6 +35,7 @@ func prepare() -> void:
 		test_name = "Unnamed"
 
 	print_rich("[bgcolor=gray]%d. [%s] %s[/bgcolor]" % [ test_counter, test_group, test_name ])
+	_start_time = Time.get_ticks_msec()
 
 
 # Called automatically. Must be implemented by individual test scripts.
@@ -40,7 +43,10 @@ func run(_scene_tree: SceneTree) -> void:
 	pass
 
 
+# Called automatically after run().
 func print_output() -> void:
+	var execution_time := Time.get_ticks_msec() - _start_time
+
 	var max_tabs := 0
 	for record in _output_buffer:
 		var plain_string := ""
@@ -66,6 +72,9 @@ func print_output() -> void:
 			print_rich("[color=green]OK[/color]: [[color=gray]%s[/color]]%s%s" % [ record.label, tabs_sep, record.result ])
 		elif not record.success:
 			print_rich("[color=red]FAIL[/color]: [[color=gray]%s[/color]]%s%s" % [ record.label, tabs_sep, record.result ])
+
+	print_rich("[color=blue]TOTAL[/color]: [b]%d[/b] / [b]%d[/b]" % [ asserts_success, asserts_total ])
+	print_rich("[color=gray]Finished in %.3f sec." % [ execution_time / 1000.0 ])
 
 
 func _print_ok(label: String, result: String) -> void:

@@ -13,6 +13,7 @@ const SAMPLE_LENGTH := 2 # In 1/16th of a beat.
 const SAMPLE_RUNS := 3
 const INT16_MAX := 32767
 
+const REFERENCE_COLOR := [ 128, 0, 255 ]
 const RUN_COLORS := [
 	[ 255, 0, 0 ], [ 0, 255, 128 ], [ 0, 128, 255 ],
 ]
@@ -32,7 +33,6 @@ func run(scene_tree: SceneTree) -> void:
 	var voice_list := voice_preset_util.get_voice_preset_keys()
 
 	for voice_name in voice_list:
-
 		var voice := voice_preset_util.get_voice_preset(voice_name)
 
 		_sample_runs.clear()
@@ -45,7 +45,7 @@ func run(scene_tree: SceneTree) -> void:
 		_validate_sampled_voices(voice_name)
 
 		# Uncomment to dump the first run into the data folder to use as a reference.
-		#_create_voice_data(voice_name)
+		#_store_voice_data(voice_name)
 
 		# Uncomment for visual debugging, but be careful, as it takes a lot of time
 		# to draw all of the voices (over 600)!
@@ -85,28 +85,19 @@ func _sample_voice(driver: SiONDriver, voice: SiONVoice) -> void:
 
 
 func _validate_sampled_voices(voice_name: String) -> void:
-	var file_name := "res://voice_data/%s.dat" % [ voice_name ]
-	var file := FileAccess.open(file_name, FileAccess.READ)
-
-	file.seek(0)
-	var file_buffer := file.get_buffer(file.get_length())
-	var reference_data := file_buffer.to_int32_array()
+	var reference_data := _load_voice_data(voice_name)
 
 	for run_data in _sample_runs:
 		_assert_equal("sample length - %s" % [ voice_name ], run_data.size(), reference_data.size())
 
-		var misses_count := 0
-		for i in reference_data.size():
-			var run_sample := run_data[i]
-			var ref_sample := reference_data[i]
-
-			if run_sample != ref_sample:
-				misses_count += 1
-
-		_assert_equal("sample misses - %s" % [ voice_name ], misses_count, 0)
+		# Extracting the comparison from the assert yields faster execution, because we don't
+		# print packed arrays themselves this way. Packed arrays are value-compared with the
+		# operator, and it's faster than iterating over them in GDScript.
+		var data_equal := (run_data == reference_data)
+		_assert_equal("sample data - %s" % [ voice_name ], data_equal, true)
 
 
-func _create_voice_data(voice_name: String) -> void:
+func _store_voice_data(voice_name: String) -> void:
 	var file_name := "res://voice_data/%s.dat" % [ voice_name ]
 	var file := FileAccess.open(file_name, FileAccess.WRITE)
 	file.resize(0)
@@ -114,6 +105,15 @@ func _create_voice_data(voice_name: String) -> void:
 	var reference_data := _sample_runs[0]
 	for sample in reference_data:
 		file.store_32(sample)
+
+
+func _load_voice_data(voice_name: String) -> PackedInt32Array:
+	var file_name := "res://voice_data/%s.dat" % [ voice_name ]
+	var file := FileAccess.open(file_name, FileAccess.READ)
+
+	file.seek(0)
+	var file_buffer := file.get_buffer(file.get_length())
+	return file_buffer.to_int32_array()
 
 
 func _create_voice_graph(voice_name: String) -> void:
@@ -134,6 +134,7 @@ func _create_voice_graph(voice_name: String) -> void:
 
 		i += 4
 
+	# Draw the middle line.
 	for pixel_x in image_width:
 		var pixel_y := image_height / 2
 		var pixel_i := (pixel_x + pixel_y * image_width) * 4
@@ -145,20 +146,13 @@ func _create_voice_graph(voice_name: String) -> void:
 
 	# Calculate and draw points for the graph.
 
+	var reference_data := _load_voice_data(voice_name)
+	_draw_run_graph(image_data, image_width, image_height, reference_data, REFERENCE_COLOR, -1)
+
 	for run_idx in _sample_runs.size():
 		var run_data := _sample_runs[run_idx]
 		var run_color: Array = RUN_COLORS[run_idx]
-
-		for pixel_x in run_data.size():
-			var sample := run_data[pixel_x]
-
-			var pixel_y := roundi(sample * image_height) + image_height / 2 + run_idx
-			var pixel_i := (pixel_x + pixel_y * image_width) * 4
-
-			image_data[pixel_i + 0] = run_color[0]
-			image_data[pixel_i + 1] = run_color[1]
-			image_data[pixel_i + 2] = run_color[2]
-			image_data[pixel_i + 3] = 255
+		_draw_run_graph(image_data, image_width, image_height, run_data, run_color, run_idx)
 
 	# Save the graph to the file.
 
@@ -168,6 +162,19 @@ func _create_voice_graph(voice_name: String) -> void:
 	var error := image.save_png(image_file)
 	if error != OK:
 		printerr("Failed to save the graph at '%s' (code %d)." % [ image_file, error ])
+
+
+func _draw_run_graph(image_data: PackedByteArray, image_width: int, image_height: int, run_data: PackedInt32Array, run_color: Array, y_offset: int) -> void:
+	for pixel_x in run_data.size():
+		var sample := run_data[pixel_x]
+
+		var pixel_y := roundi(sample / float(INT16_MAX) * image_height) + image_height / 2.0 + y_offset
+		var pixel_i := (pixel_x + pixel_y * image_width) * 4
+
+		image_data[pixel_i + 0] = run_color[0]
+		image_data[pixel_i + 1] = run_color[1]
+		image_data[pixel_i + 2] = run_color[2]
+		image_data[pixel_i + 3] = 255
 
 
 func _collect_streamed_data(event: SiONEvent) -> void:
