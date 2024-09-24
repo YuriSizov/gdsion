@@ -23,27 +23,27 @@ enum SiONChipType : signed int {
 };
 
 enum SiONModuleType : unsigned int {
-	MODULE_PSG     = 0,  // PSG (DCSG)
-	MODULE_APU     = 1,  // FC pAPU
-	MODULE_NOISE   = 2,  // Noise wave
-	MODULE_MA3     = 3,  // MA3 wave form
-	MODULE_CUSTOM  = 4,  // SCC / custom wave table
-	MODULE_ANY_PG  = 5,  // Any pulse generator type
-	MODULE_FM      = 6,  // FM sound module
-	MODULE_PCM     = 7,  // PCM
-	MODULE_PULSE   = 8,  // Pulse wave
-	MODULE_RAMP    = 9,  // Ramp wave
-	MODULE_SAMPLE  = 10, // Sampler
-	MODULE_KS      = 11, // Karplus-Strong
-	MODULE_GB      = 12, // GameBoy-like
-	MODULE_VRC6    = 13, // VRC6
-	MODULE_SID     = 14, // SID
-	MODULE_FM_OPM  = 15, // YM2151
-	MODULE_FM_OPN  = 16, // YM2203
-	MODULE_FM_OPNA = 17, // YM2608
-	MODULE_FM_OPLL = 18, // YM2413
-	MODULE_FM_OPL3 = 19, // YM3812
-	MODULE_FM_MA3  = 20, // YMU762
+	MODULE_PSG        = 0,  // PSG (DCSG)
+	MODULE_APU        = 1,  // FC pAPU
+	MODULE_NOISE      = 2,  // Noise wave
+	MODULE_MA3        = 3,  // MA3 wave form
+	MODULE_SCC        = 4,  // SCC-like wave table
+	MODULE_GENERIC_PG = 5,  // Generic pulse generator
+	MODULE_FM         = 6,  // FM sound module
+	MODULE_PCM        = 7,  // PCM
+	MODULE_PULSE      = 8,  // Pulse wave
+	MODULE_RAMP       = 9,  // Ramp wave
+	MODULE_SAMPLE     = 10, // Sampler
+	MODULE_KS         = 11, // Karplus-Strong
+	MODULE_GB         = 12, // GameBoy-like
+	MODULE_VRC6       = 13, // VRC6
+	MODULE_SID        = 14, // SID
+	MODULE_FM_OPM     = 15, // YM2151
+	MODULE_FM_OPN     = 16, // YM2203
+	MODULE_FM_OPNA    = 17, // YM2608
+	MODULE_FM_OPLL    = 18, // YM2413
+	MODULE_FM_OPL3    = 19, // YM3812
+	MODULE_FM_MA3     = 20, // YMU762
 	MODULE_MAX
 };
 

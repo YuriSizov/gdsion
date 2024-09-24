@@ -155,7 +155,7 @@ void SiMMLVoice::reset() {
 	update_volumes = false;
 
 	chip_type = SiONChipType::CHIP_SIOPM;
-	module_type = SiONModuleType::MODULE_ANY_PG;
+	module_type = SiONModuleType::MODULE_GENERIC_PG;
 	channel_num = -1;
 	tone_num = -1;
 	preferable_note = -1;

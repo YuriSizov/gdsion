@@ -1354,7 +1354,7 @@ MMLEvent *SiMMLSequencer::_on_mml_ring_modulation(MMLEvent *p_event) {
 
 MMLEvent *SiMMLSequencer::_on_mml_module_type(MMLEvent *p_event) {
 	GET_EV_PARAMS(2);
-	BIND_EV_PARAM_RANGE(type, 0, 0, SiONModuleType::MODULE_MAX, SiONModuleType::MODULE_ANY_PG);
+	BIND_EV_PARAM_RANGE(type, 0, 0, SiONModuleType::MODULE_MAX, SiONModuleType::MODULE_GENERIC_PG);
 	BIND_EV_PARAM(channel_num, 1, INT32_MIN);
 
 	_current_track->set_channel_module_type((SiONModuleType)type, channel_num);

@@ -200,7 +200,7 @@ int SiONVoice::set_by_mml(String p_mml) {
 }
 
 Ref<SiOPMWaveTable> SiONVoice::set_wave_table(Vector<double> *p_data) {
-	module_type = SiONModuleType::MODULE_CUSTOM;
+	module_type = SiONModuleType::MODULE_SCC;
 
 	Vector<int> table;
 	for (int i = 0; i < p_data->size(); i++) {
@@ -367,7 +367,7 @@ Ref<SiONVoice> SiONVoice::create(SiONModuleType p_module_type, int p_channel_num
 void SiONVoice::_bind_methods() {
 	// Factory.
 
-	ClassDB::bind_static_method("SiONVoice", D_METHOD("create", "module_type", "channel_num", "attack_rate", "release_rate", "pitch_shift", "connection_type", "wave_shape2", "pitch_shift2"), &SiONVoice::create, DEFVAL(SiONModuleType::MODULE_ANY_PG), DEFVAL(0), DEFVAL(63), DEFVAL(63), DEFVAL(0), DEFVAL(-1), DEFVAL(0), DEFVAL(0));
+	ClassDB::bind_static_method("SiONVoice", D_METHOD("create", "module_type", "channel_num", "attack_rate", "release_rate", "pitch_shift", "connection_type", "wave_shape2", "pitch_shift2"), &SiONVoice::create, DEFVAL(SiONModuleType::MODULE_GENERIC_PG), DEFVAL(0), DEFVAL(63), DEFVAL(63), DEFVAL(0), DEFVAL(-1), DEFVAL(0), DEFVAL(0));
 
 	// Public API.
 

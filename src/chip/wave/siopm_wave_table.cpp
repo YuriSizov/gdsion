@@ -35,6 +35,6 @@ void SiOPMWaveTable::copy_from(const Ref<SiOPMWaveTable> &p_source) {
 }
 
 SiOPMWaveTable::SiOPMWaveTable(Vector<int> p_wavelet, SiONPitchTableType p_default_pitch_table_type) :
-		SiOPMWaveBase(SiONModuleType::MODULE_CUSTOM) {
+		SiOPMWaveBase(SiONModuleType::MODULE_SCC) {
 	initialize(p_wavelet, p_default_pitch_table_type);
 }

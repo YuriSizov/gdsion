@@ -791,14 +791,14 @@ void SiONVoicePresetUtil::_generate_single_drum_voices() {
 }
 
 void SiONVoicePresetUtil::_create_basic_voice(const String &p_key, const String &p_name, int p_channel_num) {
-	Ref<SiONVoice> voice = memnew(SiONVoice(SiONModuleType::MODULE_ANY_PG, p_channel_num));
+	Ref<SiONVoice> voice = memnew(SiONVoice(SiONModuleType::MODULE_GENERIC_PG, p_channel_num));
 
 	voice->set_name(p_name);
 	_register_voice(p_key, voice);
 }
 
 void SiONVoicePresetUtil::_create_percussive_voice(const String &p_key, const String &p_name, int p_wave_shape, int p_attack_rate, int p_release_rate, int p_release_sweep, int p_cutoff, int p_resonance) {
-	Ref<SiONVoice> voice = memnew(SiONVoice(SiONModuleType::MODULE_ANY_PG, p_wave_shape, p_attack_rate, p_release_rate));
+	Ref<SiONVoice> voice = memnew(SiONVoice(SiONModuleType::MODULE_GENERIC_PG, p_wave_shape, p_attack_rate, p_release_rate));
 
 	if (p_attack_rate == 63) {
 		// gate time = 0
@@ -846,7 +846,7 @@ void SiONVoicePresetUtil::_create_ma3_voice(const String &p_key, const String &p
 }
 
 void SiONVoicePresetUtil::_create_wave_table_voice(const String &p_key, const String &p_name, int p_wave_shape, int p_attack_rate, int p_decay_rate, int p_sustain_rate, int p_release_rate, int p_sustain_level, int p_total_level, int p_multiple) {
-	Ref<SiONVoice> voice = memnew(SiONVoice(SiONModuleType::MODULE_CUSTOM, p_wave_shape));
+	Ref<SiONVoice> voice = memnew(SiONVoice(SiONModuleType::MODULE_SCC, p_wave_shape));
 	voice->set_wave_data(_wave_tables[p_wave_shape]);
 	voice->set_envelope(p_attack_rate, p_decay_rate, p_sustain_rate, p_release_rate, p_sustain_level, p_total_level + 4);
 	voice->get_channel_params()->get_operator_params(0)->set_multiple(p_multiple);
@@ -856,7 +856,7 @@ void SiONVoicePresetUtil::_create_wave_table_voice(const String &p_key, const St
 }
 
 void SiONVoicePresetUtil::_create_single_drum_voice(const String &p_key, const String &p_name, int p_wave_shape, int p_attack_rate, int p_decay_rate, int p_sustain_rate, int p_release_rate, int p_sustain_level, int p_total_level, int p_release_sweep, double p_fine_multiple) {
-	Ref<SiONVoice> voice = memnew(SiONVoice(SiONModuleType::MODULE_ANY_PG, p_wave_shape));
+	Ref<SiONVoice> voice = memnew(SiONVoice(SiONModuleType::MODULE_GENERIC_PG, p_wave_shape));
 	voice->set_envelope(p_attack_rate, p_decay_rate, p_sustain_rate, p_release_rate, p_sustain_level, p_total_level);
 	voice->get_channel_params()->get_operator_params(0)->set_fine_multiple((int)(p_fine_multiple * 128));
 	voice->set_release_sweep(p_release_sweep);

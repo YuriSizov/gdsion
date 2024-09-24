@@ -202,21 +202,21 @@ SiMMLRefTable::SiMMLRefTable() {
 
 	// Channel module settings map.
 	{
-		channel_settings_map[SiONModuleType::MODULE_PSG]    = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_PSG,    SiONPulseGeneratorType::PULSE_SQUARE,      3,   1, 4));
-		channel_settings_map[SiONModuleType::MODULE_APU]    = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_APU,    SiONPulseGeneratorType::PULSE_PULSE,       11,  2, 4));
-		channel_settings_map[SiONModuleType::MODULE_NOISE]  = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_NOISE,  SiONPulseGeneratorType::PULSE_NOISE_WHITE, 16,  1, 16));
-		channel_settings_map[SiONModuleType::MODULE_MA3]    = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_MA3,    SiONPulseGeneratorType::PULSE_MA3_WAVE,    32,  1, 32));
-		channel_settings_map[SiONModuleType::MODULE_CUSTOM] = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_CUSTOM, SiONPulseGeneratorType::PULSE_CUSTOM,      256, 1, 256));
-		channel_settings_map[SiONModuleType::MODULE_ANY_PG] = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_ANY_PG, SiONPulseGeneratorType::PULSE_SINE,        512, 1, 512));
-		channel_settings_map[SiONModuleType::MODULE_FM]     = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_FM,     SiONPulseGeneratorType::PULSE_SINE,        1,   1, 1));
-		channel_settings_map[SiONModuleType::MODULE_PCM]    = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_PCM,    SiONPulseGeneratorType::PULSE_PCM,         128, 1, 128));
-		channel_settings_map[SiONModuleType::MODULE_PULSE]  = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_PULSE,  SiONPulseGeneratorType::PULSE_PULSE,       32,  1, 32));
-		channel_settings_map[SiONModuleType::MODULE_RAMP]   = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_RAMP,   SiONPulseGeneratorType::PULSE_RAMP,        128, 1, 128));
-		channel_settings_map[SiONModuleType::MODULE_SAMPLE] = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_SAMPLE, SiONPulseGeneratorType::PULSE_SINE,        4,   1, 4));
-		channel_settings_map[SiONModuleType::MODULE_KS]     = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_KS,     SiONPulseGeneratorType::PULSE_SINE,        3,   1, 3));
-		channel_settings_map[SiONModuleType::MODULE_GB]     = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_GB,     SiONPulseGeneratorType::PULSE_PULSE,       11,  2, 4));
-		channel_settings_map[SiONModuleType::MODULE_VRC6]   = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_VRC6,   SiONPulseGeneratorType::PULSE_PULSE,       9,   1, 3));
-		channel_settings_map[SiONModuleType::MODULE_SID]    = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_SID,    SiONPulseGeneratorType::PULSE_PULSE,       12,  1, 3));
+		channel_settings_map[SiONModuleType::MODULE_PSG]        = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_PSG,        SiONPulseGeneratorType::PULSE_SQUARE,      3,   1, 4));
+		channel_settings_map[SiONModuleType::MODULE_APU]        = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_APU,        SiONPulseGeneratorType::PULSE_PULSE,       11,  2, 4));
+		channel_settings_map[SiONModuleType::MODULE_NOISE]      = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_NOISE,      SiONPulseGeneratorType::PULSE_NOISE_WHITE, 16,  1, 16));
+		channel_settings_map[SiONModuleType::MODULE_MA3]        = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_MA3,        SiONPulseGeneratorType::PULSE_MA3_WAVE,    32,  1, 32));
+		channel_settings_map[SiONModuleType::MODULE_SCC]        = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_SCC,        SiONPulseGeneratorType::PULSE_CUSTOM,      256, 1, 256));
+		channel_settings_map[SiONModuleType::MODULE_GENERIC_PG] = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_GENERIC_PG, SiONPulseGeneratorType::PULSE_SINE,        512, 1, 512));
+		channel_settings_map[SiONModuleType::MODULE_FM]         = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_FM,         SiONPulseGeneratorType::PULSE_SINE,        1,   1, 1));
+		channel_settings_map[SiONModuleType::MODULE_PCM]        = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_PCM,        SiONPulseGeneratorType::PULSE_PCM,         128, 1, 128));
+		channel_settings_map[SiONModuleType::MODULE_PULSE]      = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_PULSE,      SiONPulseGeneratorType::PULSE_PULSE,       32,  1, 32));
+		channel_settings_map[SiONModuleType::MODULE_RAMP]       = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_RAMP,       SiONPulseGeneratorType::PULSE_RAMP,        128, 1, 128));
+		channel_settings_map[SiONModuleType::MODULE_SAMPLE]     = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_SAMPLE,     SiONPulseGeneratorType::PULSE_SINE,        4,   1, 4));
+		channel_settings_map[SiONModuleType::MODULE_KS]         = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_KS,         SiONPulseGeneratorType::PULSE_SINE,        3,   1, 3));
+		channel_settings_map[SiONModuleType::MODULE_GB]         = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_GB,         SiONPulseGeneratorType::PULSE_PULSE,       11,  2, 4));
+		channel_settings_map[SiONModuleType::MODULE_VRC6]       = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_VRC6,       SiONPulseGeneratorType::PULSE_PULSE,       9,   1, 3));
+		channel_settings_map[SiONModuleType::MODULE_SID]        = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_SID,        SiONPulseGeneratorType::PULSE_PULSE,       12,  1, 3));
 
 		// PSG settings.
 		{

@@ -515,11 +515,11 @@
 		<constant name="MODULE_MA3" value="3" enum="SiONModuleType">
 			MA3 module type.
 		</constant>
-		<constant name="MODULE_CUSTOM" value="4" enum="SiONModuleType">
-			SCC / custom wave table module type.
+		<constant name="MODULE_SCC" value="4" enum="SiONModuleType">
+			SCC-like wave table module type.
 		</constant>
-		<constant name="MODULE_ANY_PG" value="5" enum="SiONModuleType">
-			Any pulse generator module type.
+		<constant name="MODULE_GENERIC_PG" value="5" enum="SiONModuleType">
+			Generic pulse generator module type.
 		</constant>
 		<constant name="MODULE_FM" value="6" enum="SiONModuleType">
 			FM module type.
