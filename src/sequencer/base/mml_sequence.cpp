@@ -6,12 +6,27 @@
 
 #include "mml_sequence.h"
 
+#include <godot_cpp/core/class_db.hpp>
 #include "sequencer/base/mml_event.h"
 #include "sequencer/base/mml_executor.h"
 #include "sequencer/base/mml_parser.h"
 #include "sequencer/base/mml_sequencer.h"
 
 // Chain of sequences.
+
+MMLSequence *MMLSequence::get_prev_sequence() const {
+	if (_prev_sequence && _prev_sequence->_is_terminal) {
+		return nullptr;
+	}
+	return _prev_sequence;
+}
+
+MMLSequence *MMLSequence::get_next_sequence() const {
+	if (_next_sequence && _next_sequence->_is_terminal) {
+		return nullptr;
+	}
+	return _next_sequence;
+}
 
 void MMLSequence::insert_before(MMLSequence *p_next) {
 	_prev_sequence = p_next->_prev_sequence;
@@ -25,13 +40,6 @@ void MMLSequence::insert_after(MMLSequence *p_prev) {
 	_next_sequence = p_prev->_next_sequence;
 	_prev_sequence->_next_sequence = this;
 	_next_sequence->_prev_sequence = this;
-}
-
-MMLSequence *MMLSequence::get_next_sequence() const {
-	if (_next_sequence->_is_terminal) {
-		return nullptr;
-	}
-	return _next_sequence;
 }
 
 MMLSequence *MMLSequence::remove_from_chain() {
@@ -154,9 +162,21 @@ MMLEvent *MMLSequence::cutout(MMLEvent *p_head) {
 	return next;
 }
 
-// MML string.
+int MMLSequence::get_event_length() {
+	if (_event_length == -1) {
+		_update_event_length();
+	}
+	return _event_length;
+}
 
-void MMLSequence::_update_mml_length() {
+bool MMLSequence::has_repeat_all() {
+	if (_event_length == -1) {
+		_update_event_length();
+	}
+	return _has_repeat_all;
+}
+
+void MMLSequence::_update_event_length() {
 	MMLExecutor *exec = MMLSequencer::get_temp_executor();
 	exec->initialize(this);
 
@@ -201,22 +221,10 @@ void MMLSequence::_update_mml_length() {
 		}
 	}
 
-	_mml_length = length;
+	_event_length = length;
 }
 
-int MMLSequence::get_mml_length() {
-	if (_mml_length == -1) {
-		_update_mml_length();
-	}
-	return _mml_length;
-}
-
-bool MMLSequence::has_repeat_all() {
-	if (_mml_length == -1) {
-		_update_mml_length();
-	}
-	return _has_repeat_all;
-}
+// MML string.
 
 void MMLSequence::update_mml_string() {
 	if (_head_event->get_next()->get_id() != MMLEvent::DEBUG_INFO) {
@@ -237,6 +245,7 @@ String MMLSequence::to_string() const {
 	MMLEvent *event = _head_event->get_next();
 	String str;
 
+	// Print first 32 events in the sequence.
 	for (int i = 0; i < 32 && event; i++) {
 		str += itos(event->get_id()) + " ";
 		event = event->get_next();
@@ -305,6 +314,47 @@ void MMLSequence::clear() {
 	}
 
 	_mml_string = "";
+}
+
+void MMLSequence::_bind_methods() {
+	// Sequence chains.
+	ClassDB::bind_method(D_METHOD("chain_get_prev"), &MMLSequence::get_prev_sequence);
+	ClassDB::bind_method(D_METHOD("chain_get_next"), &MMLSequence::get_next_sequence);
+
+	ClassDB::bind_method(D_METHOD("chain_insert_before", "next"), &MMLSequence::insert_before);
+	ClassDB::bind_method(D_METHOD("chain_insert_after", "prev"), &MMLSequence::insert_after);
+	ClassDB::bind_method(D_METHOD("chain_remove"), &MMLSequence::remove_from_chain);
+
+	// Sequence events.
+
+	ClassDB::bind_method(D_METHOD("is_empty"), &MMLSequence::is_empty);
+	ClassDB::bind_method(D_METHOD("is_active"), &MMLSequence::is_active);
+	ClassDB::bind_method(D_METHOD("set_active", "active"), &MMLSequence::set_active);
+
+	ClassDB::bind_method(D_METHOD("is_system_command"), &MMLSequence::is_system_command);
+	ClassDB::bind_method(D_METHOD("get_system_command"), &MMLSequence::get_system_command);
+
+	ClassDB::bind_method(D_METHOD("get_head_event"), &MMLSequence::get_head_event);
+	ClassDB::bind_method(D_METHOD("set_head_event", "event"), &MMLSequence::set_head_event);
+	ClassDB::bind_method(D_METHOD("get_tail_event"), &MMLSequence::get_tail_event);
+	ClassDB::bind_method(D_METHOD("set_tail_event", "event"), &MMLSequence::set_tail_event);
+
+	ClassDB::bind_method(D_METHOD("append_new_event", "event_id", "data", "length"), &MMLSequence::append_new_event, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("append_new_callback", "callback", "data"), &MMLSequence::append_new_callback);
+	ClassDB::bind_method(D_METHOD("prepend_new_event", "event_id", "data", "length"), &MMLSequence::prepend_new_event, DEFVAL(0));
+
+	ClassDB::bind_method(D_METHOD("push_back", "event"), &MMLSequence::push_back);
+	ClassDB::bind_method(D_METHOD("push_front", "event"), &MMLSequence::push_front);
+	ClassDB::bind_method(D_METHOD("pop_back"), &MMLSequence::pop_back);
+	ClassDB::bind_method(D_METHOD("pop_front"), &MMLSequence::pop_front);
+	ClassDB::bind_method(D_METHOD("cutout", "head"), &MMLSequence::cutout);
+
+	ClassDB::bind_method(D_METHOD("get_event_length"), &MMLSequence::get_event_length);
+	ClassDB::bind_method(D_METHOD("has_repeat_all"), &MMLSequence::has_repeat_all);
+
+	ClassDB::add_property("MMLSequence", PropertyInfo(Variant::BOOL, "active"), "set_active", "is_active");
+	ClassDB::add_property("MMLSequence", PropertyInfo(Variant::OBJECT, "head_event", PROPERTY_HINT_RESOURCE_TYPE, "MMLEvent"), "set_head_event", "get_head_event");
+	ClassDB::add_property("MMLSequence", PropertyInfo(Variant::OBJECT, "tail_event", PROPERTY_HINT_RESOURCE_TYPE, "MMLEvent"), "set_tail_event", "get_tail_event");
 }
 
 MMLSequence::MMLSequence(bool p_terminal) {

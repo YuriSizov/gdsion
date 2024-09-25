@@ -16,7 +16,8 @@ using namespace godot;
 class MMLEvent;
 
 // Sequence of 1 sound channel. MMLData > MMLSequenceGroup > MMLSequence > MMLEvent (">" means "has a").
-class MMLSequence {
+class MMLSequence : public Object {
+	GDCLASS(MMLSequence, Object)
 
 	// Chain of sequences.
 
@@ -36,22 +37,28 @@ class MMLSequence {
 	// Callback functions for Event::INTERNAL_CALL.
 	List<Callable> _callbacks_for_internal_call;
 
+	// Length in resolution units (1920 = whole-tone in default).
+	int _event_length = -1;
+	bool _has_repeat_all = false;
+
 	// MML string.
 
 	String _mml_string;
-	// Length in resolution units (1920 = whole-tone in default).
-	int _mml_length = -1;
-	bool _has_repeat_all = false;
 
-	void _update_mml_length();
+	void _update_event_length();
+
+protected:
+	static void _bind_methods();
 
 public:
 	// Chain of sequences.
 
+	MMLSequence *get_prev_sequence() const;
+	MMLSequence *get_next_sequence() const;
+
 	void insert_before(MMLSequence *p_next);
 	void insert_after(MMLSequence *p_prev);
 	MMLSequence *remove_from_chain();
-	MMLSequence *get_next_sequence() const;
 
 	// Temporarily connect to sequences via the head event pointer. Call connect_before(nullptr) to unset the connection.
 	void connect_before(MMLEvent *p_second_head);
@@ -80,15 +87,14 @@ public:
 	MMLEvent *pop_front();
 	MMLEvent *cutout(MMLEvent *p_head);
 
+	int get_event_length();
+	bool has_repeat_all();
 	List<Callable> get_callbacks_for_internal_call() const { return _callbacks_for_internal_call; }
 
 	// MML string.
 
-	String get_mml_string() const { return _mml_string; }
-	int get_mml_length();
-	bool has_repeat_all();
-
 	void update_mml_string();
+	String get_mml_string() const { return _mml_string; }
 
 	//
 

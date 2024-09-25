@@ -49,16 +49,9 @@ private:
 	List<Ref<MMLSystemCommand>> _system_commands;
 
 protected:
-	static void _bind_methods() {}
+	static void _bind_methods();
 
 public:
-	MMLSequenceGroup *get_sequence_group() const { return _sequence_group; }
-	int get_sequence_count() const;
-	int get_tick_count();
-	bool has_repeat_all();
-
-	MMLSequence *get_global_sequence() const { return _global_sequence; }
-
 	String get_title() const { return _title; }
 	void set_title(String p_title) { _title = p_title; }
 
@@ -86,8 +79,11 @@ public:
 
 	List<Ref<MMLSystemCommand>> get_system_commands() const { return _system_commands; }
 
+	// Sequences.
+
+	MMLSequence *get_global_sequence() const { return _global_sequence; }
+	MMLSequenceGroup *get_sequence_group() const { return _sequence_group; }
 	MMLSequence *append_new_sequence(List<MMLEvent *> p_events = List<MMLEvent *>());
-	MMLSequence *get_sequence(int p_index);
 
 	//
 

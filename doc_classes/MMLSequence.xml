@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MMLSequence" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Event sequence to be executed by the synthesizer.
+	</brief_description>
+	<description>
+		The event sequence is a representation of an MML sequence of commands and notes that the SiON synthesizer understands. It can also be crafted manually, although you must ensure validity of the sequence yourself.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="append_new_callback">
+			<return type="MMLEvent" />
+			<param index="0" name="callback" type="Callable" />
+			<param index="1" name="data" type="int" />
+			<description>
+				Creates a [constant MMLEvent.INTERNAL_CALL] event and assigns a callback to it. The event is added to the end of the sequence.
+			</description>
+		</method>
+		<method name="append_new_event">
+			<return type="MMLEvent" />
+			<param index="0" name="event_id" type="int" />
+			<param index="1" name="data" type="int" />
+			<param index="2" name="length" type="int" default="0" />
+			<description>
+				Creates a new event with the specified type, data, and length. The event is added to the end of the sequence.
+			</description>
+		</method>
+		<method name="chain_get_next" qualifiers="const">
+			<return type="MMLSequence" />
+			<description>
+				Returns the next sequence in the sequence chain.
+			</description>
+		</method>
+		<method name="chain_get_prev" qualifiers="const">
+			<return type="MMLSequence" />
+			<description>
+				Returns the previous sequence in the sequence chain.
+			</description>
+		</method>
+		<method name="chain_insert_after">
+			<return type="void" />
+			<param index="0" name="prev" type="MMLSequence" />
+			<description>
+				Inserts this sequence after the specified sequence in the target's sequence chain.
+			</description>
+		</method>
+		<method name="chain_insert_before">
+			<return type="void" />
+			<param index="0" name="next" type="MMLSequence" />
+			<description>
+				Inserts this sequence before the specified sequence in the target's sequence chain.
+			</description>
+		</method>
+		<method name="chain_remove">
+			<return type="MMLSequence" />
+			<description>
+				Removes this sequence from its current chain. The previous sequence in the chain is returned, if there is any.
+			</description>
+		</method>
+		<method name="cutout">
+			<return type="MMLEvent" />
+			<param index="0" name="head" type="MMLEvent" />
+			<description>
+				Cuts out a section of events from the given head to its [member MMLEvent.jump] and replaces the events in this sequence with this section. Returns the next event after the tail of the cut out section.
+			</description>
+		</method>
+		<method name="get_event_length">
+			<return type="int" />
+			<description>
+				Returns the combined event length for events that can have one (typically, rest and note events).
+			</description>
+		</method>
+		<method name="get_system_command" qualifiers="const">
+			<return type="String" />
+			<description>
+				Returns the system command if this sequences starts with one. See [method is_system_command].
+			</description>
+		</method>
+		<method name="has_repeat_all">
+			<return type="bool" />
+			<description>
+				Returns whether this sequences has a repeat all event.
+			</description>
+		</method>
+		<method name="is_empty" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns whether this sequence is empty.
+			</description>
+		</method>
+		<method name="is_system_command" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns whether this sequence starts with a system command. See also [method get_system_command].
+			</description>
+		</method>
+		<method name="pop_back">
+			<return type="MMLEvent" />
+			<description>
+				Pops the event from the back of the sequence.
+			</description>
+		</method>
+		<method name="pop_front">
+			<return type="MMLEvent" />
+			<description>
+				Pops the event from the front of the sequence.
+			</description>
+		</method>
+		<method name="prepend_new_event">
+			<return type="MMLEvent" />
+			<param index="0" name="event_id" type="int" />
+			<param index="1" name="data" type="int" />
+			<param index="2" name="length" type="int" default="0" />
+			<description>
+				Creates a new event with the specified type, data, and length. The event is added to the beginning of the sequence.
+			</description>
+		</method>
+		<method name="push_back">
+			<return type="void" />
+			<param index="0" name="event" type="MMLEvent" />
+			<description>
+				Pushes the given event to the back of the sequence.
+			</description>
+		</method>
+		<method name="push_front">
+			<return type="void" />
+			<param index="0" name="event" type="MMLEvent" />
+			<description>
+				Pushes the given event to the front of the sequence.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="active" type="bool" setter="set_active" getter="is_active" default="true">
+			Flag that enables processing for this sequence.
+		</member>
+		<member name="head_event" type="MMLEvent" setter="set_head_event" getter="get_head_event">
+			First event in this sequence, typically [constant MMLEvent.SEQUENCE_HEAD].
+		</member>
+		<member name="tail_event" type="MMLEvent" setter="set_tail_event" getter="get_tail_event">
+			Last event in this sequence, typically [constant MMLEvent.SEQUENCE_TAIL].
+		</member>
+	</members>
+</class>

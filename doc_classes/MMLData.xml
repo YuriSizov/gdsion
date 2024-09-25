@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="MMLData" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
 	<brief_description>
-		Container for the state data of the internal processing. Base class of [SiMMLData] and [SiONData].
+		Container for the state data used during compilation and processing of the input. Base class of [SiMMLData] and [SiONData].
 	</brief_description>
 	<description>
-		[b]Warning:[/b] This class currently has no intended use in the API. If you need this class and its unexposed methods in your project, please [b][url=https://github.com/YuriSizov/gdsion/issues]create a feature request with your use case[/url][/b]!
+		When the synthesizer is used to execute a complex set of instructions, this data container is created to hold the sequence of events, as well as some additional properties.
 	</description>
 	<tutorials>
 	</tutorials>
+	<methods>
+		<method name="get_global_sequence" qualifiers="const">
+			<return type="MMLSequence" />
+			<description>
+				Returns the global sequence for this execution. The global sequence contains mainly configuration information that must be applied globally/as a fallback.
+			</description>
+		</method>
+		<method name="get_sequence_group" qualifiers="const">
+			<return type="MMLSequenceGroup" />
+			<description>
+				Returns the sequence group, holding all the sequences for this execution (except for the global sequence). If you're creating the data container manually, you can use this object to add sequences to be executed.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="bpm" type="float" setter="set_bpm" getter="get_bpm">
+			BPM setting for this execution. If set to [code]0[/code], the default BPM value from the driver instance is used.
+			See also [member SiONDriver.bpm].
+		</member>
+		<member name="default_expression_mode" type="int" setter="set_default_expression_mode" getter="get_default_expression_mode">
+			Default expression mode for this execution.
+		</member>
+		<member name="default_fps" type="int" setter="set_default_fps" getter="get_default_fps">
+			Default number of frames per second for this execution. The value is affected by the sampling rate.
+		</member>
+		<member name="default_velocity_mode" type="int" setter="set_default_velocity_mode" getter="get_default_velocity_mode">
+			Default velocity mode for this execution.
+		</member>
+		<member name="default_velocity_shift" type="int" setter="set_default_velocity_shift" getter="get_default_velocity_shift">
+			Default velocity shift for this execution.
+		</member>
+		<member name="title" type="String" setter="set_title" getter="get_title">
+			Title for this execution, e.g. provided by the [code]#TITLE[/code] command in MML.
+		</member>
+	</members>
 </class>

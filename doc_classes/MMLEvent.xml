@@ -11,16 +11,16 @@
 	<tutorials>
 	</tutorials>
 	<members>
-		<member name="data" type="int" setter="set_data" getter="get_data">
+		<member name="data" type="int" setter="set_data" getter="get_data" default="0">
 			Data associated with this event.
 		</member>
-		<member name="id" type="int" setter="set_id" getter="get_id">
+		<member name="id" type="int" setter="set_id" getter="get_id" default="0">
 			Type ID of this event. Typically it's one of the [enum EventID] values, but custom user defined IDs are also supported.
 		</member>
 		<member name="jump" type="MMLEvent" setter="set_jump" getter="get_jump">
 			Reference to another event in the chain which can be jumped too. Used only by certain event types, such as loop/repeat events.
 		</member>
-		<member name="length" type="int" setter="set_length" getter="get_length">
+		<member name="length" type="int" setter="set_length" getter="get_length" default="0">
 			Length of this event in units of synthesizer's resolution.
 		</member>
 		<member name="next" type="MMLEvent" setter="set_next" getter="get_next">

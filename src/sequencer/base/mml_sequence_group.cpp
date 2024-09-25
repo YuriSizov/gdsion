@@ -6,6 +6,7 @@
 
 #include "mml_sequence_group.h"
 
+#include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/core/memory.hpp>
 #include "sequencer/base/mml_data.h"
 #include "sequencer/base/mml_event.h"
@@ -13,46 +14,7 @@
 
 using namespace godot;
 
-int MMLSequenceGroup::get_sequence_count() const {
-	return _sequences.size();
-}
-
-MMLSequence *MMLSequenceGroup::get_head_sequence() const {
-	return _term->get_next_sequence();
-}
-
-/** Get song length by tick count (1920 for wholetone). */
-int MMLSequenceGroup::get_tick_count() {
-	int tick_count = 0;
-
-	for (MMLSequence *sequence : _sequences) {
-		int length = sequence->get_mml_length();
-		if (length > tick_count) {
-			tick_count = length;
-		}
-	}
-
-	return tick_count;
-}
-
-bool MMLSequenceGroup::has_repeat_all() {
-	for (MMLSequence *sequence : _sequences) {
-		if (sequence->has_repeat_all()) {
-			return true;
-		}
-	}
-	return false;
-}
-
-//
-
-MMLSequence *MMLSequenceGroup::get_sequence(int p_index) const {
-	ERR_FAIL_INDEX_V(p_index, _sequences.size(), nullptr);
-
-	return _sequences[p_index];
-}
-
-MMLSequence *MMLSequenceGroup::get_new_sequence() {
+MMLSequence *MMLSequenceGroup::create_new_sequence() {
 	MMLSequence *sequence = nullptr;
 	if (!_free_list.is_empty()) {
 		sequence = _free_list.front()->get();
@@ -66,7 +28,7 @@ MMLSequence *MMLSequenceGroup::get_new_sequence() {
 }
 
 MMLSequence *MMLSequenceGroup::append_new_sequence() {
-	MMLSequence *sequence = get_new_sequence();
+	MMLSequence *sequence = create_new_sequence();
 	sequence->insert_before(_term);
 	sequence->set_active(false);
 	return sequence;
@@ -94,6 +56,44 @@ MMLEvent *MMLSequenceGroup::populate_sequences(MMLEvent *p_head_event) {
 	return event;
 }
 
+MMLSequence *MMLSequenceGroup::get_head_sequence() const {
+	return _term->get_next_sequence();
+}
+
+MMLSequence *MMLSequenceGroup::get_sequence(int p_index) const {
+	ERR_FAIL_INDEX_V(p_index, _sequences.size(), nullptr);
+
+	return _sequences[p_index];
+}
+
+int MMLSequenceGroup::get_sequence_count() const {
+	return _sequences.size();
+}
+
+//
+
+int MMLSequenceGroup::get_tick_count() {
+	int tick_count = 0;
+
+	for (MMLSequence *sequence : _sequences) {
+		int length = sequence->get_event_length();
+		if (length > tick_count) {
+			tick_count = length;
+		}
+	}
+
+	return tick_count;
+}
+
+bool MMLSequenceGroup::has_repeat_all() {
+	for (MMLSequence *sequence : _sequences) {
+		if (sequence->has_repeat_all()) {
+			return true;
+		}
+	}
+	return false;
+}
+
 //
 
 void MMLSequenceGroup::clear() {
@@ -103,6 +103,17 @@ void MMLSequenceGroup::clear() {
 	}
 	_sequences.clear();
 	_term->clear();
+}
+
+void MMLSequenceGroup::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("append_new_sequence"), &MMLSequenceGroup::append_new_sequence);
+
+	ClassDB::bind_method(D_METHOD("get_head_sequence"), &MMLSequenceGroup::get_head_sequence);
+	ClassDB::bind_method(D_METHOD("get_sequence", "index"), &MMLSequenceGroup::get_sequence);
+	ClassDB::bind_method(D_METHOD("get_sequence_count"), &MMLSequenceGroup::get_sequence_count);
+
+	ClassDB::bind_method(D_METHOD("get_tick_count"), &MMLSequenceGroup::get_tick_count);
+	ClassDB::bind_method(D_METHOD("has_repeat_all"), &MMLSequenceGroup::has_repeat_all);
 }
 
 MMLSequenceGroup::MMLSequenceGroup() {

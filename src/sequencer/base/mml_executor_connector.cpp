@@ -48,7 +48,7 @@ void MMLExecutorConnector::_connect(MECElement *p_element, bool p_first_oscillat
 	}
 
 	// Preprocess and assign sequence.
-	MMLSequence *prep_sequence = _connecting_sequence_group->get_new_sequence();
+	MMLSequence *prep_sequence = _connecting_sequence_group->create_new_sequence();
 	prep_sequence->initialize();
 
 	// Out pipe.

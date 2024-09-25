@@ -61,6 +61,8 @@
 #include "sequencer/base/mml_data.h"
 #include "sequencer/base/mml_event.h"
 #include "sequencer/base/mml_parser.h"
+#include "sequencer/base/mml_sequence.h"
+#include "sequencer/base/mml_sequence_group.h"
 #include "sequencer/base/mml_sequencer.h"
 #include "sequencer/base/mml_system_command.h"
 #include "sequencer/simml_data.h"
@@ -141,7 +143,9 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 
 	ClassDB::register_class<BeatsPerMinute>();
 	ClassDB::register_abstract_class<MMLData>();
-	ClassDB::register_abstract_class<MMLEvent>();
+	ClassDB::register_class<MMLEvent>();
+	ClassDB::register_class<MMLSequence>();
+	ClassDB::register_class<MMLSequenceGroup>();
 	ClassDB::register_abstract_class<MMLSequencer>();
 	ClassDB::register_abstract_class<MMLSystemCommand>();
 	ClassDB::register_abstract_class<SiMMLData>();

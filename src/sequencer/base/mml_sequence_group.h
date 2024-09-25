@@ -16,7 +16,8 @@ class MMLEvent;
 class MMLSequence;
 
 // Group of MMLSequences. MMLData > MMLSequenceGroup > MMLSequence > MMLEvent (">" means "has a").
-class MMLSequenceGroup {
+class MMLSequenceGroup : public Object {
+	GDCLASS(MMLSequenceGroup, Object)
 
 	List<MMLSequence *> _free_list;
 
@@ -24,18 +25,24 @@ class MMLSequenceGroup {
 	List<MMLSequence *> _sequences;
 	MMLSequence *_term = nullptr;
 
-public:
-	int get_sequence_count() const;
-	MMLSequence *get_head_sequence() const;
+protected:
+	static void _bind_methods();
 
-	// Get the song length by tick count (1920 for wholetone).
+public:
+	MMLSequence *create_new_sequence();
+	MMLSequence *append_new_sequence();
+	MMLEvent *populate_sequences(MMLEvent *p_head_event);
+
+	MMLSequence *get_head_sequence() const;
+	MMLSequence *get_sequence(int p_index) const;
+	int get_sequence_count() const;
+
+	//
+
 	int get_tick_count();
 	bool has_repeat_all();
 
-	MMLSequence *get_new_sequence();
-	MMLSequence *append_new_sequence();
-	MMLEvent *populate_sequences(MMLEvent *p_head_event);
-	MMLSequence *get_sequence(int p_index) const;
+	//
 
 	void clear();
 

@@ -179,7 +179,7 @@ String SiMMLSequencer::_on_before_compile(String p_mml) {
 	Ref<RegEx> re_comments = RegEx::create_from_string("(?s)/\\*.*?\\*/|//.*?[\\r\\n]+");
 	mml = re_comments->sub(mml, "", true);
 
-	// Format last.
+	// Ensure the string ends with a semicolon.
 
 	char last_char;
 	int i = mml.length();
@@ -237,6 +237,9 @@ String SiMMLSequencer::_on_before_compile(String p_mml) {
 		TypedArray<RegExMatch> mid_matches = re_macro_id->search_all(macro_id);
 		for (int j = 0; j < mid_matches.size(); j++) {
 			Ref<RegExMatch> mid_res = mid_matches[j];
+			if (mid_res->get_string().is_empty()) {
+				continue; // Regex can have empty matches, which we should filter out.
+			}
 
 			int start_id = 0;
 			if (!mid_res->get_string(1).is_empty()) {
@@ -252,7 +255,7 @@ String SiMMLSequencer::_on_before_compile(String p_mml) {
 				}
 			}
 
-			for (int k = start_id; k < end_id; k++) {
+			for (int k = start_id; k <= end_id; k++) {
 				String value = (_macro_expand_dynamic ? res->get_string(4) : _expand_macro(res->get_string(4)));
 
 				if (concat) {
@@ -502,16 +505,18 @@ String SiMMLSequencer::_expand_macro(String p_macro, bool p_nested) {
 		flag_macro_expanded |= flag;
 
 		String replacement;
-		if (!_macro_strings[i].is_empty()) {
+		if (!_macro_strings[index].is_empty()) {
+			const String macro_string = _macro_strings[index];
+
 			if (!res->get_string(2).is_empty()) {
 				int t = 0;
 				if (!res->get_string(3).is_empty()) {
 					t = res->get_string(3).to_int();
 				}
 
-				replacement = "!@ns" + itos(t) + (_macro_expand_dynamic ? _expand_macro(_macro_strings[i], true) : _macro_strings[i]) + "!@ns" + itos(-t);
+				replacement = "!@ns" + itos(t) + (_macro_expand_dynamic ? _expand_macro(macro_string, true) : macro_string) + "!@ns" + itos(-t);
 			} else {
-				replacement = (_macro_expand_dynamic ? _expand_macro(_macro_strings[i], true) : _macro_strings[i]);
+				replacement = (_macro_expand_dynamic ? _expand_macro(macro_string, true) : macro_string);
 			}
 		}
 

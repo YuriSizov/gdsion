@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MMLSequenceGroup" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Collection of event sequences which are executed together.
+	</brief_description>
+	<description>
+		The SiON synthesizer can execute multiple event sequences in parallel. This class serves as a container for such sequences, and is used by [MMLData] to hold the entire execution context, aside from the global sequence.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="append_new_sequence">
+			<return type="MMLSequence" />
+			<description>
+				Creates a new sequence and appends it at the end of a chain of sequences in this group. Sequences are chained together and can be iterated like a linked list.
+			</description>
+		</method>
+		<method name="get_head_sequence" qualifiers="const">
+			<return type="MMLSequence" />
+			<description>
+				Returns the first sequence in the sequence chain in this group.
+			</description>
+		</method>
+		<method name="get_sequence" qualifiers="const">
+			<return type="MMLSequence" />
+			<param index="0" name="index" type="int" />
+			<description>
+				Returns the sequence for the given index.
+			</description>
+		</method>
+		<method name="get_sequence_count" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the number of sequences in this group.
+			</description>
+		</method>
+		<method name="get_tick_count">
+			<return type="int" />
+			<description>
+				Returns the song length in the number of ticks. By default, the resolution of the whole tone is 1920.
+			</description>
+		</method>
+		<method name="has_repeat_all">
+			<return type="bool" />
+			<description>
+				Returns whether there is a repeat all event in any of the sequences in this group.
+			</description>
+		</method>
+	</methods>
+</class>
