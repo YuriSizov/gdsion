@@ -66,6 +66,7 @@
 #include "sequencer/base/mml_sequencer.h"
 #include "sequencer/base/mml_system_command.h"
 #include "sequencer/simml_data.h"
+#include "sequencer/simml_envelope_table.h"
 #include "sequencer/simml_ref_table.h"
 #include "sequencer/simml_sequencer.h"
 #include "sequencer/simml_track.h"
@@ -149,6 +150,7 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_abstract_class<MMLSequencer>();
 	ClassDB::register_abstract_class<MMLSystemCommand>();
 	ClassDB::register_abstract_class<SiMMLData>();
+	ClassDB::register_abstract_class<SiMMLEnvelopeTable>();
 	ClassDB::register_abstract_class<SiMMLSequencer>();
 	ClassDB::register_abstract_class<SiMMLTrack>();
 	ClassDB::register_abstract_class<SiMMLVoice>();

@@ -350,7 +350,7 @@ void SiMMLSequencer::_on_table_parse(MMLEvent *p_prev, String p_table) {
 	String data = res->get_string(1);
 	String postfix = res->get_string(2);
 
-	SiMMLEnvelopeTable *env_table = memnew(SiMMLEnvelopeTable);
+	Ref<SiMMLEnvelopeTable> env_table = memnew(SiMMLEnvelopeTable);
 	env_table->parse_mml(data, postfix);
 	ERR_FAIL_COND_MSG(!env_table->head, vformat("SiMMLSequencer: Invalid table parameter '%s' in the {..} command.", data));
 
@@ -801,7 +801,7 @@ bool SiMMLSequencer::_parse_system_command_before(String p_command, String p_par
 	if (p_command == "#TABLE") {
 		ERR_FAIL_COND_V_MSG((number < 0 || number > 254), true, vformat("SiMMLSequencer: Parameter '%d' for command '%s' is outside of valid range (%d : %d).", number, p_command, 0, 254));
 
-		SiMMLEnvelopeTable *env_table = memnew(SiMMLEnvelopeTable);
+		Ref<SiMMLEnvelopeTable> env_table = memnew(SiMMLEnvelopeTable);
 		env_table->parse_mml(content, postfix);
 		ERR_FAIL_COND_V_MSG(!env_table->head, true, vformat("SiMMLSequencer: Invalid parameter '%s' for command '%s'.", content, p_command));
 
@@ -1192,8 +1192,8 @@ MMLEvent *SiMMLSequencer::_on_mml_lf_oscillator(MMLEvent *p_event) {
 	cycle_time *= 1000/60; // Convert to ms.
 
 	if (waveform > 7 && waveform < 255) { // Custom table.
-		SiMMLEnvelopeTable *ev_table = SiMMLRefTable::get_instance()->get_envelope_table(ev_params[1]);
-		if (ev_table) {
+		Ref<SiMMLEnvelopeTable> ev_table = SiMMLRefTable::get_instance()->get_envelope_table(ev_params[1]);
+		if (ev_table.is_valid()) {
 			Vector<int> table_vector;
 			ev_table->to_vector(256, &table_vector, 0, 255);
 			_current_track->get_channel()->initialize_lfo(-1, table_vector);

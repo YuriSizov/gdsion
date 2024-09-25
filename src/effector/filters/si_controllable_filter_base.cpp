@@ -15,16 +15,16 @@ SinglyLinkedList<int> *SiControllableFilterBase::_decrement_envelope_table = nul
 void SiControllableFilterBase::set_params(int p_cutoff, int p_resonance, double p_fps) {
 	_cutoff_ptr = nullptr;
 	if (p_cutoff >= 0 && p_cutoff < 255) {
-		SiMMLEnvelopeTable *table = SiMMLRefTable::get_instance()->get_envelope_table(p_cutoff);
-		if (table) {
+		Ref<SiMMLEnvelopeTable> table = SiMMLRefTable::get_instance()->get_envelope_table(p_cutoff);
+		if (table.is_valid()) {
 			_cutoff_ptr = table->head;
 		}
 	}
 
 	_resonance_ptr = nullptr;
 	if (p_resonance >= 0 && p_resonance < 255) {
-		SiMMLEnvelopeTable *table = SiMMLRefTable::get_instance()->get_envelope_table(p_resonance);
-		if (table) {
+		Ref<SiMMLEnvelopeTable> table = SiMMLRefTable::get_instance()->get_envelope_table(p_resonance);
+		if (table.is_valid()) {
 			_resonance_ptr = table->head;
 		}
 	}

@@ -25,7 +25,7 @@ class SiMMLData : public MMLData {
 protected:
 	static void _bind_methods() {}
 
-	Vector<SiMMLEnvelopeTable *> _envelope_tables;
+	Vector<Ref<SiMMLEnvelopeTable>> _envelope_tables;
 	Vector<Ref<SiOPMWaveTable>> _wave_tables;
 	Vector<Ref<SiOPMWaveSamplerTable>> _sampler_tables;
 
@@ -39,10 +39,10 @@ public:
 
 	// Tables.
 
-	Vector<SiMMLEnvelopeTable *> get_envelope_tables() const { return _envelope_tables; }
+	Vector<Ref<SiMMLEnvelopeTable>> get_envelope_tables() const { return _envelope_tables; }
 
-	SiMMLEnvelopeTable *get_envelope_table(int p_index) const;
-	void set_envelope_table(int p_index, SiMMLEnvelopeTable *p_envelope);
+	Ref<SiMMLEnvelopeTable> get_envelope_table(int p_index) const;
+	void set_envelope_table(int p_index, const Ref<SiMMLEnvelopeTable> &p_envelope);
 	Ref<SiOPMWaveTable> get_wave_table(int p_index) const;
 	Ref<SiOPMWaveTable> set_wave_table(int p_index, Vector<double> *p_data);
 	Ref<SiOPMWaveSamplerTable> get_sampler_table(int p_index) const;

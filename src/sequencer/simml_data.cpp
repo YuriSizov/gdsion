@@ -42,13 +42,13 @@ void SiMMLData::register_ref_stencils() {
 
 // Tables.
 
-SiMMLEnvelopeTable *SiMMLData::get_envelope_table(int p_index) const {
+Ref<SiMMLEnvelopeTable> SiMMLData::get_envelope_table(int p_index) const {
 	ERR_FAIL_INDEX_V(p_index, SiMMLRefTable::ENVELOPE_TABLE_MAX, nullptr);
 
 	return _envelope_tables[p_index];
 }
 
-void SiMMLData::set_envelope_table(int p_index, SiMMLEnvelopeTable *p_envelope) {
+void SiMMLData::set_envelope_table(int p_index, const Ref<SiMMLEnvelopeTable> &p_envelope) {
 	ERR_FAIL_INDEX(p_index, SiMMLRefTable::ENVELOPE_TABLE_MAX);
 
 	_envelope_tables.write[p_index] = p_envelope;
@@ -119,10 +119,7 @@ void SiMMLData::clear() {
 	MMLData::clear();
 
 	for (int i = 0; i < SiMMLRefTable::ENVELOPE_TABLE_MAX; i++) {
-		if (_envelope_tables[i]) {
-			memdelete(_envelope_tables[i]);
-			_envelope_tables.write[i] = nullptr;
-		}
+		_envelope_tables.write[i] = Ref<SiMMLEnvelopeTable>();
 	}
 
 	for (int i = 0; i < SiMMLRefTable::VOICE_MAX; i++) {
@@ -163,13 +160,7 @@ SiMMLData::SiMMLData() {
 }
 
 SiMMLData::~SiMMLData() {
-	for (int i = 0; i < SiMMLRefTable::ENVELOPE_TABLE_MAX; i++) {
-		if (_envelope_tables[i]) {
-			memdelete(_envelope_tables[i]);
-			_envelope_tables.write[i] = nullptr;
-		}
-	}
-
+	_envelope_tables.clear();
 	_wave_tables.clear();
 	_sampler_tables.clear();
 }

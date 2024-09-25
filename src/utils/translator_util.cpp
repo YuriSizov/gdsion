@@ -1119,7 +1119,7 @@ String TranslatorUtil::get_al_params_as_mml(const Ref<SiOPMChannelParams> &p_par
 	return mml;
 }
 
-void TranslatorUtil::parse_voice_setting(const Ref<SiMMLVoice> &p_voice, String p_mml, Vector<SiMMLEnvelopeTable *> p_envelopes) {
+void TranslatorUtil::parse_voice_setting(const Ref<SiMMLVoice> &p_voice, String p_mml, Vector<Ref<SiMMLEnvelopeTable>> p_envelopes) {
 	Ref<SiOPMChannelParams> params = p_voice->channel_params;
 
 	String base_re_exp = "(%[fvx]|@[fpqv]|@er|@lfo|kt?|m[ap]|_?@@|_?n[aptf]|po|p|q|s|x|v)";
@@ -1668,7 +1668,7 @@ bool TranslatorUtil::parse_pcm_wave(const Ref<SiOPMWavePCMTable> &p_table, Strin
 	return true;
 }
 
-bool TranslatorUtil::parse_pcm_voice(const Ref<SiMMLVoice> &p_voice, String p_mml, String p_postfix, Vector<SiMMLEnvelopeTable *> p_envelopes) {
+bool TranslatorUtil::parse_pcm_voice(const Ref<SiMMLVoice> &p_voice, String p_mml, String p_postfix, Vector<Ref<SiMMLEnvelopeTable>> p_envelopes) {
 	Ref<SiOPMWavePCMTable> table = p_voice->get_wave_data();
 	if (table.is_null()) {
 		return false;

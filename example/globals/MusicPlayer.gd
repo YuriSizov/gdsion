@@ -179,8 +179,11 @@ func start_driver() -> void:
 
 func play_tune(mml_command: String) -> void:
 	print("Playing MML tune: '%s'" % [ mml_command ])
+	_driver.compilation_finished.connect(func(_data: SiONData) -> void:
+		print("MML compiled in %d msec." % [ _driver.get_compiling_time() ])
+	, CONNECT_ONE_SHOT)
+
 	_driver.play(mml_command)
-	print("MML compiled in %d msec." % [ _driver.get_compiling_time() ])
 
 
 func play_note(note: int, length: int) -> void:

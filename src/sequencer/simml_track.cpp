@@ -288,8 +288,8 @@ void SiMMLTrack::set_modulation_envelope(bool p_is_pitch_mod, int p_depth, int p
 	}
 }
 
-void SiMMLTrack::set_tone_envelope(int p_note_on, SiMMLEnvelopeTable *p_table, int p_step) {
-	if (!p_table || p_step == 0) {
+void SiMMLTrack::set_tone_envelope(int p_note_on, const Ref<SiMMLEnvelopeTable> &p_table, int p_step) {
+	if (p_table.is_null() || p_step == 0) {
 		_setting_envelope_voice.write[p_note_on] = nullptr;
 		_disable_envelope_mode(p_note_on);
 	} else {
@@ -299,8 +299,8 @@ void SiMMLTrack::set_tone_envelope(int p_note_on, SiMMLEnvelopeTable *p_table, i
 	}
 }
 
-void SiMMLTrack::set_amplitude_envelope(int p_note_on, SiMMLEnvelopeTable *p_table, int p_step, bool p_offset) {
-	if (!p_table || p_step == 0) {
+void SiMMLTrack::set_amplitude_envelope(int p_note_on, const Ref<SiMMLEnvelopeTable> &p_table, int p_step, bool p_offset) {
+	if (p_table.is_null() || p_step == 0) {
 		_setting_envelope_exp.write[p_note_on] = nullptr;
 		_disable_envelope_mode(p_note_on);
 	} else {
@@ -311,8 +311,8 @@ void SiMMLTrack::set_amplitude_envelope(int p_note_on, SiMMLEnvelopeTable *p_tab
 	}
 }
 
-void SiMMLTrack::set_filter_envelope(int p_note_on, SiMMLEnvelopeTable *p_table, int p_step) {
-	if (!p_table || p_step == 0) {
+void SiMMLTrack::set_filter_envelope(int p_note_on, const Ref<SiMMLEnvelopeTable> &p_table, int p_step) {
+	if (p_table.is_null() || p_step == 0) {
 		_setting_envelope_filter.write[p_note_on] = nullptr;
 		_disable_envelope_mode(p_note_on);
 	} else {
@@ -322,8 +322,8 @@ void SiMMLTrack::set_filter_envelope(int p_note_on, SiMMLEnvelopeTable *p_table,
 	}
 }
 
-void SiMMLTrack::set_pitch_envelope(int p_note_on, SiMMLEnvelopeTable *p_table, int p_step) {
-	if (!p_table || p_step == 0) {
+void SiMMLTrack::set_pitch_envelope(int p_note_on, const Ref<SiMMLEnvelopeTable> &p_table, int p_step) {
+	if (p_table.is_null() || p_step == 0) {
 		_setting_envelope_pitch.write[p_note_on] = _envelope_zero_table;
 		_disable_envelope_mode(p_note_on);
 	} else {
@@ -334,8 +334,8 @@ void SiMMLTrack::set_pitch_envelope(int p_note_on, SiMMLEnvelopeTable *p_table, 
 	}
 }
 
-void SiMMLTrack::set_note_envelope(int p_note_on, SiMMLEnvelopeTable *p_table, int p_step) {
-	if (!p_table || p_step == 0) {
+void SiMMLTrack::set_note_envelope(int p_note_on, const Ref<SiMMLEnvelopeTable> &p_table, int p_step) {
+	if (p_table.is_null() || p_step == 0) {
 		_setting_envelope_note.write[p_note_on] = _envelope_zero_table;
 		_disable_envelope_mode(p_note_on);
 	} else {

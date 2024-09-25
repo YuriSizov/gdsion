@@ -187,46 +187,16 @@ void SiMMLVoice::reset() {
 	pitch_modulation_delay = 0;
 	pitch_modulation_term = 0;
 
-	if (note_on_tone_envelope) {
-		memdelete(note_on_tone_envelope);
-		note_on_tone_envelope = nullptr;
-	}
-	if (note_on_amplitude_envelope) {
-		memdelete(note_on_amplitude_envelope);
-		note_on_amplitude_envelope = nullptr;
-	}
-	if (note_on_filter_envelope) {
-		memdelete(note_on_filter_envelope);
-		note_on_filter_envelope = nullptr;
-	}
-	if (note_on_pitch_envelope) {
-		memdelete(note_on_pitch_envelope);
-		note_on_pitch_envelope = nullptr;
-	}
-	if (note_on_note_envelope) {
-		memdelete(note_on_note_envelope);
-		note_on_note_envelope = nullptr;
-	}
-	if (note_off_tone_envelope) {
-		memdelete(note_off_tone_envelope);
-		note_off_tone_envelope = nullptr;
-	}
-	if (note_off_amplitude_envelope) {
-		memdelete(note_off_amplitude_envelope);
-		note_off_amplitude_envelope = nullptr;
-	}
-	if (note_off_filter_envelope) {
-		memdelete(note_off_filter_envelope);
-		note_off_filter_envelope = nullptr;
-	}
-	if (note_off_pitch_envelope) {
-		memdelete(note_off_pitch_envelope);
-		note_off_pitch_envelope = nullptr;
-	}
-	if (note_off_note_envelope) {
-		memdelete(note_off_note_envelope);
-		note_off_note_envelope = nullptr;
-	}
+	note_on_tone_envelope = Ref<SiMMLEnvelopeTable>();
+	note_on_amplitude_envelope = Ref<SiMMLEnvelopeTable>();
+	note_on_filter_envelope = Ref<SiMMLEnvelopeTable>();
+	note_on_pitch_envelope = Ref<SiMMLEnvelopeTable>();
+	note_on_note_envelope = Ref<SiMMLEnvelopeTable>();
+	note_off_tone_envelope = Ref<SiMMLEnvelopeTable>();
+	note_off_amplitude_envelope = Ref<SiMMLEnvelopeTable>();
+	note_off_filter_envelope = Ref<SiMMLEnvelopeTable>();
+	note_off_pitch_envelope = Ref<SiMMLEnvelopeTable>();
+	note_off_note_envelope = Ref<SiMMLEnvelopeTable>();
 
 	note_on_tone_envelope_step = 1;
 	note_on_amplitude_envelope_step = 1;
@@ -279,12 +249,8 @@ void SiMMLVoice::copy_from(const Ref<SiMMLVoice> &p_source) {
 	pitch_modulation_term = p_source->pitch_modulation_term;
 
 #define COPY_NOTE_ENVELOPE(m_prop)            \
-	if (m_prop) {                             \
-		memdelete(m_prop);                    \
-		m_prop = nullptr;                     \
-	}                                         \
-	if (p_source->m_prop) {                   \
-		m_prop = memnew(SiMMLEnvelopeTable);  \
+	m_prop = Ref<SiMMLEnvelopeTable>();       \
+	if (p_source->m_prop.is_valid()) {        \
 		m_prop->copy_from(p_source->m_prop);  \
 	}
 
@@ -357,47 +323,4 @@ void SiMMLVoice::_bind_methods() {
 SiMMLVoice::SiMMLVoice() {
 	channel_params.instantiate();
 	reset();
-}
-
-SiMMLVoice::~SiMMLVoice() {
-	if (note_on_tone_envelope) {
-		memdelete(note_on_tone_envelope);
-		note_on_tone_envelope = nullptr;
-	}
-	if (note_on_amplitude_envelope) {
-		memdelete(note_on_amplitude_envelope);
-		note_on_amplitude_envelope = nullptr;
-	}
-	if (note_on_filter_envelope) {
-		memdelete(note_on_filter_envelope);
-		note_on_filter_envelope = nullptr;
-	}
-	if (note_on_pitch_envelope) {
-		memdelete(note_on_pitch_envelope);
-		note_on_pitch_envelope = nullptr;
-	}
-	if (note_on_note_envelope) {
-		memdelete(note_on_note_envelope);
-		note_on_note_envelope = nullptr;
-	}
-	if (note_off_tone_envelope) {
-		memdelete(note_off_tone_envelope);
-		note_off_tone_envelope = nullptr;
-	}
-	if (note_off_amplitude_envelope) {
-		memdelete(note_off_amplitude_envelope);
-		note_off_amplitude_envelope = nullptr;
-	}
-	if (note_off_filter_envelope) {
-		memdelete(note_off_filter_envelope);
-		note_off_filter_envelope = nullptr;
-	}
-	if (note_off_pitch_envelope) {
-		memdelete(note_off_pitch_envelope);
-		note_off_pitch_envelope = nullptr;
-	}
-	if (note_off_note_envelope) {
-		memdelete(note_off_note_envelope);
-		note_off_note_envelope = nullptr;
-	}
 }

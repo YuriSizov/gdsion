@@ -31,8 +31,9 @@ void SiMMLEnvelopeTable::to_vector(int p_length, Vector<int> *r_destination, int
 	}
 }
 
-void SiMMLEnvelopeTable::copy_from(SiMMLEnvelopeTable *p_source) {
+void SiMMLEnvelopeTable::copy_from(const Ref<SiMMLEnvelopeTable> &p_source) {
 	free();
+
 	if (!p_source->head) {
 		return;
 	}

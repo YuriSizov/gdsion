@@ -11,12 +11,12 @@
 #include <godot_cpp/templates/hash_map.hpp>
 #include <godot_cpp/templates/list.hpp>
 #include <godot_cpp/templates/vector.hpp>
+#include "sequencer/simml_envelope_table.h"
 #include "sequencer/simml_voice.h"
 
 using namespace godot;
 
 class SiMMLChannelSettings;
-class SiMMLEnvelopeTable;
 enum SiONModuleType : unsigned int;
 
 // Reference data object for the sequencer and related operations.
@@ -24,9 +24,9 @@ class SiMMLRefTable {
 
 	static SiMMLRefTable *_instance;
 
-	Vector<SiMMLEnvelopeTable *> _master_envelopes;
+	Vector<Ref<SiMMLEnvelopeTable>> _master_envelopes;
 	Vector<Ref<SiMMLVoice>> _master_voices;
-	Vector<SiMMLEnvelopeTable *> _stencil_envelopes;
+	Vector<Ref<SiMMLEnvelopeTable>> _stencil_envelopes;
 	Vector<Ref<SiMMLVoice>> _stencil_voices;
 
 	void _fill_tss_log_table(String (&r_table)[256], int p_start, int p_step, int p_v0, int p_v255);
@@ -118,15 +118,15 @@ public:
 	//
 
 	void reset_all_user_tables();
-	void register_master_envelope_table(int p_index, SiMMLEnvelopeTable *p_table);
+	void register_master_envelope_table(int p_index, const Ref<SiMMLEnvelopeTable> &p_table);
 	void register_master_voice(int p_index, const Ref<SiMMLVoice> &p_voice);
 
-	void set_stencil_envelopes(Vector<SiMMLEnvelopeTable *> p_tables) { _stencil_envelopes = p_tables; }
-	void clear_stencil_envelopes() { _stencil_envelopes = Vector<SiMMLEnvelopeTable *>(); }
+	void set_stencil_envelopes(Vector<Ref<SiMMLEnvelopeTable>> p_tables) { _stencil_envelopes = p_tables; }
+	void clear_stencil_envelopes() { _stencil_envelopes = Vector<Ref<SiMMLEnvelopeTable>>(); }
 	void set_stencil_voices(Vector<Ref<SiMMLVoice>> p_tables) { _stencil_voices = p_tables; }
 	void clear_stencil_voices() { _stencil_voices = Vector<Ref<SiMMLVoice>>(); }
 
-	SiMMLEnvelopeTable *get_envelope_table(int p_index);
+	Ref<SiMMLEnvelopeTable> get_envelope_table(int p_index);
 	Ref<SiMMLVoice> get_voice(int p_index);
 
 	int get_pulse_generator_type(SiONModuleType p_module_type, int p_channel_num, int p_tone_num = -1);

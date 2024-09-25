@@ -320,11 +320,11 @@ public:
 	void set_envelope_fps(int p_fps);
 	void set_release_sweep(int p_sweep);
 	void set_modulation_envelope(bool p_is_pitch_mod, int p_depth, int p_end_depth, int p_delay, int p_term);
-	void set_tone_envelope(int p_note_on, SiMMLEnvelopeTable *p_table, int p_step);
-	void set_amplitude_envelope(int p_note_on, SiMMLEnvelopeTable *p_table, int p_step, bool p_offset = false);
-	void set_filter_envelope(int p_note_on, SiMMLEnvelopeTable *p_table, int p_step);
-	void set_pitch_envelope(int p_note_on, SiMMLEnvelopeTable *p_table, int p_step);
-	void set_note_envelope(int p_note_on, SiMMLEnvelopeTable *p_table, int p_step);
+	void set_tone_envelope(int p_note_on, const Ref<SiMMLEnvelopeTable> &p_table, int p_step);
+	void set_amplitude_envelope(int p_note_on, const Ref<SiMMLEnvelopeTable> &p_table, int p_step, bool p_offset = false);
+	void set_filter_envelope(int p_note_on, const Ref<SiMMLEnvelopeTable> &p_table, int p_step);
+	void set_pitch_envelope(int p_note_on, const Ref<SiMMLEnvelopeTable> &p_table, int p_step);
+	void set_note_envelope(int p_note_on, const Ref<SiMMLEnvelopeTable> &p_table, int p_step);
 
 	// Events.
 

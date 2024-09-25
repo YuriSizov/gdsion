@@ -10,10 +10,10 @@
 #include <godot_cpp/classes/ref_counted.hpp>
 #include "chip/siopm_channel_params.h"
 #include "chip/wave/siopm_wave_base.h"
+#include "sequencer/simml_envelope_table.h"
 
 using namespace godot;
 
-class SiMMLEnvelopeTable;
 class SiMMLTrack;
 enum SiONChipType : signed int;
 enum SiONModuleType : unsigned int;
@@ -46,16 +46,16 @@ class SiMMLVoice : public RefCounted {
 	int velocity_shift = 4;
 	int expression_mode = 0;
 
-	SiMMLEnvelopeTable *note_on_tone_envelope = nullptr;
-	SiMMLEnvelopeTable *note_on_amplitude_envelope = nullptr;
-	SiMMLEnvelopeTable *note_on_filter_envelope = nullptr;
-	SiMMLEnvelopeTable *note_on_pitch_envelope = nullptr;
-	SiMMLEnvelopeTable *note_on_note_envelope = nullptr;
-	SiMMLEnvelopeTable *note_off_tone_envelope = nullptr;
-	SiMMLEnvelopeTable *note_off_amplitude_envelope = nullptr;
-	SiMMLEnvelopeTable *note_off_filter_envelope = nullptr;
-	SiMMLEnvelopeTable *note_off_pitch_envelope = nullptr;
-	SiMMLEnvelopeTable *note_off_note_envelope = nullptr;
+	Ref<SiMMLEnvelopeTable> note_on_tone_envelope;
+	Ref<SiMMLEnvelopeTable> note_on_amplitude_envelope;
+	Ref<SiMMLEnvelopeTable> note_on_filter_envelope;
+	Ref<SiMMLEnvelopeTable> note_on_pitch_envelope;
+	Ref<SiMMLEnvelopeTable> note_on_note_envelope;
+	Ref<SiMMLEnvelopeTable> note_off_tone_envelope;
+	Ref<SiMMLEnvelopeTable> note_off_amplitude_envelope;
+	Ref<SiMMLEnvelopeTable> note_off_filter_envelope;
+	Ref<SiMMLEnvelopeTable> note_off_pitch_envelope;
+	Ref<SiMMLEnvelopeTable> note_off_note_envelope;
 
 	int note_on_tone_envelope_step = 1;
 	int note_on_amplitude_envelope_step = 1;
@@ -144,7 +144,7 @@ public:
 	virtual void copy_from(const Ref<SiMMLVoice> &p_source);
 
 	SiMMLVoice();
-	~SiMMLVoice();
+	~SiMMLVoice() {}
 };
 
 #endif // SIMML_VOICE_H

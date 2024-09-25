@@ -42,9 +42,9 @@ void SiMMLRefTable::finalize() {
 
 void SiMMLRefTable::reset_all_user_tables() {
 	for (int i = 0; i < ENVELOPE_TABLE_MAX; i++) {
-		if (_master_envelopes[i]) {
+		if (_master_envelopes[i].is_valid()) {
 			_master_envelopes[i]->free();
-			_master_envelopes.write[i] = nullptr;
+			_master_envelopes.write[i] = Ref<SiMMLEnvelopeTable>();
 		}
 	}
 
@@ -53,7 +53,7 @@ void SiMMLRefTable::reset_all_user_tables() {
 	}
 }
 
-void SiMMLRefTable::register_master_envelope_table(int p_index, SiMMLEnvelopeTable *p_table) {
+void SiMMLRefTable::register_master_envelope_table(int p_index, const Ref<SiMMLEnvelopeTable> &p_table) {
 	ERR_FAIL_INDEX(p_index, ENVELOPE_TABLE_MAX);
 	_master_envelopes.write[p_index] = p_table;
 }
@@ -63,10 +63,10 @@ void SiMMLRefTable::register_master_voice(int p_index, const Ref<SiMMLVoice> &p_
 	_master_voices.write[p_index] = p_voice;
 }
 
-SiMMLEnvelopeTable *SiMMLRefTable::get_envelope_table(int p_index) {
+Ref<SiMMLEnvelopeTable> SiMMLRefTable::get_envelope_table(int p_index) {
 	ERR_FAIL_INDEX_V(p_index, ENVELOPE_TABLE_MAX, nullptr);
 
-	if (p_index < _stencil_envelopes.size() && _stencil_envelopes[p_index]) {
+	if (p_index < _stencil_envelopes.size() && _stencil_envelopes[p_index].is_valid()) {
 		return _stencil_envelopes[p_index];
 	}
 	return _master_envelopes[p_index];
@@ -363,21 +363,9 @@ SiMMLRefTable::SiMMLRefTable() {
 }
 
 SiMMLRefTable::~SiMMLRefTable() {
-	for (SiMMLEnvelopeTable *env_table : _master_envelopes) {
-		if (env_table) {
-			memdelete(env_table);
-		}
-	}
 	_master_envelopes.clear();
-
-	for (SiMMLEnvelopeTable *env_table : _stencil_envelopes) {
-		if (env_table) {
-			memdelete(env_table);
-		}
-	}
-	_stencil_envelopes.clear();
-
 	_master_voices.clear();
+	_stencil_envelopes.clear();
 	_stencil_voices.clear();
 
 	for (const KeyValue<SiONModuleType, SiMMLChannelSettings *> &kv : channel_settings_map) {

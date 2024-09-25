@@ -71,15 +71,18 @@ def _register_library(name, path):
     Default(library)
     return library
 
+
+def _install_artifacts(name, path, depends):
+    install_artifacts = env.Install(name, path)
+    Default(install_artifacts)
+    env.Depends(install_artifacts, depends)
+
+
 env.__class__.add_source_files = add_source_files
 Export("env")
 
 library_gdsion = _register_library("libgdsion", "src")
 
 # Copy the build results into example and tests projects.
-install_example_artifacts = env.Install("example", "bin")
-Default(install_example_artifacts)
-install_tests_artifacts = env.Install("tests", "bin")
-Default(install_tests_artifacts)
-
-env.Depends(install_tests_artifacts, library_gdsion)
+_install_artifacts("example", "bin", library_gdsion)
+_install_artifacts("tests", "bin", library_gdsion)
