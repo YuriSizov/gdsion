@@ -69,7 +69,6 @@ private:
 	SiMMLChannelSettings *_channel_settings = nullptr;
 
 	Ref<SiMMLData> _mml_data;
-	SiMMLRefTable *_table = nullptr;
 
 	// This value is specified by user and contains the track starter.
 	int _internal_track_id = 0;

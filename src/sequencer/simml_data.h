@@ -33,7 +33,9 @@ protected:
 	Vector<Ref<SiMMLVoice>> _pcm_voices;
 
 public:
-	void register_all();
+	// Static so it can be called when there is no SiMMLData instance available.
+	static void clear_ref_stencils();
+	void register_ref_stencils();
 
 	// Tables.
 

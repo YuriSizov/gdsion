@@ -122,7 +122,9 @@ public:
 	void register_master_voice(int p_index, const Ref<SiMMLVoice> &p_voice);
 
 	void set_stencil_envelopes(Vector<SiMMLEnvelopeTable *> p_tables) { _stencil_envelopes = p_tables; }
+	void clear_stencil_envelopes() { _stencil_envelopes = Vector<SiMMLEnvelopeTable *>(); }
 	void set_stencil_voices(Vector<Ref<SiMMLVoice>> p_tables) { _stencil_voices = p_tables; }
+	void clear_stencil_voices() { _stencil_voices = Vector<Ref<SiMMLVoice>>(); }
 
 	SiMMLEnvelopeTable *get_envelope_table(int p_index);
 	Ref<SiMMLVoice> get_voice(int p_index);

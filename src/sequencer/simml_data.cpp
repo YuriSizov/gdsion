@@ -16,10 +16,22 @@
 
 using namespace godot;
 
-void SiMMLData::register_all() {
+void SiMMLData::clear_ref_stencils() {
 	// Bank 2 and 3 are not available at this time.
-	SiOPMRefTable::get_instance()->sampler_tables[0]->set_stencil(_sampler_tables[0]);
-	SiOPMRefTable::get_instance()->sampler_tables[1]->set_stencil(_sampler_tables[1]);
+	SiOPMRefTable::get_instance()->clear_sampler_table_stencil(0);
+	SiOPMRefTable::get_instance()->clear_sampler_table_stencil(1);
+
+	SiOPMRefTable::get_instance()->clear_stencil_custom_wave_tables();
+	SiOPMRefTable::get_instance()->clear_stencil_pcm_voices();
+
+	SiMMLRefTable::get_instance()->clear_stencil_envelopes();
+	SiMMLRefTable::get_instance()->clear_stencil_voices();
+}
+
+void SiMMLData::register_ref_stencils() {
+	// Bank 2 and 3 are not available at this time.
+	SiOPMRefTable::get_instance()->set_sampler_table_stencil(0, _sampler_tables[0]);
+	SiOPMRefTable::get_instance()->set_sampler_table_stencil(1, _sampler_tables[1]);
 
 	SiOPMRefTable::get_instance()->set_stencil_custom_wave_tables(_wave_tables);
 	SiOPMRefTable::get_instance()->set_stencil_pcm_voices(_pcm_voices);

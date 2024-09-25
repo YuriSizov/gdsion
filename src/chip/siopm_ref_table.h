@@ -271,8 +271,13 @@ public:
 	Ref<SiMMLVoice> get_global_pcm_voice(int p_index);
 	Ref<SiMMLVoice> set_global_pcm_voice(int p_index, const Ref<SiMMLVoice> &p_from_voice);
 
+	void set_sampler_table_stencil(int p_index, const Ref<SiOPMWaveSamplerTable> &p_table);
+	void clear_sampler_table_stencil(int p_index);
+
 	void set_stencil_custom_wave_tables(Vector<Ref<SiOPMWaveTable>> p_tables) { _stencil_custom_wave_tables = p_tables; }
+	void clear_stencil_custom_wave_tables() { _stencil_custom_wave_tables = Vector<Ref<SiOPMWaveTable>>(); }
 	void set_stencil_pcm_voices(Vector<Ref<SiMMLVoice>> p_tables) { _stencil_pcm_voices = p_tables; }
+	void clear_stencil_pcm_voices() { _stencil_pcm_voices = Vector<Ref<SiMMLVoice>>(); }
 
 	//
 

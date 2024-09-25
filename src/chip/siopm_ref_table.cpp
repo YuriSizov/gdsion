@@ -148,6 +148,18 @@ Ref<SiMMLVoice> SiOPMRefTable::set_global_pcm_voice(int p_index, const Ref<SiMML
 	return _pcm_voices[index];
 }
 
+void SiOPMRefTable::set_sampler_table_stencil(int p_index, const Ref<SiOPMWaveSamplerTable> &p_table) {
+	ERR_FAIL_INDEX(p_index, sampler_tables.size());
+
+	sampler_tables[p_index]->set_stencil(p_table);
+}
+
+void SiOPMRefTable::clear_sampler_table_stencil(int p_index) {
+	ERR_FAIL_INDEX(p_index, sampler_tables.size());
+
+	sampler_tables[p_index]->set_stencil(nullptr);
+}
+
 //
 
 void SiOPMRefTable::_set_constants(int p_fm_clock, double p_psg_clock, int p_sampling_rate) {

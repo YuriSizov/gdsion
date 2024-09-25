@@ -29,7 +29,6 @@ class SiMMLSequencer : public MMLSequencer {
 	static const int MACRO_SIZE = 26;
 	static const int DEFAULT_MAX_TRACK_COUNT = 128;
 
-	SiMMLRefTable *_table = nullptr;
 	SiOPMSoundChip *_sound_chip = nullptr;
 	MMLExecutorConnector *_connector = nullptr;
 

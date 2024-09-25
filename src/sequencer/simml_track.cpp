@@ -135,7 +135,7 @@ void SiMMLTrack::set_note_immediately(int p_note, int p_sample_length, bool p_sl
 // Channel properties.
 
 void SiMMLTrack::set_channel_module_type(SiONModuleType p_type, int p_channel_num, int p_tone_num) {
-	_channel_settings = _table->channel_settings_map[p_type];
+	_channel_settings = SiMMLRefTable::get_instance()->channel_settings_map[p_type];
 
 	_voice_index = _channel_settings->initialize_tone(this, p_channel_num, _channel->get_buffer_index());
 	if (p_tone_num >= 0) {
@@ -492,15 +492,9 @@ void SiMMLTrack::_disable_envelope_mode(int p_note_on) {
 
 int SiMMLTrack::prepare_buffer(int p_buffer_length) {
 	if (_mml_data.is_valid()) {
-		_mml_data->register_all();
+		_mml_data->register_ref_stencils();
 	} else {
-		SiOPMRefTable::get_instance()->sampler_tables[0]->set_stencil(nullptr);
-
-		SiOPMRefTable::get_instance()->set_stencil_custom_wave_tables(Vector<Ref<SiOPMWaveTable>>());
-		SiOPMRefTable::get_instance()->set_stencil_pcm_voices(Vector<Ref<SiMMLVoice>>());
-
-		_table->set_stencil_envelopes(Vector<SiMMLEnvelopeTable *>());
-		_table->set_stencil_voices(Vector<Ref<SiMMLVoice>>());
+		SiMMLData::clear_ref_stencils();
 	}
 
 	// No delay.
@@ -881,7 +875,7 @@ void SiMMLTrack::change_note_length(int p_length) {
 
 void SiMMLTrack::reset(int p_buffer_index) {
 	// Channel module settings.
-	_channel_settings = _table->channel_settings_map[SiONModuleType::MODULE_PSG];
+	_channel_settings = SiMMLRefTable::get_instance()->channel_settings_map[SiONModuleType::MODULE_PSG];
 	_channel_number = 0;
 
 	// Initialize channel.
@@ -1012,7 +1006,6 @@ SiMMLTrack::SiMMLTrack() {
 		_envelope_zero_table = SinglyLinkedList<int>::alloc_ring(1);
 	}
 
-	_table = SiMMLRefTable::get_instance();
 	_executor = memnew(MMLExecutor);
 
 	_setting_envelope_exp.resize_zeroed(2);
@@ -1026,6 +1019,5 @@ SiMMLTrack::SiMMLTrack() {
 }
 
 SiMMLTrack::~SiMMLTrack() {
-	_table = nullptr;
 	memdelete(_executor);
 }
