@@ -14,6 +14,27 @@
 #include "chip/wave/siopm_wave_table.h"
 #include "utils/godot_util.h"
 
+void SiONVoicePresetUtil::_generate_voices(uint32_t p_flags) {
+	if (p_flags & INCLUDE_DEFAULT) {
+		_generate_default_voices();
+	}
+	if (p_flags & INCLUDE_VALSOUND) {
+		_generate_valsound_voices();
+	}
+	if (p_flags & INCLUDE_MIDI) {
+		_generate_midi_voices();
+	}
+	if (p_flags & INCLUDE_MIDIDRUM) {
+		_generate_mididrum_voices();
+	}
+	if (p_flags & INCLUDE_WAVETABLE) {
+		_generate_wave_table_voices();
+	}
+	if (p_flags & INCLUDE_SINGLE_DRUM) {
+		_generate_single_drum_voices();
+	}
+}
+
 void SiONVoicePresetUtil::_generate_default_voices() {
 	// 16 default voices.
 
@@ -542,40 +563,49 @@ void SiONVoicePresetUtil::_generate_mididrum_voices() {
 	_create_ma3_voice("midi.drum84",  "Bell Tree",        { 5,7, 19,12, 4, 2, 0, 0,24,0,0, 3,0,2,  2, 4, 3, 5, 5, 4, 0,0,0, 2,0,3,  2, 3, 0, 0, 2, 0, 7,1,0, 7,0,3, 13, 5, 4, 2, 6, 6, 2,0,0, 3,0,3 });
 }
 
-void SiONVoicePresetUtil::_generate_wavetable_voices() {
+void SiONVoicePresetUtil::_generate_wave_table_voices() {
 	// 128 voices from GM.
 
-	// TODO: The hash part seems to be a one-to-one conversion of each numerical value to some hexidecimal value. It might be worth it to do this automatically, to avoid typos.
-	// But at this time I don't quite understand the formula for this conversion, so keeping it as is.
-	_register_wave_table("0d253c5163717a7f7f7a7163513c250df3dbc4af9d8f868181868f9dafc4dbf3", { 1716,914,556,336,190,92,32,4,4,32,92,190,336,556,914,1716,1717,915,557,337,191,93,33,5,5,33,93,191,337,557,915,1717 });
-	_register_wave_table("2a46596771787d7f7f7d78716759462ad6baa7998f8883808083888f99a7bad6", { 828,440,266,160,90,42,14,0,0,14,42,90,160,266,440,828,829,441,267,161,91,43,15,1,1,15,43,91,161,267,441,829 });
-	_register_wave_table("0d253c5163717a7f7f7a7163513c250d8091a2b3c4d5e6f7091a2b3c4d5e6f7f", { 1716,914,556,336,190,92,32,4,4,32,92,190,336,556,914,1716,1,107,231,379,563,813,1189,2001,2000,1188,812,562,378,230,106,0 });
-	_register_wave_table("0d253c5163717a7f7f7a7163513c250de7b996828296b9e719476a7e7e6a4719", { 1716,914,556,336,190,92,32,4,4,32,92,190,336,556,914,1716,1209,435,137,15,15,137,435,1209,1208,434,136,14,14,136,434,1208 });
-	_register_wave_table("7f6f5e4d3c2b1a098091a2b3c4d5e6f7f7e6d5c4b3a29180091a2b3c4d5e6f7f", { 4,32,92,190,336,556,914,1716,1,33,93,191,337,557,915,1717,1717,915,557,337,191,93,33,1,1716,914,556,336,190,92,32,4 });
-	_register_wave_table("f7e6d5c4b3a29180808080808080808080808080808080807f6f5e4d3c2b1a09", { 2001,1189,813,563,379,231,107,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,106,230,378,562,812,1188,2000 });
-	_register_wave_table("80889199a1a9b2bac2cad3dbe3ebf4fc040c151d252d363e464e575f676f787f", { 1,51,103,159,221,289,363,445,537,643,767,915,1101,1349,1727,2537,2536,1726,1348,1100,914,766,642,536,444,362,288,220,158,102,50,0 });
-	_register_wave_table("f7c29480808b96a1adb8c3ced9e4effa06111c27323d48535f6a757f7f6c3e09", { 2001,535,129,1,1,69,143,225,317,423,545,695,879,1129,1505,2317,2316,1504,1128,878,694,544,422,316,224,142,68,0,0,128,534,2000 });
-	_register_wave_table("091a2b3c4d5e6f7f7f6f5e4d3c2b1a09f7e6d5c4b3a291808091a2b3c4d5e6f7", { 2000,1188,812,562,378,230,106,0,0,106,230,378,562,812,1188,2000,2001,1189,813,563,379,231,107,1,1,107,231,379,563,813,1189,2001 });
-	_register_wave_table("002040607f5b371200e0c0a080a5c9ee002040607f5b371200e0c0a080a5c9ee", { 6654,1024,512,212,0,248,626,1438,6654,1025,513,213,1,249,627,1439,6654,1024,512,212,0,248,626,1438,6654,1025,513,213,1,249,627,1439 });
-	_register_wave_table("19476a7e7e6a4719e7b996828296b9e71d4f727e714e1ce4b28f828eb1e37f80", { 1208,434,136,14,14,136,434,1208,1209,435,137,15,15,137,435,1209,1084,352,88,14,92,362,1118,1119,363,93,15,89,353,1085,0,1 });
-	_register_wave_table("102e455252452e1043687d7d684312f30deebd98838398bdf0d2bbaeaebbd2f0", { 1540,740,436,310,310,436,740,1540,462,132,0,0,132,462,1422,1671,1670,1423,463,133,1,1,133,463,1541,741,437,311,311,437,741,1541 });
-	_register_wave_table("091a2b3c4d5e6f7f7f6f5e4d3c2b1a09eec9a58080a5c9ee12375b7f7f5b3712", { 2000,1188,812,562,378,230,106,0,0,106,230,378,562,812,1188,2000,1439,627,249,1,1,249,627,1439,1438,626,248,0,0,248,626,1438 });
-	_register_wave_table("0d28405668757d7f7f7d75685640280deec9a58080a5c9ee12375b7f7f5b3712", { 1668,868,512,296,156,66,16,0,0,16,66,156,296,512,868,1668,1439,627,249,1,1,249,627,1439,1438,626,248,0,0,248,626,1438 });
-	_register_wave_table("7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f80808080808080808080808080808080", { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 });
-	_register_wave_table("7f7f7f7f7f7f7f7f808080808080808080808080808080808080808080808080", { 0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 });
-	_register_wave_table("7f7f7f7f80808080808080808080808080808080808080808080808080808080", { 0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 });
-	_register_wave_table("7f7f7f7f7f7f7f7f80808080808080807f7f7f8080807f7f7f7f7f8080808080", { 0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,0,0,1,1,1,1,1 });
-	_register_wave_table("000000007f7f7f80808000000000007f7f7f80808000000000007f7f7f808080", { 6654,6654,6654,6654,0,0,0,1,1,1,6654,6654,6654,6654,6654,0,0,0,1,1,1,6654,6654,6654,6654,6654,0,0,0,1,1,1 });
-	_register_wave_table("8000007f7f7f0080808080000000007f7f7f7f7f807f87ca002430302400ca87", { 1,6654,6654,0,0,0,6654,1,1,1,1,6654,6654,6654,6654,0,0,0,0,0,1,0,41,633,5396,944,724,724,944,5396,633,41 });
-	_register_wave_table("000000807f7f7f7f000000008000008080808000808080000000808080008080", { 6654,6654,6654,1,6,6,6,6,6654,6654,6654,6654,1,6654,6654,1,1,1,1,6654,1,1,1,6654,6654,6654,1,1,1,6654,1,1 });
-	_register_wave_table("80b3e61a4d7f7f4d1ae6b380aac3e1001e3c5569787f7f7869553c1e00e1c3aa", { 1,379,1189,1188,378,0,0,378,1188,1189,379,1,295,553,1043,4105,1066,562,302,144,50,0,0,50,144,302,562,1066,4105,1043,553,295 });
-	_register_wave_table("1a4d7f7f4d1ad200d200f6e4d1c0b0a2968d8681808081868d96a2b0c0d1e4f6", { 1188,378,0,0,378,1188,757,6654,757,6654,1917,1111,745,513,349,231,141,79,35,9,1,1,9,35,79,141,231,349,513,745,1111,1917 });
-	_register_wave_table("1a4d7f7f4d1af6e6d6c8baada1978f89848180808184898f97a1adbac8d6e6f6", { 1188,378,0,0,378,1188,1853,1171,831,607,445,321,225,151,95,53,25,7,1,1,7,25,53,95,151,225,321,445,607,831,1171,1853 });
-	_register_wave_table("15406b7f552b00d5ab8095c0eb15406b7f552b00e9c7d3f01d0a00007f7f7f7f", { 1324,512,134,0,300,812,6654,813,301,1,135,513,1325,1324,512,134,0,300,812,6654,1269,599,773,1537,1096,1884,6654,6654,0,0,0,0 });
-	_register_wave_table("15406b7f552b00d5ab8095c0eb15406b7f552b00e9c7d3f01d0a0000002a2a2a", { 1324,512,134,0,300,812,6654,813,301,1,135,513,1325,1324,512,134,0,300,812,6654,1269,599,773,1537,1096,1884,6654,6654,6654,824,824,824 });
-	_register_wave_table("0d2943586a767d7f7f7d766a5843290d1e7a2b427baae17d767df5861a591782", { 1668,834,482,274,142,60,14,0,0,14,60,142,274,482,834,1668,1068,38,806,494,30,293,1049,20,56,18,1845,39,1190,272,1260,11 });
-	_register_wave_table("166a765823296f7552657f7f7621c8c2fd311ab7818581979d81adf3e8ac92ad", { 1290,134,56,272,956,834,104,60,330,174,2,0,56,994,603,529,2845,700,1186,411,1,25,1,141,185,1,315,1685,1235,307,105,319 });
-	_register_wave_table("207b2a9e6e3d73f47cdc78524190377fe085d66292c38d0c842488aebf70c981", { 1028,32,820,197,112,546,80,1775,26,933,46,330,502,97,620,4,1029,33,821,196,113,547,81,1774,27,932,47,331,503,96,621,5 });
+	// Hashes (hex strings) here are provided for reference, but do not directly correspond to the described wavelet.
+	// My understanding is that these hashes are wave tables somewhat commonly used across synthesizers, but instead
+	// of transforming them as is for voice presets the original author created an approximation that sounds the
+	// best with SiON.
+	// Our synthesizer actually has the infrastructure to convert such hashes to wave tables, using a combination of
+	// TranslatorUtil::parse_wavb() and SiOPMRefTable::calculate_log_table_index(). This is exactly how the #WAVB
+	// command is handled by the sequencer.
+
+	// In the original code these hex strings were stored alongside the wave table, however they were never accessed
+	// nor could be reasonably used. This information is worth preserving though, so we're keeping them in comments.
+
+	_register_wave_table({ 1716,914,556,336,190,92,32,4,4,32,92,190,336,556,914,1716,1717,915,557,337,191,93,33,5,5,33,93,191,337,557,915,1717 });                   // 0d253c5163717a7f7f7a7163513c250df3dbc4af9d8f868181868f9dafc4dbf3
+	_register_wave_table({ 828,440,266,160,90,42,14,0,0,14,42,90,160,266,440,828,829,441,267,161,91,43,15,1,1,15,43,91,161,267,441,829 });                           // 2a46596771787d7f7f7d78716759462ad6baa7998f8883808083888f99a7bad6
+	_register_wave_table({ 1716,914,556,336,190,92,32,4,4,32,92,190,336,556,914,1716,1,107,231,379,563,813,1189,2001,2000,1188,812,562,378,230,106,0 });             // 0d253c5163717a7f7f7a7163513c250d8091a2b3c4d5e6f7091a2b3c4d5e6f7f
+	_register_wave_table({ 1716,914,556,336,190,92,32,4,4,32,92,190,336,556,914,1716,1209,435,137,15,15,137,435,1209,1208,434,136,14,14,136,434,1208 });             // 0d253c5163717a7f7f7a7163513c250de7b996828296b9e719476a7e7e6a4719
+	_register_wave_table({ 4,32,92,190,336,556,914,1716,1,33,93,191,337,557,915,1717,1717,915,557,337,191,93,33,1,1716,914,556,336,190,92,32,4 });                   // 7f6f5e4d3c2b1a098091a2b3c4d5e6f7f7e6d5c4b3a29180091a2b3c4d5e6f7f
+	_register_wave_table({ 2001,1189,813,563,379,231,107,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,106,230,378,562,812,1188,2000 });                                       // f7e6d5c4b3a29180808080808080808080808080808080807f6f5e4d3c2b1a09
+	_register_wave_table({ 1,51,103,159,221,289,363,445,537,643,767,915,1101,1349,1727,2537,2536,1726,1348,1100,914,766,642,536,444,362,288,220,158,102,50,0 });     // 80889199a1a9b2bac2cad3dbe3ebf4fc040c151d252d363e464e575f676f787f
+	_register_wave_table({ 2001,535,129,1,1,69,143,225,317,423,545,695,879,1129,1505,2317,2316,1504,1128,878,694,544,422,316,224,142,68,0,0,128,534,2000 });         // f7c29480808b96a1adb8c3ced9e4effa06111c27323d48535f6a757f7f6c3e09
+	_register_wave_table({ 2000,1188,812,562,378,230,106,0,0,106,230,378,562,812,1188,2000,2001,1189,813,563,379,231,107,1,1,107,231,379,563,813,1189,2001 });       // 091a2b3c4d5e6f7f7f6f5e4d3c2b1a09f7e6d5c4b3a291808091a2b3c4d5e6f7
+	_register_wave_table({ 6654,1024,512,212,0,248,626,1438,6654,1025,513,213,1,249,627,1439,6654,1024,512,212,0,248,626,1438,6654,1025,513,213,1,249,627,1439 });   // 002040607f5b371200e0c0a080a5c9ee002040607f5b371200e0c0a080a5c9ee
+	_register_wave_table({ 1208,434,136,14,14,136,434,1208,1209,435,137,15,15,137,435,1209,1084,352,88,14,92,362,1118,1119,363,93,15,89,353,1085,0,1 });             // 19476a7e7e6a4719e7b996828296b9e71d4f727e714e1ce4b28f828eb1e37f80
+	_register_wave_table({ 1540,740,436,310,310,436,740,1540,462,132,0,0,132,462,1422,1671,1670,1423,463,133,1,1,133,463,1541,741,437,311,311,437,741,1541 });       // 102e455252452e1043687d7d684312f30deebd98838398bdf0d2bbaeaebbd2f0
+	_register_wave_table({ 2000,1188,812,562,378,230,106,0,0,106,230,378,562,812,1188,2000,1439,627,249,1,1,249,627,1439,1438,626,248,0,0,248,626,1438 });           // 091a2b3c4d5e6f7f7f6f5e4d3c2b1a09eec9a58080a5c9ee12375b7f7f5b3712
+	_register_wave_table({ 1668,868,512,296,156,66,16,0,0,16,66,156,296,512,868,1668,1439,627,249,1,1,249,627,1439,1438,626,248,0,0,248,626,1438 });                 // 0d28405668757d7f7f7d75685640280deec9a58080a5c9ee12375b7f7f5b3712
+	_register_wave_table({ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 });                                                                       // 7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f80808080808080808080808080808080
+	_register_wave_table({ 0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 });                                                                       // 7f7f7f7f7f7f7f7f808080808080808080808080808080808080808080808080
+	_register_wave_table({ 0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 });                                                                       // 7f7f7f7f80808080808080808080808080808080808080808080808080808080
+	_register_wave_table({ 0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,0,0,1,1,1,1,1 });                                                                       // 7f7f7f7f7f7f7f7f80808080808080807f7f7f8080807f7f7f7f7f8080808080
+	_register_wave_table({ 6654,6654,6654,6654,0,0,0,1,1,1,6654,6654,6654,6654,6654,0,0,0,1,1,1,6654,6654,6654,6654,6654,0,0,0,1,1,1 });                             // 000000007f7f7f80808000000000007f7f7f80808000000000007f7f7f808080
+	_register_wave_table({ 1,6654,6654,0,0,0,6654,1,1,1,1,6654,6654,6654,6654,0,0,0,0,0,1,0,41,633,5396,944,724,724,944,5396,633,41 });                              // 8000007f7f7f0080808080000000007f7f7f7f7f807f87ca002430302400ca87
+	_register_wave_table({ 6654,6654,6654,1,6,6,6,6,6654,6654,6654,6654,1,6654,6654,1,1,1,1,6654,1,1,1,6654,6654,6654,1,1,1,6654,1,1 });                             // 000000807f7f7f7f000000008000008080808000808080000000808080008080
+	_register_wave_table({ 1,379,1189,1188,378,0,0,378,1188,1189,379,1,295,553,1043,4105,1066,562,302,144,50,0,0,50,144,302,562,1066,4105,1043,553,295 });           // 80b3e61a4d7f7f4d1ae6b380aac3e1001e3c5569787f7f7869553c1e00e1c3aa
+	_register_wave_table({ 1188,378,0,0,378,1188,757,6654,757,6654,1917,1111,745,513,349,231,141,79,35,9,1,1,9,35,79,141,231,349,513,745,1111,1917 });               // 1a4d7f7f4d1ad200d200f6e4d1c0b0a2968d8681808081868d96a2b0c0d1e4f6
+	_register_wave_table({ 1188,378,0,0,378,1188,1853,1171,831,607,445,321,225,151,95,53,25,7,1,1,7,25,53,95,151,225,321,445,607,831,1171,1853 });                   // 1a4d7f7f4d1af6e6d6c8baada1978f89848180808184898f97a1adbac8d6e6f6
+	_register_wave_table({ 1324,512,134,0,300,812,6654,813,301,1,135,513,1325,1324,512,134,0,300,812,6654,1269,599,773,1537,1096,1884,6654,6654,0,0,0,0 });          // 15406b7f552b00d5ab8095c0eb15406b7f552b00e9c7d3f01d0a00007f7f7f7f
+	_register_wave_table({ 1324,512,134,0,300,812,6654,813,301,1,135,513,1325,1324,512,134,0,300,812,6654,1269,599,773,1537,1096,1884,6654,6654,6654,824,824,824 }); // 15406b7f552b00d5ab8095c0eb15406b7f552b00e9c7d3f01d0a0000002a2a2a
+	_register_wave_table({ 1668,834,482,274,142,60,14,0,0,14,60,142,274,482,834,1668,1068,38,806,494,30,293,1049,20,56,18,1845,39,1190,272,1260,11 });               // 0d2943586a767d7f7f7d766a5843290d1e7a2b427baae17d767df5861a591782
+	_register_wave_table({ 1290,134,56,272,956,834,104,60,330,174,2,0,56,994,603,529,2845,700,1186,411,1,25,1,141,185,1,315,1685,1235,307,105,319 });                // 166a765823296f7552657f7f7621c8c2fd311ab7818581979d81adf3e8ac92ad
+	_register_wave_table({ 1028,32,820,197,112,546,80,1775,26,933,46,330,502,97,620,4,1029,33,821,196,113,547,81,1774,27,932,47,331,503,96,621,5 });                 // 207b2a9e6e3d73f47cdc78524190377fe085d66292c38d0c842488aebf70c981
 
 	_begin_category("svmidi");
 	_create_wave_table_voice("svmidi.piano1",  "SV.GrandPno", 13,63,24,14,32,4,2);
@@ -884,30 +914,16 @@ void SiONVoicePresetUtil::_register_voice(const String &p_key, const Ref<SiONVoi
 	_voice_map[p_key] = p_voice;
 }
 
-void SiONVoicePresetUtil::_register_wave_table(const String &p_hex, Vector<int> p_wavelet) {
-	_wave_table_hexes.push_back(p_hex);
+void SiONVoicePresetUtil::_register_wave_table(Vector<int> p_wavelet) {
 	_wave_tables.push_back(memnew(SiOPMWaveTable(p_wavelet)));
 }
 
-void SiONVoicePresetUtil::generate_voices(uint32_t p_flags) {
-	if (p_flags & INCLUDE_DEFAULT) {
-		_generate_default_voices();
-	}
-	if (p_flags & INCLUDE_VALSOUND) {
-		_generate_valsound_voices();
-	}
-	if (p_flags & INCLUDE_MIDI) {
-		_generate_midi_voices();
-	}
-	if (p_flags & INCLUDE_MIDIDRUM) {
-		_generate_mididrum_voices();
-	}
-	if (p_flags & INCLUDE_WAVETABLE) {
-		_generate_wavetable_voices();
-	}
-	if (p_flags & INCLUDE_SINGLE_DRUM) {
-		_generate_single_drum_voices();
-	}
+//
+
+SiONVoicePresetUtil *SiONVoicePresetUtil::generate_voices(uint32_t p_flags) {
+	SiONVoicePresetUtil *instance = memnew(SiONVoicePresetUtil);
+	instance->_generate_voices(p_flags);
+	return instance;
 }
 
 PackedStringArray SiONVoicePresetUtil::get_voice_preset_keys() const {
@@ -929,7 +945,7 @@ Ref<SiONVoice> SiONVoicePresetUtil::get_voice_preset(const String &p_key) const 
 //
 
 void SiONVoicePresetUtil::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("generate_voices", "flags"), &SiONVoicePresetUtil::generate_voices, DEFVAL(GeneratorFlags::INCLUDE_ALL));
+	ClassDB::bind_static_method("SiONVoicePresetUtil", D_METHOD("generate_voices", "flags"), &SiONVoicePresetUtil::generate_voices, DEFVAL(GeneratorFlags::INCLUDE_ALL));
 	ClassDB::bind_method(D_METHOD("get_voice_preset_keys"), &SiONVoicePresetUtil::get_voice_preset_keys);
 	ClassDB::bind_method(D_METHOD("get_voice_preset", "key"), &SiONVoicePresetUtil::get_voice_preset);
 
@@ -942,10 +958,9 @@ void SiONVoicePresetUtil::_bind_methods() {
 	BIND_ENUM_CONSTANT(INCLUDE_ALL);
 }
 
-SiONVoicePresetUtil::SiONVoicePresetUtil(uint32_t p_flags) {
-	generate_voices(p_flags);
-}
-
 SiONVoicePresetUtil::~SiONVoicePresetUtil() {
+	_current_category.clear();
+	_category_map.clear();
+	_voice_map.clear();
 	_wave_tables.clear();
 }

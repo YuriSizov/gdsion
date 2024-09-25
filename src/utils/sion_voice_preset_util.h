@@ -25,19 +25,30 @@ class SiOPMWaveTable;
 class SiONVoicePresetUtil : public Object {
 	GDCLASS(SiONVoicePresetUtil, Object)
 
-	HashMap<String, Ref<SiONVoice>> _voice_map;
+public:
+	enum GeneratorFlags {
+		INCLUDE_DEFAULT = 1,      // Include default voices.
+		INCLUDE_VALSOUND = 2,     // Include voices set [valsound] (http://www.valsound.com/).
+		INCLUDE_MIDI = 4,         // Include General MIDI voices.
+		INCLUDE_MIDIDRUM = 8,     // Include General MIDI drum set voices.
+		INCLUDE_WAVETABLE = 16,   // Include wave table voices.
+		INCLUDE_SINGLE_DRUM = 32, // Include single voice drum voices.
 
+		INCLUDE_ALL = 0xffff      // Include all voices (forwards compatible).
+	};
+
+private:
 	List<Ref<SiONVoice>> _current_category;
 	HashMap<String, List<Ref<SiONVoice>>> _category_map;
-
+	HashMap<String, Ref<SiONVoice>> _voice_map;
 	List<Ref<SiOPMWaveTable>> _wave_tables;
-	List<String> _wave_table_hexes;
 
+	void _generate_voices(uint32_t p_flags);
 	void _generate_default_voices();
 	void _generate_valsound_voices();
 	void _generate_midi_voices();
 	void _generate_mididrum_voices();
-	void _generate_wavetable_voices();
+	void _generate_wave_table_voices();
 	void _generate_single_drum_voices();
 
 	void _create_basic_voice(const String &p_key, const String &p_name, int p_channel_num);
@@ -50,28 +61,17 @@ class SiONVoicePresetUtil : public Object {
 
 	void _begin_category(const String &p_key);
 	void _register_voice(const String &p_key, const Ref<SiONVoice> &p_voice);
-	void _register_wave_table(const String &p_hex, Vector<int> p_wavelet);
+	void _register_wave_table(Vector<int> p_wavelet);
 
 protected:
 	static void _bind_methods();
 
 public:
-	enum GeneratorFlags {
-		INCLUDE_DEFAULT = 1,      // Include default voices.
-		INCLUDE_VALSOUND = 2,     // Include voices set [valsound] (http://www.valsound.com/).
-		INCLUDE_MIDI = 4,         // Include General MIDI voices.
-		INCLUDE_MIDIDRUM = 8,     // Include General MIDI drum set voices.
-		INCLUDE_WAVETABLE = 16,   // Include wave table voices.
-		INCLUDE_SINGLE_DRUM = 32, // Include single voice drum voices.
-
-		INCLUDE_ALL = 0xffff      // Include all voices.
-	};
-
-	void generate_voices(uint32_t p_flags = GeneratorFlags::INCLUDE_ALL);
+	static SiONVoicePresetUtil *generate_voices(uint32_t p_flags = GeneratorFlags::INCLUDE_ALL);
 	PackedStringArray get_voice_preset_keys() const;
 	Ref<SiONVoice> get_voice_preset(const String &p_key) const;
 
-	SiONVoicePresetUtil(uint32_t p_flags = GeneratorFlags::INCLUDE_ALL);
+	SiONVoicePresetUtil() {}
 	~SiONVoicePresetUtil();
 };
 

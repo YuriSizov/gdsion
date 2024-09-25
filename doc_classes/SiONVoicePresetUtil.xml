@@ -5,24 +5,24 @@
 	</brief_description>
 	<description>
 		Voice presets are a good way to quickly get started with GDSiON before diving deeper into fine tuning the synthesizer to your needs. [SiONVoicePresetUtil] can produce hundreds of preconfigured instrument voices in different categories.
-		To begin, simply instantiate the utility:
+		To begin, instantiate the utility using [method generate_voices]:
 		[codeblocks]
 		[gdscript]
-			var preset_util := SiONVoicePresetUtil.new()
+			var preset_util := SiONVoicePresetUtil.generate_voices()
 			print(preset_util.get_voice_preset_keys()) # Prints all available voice presets by their key.
 		[/gdscript]
 		[/codeblocks]
-		Alternatively, you can use [method generate_voices] to only generate a subset of available voices (see [enum GeneratorFlags]). To get the voice that you need, pass its key to [method get_voice_preset].
+		You can also generate only a subset of available voices (see [enum GeneratorFlags]). To get the voice that you need, pass its key to [method get_voice_preset].
 		Preset keys are static and will remain compatible with future version, unless stated otherwise in release notes. This means you can rely on them and hardcode them.
 	</description>
 	<tutorials>
 	</tutorials>
 	<methods>
-		<method name="generate_voices">
-			<return type="void" />
+		<method name="generate_voices" qualifiers="static">
+			<return type="SiONVoicePresetUtil" />
 			<param index="0" name="flags" type="int" default="65535" />
 			<description>
-				Regenerates voice presets for the given set of flags (see [enum GeneratorFlags]). Multiple flags can be selected using bitwise operators.
+				Instantiates the utility and generates voice presets for the given set of flags (see [enum GeneratorFlags]). Multiple flags can be selected using bitwise operators.
 			</description>
 		</method>
 		<method name="get_voice_preset" qualifiers="const">

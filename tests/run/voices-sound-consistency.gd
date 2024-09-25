@@ -29,7 +29,8 @@ func run(scene_tree: SceneTree) -> void:
 
 	await scene_tree.process_frame
 
-	var voice_preset_util := SiONVoicePresetUtil.new()
+	# Generate every voice preset.
+	var voice_preset_util := SiONVoicePresetUtil.generate_voices()
 	var voice_list := voice_preset_util.get_voice_preset_keys()
 
 	for voice_name in voice_list:
