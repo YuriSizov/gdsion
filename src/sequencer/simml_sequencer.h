@@ -67,7 +67,7 @@ class SiMMLSequencer : public MMLSequencer {
 	Vector<String> _macro_strings;
 	bool _macro_expand_dynamic = false;
 
-	String _expand_macro(String p_macro, bool p_nested = false);
+	String _expand_macro(String p_macro, uint32_t p_macro_flags = 0);
 
 	int _internal_table_index = 0;
 

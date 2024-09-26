@@ -15,6 +15,7 @@ extends Control
 @onready var _piano_view: Control = %PianoView
 @onready var _tunes_view: Control = %TunesView
 
+@onready var _volume_slider: HSlider = %VolumeSlider
 @onready var _kenney_label := %KenneyLabel
 
 var _current_view: Controller.AppView = Controller.AppView.WELCOME_VIEW
@@ -23,9 +24,11 @@ var _current_view: Controller.AppView = Controller.AppView.WELCOME_VIEW
 func _ready() -> void:
 	get_window().min_size = Vector2(640, 360)
 	_update_active_view(Controller.AppView.WELCOME_VIEW, true)
+	Controller.music_player.change_volume(int(_volume_slider.value))
 
 	_piano_view_button.pressed.connect(Controller.change_app_view.bind(Controller.AppView.PIANO_VIEW))
 	_tunes_view_button.pressed.connect(Controller.change_app_view.bind(Controller.AppView.TUNES_VIEW))
+	_volume_slider.value_changed.connect(Controller.music_player.change_volume)
 	_kenney_label.meta_clicked.connect(_handle_meta_clicked)
 
 	Controller.app_view_changed.connect(_update_active_view.bind(false))

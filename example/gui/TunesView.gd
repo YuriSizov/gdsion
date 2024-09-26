@@ -32,6 +32,7 @@ func _ready() -> void:
 func _set_view_active() -> void:
 	if not visible:
 		_tune_status.text = ""
+		_tune_status.tooltip_text = ""
 		return
 
 
@@ -48,11 +49,13 @@ func _play_selected() -> void:
 		_tune_status.text = "Now Playing: %s" % [ selected_tune.title ]
 	else:
 		_tune_status.text = "Now Playing: %s by %s" % [ selected_tune.title, selected_tune.author ]
+	_tune_status.tooltip_text = _tune_status.text
 
 
 func _stop_playback() -> void:
 	Controller.music_player.stop()
 	_tune_status.text = ""
+	_tune_status.tooltip_text = ""
 
 
 # Tune management.

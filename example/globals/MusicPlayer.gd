@@ -169,6 +169,12 @@ func change_filter_power(value: int) -> void:
 	filter_changed.emit()
 
 
+func change_volume(value: int) -> void:
+	var volume := clampi(value, 0, 100)
+
+	_driver.volume = (volume / 100.0)
+
+
 # Output and streaming control.
 
 func stop() -> void:

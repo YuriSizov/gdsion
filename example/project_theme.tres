@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=7 format=3 uid="uid://bm402itx0nq0t"]
+[gd_resource type="Theme" load_steps=8 format=3 uid="uid://bm402itx0nq0t"]
 
 [ext_resource type="FontFile" uid="uid://c4b0xfmxt4on2" path="res://fonts/NotoSans-SemiBold.ttf" id="1_2oopj"]
 [ext_resource type="FontFile" uid="uid://y70lqerdtol1" path="res://fonts/Kenney Future Narrow.ttf" id="1_8d45h"]
@@ -27,6 +27,22 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wqqdn"]
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+bg_color = Color(0.123694, 0.138055, 0.166794, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.0343809, 0.0400633, 0.0557284, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
 [resource]
 default_font = ExtResource("1_8d45h")
 default_font_size = 30
@@ -50,5 +66,6 @@ ItemList/styles/panel = SubResource("StyleBoxFlat_h73hr")
 ItemList/styles/selected = SubResource("StyleBoxFlat_6uu3r")
 TooltipLabel/font_sizes/font_size = 20
 TooltipLabel/fonts/font = ExtResource("1_2oopj")
+TooltipPanel/styles/panel = SubResource("StyleBoxFlat_wqqdn")
 WelcomeLabel/base_type = &"Label"
 WelcomeLabel/fonts/font = ExtResource("1_2oopj")

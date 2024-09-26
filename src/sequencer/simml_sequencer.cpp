@@ -472,21 +472,13 @@ void SiMMLSequencer::process() {
 
 // Parser.
 
-String SiMMLSequencer::_expand_macro(String p_macro, bool p_nested) {
+String SiMMLSequencer::_expand_macro(String p_macro, uint32_t p_macro_flags) {
 	// Note that the original code has a broken circular call check. It never updates the flag
 	// storage, and the check is written incorrectly too. We attempt to fix it here based on the
 	// intention of the original code rather than the actual implementation.
 
-	static uint32_t flag_macro_expanded = 0;
-
 	if (p_macro.is_empty()) {
 		return "";
-	}
-
-	if (!p_nested) {
-		// This is a top-level call, so we reset the flag storage.
-		// We expect only one chain of _expand_macro() calls to be executed at the same time.
-		flag_macro_expanded = 0;
 	}
 
 	String expanded_macro = p_macro;
@@ -496,27 +488,33 @@ String SiMMLSequencer::_expand_macro(String p_macro, bool p_nested) {
 	// Iterate backwards so we can do in-place replacements without disturbing indices.
 	for (int i = matches.size() - 1; i >= 0; i--) {
 		Ref<RegExMatch> res = matches[i];
-
 		int index = res->get_string(1).unicode_at(0) - 'A';
 
 		// Check for circular calls.
+
+		// The set of flags is unique to each chain of nested calls, which is how we detect circular
+		// calls without getting false positives on sibling macros (e.g. "AAA").
+		uint32_t expanded_macro_flags = p_macro_flags;
+
 		int flag = 1 << index;
-		ERR_FAIL_COND_V_MSG(flag_macro_expanded & flag, p_macro, vformat("SiMMLSequencer: Failed to expand a macro due to a circular reference, '%s'.", res->get_string()));
-		flag_macro_expanded |= flag;
+		ERR_FAIL_COND_V_MSG(expanded_macro_flags & flag, p_macro, vformat("SiMMLSequencer: Failed to expand a macro due to a circular reference, '%s'.", res->get_string()));
+		expanded_macro_flags |= flag;
+
+		// Find the replacement string.
 
 		String replacement;
 		if (!_macro_strings[index].is_empty()) {
 			const String macro_string = _macro_strings[index];
+			replacement = (_macro_expand_dynamic ? _expand_macro(macro_string, expanded_macro_flags) : macro_string);
 
+			// Apply a note shift to the expanded macro.
 			if (!res->get_string(2).is_empty()) {
-				int t = 0;
+				int note_shift = 0;
 				if (!res->get_string(3).is_empty()) {
-					t = res->get_string(3).to_int();
+					note_shift = res->get_string(3).to_int();
 				}
 
-				replacement = "!@ns" + itos(t) + (_macro_expand_dynamic ? _expand_macro(macro_string, true) : macro_string) + "!@ns" + itos(-t);
-			} else {
-				replacement = (_macro_expand_dynamic ? _expand_macro(macro_string, true) : macro_string);
+				replacement = "!@ns" + itos(note_shift) + replacement + "!@ns" + itos(-note_shift);
 			}
 		}
 

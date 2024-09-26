@@ -31,8 +31,8 @@ theme_override_constants/separation = 16
 
 [node name="Controls" type="HBoxContainer" parent="Layout/Playback"]
 layout_mode = 2
-size_flags_horizontal = 8
 theme_override_constants/separation = 12
+alignment = 2
 
 [node name="PlayButton" parent="Layout/Playback/Controls" instance=ExtResource("2_c6y1p")]
 unique_name_in_owner = true
@@ -59,7 +59,9 @@ size_flags_vertical = 3
 [node name="TuneStatus" type="Label" parent="Layout/Playback"]
 unique_name_in_owner = true
 layout_mode = 2
+mouse_filter = 1
 theme_override_font_sizes/font_size = 24
+text_overrun_behavior = 1
 
 [node name="HTTPRequest" type="HTTPRequest" parent="."]
 unique_name_in_owner = true
