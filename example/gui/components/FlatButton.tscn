@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://dp02gpc8hg7fw"]
+
+[node name="FlatButton" type="Button"]
+custom_minimum_size = Vector2(280, 48)
+size_flags_horizontal = 4
+text = "Button"
+flat = true
+expand_icon = true

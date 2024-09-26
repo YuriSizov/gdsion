@@ -1,0 +1,24 @@
+[gd_scene load_steps=5 format=3 uid="uid://0ixhg8e0u8ib"]
+
+[ext_resource type="Script" path="res://gui/PianoView.gd" id="1_c3xxx"]
+[ext_resource type="PackedScene" uid="uid://c0h17xqwiktsx" path="res://gui/components/Visualizer.tscn" id="1_toa2m"]
+[ext_resource type="PackedScene" uid="uid://hoqar5y4dpps" path="res://gui/components/PianoRoll.tscn" id="2_a0yf8"]
+[ext_resource type="PackedScene" uid="uid://cnskkj6nyfxor" path="res://gui/components/PianoSettings.tscn" id="2_gcyey"]
+
+[node name="PianoView" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_c3xxx")
+
+[node name="Visualizer" parent="." instance=ExtResource("1_toa2m")]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PianoSettings" parent="." instance=ExtResource("2_gcyey")]
+layout_mode = 2
+
+[node name="PianoRoll" parent="." instance=ExtResource("2_a0yf8")]
+layout_mode = 2

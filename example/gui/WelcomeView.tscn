@@ -1,0 +1,56 @@
+[gd_scene load_steps=5 format=3 uid="uid://ca4qv5iivhn3v"]
+
+[ext_resource type="Script" path="res://gui/WelcomeView.gd" id="1_gopxo"]
+[ext_resource type="PackedScene" uid="uid://dp02gpc8hg7fw" path="res://gui/components/FlatButton.tscn" id="2_ebyl0"]
+[ext_resource type="Texture2D" uid="uid://5pxu35ux4hkn" path="res://icons/piano.png" id="3_c3wo5"]
+[ext_resource type="Texture2D" uid="uid://ceui0jym6bois" path="res://icons/note.png" id="4_wt7uw"]
+
+[node name="WelcomeView" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 48
+alignment = 1
+script = ExtResource("1_gopxo")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+theme_type_variation = &"WelcomeLabel"
+text = "Welcome to the GDSiON Example Project!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label2" type="Label" parent="."]
+custom_minimum_size = Vector2(480, 0)
+layout_mode = 2
+theme_type_variation = &"WelcomeLabel"
+theme_override_colors/font_color = Color(0.764933, 0.764933, 0.764933, 1)
+theme_override_font_sizes/font_size = 24
+text = "The GDSiON synthesizer can be used to play music interactively,
+or to play compositions described with its own flavor of the MML notation.
+
+Try it out!"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Layout" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="PianoButton" parent="Layout" instance=ExtResource("2_ebyl0")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 96)
+layout_mode = 2
+text = "Piano roll"
+icon = ExtResource("3_c3wo5")
+
+[node name="TunesButton" parent="Layout" instance=ExtResource("2_ebyl0")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 96)
+layout_mode = 2
+text = "MML Tunes"
+icon = ExtResource("4_wt7uw")

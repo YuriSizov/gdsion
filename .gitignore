@@ -2,6 +2,7 @@
 
 bin/*
 !bin/*.gdextension
+example/.references/
 example/bin/
 example/export/
 tests/bin/

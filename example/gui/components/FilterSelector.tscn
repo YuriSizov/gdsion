@@ -1,0 +1,50 @@
+[gd_scene load_steps=5 format=3 uid="uid://nr6m265wsn1s"]
+
+[ext_resource type="Script" path="res://gui/components/FilterSelector.gd" id="1_eh8ma"]
+[ext_resource type="Texture2D" uid="uid://c37ayws6ebi88" path="res://icons/arrow_left.png" id="2_8mesb"]
+[ext_resource type="Texture2D" uid="uid://bp1awbe5naawb" path="res://icons/arrow_right.png" id="3_5jl5u"]
+[ext_resource type="Texture2D" uid="uid://d4darly7q0o0o" path="res://icons/level.png" id="4_1l30c"]
+
+[node name="FilterSelector" type="HBoxContainer"]
+auto_translate_mode = 1
+script = ExtResource("1_eh8ma")
+
+[node name="LeftButton" type="Button" parent="."]
+auto_translate_mode = 1
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+icon = ExtResource("2_8mesb")
+flat = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="Label" type="Label" parent="."]
+auto_translate_mode = 1
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "[EFFECT NAME]"
+
+[node name="RightButton" type="Button" parent="."]
+auto_translate_mode = 1
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+icon = ExtResource("3_5jl5u")
+flat = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 2
+
+[node name="PowerIcon" type="TextureRect" parent="."]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("4_1l30c")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PowerSlider" type="HSlider" parent="."]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_vertical = 1

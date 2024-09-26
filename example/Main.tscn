@@ -1,15 +1,13 @@
-[gd_scene load_steps=11 format=3 uid="uid://btlcavlirkxet"]
+[gd_scene load_steps=9 format=3 uid="uid://btlcavlirkxet"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_8sk4m"]
-[ext_resource type="Script" path="res://gui/Visualizer.gd" id="2_3u74r"]
-[ext_resource type="Texture2D" uid="uid://13wsrwe0hcno" path="res://icons/play.png" id="2_rk7ks"]
+[ext_resource type="PackedScene" uid="uid://dp02gpc8hg7fw" path="res://gui/components/FlatButton.tscn" id="2_7ss6h"]
+[ext_resource type="PackedScene" uid="uid://ca4qv5iivhn3v" path="res://gui/WelcomeView.tscn" id="2_d1bku"]
+[ext_resource type="PackedScene" uid="uid://0ixhg8e0u8ib" path="res://gui/PianoView.tscn" id="2_r003a"]
 [ext_resource type="Texture2D" uid="uid://xh41omtsrrr7" path="res://icons/godot.png" id="3_7khnb"]
-[ext_resource type="Script" path="res://gui/PianoRoll.gd" id="3_71u1t"]
-[ext_resource type="Script" path="res://gui/InstrumentSelector.gd" id="4_0mkok"]
-[ext_resource type="Texture2D" uid="uid://c37ayws6ebi88" path="res://icons/arrow_left.png" id="4_btwgs"]
-[ext_resource type="Script" path="res://gui/FilterSelector.gd" id="4_uavpo"]
-[ext_resource type="Texture2D" uid="uid://bp1awbe5naawb" path="res://icons/arrow_right.png" id="5_ururd"]
-[ext_resource type="Texture2D" uid="uid://d4darly7q0o0o" path="res://icons/level.png" id="7_6h62v"]
+[ext_resource type="Texture2D" uid="uid://5pxu35ux4hkn" path="res://icons/piano.png" id="3_cw50e"]
+[ext_resource type="PackedScene" uid="uid://cwl0nh1ofpudo" path="res://gui/TunesView.tscn" id="3_k0wkn"]
+[ext_resource type="Texture2D" uid="uid://ceui0jym6bois" path="res://icons/note.png" id="4_s2pjj"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -20,174 +18,96 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_8sk4m")
 
-[node name="Visualizer" type="Control" parent="."]
+[node name="Views" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 83.0
-offset_bottom = -162.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-script = ExtResource("2_3u74r")
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 110
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 36
 
-[node name="PianoRoll" type="Control" parent="."]
-layout_mode = 1
-anchor_top = 0.733
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 17.0
-offset_top = 0.0159607
-offset_right = -17.0
-offset_bottom = -38.0
-grow_horizontal = 2
-grow_vertical = 0
-script = ExtResource("3_71u1t")
+[node name="WelcomeView" parent="Views" instance=ExtResource("2_d1bku")]
+unique_name_in_owner = true
+layout_mode = 2
 
-[node name="Controls" type="HBoxContainer" parent="PianoRoll"]
+[node name="PianoView" parent="Views" instance=ExtResource("2_r003a")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="TunesView" parent="Views" instance=ExtResource("3_k0wkn")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="TopBar" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 90)
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
-offset_left = 10.0
-offset_top = -44.0
-offset_right = -10.0
-offset_bottom = -8.0
+offset_left = 24.0
+offset_top = 16.0
+offset_right = -24.0
 grow_horizontal = 2
-grow_vertical = 0
 
-[node name="FilterLabel" type="Label" parent="PianoRoll/Controls"]
-auto_translate_mode = 1
+[node name="Label" type="Label" parent="TopBar"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.503461, 0.593425, 0.670281, 1)
-theme_override_font_sizes/font_size = 16
-text = "Effect:"
-horizontal_alignment = 2
-vertical_alignment = 1
+theme_override_colors/font_color = Color(0.471226, 0.726486, 0.564489, 1)
+theme_override_font_sizes/font_size = 36
+text = "GDSiON"
 
-[node name="FilterSelector" type="HBoxContainer" parent="PianoRoll/Controls"]
-auto_translate_mode = 1
-layout_mode = 2
-script = ExtResource("4_uavpo")
-
-[node name="LeftButton" type="Button" parent="PianoRoll/Controls/FilterSelector"]
-auto_translate_mode = 1
-custom_minimum_size = Vector2(36, 36)
-layout_mode = 2
-icon = ExtResource("4_btwgs")
-flat = true
-icon_alignment = 1
-expand_icon = true
-
-[node name="Label" type="Label" parent="PianoRoll/Controls/FilterSelector"]
-auto_translate_mode = 1
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "[EFFECT NAME]"
-
-[node name="RightButton" type="Button" parent="PianoRoll/Controls/FilterSelector"]
-auto_translate_mode = 1
-custom_minimum_size = Vector2(36, 36)
-layout_mode = 2
-icon = ExtResource("5_ururd")
-flat = true
-icon_alignment = 1
-expand_icon = true
-
-[node name="Control" type="Control" parent="PianoRoll/Controls/FilterSelector"]
-layout_mode = 2
-
-[node name="PowerIcon" type="TextureRect" parent="PianoRoll/Controls/FilterSelector"]
-custom_minimum_size = Vector2(32, 32)
-layout_mode = 2
-size_flags_vertical = 4
-texture = ExtResource("7_6h62v")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="PowerSlider" type="HSlider" parent="PianoRoll/Controls/FilterSelector"]
-custom_minimum_size = Vector2(200, 0)
-layout_mode = 2
-size_flags_vertical = 1
-
-[node name="Filler" type="Control" parent="PianoRoll/Controls"]
+[node name="ViewSelectorFiller" type="Control" parent="TopBar"]
+unique_name_in_owner = true
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="InstrumentLabel" type="Label" parent="PianoRoll/Controls"]
+[node name="ViewSelector" type="HBoxContainer" parent="TopBar"]
+unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.503461, 0.593425, 0.670281, 1)
-theme_override_font_sizes/font_size = 16
-text = "Instrument:"
-horizontal_alignment = 2
-vertical_alignment = 1
+size_flags_horizontal = 3
+alignment = 1
 
-[node name="InstrumentSelector" type="HBoxContainer" parent="PianoRoll/Controls"]
+[node name="PianoButton" parent="TopBar/ViewSelector" instance=ExtResource("2_7ss6h")]
+unique_name_in_owner = true
 layout_mode = 2
-script = ExtResource("4_0mkok")
+size_flags_vertical = 4
+text = "Piano roll"
+icon = ExtResource("3_cw50e")
 
-[node name="LeftButton" type="Button" parent="PianoRoll/Controls/InstrumentSelector"]
-custom_minimum_size = Vector2(36, 36)
+[node name="TunesButton" parent="TopBar/ViewSelector" instance=ExtResource("2_7ss6h")]
+unique_name_in_owner = true
 layout_mode = 2
-icon = ExtResource("4_btwgs")
-flat = true
-icon_alignment = 1
-expand_icon = true
+size_flags_vertical = 4
+text = "MML Tunes"
+icon = ExtResource("4_s2pjj")
 
-[node name="Label" type="Label" parent="PianoRoll/Controls/InstrumentSelector"]
+[node name="GodotLogo" type="TextureRect" parent="TopBar"]
+custom_minimum_size = Vector2(76, 76)
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "[INSTRUMENT NAME]"
-
-[node name="RightButton" type="Button" parent="PianoRoll/Controls/InstrumentSelector"]
-auto_translate_mode = 1
-custom_minimum_size = Vector2(36, 36)
-layout_mode = 2
-icon = ExtResource("5_ururd")
-flat = true
-icon_alignment = 1
-expand_icon = true
-
-[node name="PlayButton" type="Button" parent="."]
-layout_mode = 0
-offset_left = 28.0
-offset_top = 28.0
-offset_right = 277.0
-offset_bottom = 86.0
-focus_mode = 0
-text = "Play Tune"
-icon = ExtResource("2_rk7ks")
-flat = true
-expand_icon = true
-
-[node name="TextureRect" type="TextureRect" parent="."]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -112.0
-offset_top = 24.0
-offset_right = -39.0
-offset_bottom = 100.0
-grow_horizontal = 0
+size_flags_vertical = 4
 texture = ExtResource("3_7khnb")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="KenneyLabel" type="RichTextLabel" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -303.0
-offset_top = -24.0
+offset_left = -249.0
+offset_top = -27.0
 offset_right = -2.0
 offset_bottom = -7.0
 grow_horizontal = 0
 grow_vertical = 0
-theme_override_colors/default_color = Color(0.56255, 0.612323, 0.606761, 1)
-theme_override_font_sizes/normal_font_size = 14
+theme_type_variation = &"CreditsRichLabel"
 bbcode_enabled = true
 text = "Features icons and fonts by [url=https://kenney.nl/]Kenney[/url]"

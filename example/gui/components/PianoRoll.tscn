@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://hoqar5y4dpps"]
+
+[ext_resource type="Script" path="res://gui/components/PianoRoll.gd" id="1_eqlk1"]
+
+[node name="PianoRoll" type="Control"]
+custom_minimum_size = Vector2(0, 160)
+layout_mode = 3
+anchor_top = 0.733
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 17.0
+offset_top = 0.0159607
+offset_right = -17.0
+offset_bottom = -38.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("1_eqlk1")

@@ -1,6 +1,8 @@
-[gd_resource type="Theme" load_steps=3 format=3 uid="uid://bm402itx0nq0t"]
+[gd_resource type="Theme" load_steps=7 format=3 uid="uid://bm402itx0nq0t"]
 
+[ext_resource type="FontFile" uid="uid://c4b0xfmxt4on2" path="res://fonts/NotoSans-SemiBold.ttf" id="1_2oopj"]
 [ext_resource type="FontFile" uid="uid://y70lqerdtol1" path="res://fonts/Kenney Future Narrow.ttf" id="1_8d45h"]
+[ext_resource type="FontFile" uid="uid://dcbvx1s1wlryp" path="res://fonts/NotoSans-Medium.ttf" id="1_wsmxg"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iv47y"]
 content_margin_top = 4.0
@@ -11,7 +13,42 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h73hr"]
+bg_color = Color(0.123694, 0.138055, 0.166794, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6uu3r"]
+bg_color = Color(0.247059, 0.270588, 0.317647, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
 [resource]
 default_font = ExtResource("1_8d45h")
 default_font_size = 30
+Button/colors/font_color = Color(0.761561, 0.761561, 0.761561, 1)
+Button/colors/font_hover_color = Color(1, 1, 1, 1)
+Button/colors/font_pressed_color = Color(0.671514, 0.671514, 0.671514, 1)
+Button/colors/icon_hover_color = Color(1, 1, 1, 1)
+Button/colors/icon_normal_color = Color(0.760784, 0.760784, 0.760784, 1)
+Button/colors/icon_pressed_color = Color(0.670588, 0.670588, 0.670588, 1)
+CreditsRichLabel/base_type = &"RichTextLabel"
+CreditsRichLabel/colors/default_color = Color(0.560784, 0.611765, 0.607843, 1)
+CreditsRichLabel/font_sizes/normal_font_size = 14
+CreditsRichLabel/fonts/normal_font = ExtResource("1_wsmxg")
 HSlider/styles/slider = SubResource("StyleBoxFlat_iv47y")
+ItemList/constants/h_separation = 16
+ItemList/constants/line_separation = 4
+ItemList/constants/v_separation = 8
+ItemList/font_sizes/font_size = 20
+ItemList/fonts/font = ExtResource("1_2oopj")
+ItemList/styles/panel = SubResource("StyleBoxFlat_h73hr")
+ItemList/styles/selected = SubResource("StyleBoxFlat_6uu3r")
+TooltipLabel/font_sizes/font_size = 20
+TooltipLabel/fonts/font = ExtResource("1_2oopj")
+WelcomeLabel/base_type = &"Label"
+WelcomeLabel/fonts/font = ExtResource("1_2oopj")

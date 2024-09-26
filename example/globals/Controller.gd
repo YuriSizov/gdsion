@@ -7,6 +7,14 @@
 ## The main controller component, orchestrating (sic!) application's processes.
 extends Node
 
+signal app_view_changed(next_view: AppView)
+
+enum AppView {
+	WELCOME_VIEW,
+	PIANO_VIEW,
+	TUNES_VIEW,
+}
+
 var voice_manager: VoiceManager = null
 var music_player: MusicPlayer = null
 
@@ -30,4 +38,9 @@ func _ready() -> void:
 	# Driver must be ready by this time.
 
 	music_player.initialize()
-	music_player.start_driver()
+
+
+# Navigation.
+
+func change_app_view(view: AppView) -> void:
+	app_view_changed.emit(view)

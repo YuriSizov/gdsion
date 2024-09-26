@@ -1,0 +1,65 @@
+[gd_scene load_steps=6 format=3 uid="uid://cwl0nh1ofpudo"]
+
+[ext_resource type="Script" path="res://gui/TunesView.gd" id="1_bfqjf"]
+[ext_resource type="Texture2D" uid="uid://13wsrwe0hcno" path="res://icons/play.png" id="1_l67aq"]
+[ext_resource type="PackedScene" uid="uid://dp02gpc8hg7fw" path="res://gui/components/FlatButton.tscn" id="2_c6y1p"]
+[ext_resource type="Texture2D" uid="uid://d0bp18rvcim06" path="res://icons/stop.png" id="4_wlce4"]
+[ext_resource type="PackedScene" uid="uid://c0h17xqwiktsx" path="res://gui/components/Visualizer.tscn" id="5_cqeer"]
+
+[node name="TunesView" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_bfqjf")
+
+[node name="Layout" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="TuneList" type="ItemList" parent="Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(340, 0)
+layout_mode = 2
+
+[node name="Playback" type="VBoxContainer" parent="Layout"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 16
+
+[node name="Controls" type="HBoxContainer" parent="Layout/Playback"]
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_constants/separation = 12
+
+[node name="PlayButton" parent="Layout/Playback/Controls" instance=ExtResource("2_c6y1p")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 36)
+layout_mode = 2
+size_flags_vertical = 6
+theme_override_font_sizes/font_size = 24
+text = "Play"
+icon = ExtResource("1_l67aq")
+
+[node name="StopButton" parent="Layout/Playback/Controls" instance=ExtResource("2_c6y1p")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 36)
+layout_mode = 2
+size_flags_vertical = 6
+theme_override_font_sizes/font_size = 24
+text = "Stop"
+icon = ExtResource("4_wlce4")
+
+[node name="Visualizer" parent="Layout/Playback" instance=ExtResource("5_cqeer")]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="TuneStatus" type="Label" parent="Layout/Playback"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
+unique_name_in_owner = true

@@ -1,0 +1,41 @@
+[gd_scene load_steps=3 format=3 uid="uid://cnskkj6nyfxor"]
+
+[ext_resource type="PackedScene" uid="uid://nr6m265wsn1s" path="res://gui/components/FilterSelector.tscn" id="1_660t5"]
+[ext_resource type="PackedScene" uid="uid://bhf8mbp7a27ta" path="res://gui/components/InstrumentSelector.tscn" id="2_cb1gc"]
+
+[node name="PianoSettings" type="HBoxContainer"]
+anchors_preset = -1
+anchor_right = 1.0
+offset_left = 10.0
+offset_top = -44.0
+offset_right = -10.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="FilterLabel" type="Label" parent="."]
+auto_translate_mode = 1
+layout_mode = 2
+theme_override_colors/font_color = Color(0.503461, 0.593425, 0.670281, 1)
+theme_override_font_sizes/font_size = 16
+text = "Effect:"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="FilterSelector" parent="." instance=ExtResource("1_660t5")]
+layout_mode = 2
+
+[node name="Filler" type="Control" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="InstrumentLabel" type="Label" parent="."]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.503461, 0.593425, 0.670281, 1)
+theme_override_font_sizes/font_size = 16
+text = "Instrument:"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="InstrumentSelector" parent="." instance=ExtResource("2_cb1gc")]
+layout_mode = 2

@@ -171,19 +171,24 @@ func change_filter_power(value: int) -> void:
 
 # Output and streaming control.
 
-func start_driver() -> void:
-	# Driver is always playing/streaming. We decide when to feed it notes on our side.
-	_driver.play(null, false)
-	print("Driver is streaming.")
+func stop() -> void:
+	_driver.stop()
+	print("Driver stopped.")
 
 
-func play_tune(mml_command: String) -> void:
-	print("Playing MML tune: '%s'" % [ mml_command ])
+func play_tune(mml_string: String) -> void:
+	print("Driver is processing MML tune.")
+
 	_driver.compilation_finished.connect(func(_data: SiONData) -> void:
 		print("MML compiled in %d msec." % [ _driver.get_compiling_time() ])
 	, CONNECT_ONE_SHOT)
 
-	_driver.play(mml_command)
+	_driver.play(mml_string)
+
+
+func start_streaming() -> void:
+	_driver.play(null, false)
+	print("Driver is streaming.")
 
 
 func play_note(note: int, length: int) -> void:

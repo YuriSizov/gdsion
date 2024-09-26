@@ -635,6 +635,7 @@ void SiONDriver::stop() {
 	_preserve_stop = false;
 	_is_paused = false;
 	_is_streaming = false;
+	_data = Ref<SiONData>(); // Original SiON doesn't do that, but that seems like an oversight.
 
 	clear_background_sound();
 	_clear_processing();
