@@ -519,7 +519,9 @@ String SiMMLSequencer::_expand_macro(String p_macro, uint32_t p_macro_flags) {
 		}
 
 		// Take the rest of the string (around the match) and insert the replaced substring.
-		expanded_macro = expanded_macro.substr(0, res->get_start()) + replacement + expanded_macro.substr(res->get_end() + 1);
+		const String prefix = expanded_macro.substr(0, res->get_start());
+		const String suffix = expanded_macro.substr(res->get_end());
+		expanded_macro = prefix + replacement + suffix;
 	}
 
 	return expanded_macro;

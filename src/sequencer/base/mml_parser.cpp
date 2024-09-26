@@ -36,11 +36,11 @@ void MMLParser::finalize() {
 
 // Methods.
 
-#define OP_ERR_FAIL_RANGE(m_value, m_min, m_max, m_cmd)                                                                                                            \
-	ERR_FAIL_COND_MSG(m_value < m_min || m_value > m_max, vformat("MMLParser: Command '%s' has argument outside of valid range (%d : %d).", m_cmd, m_min, m_max));
+#define OP_ERR_FAIL_RANGE(m_value, m_min, m_max, m_cmd)                                                                                                                          \
+	ERR_FAIL_COND_MSG(m_value < m_min || m_value > m_max, vformat("MMLParser: Command '%s' has argument (%d) outside of valid range (%d : %d).", m_cmd, m_value, m_min, m_max));
 
-#define OP_ERR_FAIL_RANGE_V(m_value, m_min, m_max, m_cmd, m_return)                                                                                                            \
-	ERR_FAIL_COND_V_MSG(m_value < m_min || m_value > m_max, m_return, vformat("MMLParser: Command '%s' has argument outside of valid range (%d : %d).", m_cmd, m_min, m_max));
+#define OP_ERR_FAIL_RANGE_V(m_value, m_min, m_max, m_cmd, m_return)                                                                                                                          \
+	ERR_FAIL_COND_V_MSG(m_value < m_min || m_value > m_max, m_return, vformat("MMLParser: Command '%s' has argument (%d) outside of valid range (%d : %d).", m_cmd, m_value, m_min, m_max));
 
 // Settings.
 
@@ -364,9 +364,11 @@ int MMLParser::_parse_length(const Ref<RegExMatch> &p_res) {
 }
 
 int MMLParser::_parse_param(const Ref<RegExMatch> &p_res, int p_default) {
-	if (p_res->get_string(REX_PARAM).length() > 0) {
-		return p_res->get_string(REX_PARAM).to_int();
+	const String param = p_res->get_string(REX_PARAM);
+	if (!param.is_empty()) {
+		return param.to_int();
 	}
+
 	return p_default;
 }
 
@@ -387,9 +389,10 @@ MMLEvent *MMLParser::parse(int p_interrupt) {
 	TypedArray<RegExMatch> matches = _mml_regex->search_all(_mml_string, _mml_regex_last_index);
 	for (int i = 0; i < matches.size(); i++) {
 		Ref<RegExMatch> res = matches[i];
+		const String match_string = res->get_string(0);
 		_mml_regex_last_index = res->get_end() + 1;
 
-		if (res->get_string(0).is_empty()) {
+		if (match_string.is_empty()) {
 			break; // Stop parsing if there is an empty match.
 		}
 
@@ -545,7 +548,7 @@ MMLEvent *MMLParser::parse(int p_interrupt) {
 
 		// Invalid syntax.
 		} else {
-			ERR_FAIL_V_MSG(nullptr, vformat("MMLParser: Invalid syntax encountered: '%s'.", res->get_string(0)));
+			ERR_FAIL_V_MSG(nullptr, vformat("MMLParser: Invalid syntax encountered: '%s'.", match_string));
 		}
 
 		if (halt) {
