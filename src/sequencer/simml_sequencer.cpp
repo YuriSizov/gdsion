@@ -1027,7 +1027,12 @@ MMLEvent *SiMMLSequencer::_on_mml_tone_envelope(MMLEvent *p_event) {
 		return next_event->get_next(); // Check the mask.
 	}
 
-	_current_track->set_tone_envelope(1, SiMMLRefTable::get_instance()->get_envelope_table(idx), step);
+	Ref<SiMMLEnvelopeTable> env_table;
+	if (idx >= 0) {
+		env_table = SiMMLRefTable::get_instance()->get_envelope_table(idx);
+	}
+
+	_current_track->set_tone_envelope(1, env_table, step);
 	return next_event->get_next();
 }
 
@@ -1040,7 +1045,12 @@ MMLEvent *SiMMLSequencer::_on_mml_amplitude_envelope(MMLEvent *p_event) {
 		return next_event->get_next(); // Check the mask.
 	}
 
-	_current_track->set_amplitude_envelope(1, SiMMLRefTable::get_instance()->get_envelope_table(idx), step);
+	Ref<SiMMLEnvelopeTable> env_table;
+	if (idx >= 0) {
+		env_table = SiMMLRefTable::get_instance()->get_envelope_table(idx);
+	}
+
+	_current_track->set_amplitude_envelope(1, env_table, step);
 	return next_event->get_next();
 }
 
@@ -1053,7 +1063,12 @@ MMLEvent *SiMMLSequencer::_on_mml_amplitude_envelope_tsscp(MMLEvent *p_event) {
 		return next_event->get_next(); // Check the mask.
 	}
 
-	_current_track->set_amplitude_envelope(1, SiMMLRefTable::get_instance()->get_envelope_table(idx), step, true);
+	Ref<SiMMLEnvelopeTable> env_table;
+	if (idx >= 0) {
+		env_table = SiMMLRefTable::get_instance()->get_envelope_table(idx);
+	}
+
+	_current_track->set_amplitude_envelope(1, env_table, step, true);
 	return next_event->get_next();
 }
 
@@ -1066,7 +1081,12 @@ MMLEvent *SiMMLSequencer::_on_mml_pitch_envelope(MMLEvent *p_event) {
 		return next_event->get_next(); // Check the mask.
 	}
 
-	_current_track->set_pitch_envelope(1, SiMMLRefTable::get_instance()->get_envelope_table(idx), step);
+	Ref<SiMMLEnvelopeTable> env_table;
+	if (idx >= 0) {
+		env_table = SiMMLRefTable::get_instance()->get_envelope_table(idx);
+	}
+
+	_current_track->set_pitch_envelope(1, env_table, step);
 	return next_event->get_next();
 }
 
@@ -1078,7 +1098,13 @@ MMLEvent *SiMMLSequencer::_on_mml_note_envelope(MMLEvent *p_event) {
 	if (_current_track->get_event_mask() & SiMMLTrack::MASK_ENVELOPE) {
 		return next_event->get_next(); // Check the mask.
 	}
-	_current_track->set_note_envelope(1, SiMMLRefTable::get_instance()->get_envelope_table(idx), step);
+
+	Ref<SiMMLEnvelopeTable> env_table;
+	if (idx >= 0) {
+		env_table = SiMMLRefTable::get_instance()->get_envelope_table(idx);
+	}
+
+	_current_track->set_note_envelope(1, env_table, step);
 	return next_event->get_next();
 }
 
@@ -1091,7 +1117,12 @@ MMLEvent *SiMMLSequencer::_on_mml_filter_envelope(MMLEvent *p_event) {
 		return next_event->get_next(); // Check the mask.
 	}
 
-	_current_track->set_filter_envelope(1, SiMMLRefTable::get_instance()->get_envelope_table(idx), step);
+	Ref<SiMMLEnvelopeTable> env_table;
+	if (idx >= 0) {
+		env_table = SiMMLRefTable::get_instance()->get_envelope_table(idx);
+	}
+
+	_current_track->set_filter_envelope(1, env_table, step);
 	return next_event->get_next();
 }
 
@@ -1104,7 +1135,12 @@ MMLEvent *SiMMLSequencer::_on_mml_tone_release_envelope(MMLEvent *p_event) {
 		return next_event->get_next(); // Check the mask.
 	}
 
-	_current_track->set_tone_envelope(0, SiMMLRefTable::get_instance()->get_envelope_table(idx), step);
+	Ref<SiMMLEnvelopeTable> env_table;
+	if (idx >= 0) {
+		env_table = SiMMLRefTable::get_instance()->get_envelope_table(idx);
+	}
+
+	_current_track->set_tone_envelope(0, env_table, step);
 	return next_event->get_next();
 }
 
@@ -1117,7 +1153,12 @@ MMLEvent *SiMMLSequencer::_on_mml_amplitude_release_envelope(MMLEvent *p_event) 
 		return next_event->get_next(); // Check the mask.
 	}
 
-	_current_track->set_amplitude_envelope(0, SiMMLRefTable::get_instance()->get_envelope_table(idx), step);
+	Ref<SiMMLEnvelopeTable> env_table;
+	if (idx >= 0) {
+		env_table = SiMMLRefTable::get_instance()->get_envelope_table(idx);
+	}
+
+	_current_track->set_amplitude_envelope(0, env_table, step);
 	return next_event->get_next();
 }
 
@@ -1130,7 +1171,12 @@ MMLEvent *SiMMLSequencer::_on_mml_pitch_release_envelope(MMLEvent *p_event) {
 		return next_event->get_next(); // Check the mask.
 	}
 
-	_current_track->set_pitch_envelope(0, SiMMLRefTable::get_instance()->get_envelope_table(idx), step);
+	Ref<SiMMLEnvelopeTable> env_table;
+	if (idx >= 0) {
+		env_table = SiMMLRefTable::get_instance()->get_envelope_table(idx);
+	}
+
+	_current_track->set_pitch_envelope(0, env_table, step);
 	return next_event->get_next();
 }
 
@@ -1143,7 +1189,12 @@ MMLEvent *SiMMLSequencer::_on_mml_note_release_envelope(MMLEvent *p_event) {
 		return next_event->get_next(); // Check the mask.
 	}
 
-	_current_track->set_note_envelope(0, SiMMLRefTable::get_instance()->get_envelope_table(idx), step);
+	Ref<SiMMLEnvelopeTable> env_table;
+	if (idx >= 0) {
+		env_table = SiMMLRefTable::get_instance()->get_envelope_table(idx);
+	}
+
+	_current_track->set_note_envelope(0, env_table, step);
 	return next_event->get_next();
 }
 
@@ -1156,7 +1207,12 @@ MMLEvent *SiMMLSequencer::_on_mml_filter_release_envelope(MMLEvent *p_event) {
 		return next_event->get_next(); // Check the mask.
 	}
 
-	_current_track->set_filter_envelope(0, SiMMLRefTable::get_instance()->get_envelope_table(idx), step);
+	Ref<SiMMLEnvelopeTable> env_table;
+	if (idx >= 0) {
+		env_table = SiMMLRefTable::get_instance()->get_envelope_table(idx);
+	}
+
+	_current_track->set_filter_envelope(0, env_table, step);
 	return next_event->get_next();
 }
 
