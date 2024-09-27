@@ -13,7 +13,9 @@ var tests_total: int = 0
 var tests_success: int = 0
 var asserts_total: int = 0
 var asserts_success: int = 0
+
 var start_time: int = -1
+var start_memory: int = -1
 
 
 func _init():
@@ -35,6 +37,7 @@ func _init():
 		return
 
 	start_time = Time.get_ticks_msec()
+	start_memory = OS.get_static_memory_usage()
 
 	var file_name := fs.get_next()
 	while not file_name.is_empty():
@@ -86,9 +89,11 @@ func _quit_with_status() -> void:
 
 	var success := tests_success == tests_total
 	var execution_time := Time.get_ticks_msec() - start_time
+	var final_memory := OS.get_static_memory_usage()
 
 	print_rich("[color=blue]Status:[/color]\t\t\t[b]%s[/b]" % [ "[color=green]SUCCESS[/color]" if success else "[color=red]FAILURE[/color]" ])
 	print_rich("[color=gray]Time:\t\t\t[b]%.3f sec[/b][/color]" % [ execution_time / 1000.0 ])
+	print_rich("[color=gray]Memory:\t\t\t[b]%s[/b] / [b]%s[/b][/color]" % [ String.humanize_size(start_memory), String.humanize_size(final_memory) ])
 
 	print("")
 	quit(0 if success else 1)

@@ -54,6 +54,9 @@ func run(scene_tree: SceneTree) -> void:
 
 	# Cleanup.
 
+	_sample_runs.clear()
+	_sample_data.clear()
+
 	voice_preset_util.free()
 	driver.get_parent().remove_child(driver)
 	driver.free()

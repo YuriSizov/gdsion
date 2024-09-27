@@ -12,6 +12,7 @@ var asserts_total: int = 0
 var asserts_success: int = 0
 
 var _start_time: int = -1
+var _start_memory: int = -1
 
 class OutputBufferRecord:
 	var success: bool = true
@@ -36,6 +37,7 @@ func prepare() -> void:
 
 	print_rich("[bgcolor=gray]%d. [%s] %s[/bgcolor]" % [ test_counter, test_group, test_name ])
 	_start_time = Time.get_ticks_msec()
+	_start_memory = OS.get_static_memory_usage()
 
 
 # Called automatically. Must be implemented by individual test scripts.
@@ -46,6 +48,7 @@ func run(_scene_tree: SceneTree) -> void:
 # Called automatically after run().
 func print_output() -> void:
 	var execution_time := Time.get_ticks_msec() - _start_time
+	var final_memory := OS.get_static_memory_usage()
 
 	var max_tabs := 0
 	for record in _output_buffer:
@@ -74,7 +77,8 @@ func print_output() -> void:
 			print_rich("[color=red]FAIL[/color]: [[color=gray]%s[/color]]%s%s" % [ record.label, tabs_sep, record.result ])
 
 	print_rich("[color=blue]TOTAL[/color]: [b]%d[/b] / [b]%d[/b]" % [ asserts_success, asserts_total ])
-	print_rich("[color=gray]Finished in %.3f sec." % [ execution_time / 1000.0 ])
+	print_rich("[color=gray]Memory used: [b]%s[/b] / [b]%s[/b][/color]" % [ String.humanize_size(_start_memory), String.humanize_size(final_memory) ])
+	print_rich("[color=gray]Finished in %.3f sec.[/color]" % [ execution_time / 1000.0 ])
 
 
 func _print_ok(label: String, result: String) -> void:
