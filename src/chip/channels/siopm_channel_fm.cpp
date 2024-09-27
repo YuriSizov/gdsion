@@ -936,8 +936,6 @@ void SiOPMChannelFM::_process_operator2(int p_length) {
 	_in_pipe = in_pipe;
 	_base_pipe = base_pipe;
 	_out_pipe = out_pipe;
-
-
 }
 
 void SiOPMChannelFM::_process_operator3(int p_length) {

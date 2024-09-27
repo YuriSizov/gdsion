@@ -42,6 +42,10 @@ double MMLData::get_bpm_from_tcommand(int p_param) {
 	return 0.0;
 }
 
+void MMLData::add_system_command(const Ref<MMLSystemCommand> &p_command) {
+	_system_commands.push_back(p_command);
+}
+
 // Sequences.
 
 MMLSequence *MMLData::append_new_sequence(List<MMLEvent *> p_events) {

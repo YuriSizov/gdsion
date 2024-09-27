@@ -685,7 +685,7 @@ void SiMMLSequencer::_try_process_command_callback(String p_command, int p_numbe
 	}
 
 	// Wasn't parsed, add it to the list.
-	mml_data->get_system_commands().push_back(command_obj);
+	mml_data->add_system_command(command_obj);
 }
 
 bool SiMMLSequencer::_parse_system_command_before(String p_command, String p_param) {

@@ -56,7 +56,7 @@ class SiEffectEqualizer : public SiEffectBase {
 	double _mid_gain = 0;
 	double _high_gain = 0;
 
-	double _process_channel(PipeChannel p_channel, double p_value);
+	double _process_channel(PipeChannel *p_channel, double p_value);
 	void _process_mono(Vector<double> *r_buffer, int p_start_index, int p_length);
 	void _process_stereo(Vector<double> *r_buffer, int p_start_index, int p_length);
 

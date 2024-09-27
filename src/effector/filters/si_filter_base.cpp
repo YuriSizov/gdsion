@@ -15,14 +15,14 @@ int SiFilterBase::prepare_process() {
 	return 2;
 }
 
-double SiFilterBase::_process_channel(ChannelValues p_channel, double p_input) {
-	double output = _b0 * p_input + _b1 * p_channel.in1 + _b2 * p_channel.in2 - _a1 * p_channel.out1 - _a2 * p_channel.out2;
+double SiFilterBase::_process_channel(ChannelValues *p_channel, double p_input) {
+	double output = _b0 * p_input + _b1 * p_channel->in1 + _b2 * p_channel->in2 - _a1 * p_channel->out1 - _a2 * p_channel->out2;
 	output = CLAMP(output, -1, 1);
 
-	p_channel.in2  = p_channel.in1;
-	p_channel.in1  = p_input;
-	p_channel.out2 = p_channel.out1;
-	p_channel.out1 = output;
+	p_channel->in2  = p_channel->in1;
+	p_channel->in1  = p_input;
+	p_channel->out2 = p_channel->out1;
+	p_channel->out1 = output;
 
 	return output;
 }
@@ -36,12 +36,12 @@ int SiFilterBase::process(int p_channels, Vector<double> *r_buffer, int p_start_
 
 	if (p_channels == 2) {
 		for (int i = start_index; i < (start_index + length); i += 2) {
-			r_buffer->write[i] = _process_channel(_left, (*r_buffer)[i]);
-			r_buffer->write[i + 1] = _process_channel(_right, (*r_buffer)[i + 1]);
+			r_buffer->write[i] = _process_channel(&_left, (*r_buffer)[i]);
+			r_buffer->write[i + 1] = _process_channel(&_right, (*r_buffer)[i + 1]);
 		}
 	} else {
 		for (int i = start_index; i < (start_index + length); i += 2) {
-			double value = _process_channel(_left, (*r_buffer)[i]);
+			double value = _process_channel(&_left, (*r_buffer)[i]);
 
 			r_buffer->write[i] = value;
 			r_buffer->write[i + 1] = value;

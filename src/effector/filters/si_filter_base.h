@@ -38,7 +38,7 @@ class SiFilterBase : public SiEffectBase {
 	ChannelValues _left;
 	ChannelValues _right;
 
-	double _process_channel(ChannelValues p_channel, double p_input);
+	double _process_channel(ChannelValues *p_channel, double p_input);
 
 protected:
 	static void _bind_methods() {}

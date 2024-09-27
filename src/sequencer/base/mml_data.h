@@ -78,6 +78,7 @@ public:
 	double get_bpm_from_tcommand(int p_param);
 
 	List<Ref<MMLSystemCommand>> get_system_commands() const { return _system_commands; }
+	void add_system_command(const Ref<MMLSystemCommand> &p_command);
 
 	// Sequences.
 

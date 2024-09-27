@@ -22,31 +22,31 @@ int SiEffectEqualizer::prepare_process() {
 	return 2;
 }
 
-double SiEffectEqualizer::_process_channel(PipeChannel p_channel, double p_value) {
-		p_channel.f1p0 += (_low_frequency * (p_value        - p_channel.f1p0)) + 2.3283064370807974e-10;
-		p_channel.f1p1 += (_low_frequency * (p_channel.f1p0 - p_channel.f1p1));
-		p_channel.f1p2 += (_low_frequency * (p_channel.f1p1 - p_channel.f1p2));
-		p_channel.f1p3 += (_low_frequency * (p_channel.f1p2 - p_channel.f1p3));
+double SiEffectEqualizer::_process_channel(PipeChannel *p_channel, double p_value) {
+		p_channel->f1p0 += (_low_frequency * (p_value         - p_channel->f1p0)) + 2.3283064370807974e-10;
+		p_channel->f1p1 += (_low_frequency * (p_channel->f1p0 - p_channel->f1p1));
+		p_channel->f1p2 += (_low_frequency * (p_channel->f1p1 - p_channel->f1p2));
+		p_channel->f1p3 += (_low_frequency * (p_channel->f1p2 - p_channel->f1p3));
 
-		p_channel.f2p0 += (_high_frequency * (p_value        - p_channel.f2p0)) + 2.3283064370807974e-10;
-		p_channel.f2p1 += (_high_frequency * (p_channel.f2p0 - p_channel.f2p1));
-		p_channel.f2p2 += (_high_frequency * (p_channel.f2p1 - p_channel.f2p2));
-		p_channel.f2p3 += (_high_frequency * (p_channel.f2p2 - p_channel.f2p3));
+		p_channel->f2p0 += (_high_frequency * (p_value         - p_channel->f2p0)) + 2.3283064370807974e-10;
+		p_channel->f2p1 += (_high_frequency * (p_channel->f2p0 - p_channel->f2p1));
+		p_channel->f2p2 += (_high_frequency * (p_channel->f2p1 - p_channel->f2p2));
+		p_channel->f2p3 += (_high_frequency * (p_channel->f2p2 - p_channel->f2p3));
 
-		double value_low  = p_channel.f1p3;
-		double value_high = p_channel.sdm3 - p_channel.f2p3;
-		double value_mid  = p_channel.sdm3 - (value_high + value_low);
+		double value_low  = p_channel->f1p3;
+		double value_high = p_channel->sdm3 - p_channel->f2p3;
+		double value_mid  = p_channel->sdm3 - (value_high + value_low);
 
-		p_channel.sdm3 = p_channel.sdm2;
-		p_channel.sdm2 = p_channel.sdm1;
-		p_channel.sdm1 = p_value;
+		p_channel->sdm3 = p_channel->sdm2;
+		p_channel->sdm2 = p_channel->sdm1;
+		p_channel->sdm1 = p_value;
 
 		return value_low * _low_gain + value_mid * _mid_gain + value_high * _high_gain;
 }
 
 void SiEffectEqualizer::_process_mono(Vector<double> *r_buffer, int p_start_index, int p_length) {
 	for (int i = p_start_index; i < (p_start_index + p_length); i += 2) {
-		double value = _process_channel(_left, (*r_buffer)[i]);
+		double value = _process_channel(&_left, (*r_buffer)[i]);
 
 		r_buffer->write[i] = value;
 		r_buffer->write[i + 1] = value;
@@ -55,10 +55,10 @@ void SiEffectEqualizer::_process_mono(Vector<double> *r_buffer, int p_start_inde
 
 void SiEffectEqualizer::_process_stereo(Vector<double> *r_buffer, int p_start_index, int p_length) {
 	for (int i = p_start_index; i < (p_start_index + p_length); i += 2) {
-		double value_left = _process_channel(_left, (*r_buffer)[i]);
+		double value_left = _process_channel(&_left, (*r_buffer)[i]);
 		r_buffer->write[i] = value_left;
 
-		double value_right = _process_channel(_right, (*r_buffer)[i + 1]);
+		double value_right = _process_channel(&_right, (*r_buffer)[i + 1]);
 		r_buffer->write[i + 1] = value_right;
 	}
 }
