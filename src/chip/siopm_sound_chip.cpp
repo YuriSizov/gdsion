@@ -20,10 +20,10 @@ int SiOPMSoundChip::get_channel_count() const {
 }
 
 SinglyLinkedList<int> *SiOPMSoundChip::get_pipe(int p_pipe_num, int p_index) {
-	ERR_FAIL_INDEX_V(p_pipe_num, _pipe_buffer_pager.size(), nullptr);
-	ERR_FAIL_INDEX_V(p_index, _pipe_buffer_pager[p_pipe_num].size(), nullptr);
+	ERR_FAIL_INDEX_V(p_pipe_num, _pipe_buffers.size(), nullptr);
 
-	return _pipe_buffer_pager[p_pipe_num][p_index];
+	// FIXME: It would be good to check the index, but right now we have no way of knowing size.
+	return _pipe_buffers[p_pipe_num]->index(p_index);
 }
 
 void SiOPMSoundChip::begin_process() {
@@ -55,12 +55,11 @@ void SiOPMSoundChip::initialize(int p_channel_count, int p_bitrate, int p_buffer
 		output_stream->resize(_buffer_length << 1);
 
 		for (int i = 0; i < PIPE_SIZE; i++) {
-			if (_pipe_buffer[i]) {
-				SinglyLinkedList<int>::free_ring(_pipe_buffer[i]);
+			if (_pipe_buffers[i]) {
+				SinglyLinkedList<int>::free_list(_pipe_buffers[i]);
 			}
 
-			_pipe_buffer.write[i] = SinglyLinkedList<int>::alloc_ring(_buffer_length);
-			_pipe_buffer_pager.write[i] = SinglyLinkedList<int>::create_ring_pager(_pipe_buffer[i]);
+			_pipe_buffers.write[i] = SinglyLinkedList<int>::alloc_list(_buffer_length, 0, true);
 		}
 	}
 
@@ -86,9 +85,8 @@ SiOPMSoundChip::SiOPMSoundChip() {
 	stream_slot.resize_zeroed(STREAM_SEND_SIZE);
 	stream_slot.fill(nullptr);
 
-	zero_buffer = SinglyLinkedList<int>::alloc_ring(1);
-	_pipe_buffer.resize_zeroed(PIPE_SIZE);
-	_pipe_buffer_pager.resize_zeroed(PIPE_SIZE);
+	zero_buffer = SinglyLinkedList<int>::alloc_list(1, 0, true);
+	_pipe_buffers.resize_zeroed(PIPE_SIZE);
 
 	SiOPMChannelManager::initialize(this);
 }
@@ -97,6 +95,6 @@ SiOPMSoundChip::~SiOPMSoundChip() {
 	memdelete(init_operator_params);
 	memdelete(output_stream);
 
-	SinglyLinkedList<int>::free_ring(zero_buffer);
+	SinglyLinkedList<int>::free_list(zero_buffer);
 	SiOPMChannelManager::finalize();
 }

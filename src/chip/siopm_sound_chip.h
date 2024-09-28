@@ -32,9 +32,8 @@ class SiOPMSoundChip : public Object {
 	int _buffer_length = 0;
 	int _bitrate = 0;
 
-	// Both expected to be of PIPE_SIZE size.
-	Vector<SinglyLinkedList<int> *> _pipe_buffer;
-	Vector<List<SinglyLinkedList<int> *>> _pipe_buffer_pager;
+	// Expected to be of PIPE_SIZE size.
+	Vector<SinglyLinkedList<int> *> _pipe_buffers;
 
 protected:
 	static void _bind_methods();

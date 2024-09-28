@@ -109,6 +109,6 @@ void SiEffectAutopan::_bind_methods() {
 
 SiEffectAutopan::SiEffectAutopan(double p_frequency, double p_stereo_width) :
 		SiEffectBase() {
-	_p_left = SinglyLinkedList<double>::alloc_ring(256);
+	_p_left = SinglyLinkedList<double>::alloc_list(256, 0.0, true);
 	set_params(p_frequency, p_stereo_width);
 }

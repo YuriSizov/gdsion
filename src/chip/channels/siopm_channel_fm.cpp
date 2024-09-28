@@ -1554,8 +1554,8 @@ SiOPMChannelFM::SiOPMChannelFM(SiOPMSoundChip *p_chip) : SiOPMChannelBase(p_chip
 
 	_update_process_function();
 
-	_pipe0 = SinglyLinkedList<int>::alloc_ring(1);
-	_pipe1 = SinglyLinkedList<int>::alloc_ring(1);
+	_pipe0 = SinglyLinkedList<int>::alloc_list(1, 0, true);
+	_pipe1 = SinglyLinkedList<int>::alloc_list(1, 0, true);
 
 	initialize(nullptr, 0);
 }

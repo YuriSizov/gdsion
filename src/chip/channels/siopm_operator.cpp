@@ -617,7 +617,7 @@ SiOPMOperator::SiOPMOperator(SiOPMSoundChip *p_chip) {
 	_table = SiOPMRefTable::get_instance();
 	_sound_chip = p_chip;
 
-	_feed_pipe = SinglyLinkedList<int>::alloc_ring(1);
+	_feed_pipe = SinglyLinkedList<int>::alloc_list(1, 0, true);
 	_eg_increment_table = make_vector<int>(_table->eg_increment_tables[17]);
 	_eg_level_table = make_vector<int>(_table->eg_level_tables[0]);
 }

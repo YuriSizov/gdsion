@@ -1501,7 +1501,7 @@ SiONDriver::SiONDriver(int p_buffer_length, int p_channel_num, int p_sample_rate
 		_timer_interval_event = _timer_sequence->append_new_event(MMLEvent::GLOBAL_WAIT, 0, 0);
 	}
 
-	_performance_stats.processing_time_data = SinglyLinkedList<int>::alloc_ring(TIME_AVERAGING_COUNT);
+	_performance_stats.processing_time_data = SinglyLinkedList<int>::alloc_list(TIME_AVERAGING_COUNT, 0, true);
 	_performance_stats.total_processing_time_ratio = _sample_rate / (_buffer_length * TIME_AVERAGING_COUNT);
 }
 

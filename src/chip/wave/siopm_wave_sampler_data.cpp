@@ -36,7 +36,7 @@ int SiOPMWaveSamplerData::_seek_head_silence() {
 		return 0;
 	}
 
-	SinglyLinkedList<double> *ms_window = SinglyLinkedList<double>::alloc_ring(22); // 0.5ms
+	SinglyLinkedList<double> *ms_window = SinglyLinkedList<double>::alloc_list(22, 0.0, true); // 0.5ms
 	int i = 0;
 
 	if (_channel_count == 1) {
@@ -81,7 +81,7 @@ int SiOPMWaveSamplerData::_seek_head_silence() {
 	}
 
 
-	SinglyLinkedList<double>::free_ring(ms_window);
+	SinglyLinkedList<double>::free_list(ms_window);
 	return i - 22;
 }
 

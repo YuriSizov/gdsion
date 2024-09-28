@@ -1003,7 +1003,7 @@ void SiMMLTrack::_bind_methods() {
 SiMMLTrack::SiMMLTrack() {
 	// Initialize static members once.
 	if (!_envelope_zero_table) {
-		_envelope_zero_table = SinglyLinkedList<int>::alloc_ring(1);
+		_envelope_zero_table = SinglyLinkedList<int>::alloc_list(1, 0, true);
 	}
 
 	_executor = memnew(MMLExecutor);

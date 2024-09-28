@@ -28,9 +28,9 @@ void SiEffectCompressor::set_params(double p_threshold, double p_window_time, do
 
 int SiEffectCompressor::prepare_process() {
 	if (_window_rms_list) {
-		SinglyLinkedList<double>::free_ring(_window_rms_list);
+		SinglyLinkedList<double>::free_list(_window_rms_list);
 	}
-	_window_rms_list = SinglyLinkedList<double>::alloc_ring(_window_samples);
+	_window_rms_list = SinglyLinkedList<double>::alloc_list(_window_samples, 0.0, true);
 	_window_rms_total = 0;
 	_gain = 2;
 

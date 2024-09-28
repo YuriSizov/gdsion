@@ -48,90 +48,59 @@ public:
 		return ret;
 	}
 
-	static SinglyLinkedList<T> *alloc_list(int p_size, int p_default_value = 0) {
-		SinglyLinkedList<T> *ret = alloc(p_default_value);
+	static SinglyLinkedList<T> *alloc_list(int p_size, T p_default_value = 0, bool p_ring = false) {
+		SinglyLinkedList<T> *head = alloc(p_default_value);
 
-		SinglyLinkedList<T> *elem = ret;
+		SinglyLinkedList<T> *elem = head;
 		for (int i = 1; i < p_size; i++) {
 			elem = elem->append(p_default_value);
 		}
 
-		return ret;
-	}
-
-	static SinglyLinkedList<T> *alloc_ring(int p_size, int p_default_value = 0) {
-		SinglyLinkedList<T> *ret = alloc(p_default_value);
-
-		SinglyLinkedList<T> *elem = ret;
-		for (int i = 1; i < p_size; i++) {
-			elem = elem->append(p_default_value);
+		if (p_ring) {
+			elem->_next = head; // Loop makes the ring.
 		}
-		elem->_next = ret;
 
-		return ret;
+		return head;
 	}
 
-	static void free(SinglyLinkedList<T> *p_first_element) {
+	static void free(SinglyLinkedList<T> *p_element) {
+		// If this element is part of a list, you must be careful here, as this method does NOT
+		// handle the list itself gracefully and you may leave bad pointers unattended as a result.
+
 		// Append the current allocated free list and then assume its position.
-		// The argument MUST be the first element in any list, otherwise we leave bad pointers.
-		p_first_element->_next = _free_list;
-		_free_list = p_first_element;
+		p_element->_next = _free_list;
+		_free_list = p_element;
 	}
 
-	static void free_list(SinglyLinkedList<T> *p_first_element) {
-		if (!p_first_element) {
+	static void free_list(SinglyLinkedList<T> *p_head) {
+		if (!p_head) {
 			return;
 		}
 
-		// The argument MUST be the first element in any list, otherwise we leave bad pointers.
-		SinglyLinkedList<T> *elem = p_first_element;
-		while (elem->_next) {
-			elem = elem->_next;
-		}
+		// For a ring list, the argument can be any element. In a non-ring, it MUST be the first
+		// element in the list, otherwise we leave bad pointers unattended.
+		SinglyLinkedList<T> *tail = p_head->last();
 
 		// Append the current allocated free list and then assume its position.
-		elem->_next = _free_list;
-		_free_list = p_first_element;
-	}
-
-	static void free_ring(SinglyLinkedList<T> *p_first_element) {
-		if (!p_first_element) {
-			return;
-		}
-
-		// The argument MUST be the first element in any list, otherwise we leave bad pointers.
-		SinglyLinkedList<T> *elem = p_first_element;
-		while (elem->_next != p_first_element) {
-			elem = elem->_next;
-		}
-
-		// Append the current allocated free list and then assume its position.
-		elem->_next = _free_list;
-		_free_list = p_first_element;
-	}
-
-	// FIXME: Original code supports creating a vector of a fixed size, but we don't have such data structure. May require code changes.
-	static List<SinglyLinkedList<T> *> create_ring_pager(SinglyLinkedList<T> *p_first_element) {
-		if (!p_first_element) {
-			return List<SinglyLinkedList<T> *>();
-		}
-
-		List<SinglyLinkedList<T> *> pager;
-		pager.push_back(p_first_element);
-
-		SinglyLinkedList<T> *elem = p_first_element->_next;
-		while (elem != p_first_element) {
-			pager.push_back(elem);
-			elem = elem->_next;
-		}
-
-		return pager;
+		tail->_next = _free_list;
+		_free_list = p_head;
 	}
 
 	//
 
 	SinglyLinkedList<T> *next() const {
 		return _next;
+	}
+
+	SinglyLinkedList<T> *last() const {
+		SinglyLinkedList<T> *first = const_cast<SinglyLinkedList<T> *>(this);
+		SinglyLinkedList<T> *elem = first;
+
+		while (elem->_next && elem->_next != first) {
+			elem = elem->_next;
+		}
+
+		return elem;
 	}
 
 	SinglyLinkedList<T> *append(T p_value) {
@@ -154,6 +123,17 @@ public:
 	}
 
 	//
+
+	SinglyLinkedList<T> *index(int p_index) const {
+		SinglyLinkedList<T> *element = const_cast<SinglyLinkedList<T> *>(this);
+
+		// This isn't very efficient, but should be fast enough for now.
+		for (int i = 0; i < p_index; i++) {
+			element = element->_next;
+		}
+
+		return element;
+	}
 
 	SinglyLinkedList<T> *clone_element() {
 		return alloc(value);
