@@ -217,7 +217,7 @@ SinglyLinkedList<int> *SiMMLTrack::_make_modulation_table(int p_depth, int p_end
 	if (p_delay != 0) {
 		for (int i = 0; i < p_delay; i++) {
 			element->value = p_depth;
-			element = element->next;
+			element = element->next();
 		}
 	}
 
@@ -228,7 +228,7 @@ SinglyLinkedList<int> *SiMMLTrack::_make_modulation_table(int p_depth, int p_end
 		for (int i = 0; i < p_term; i++) {
 			element->value = depth >> FIXED_BITS;
 			depth += step;
-			element = element->next;
+			element = element->next();
 		}
 	}
 
@@ -534,7 +534,7 @@ int SiMMLTrack::_buffer_envelope(int p_length, int p_step) {
 			int expression = CLAMP(_envelope_exp_offset + _envelope_exp->value, 0, 128);
 			_channel->offset_volume(expression, _velocity);
 
-			_envelope_exp = _envelope_exp->next;
+			_envelope_exp = _envelope_exp->next();
 			_counter_exp = _max_counter_exp;
 		}
 
@@ -545,14 +545,14 @@ int SiMMLTrack::_buffer_envelope(int p_length, int p_step) {
 			if (_counter_pitch == 1) {
 				_counter_pitch--;
 
-				_envelope_pitch = _envelope_pitch->next;
+				_envelope_pitch = _envelope_pitch->next();
 				_counter_pitch = _max_counter_pitch;
 			}
 
 			if (_counter_note == 1) {
 				_counter_note--;
 
-				_envelope_note = _envelope_note->next;
+				_envelope_note = _envelope_note->next();
 				_counter_note = _max_counter_note;
 			}
 
@@ -572,7 +572,7 @@ int SiMMLTrack::_buffer_envelope(int p_length, int p_step) {
 
 			_channel->offset_filter(_envelope_filter->value);
 
-			_envelope_filter = _envelope_filter->next;
+			_envelope_filter = _envelope_filter->next();
 			_counter_filter = _max_counter_filter;
 		}
 
@@ -582,18 +582,18 @@ int SiMMLTrack::_buffer_envelope(int p_length, int p_step) {
 
 			_channel_settings->select_tone(this, _envelope_voice->value);
 
-			_envelope_voice = _envelope_voice->next;
+			_envelope_voice = _envelope_voice->next();
 			_counter_voice = _max_counter_voice;
 		}
 
 		// Update modulations.
 		if (_envelope_mod_amp) {
 			_channel->set_amplitude_modulation(_envelope_mod_amp->value);
-			_envelope_mod_amp =_envelope_mod_amp->next;
+			_envelope_mod_amp =_envelope_mod_amp->next();
 		}
 		if (_envelope_mod_pitch) {
 			_channel->set_pitch_modulation(_envelope_mod_pitch->value);
-			_envelope_mod_pitch = _envelope_mod_pitch->next;
+			_envelope_mod_pitch = _envelope_mod_pitch->next();
 		}
 
 		remaining_length -= current_step;

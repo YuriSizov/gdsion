@@ -23,7 +23,7 @@ void SiMMLEnvelopeTable::to_vector(int p_length, Vector<int> *r_destination, int
 		int value = 0;
 		if (current) {
 			value = current->value;
-			current = current->next;
+			current = current->next();
 		}
 
 		CLAMP(value, p_min, p_max);
@@ -40,10 +40,10 @@ void SiMMLEnvelopeTable::copy_from(const Ref<SiMMLEnvelopeTable> &p_source) {
 
 	SinglyLinkedList<int> *curr_source = p_source->head;
 	SinglyLinkedList<int> *curr_destination = nullptr;
-	for (; curr_source != p_source->tail; curr_source = curr_source->next) {
+	for (; curr_source != p_source->tail; curr_source = curr_source->next()) {
 		SinglyLinkedList<int> *sll_value = SinglyLinkedList<int>::alloc(curr_source->value);
 		if (curr_destination) {
-			curr_destination->next = sll_value;
+			curr_destination->link(sll_value);
 			curr_destination = sll_value;
 		} else {
 			head = sll_value;
@@ -57,14 +57,14 @@ void SiMMLEnvelopeTable::_initialize(SinglyLinkedList<int> *p_head, SinglyLinked
 	tail = p_tail;
 
 	// Looping last data.
-	if (tail->next == nullptr) {
-		tail->next = tail;
+	if (tail->next() == nullptr) {
+		tail->link(tail);
 	}
 }
 
 void SiMMLEnvelopeTable::free() {
 	if (head) {
-		tail->next = nullptr;
+		tail->unlink();
 		SinglyLinkedList<int>::free_list(head);
 
 		head = nullptr;
@@ -90,9 +90,9 @@ SiMMLEnvelopeTable::SiMMLEnvelopeTable(Vector<int> p_table, int p_loop_point) {
 		}
 
 		tail->value = p_table[i];
-		tail = tail->next;
+		tail = tail->next();
 	}
 
 	tail->value = p_table[i];
-	tail->next = loop;
+	tail->link(loop);
 }

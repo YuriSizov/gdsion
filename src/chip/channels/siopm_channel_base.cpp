@@ -264,7 +264,7 @@ void SiOPMChannelBase::note_off() {
 SinglyLinkedList<int> *SiOPMChannelBase::_rotate_pipe(SinglyLinkedList<int> *p_pipe, int p_length) {
 	SinglyLinkedList<int> *pipe = p_pipe;
 	for (int i = 0; i < p_length; i++) {
-		pipe = pipe->next;
+		pipe = pipe->next();
 	}
 	return pipe;
 }
@@ -302,8 +302,8 @@ void SiOPMChannelBase::_apply_ring_modulation(SinglyLinkedList<int> *p_target, i
 
 	for (int i = 0; i < p_length; i++) {
 		target->value *= pipe->value * _ringmod_level;
-		pipe = pipe->next;
-		target = target->next;
+		pipe = pipe->next();
+		target = target->next();
 	}
 
 	_ring_pipe = pipe;
@@ -327,7 +327,7 @@ void SiOPMChannelBase::_apply_sv_filter(SinglyLinkedList<int> *p_target, int p_l
 			r_variables[0] += r_variables[1] * cutoff_value;
 
 			target->value = (int)r_variables[_filter_type];
-			target = target->next;
+			target = target->next();
 		}
 		length -= step;
 
@@ -352,7 +352,7 @@ void SiOPMChannelBase::_apply_sv_filter(SinglyLinkedList<int> *p_target, int p_l
 		r_variables[0] += r_variables[1] * cutoff_value;
 
 		target->value = (int)r_variables[_filter_type];
-		target = target->next;
+		target = target->next();
 	}
 
 	// Next setting.

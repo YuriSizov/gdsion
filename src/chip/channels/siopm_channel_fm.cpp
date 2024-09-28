@@ -818,9 +818,9 @@ void SiOPMChannelFM::_process_operator1_lfo_off(int p_length) {
 		{
 			out_pipe->value = output + base_pipe->value;
 
-			in_pipe = in_pipe->next;
-			base_pipe = base_pipe->next;
-			out_pipe = out_pipe->next;
+			in_pipe = in_pipe->next();
+			base_pipe = base_pipe->next();
+			out_pipe = out_pipe->next();
 		}
 	}
 
@@ -860,9 +860,9 @@ void SiOPMChannelFM::_process_operator1_lfo_on(int p_length) {
 		// Output and increment pointers.
 		{
 			out_pipe->value = output + base_pipe->value;
-			in_pipe = in_pipe->next;
-			base_pipe = base_pipe->next;
-			out_pipe = out_pipe->next;
+			in_pipe = in_pipe->next();
+			base_pipe = base_pipe->next();
+			out_pipe = out_pipe->next();
 		}
 	}
 
@@ -927,9 +927,9 @@ void SiOPMChannelFM::_process_operator2(int p_length) {
 		// Output and increment pointers.
 		{
 			out_pipe->value = _pipe0->value + base_pipe->value;
-			in_pipe = in_pipe->next;
-			base_pipe = base_pipe->next;
-			out_pipe = out_pipe->next;
+			in_pipe = in_pipe->next();
+			base_pipe = base_pipe->next();
+			out_pipe = out_pipe->next();
 		}
 	}
 
@@ -1016,9 +1016,9 @@ void SiOPMChannelFM::_process_operator3(int p_length) {
 		// Output and increment pointers.
 		{
 			out_pipe->value = _pipe0->value + base_pipe->value;
-			in_pipe = in_pipe->next;
-			base_pipe = base_pipe->next;
-			out_pipe = out_pipe->next;
+			in_pipe = in_pipe->next();
+			base_pipe = base_pipe->next();
+			out_pipe = out_pipe->next();
 		}
 	}
 
@@ -1125,9 +1125,9 @@ void SiOPMChannelFM::_process_operator4(int p_length) {
 		// Output and increment pointers.
 		{
 			out_pipe->value = _pipe0->value + base_pipe->value;
-			in_pipe = in_pipe->next;
-			base_pipe = base_pipe->next;
-			out_pipe = out_pipe->next;
+			in_pipe = in_pipe->next();
+			base_pipe = base_pipe->next();
+			out_pipe = out_pipe->next();
 		}
 	}
 
@@ -1162,9 +1162,9 @@ void SiOPMChannelFM::_process_pcm_lfo_off(int p_length) {
 					// Fast forward.
 					for (; i < p_length; i++) {
 						out_pipe->value = base_pipe->value;
-						in_pipe = in_pipe->next;
-						base_pipe = base_pipe->next;
-						out_pipe = out_pipe->next;
+						in_pipe = in_pipe->next();
+						base_pipe = base_pipe->next();
+						out_pipe = out_pipe->next();
 					}
 					break;
 				} else {
@@ -1184,9 +1184,9 @@ void SiOPMChannelFM::_process_pcm_lfo_off(int p_length) {
 		// Output and increment pointers.
 		{
 			out_pipe->value = output + base_pipe->value;
-			in_pipe = in_pipe->next;
-			base_pipe = base_pipe->next;
-			out_pipe = out_pipe->next;
+			in_pipe = in_pipe->next();
+			base_pipe = base_pipe->next();
+			out_pipe = out_pipe->next();
 		}
 	}
 
@@ -1224,9 +1224,9 @@ void SiOPMChannelFM::_process_pcm_lfo_on(int p_length) {
 					// Fast forward.
 					for (; i < p_length; i++) {
 						out_pipe->value = base_pipe->value;
-						in_pipe = in_pipe->next;
-						base_pipe = base_pipe->next;
-						out_pipe = out_pipe->next;
+						in_pipe = in_pipe->next();
+						base_pipe = base_pipe->next();
+						out_pipe = out_pipe->next();
 					}
 					break;
 				} else {
@@ -1246,9 +1246,9 @@ void SiOPMChannelFM::_process_pcm_lfo_on(int p_length) {
 		// Output and increment pointers.
 		{
 			out_pipe->value = output + base_pipe->value;
-			in_pipe = in_pipe->next;
-			base_pipe = base_pipe->next;
-			out_pipe = out_pipe->next;
+			in_pipe = in_pipe->next();
+			base_pipe = base_pipe->next();
+			out_pipe = out_pipe->next();
 		}
 	}
 
@@ -1304,9 +1304,9 @@ void SiOPMChannelFM::_process_analog_like(int p_length) {
 		// Output and increment pointers.
 		{
 			out_pipe->value = output0 + output1 + base_pipe->value;
-			in_pipe = in_pipe->next;
-			base_pipe = base_pipe->next;
-			out_pipe = out_pipe->next;
+			in_pipe = in_pipe->next();
+			base_pipe = base_pipe->next();
+			out_pipe = out_pipe->next();
 		}
 	}
 
@@ -1360,9 +1360,9 @@ void SiOPMChannelFM::_process_ring(int p_length) {
 		// Output and increment pointers.
 		{
 			out_pipe->value = output + base_pipe->value;
-			in_pipe = in_pipe->next;
-			base_pipe = base_pipe->next;
-			out_pipe = out_pipe->next;
+			in_pipe = in_pipe->next();
+			base_pipe = base_pipe->next();
+			out_pipe = out_pipe->next();
 		}
 	}
 
@@ -1417,9 +1417,9 @@ void SiOPMChannelFM::_process_sync(int p_length) {
 		// Output and increment pointers.
 		{
 			out_pipe->value = output + base_pipe->value;
-			in_pipe = in_pipe->next;
-			base_pipe = base_pipe->next;
-			out_pipe = out_pipe->next;
+			in_pipe = in_pipe->next();
+			base_pipe = base_pipe->next();
+			out_pipe = out_pipe->next();
 		}
 	}
 

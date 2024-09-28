@@ -167,7 +167,7 @@ void SiOPMChannelKS::_apply_karplus_strong(SinglyLinkedList<int> *p_target, int 
 
 		_ks_delay_buffer.write[buffer_index] = _output;
 		target->value = (int)_output;
-		target = target->next;
+		target = target->next();
 	}
 }
 

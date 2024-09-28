@@ -83,12 +83,12 @@ int SiControllableFilterBase::process(int p_channels, Vector<double> *r_buffer, 
 		_process_lfo(r_buffer, i, step);
 
 		if (_cutoff_ptr) {
-			_cutoff_ptr = _cutoff_ptr->next;
+			_cutoff_ptr = _cutoff_ptr->next();
 			_cutoff_index = (_cutoff_ptr ? _cutoff_ptr->value : 128);
 		}
 
 		if (_resonance_ptr) {
-			_resonance_ptr = _resonance_ptr->next;
+			_resonance_ptr = _resonance_ptr->next();
 			_resonance = (_resonance_ptr ? _resonance_ptr->value * 0.007751937984496124 : 0);
 		}
 
@@ -132,8 +132,8 @@ SiControllableFilterBase::SiControllableFilterBase() :
 			inc_ptr->value = i;
 			dec_ptr->value = 128 - i;
 
-			inc_ptr = inc_ptr->next;
-			dec_ptr = dec_ptr->next;
+			inc_ptr = inc_ptr->next();
+			dec_ptr = dec_ptr->next();
 		}
 	}
 }

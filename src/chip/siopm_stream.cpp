@@ -50,7 +50,7 @@ void SiOPMStream::write(SinglyLinkedList<int> *p_data, int p_start, int p_length
 			buffer.write[i] += current->value * volume_right;
 			i++;
 
-			current = current->next;
+			current = current->next();
 		}
 	} else if (channels == 1) { // mono
 		SinglyLinkedList<int> *current = p_data;
@@ -60,7 +60,7 @@ void SiOPMStream::write(SinglyLinkedList<int> *p_data, int p_start, int p_length
 			buffer.write[i] += current->value * volume;
 			i++;
 
-			current = current->next;
+			current = current->next();
 		}
 	}
 }
@@ -83,8 +83,8 @@ void SiOPMStream::write_stereo(SinglyLinkedList<int> *p_left, SinglyLinkedList<i
 			buffer.write[i] += current_right->value * volume_right;
 			i++;
 
-			current_left = current_left->next;
-			current_right = current_right->next;
+			current_left = current_left->next();
+			current_right = current_right->next();
 		}
 	} else if (channels == 1) { // mono
 		volume *= 0.5;
@@ -98,8 +98,8 @@ void SiOPMStream::write_stereo(SinglyLinkedList<int> *p_left, SinglyLinkedList<i
 			buffer.write[i] += (current_left->value + current_right->value) * volume;
 			i++;
 
-			current_left = current_left->next;
-			current_right = current_right->next;
+			current_left = current_left->next();
+			current_right = current_right->next();
 		}
 	}
 }

@@ -23,13 +23,13 @@ void SiEffectAutopan::set_params(double p_frequency, double p_stereo_width) {
 	// Volume table.
 	for (int i = -128; i < 128; i++) {
 		_p_left->value = Math::sin(1.5707963267948965 + i * width);
-		_p_left = _p_left->next;
+		_p_left = _p_left->next();
 	}
 
 	// Right phase shift.
 	_p_right = _p_left;
 	for (int i = 0; i < 128; i++) {
-		_p_right = _p_right->next;
+		_p_right = _p_right->next();
 	}
 }
 
@@ -45,8 +45,8 @@ void SiEffectAutopan::_process_lfo_mono(Vector<double> *r_buffer, int p_start_in
 		r_buffer->write[i + 1] = value * _p_right->value;
 	}
 
-	_p_left = _p_left->next;
-	_p_right = _p_right->next;
+	_p_left = _p_left->next();
+	_p_right = _p_right->next();
 }
 
 void SiEffectAutopan::_process_lfo_stereo(Vector<double> *r_buffer, int p_start_index, int p_length) {
@@ -58,8 +58,8 @@ void SiEffectAutopan::_process_lfo_stereo(Vector<double> *r_buffer, int p_start_
 		r_buffer->write[i + 1] = value_left * _p_right->value + value_right * _p_left->value;
 	}
 
-	_p_left = _p_left->next;
-	_p_right = _p_right->next;
+	_p_left = _p_left->next();
+	_p_right = _p_right->next();
 }
 
 int SiEffectAutopan::process(int p_channels, Vector<double> *r_buffer, int p_start_index, int p_length) {

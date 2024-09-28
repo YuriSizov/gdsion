@@ -26,20 +26,21 @@ class SinglyLinkedList {
 	// In other words, this is going to leak on exit, unless memory is properly managed.
 	static SinglyLinkedList<T> *_free_list;
 
+	SinglyLinkedList<T> *_next = nullptr;
+
 public:
 	// NOTE: Original code called it `i`. There is no special accessor, so we opt for a better public name.
 	T value = 0;
-	SinglyLinkedList<T> *next = nullptr;
 
 	static SinglyLinkedList<T> *alloc(int p_value = 0) {
 		SinglyLinkedList<T> *ret;
 
 		if (_free_list) {
 			ret = _free_list;
-			_free_list = _free_list->next;
+			_free_list = _free_list->_next;
 
 			ret->value = p_value;
-			ret->next = nullptr;
+			ret->_next = nullptr;
 		} else {
 			ret = memnew(SinglyLinkedList<T>(p_value));
 		}
@@ -52,8 +53,7 @@ public:
 
 		SinglyLinkedList<T> *elem = ret;
 		for (int i = 1; i < p_size; i++) {
-			elem->next = alloc(p_default_value);
-			elem = elem->next;
+			elem = elem->append(p_default_value);
 		}
 
 		return ret;
@@ -64,10 +64,9 @@ public:
 
 		SinglyLinkedList<T> *elem = ret;
 		for (int i = 1; i < p_size; i++) {
-			elem->next = alloc(p_default_value);
-			elem = elem->next;
+			elem = elem->append(p_default_value);
 		}
-		elem->next = ret;
+		elem->_next = ret;
 
 		return ret;
 	}
@@ -75,7 +74,7 @@ public:
 	static void free(SinglyLinkedList<T> *p_first_element) {
 		// Append the current allocated free list and then assume its position.
 		// The argument MUST be the first element in any list, otherwise we leave bad pointers.
-		p_first_element->next = _free_list;
+		p_first_element->_next = _free_list;
 		_free_list = p_first_element;
 	}
 
@@ -86,12 +85,12 @@ public:
 
 		// The argument MUST be the first element in any list, otherwise we leave bad pointers.
 		SinglyLinkedList<T> *elem = p_first_element;
-		while (elem->next) {
-			elem = elem->next;
+		while (elem->_next) {
+			elem = elem->_next;
 		}
 
 		// Append the current allocated free list and then assume its position.
-		elem->next = _free_list;
+		elem->_next = _free_list;
 		_free_list = p_first_element;
 	}
 
@@ -102,12 +101,12 @@ public:
 
 		// The argument MUST be the first element in any list, otherwise we leave bad pointers.
 		SinglyLinkedList<T> *elem = p_first_element;
-		while (elem->next != p_first_element) {
-			elem = elem->next;
+		while (elem->_next != p_first_element) {
+			elem = elem->_next;
 		}
 
 		// Append the current allocated free list and then assume its position.
-		elem->next = _free_list;
+		elem->_next = _free_list;
 		_free_list = p_first_element;
 	}
 
@@ -120,16 +119,35 @@ public:
 		List<SinglyLinkedList<T> *> pager;
 		pager.push_back(p_first_element);
 
-		SinglyLinkedList<T> *elem = p_first_element->next;
+		SinglyLinkedList<T> *elem = p_first_element->_next;
 		while (elem != p_first_element) {
 			pager.push_back(elem);
-			elem = elem->next;
+			elem = elem->_next;
 		}
 
 		return pager;
 	}
 
-	SinglyLinkedList(int p_value = 0) {
+	//
+
+	SinglyLinkedList<T> *next() const {
+		return _next;
+	}
+
+	SinglyLinkedList<T> *append(T p_value) {
+		_next = alloc(p_value);
+		return _next;
+	}
+
+	void link(SinglyLinkedList<T> *p_element) {
+		_next = p_element;
+	}
+
+	void unlink() {
+		_next = nullptr;
+	}
+
+	SinglyLinkedList(T p_value) {
 		value = p_value;
 	}
 };
