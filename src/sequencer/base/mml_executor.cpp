@@ -125,9 +125,7 @@ MMLEvent *MMLExecutor::on_repeat_all(MMLEvent *p_event) {
 }
 
 MMLEvent *MMLExecutor::on_repeat_begin(MMLEvent *p_event) {
-	SinglyLinkedList<int> *counter = SinglyLinkedList<int>::alloc(p_event->get_data());
-	counter->link(_repeat_counters);
-	_repeat_counters = counter;
+	_repeat_counters = _repeat_counters->prepend(p_event->get_data());
 
 	return p_event->get_next();
 }

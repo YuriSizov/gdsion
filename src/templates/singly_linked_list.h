@@ -32,7 +32,7 @@ public:
 	// NOTE: Original code called it `i`. There is no special accessor, so we opt for a better public name.
 	T value = 0;
 
-	static SinglyLinkedList<T> *alloc(int p_value = 0) {
+	static SinglyLinkedList<T> *alloc(T p_value) {
 		SinglyLinkedList<T> *ret;
 
 		if (_free_list) {
@@ -139,12 +139,24 @@ public:
 		return _next;
 	}
 
+	SinglyLinkedList<T> *prepend(T p_value) {
+		SinglyLinkedList<T> *head = alloc(p_value);
+		head->_next = this;
+		return head;
+	}
+
 	void link(SinglyLinkedList<T> *p_element) {
 		_next = p_element;
 	}
 
 	void unlink() {
 		_next = nullptr;
+	}
+
+	//
+
+	SinglyLinkedList<T> *clone_element() {
+		return alloc(value);
 	}
 
 	SinglyLinkedList(T p_value) {

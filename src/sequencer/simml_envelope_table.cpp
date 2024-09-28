@@ -38,17 +38,14 @@ void SiMMLEnvelopeTable::copy_from(const Ref<SiMMLEnvelopeTable> &p_source) {
 		return;
 	}
 
-	SinglyLinkedList<int> *curr_source = p_source->head;
-	SinglyLinkedList<int> *curr_destination = nullptr;
-	for (; curr_source != p_source->tail; curr_source = curr_source->next()) {
-		SinglyLinkedList<int> *sll_value = SinglyLinkedList<int>::alloc(curr_source->value);
-		if (curr_destination) {
-			curr_destination->link(sll_value);
-			curr_destination = sll_value;
-		} else {
-			head = sll_value;
-			curr_destination = head;
-		}
+	head = p_source->head->clone_element();
+
+	SinglyLinkedList<int> *target = head;
+	SinglyLinkedList<int> *current = p_source->head->next();
+
+	while (current != p_source->tail) {
+		target = target->append(current->value);
+		current = current->next();
 	}
 }
 
