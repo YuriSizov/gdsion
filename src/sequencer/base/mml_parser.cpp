@@ -384,8 +384,6 @@ MMLEvent *MMLParser::parse(int p_interrupt) {
 
 	// Start parsing.
 
-	// TODO: Test the _mml_regex_last_index logic. In the original code it's a native property of the RegExp object,
-	// which is updated automatically. We use it, update it, and keep track of it manually.
 	TypedArray<RegExMatch> matches = _mml_regex->search_all(_mml_string, _mml_regex_last_index);
 	for (int i = 0; i < matches.size(); i++) {
 		Ref<RegExMatch> res = matches[i];

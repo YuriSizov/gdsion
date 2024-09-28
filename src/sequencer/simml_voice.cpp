@@ -63,7 +63,7 @@ void SiMMLVoice::set_module_type(SiONModuleType p_module_type, int p_channel_num
 	tone_num = p_tone_num;
 
 	int pg_type = -1;
-	// TODO: This is needed because this method can be indirectly called by Godot editor's docgen. But this smells...
+	// SUS: This is needed because this method can be indirectly called by Godot editor's docgen. But this smells...
 	if (SiMMLRefTable::get_instance()) {
 		pg_type = SiMMLRefTable::get_instance()->get_pulse_generator_type(module_type, channel_num, tone_num);
 	}

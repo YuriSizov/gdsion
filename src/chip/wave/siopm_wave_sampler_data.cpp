@@ -60,7 +60,7 @@ int SiOPMWaveSamplerData::_seek_head_silence() {
 		for (; i < _wave_data.size();) {
 			ms -= ms_window->value;
 
-			// TODO: This looks suspicious. For the mono version we would break the loop before the final increment.
+			// SUS: For the mono version we would break the loop before the final increment.
 			// Here we would increment and then break. This is inconsistent and needs to be validated.
 			// Keeping as in the original implementation for now.
 
@@ -102,7 +102,7 @@ int SiOPMWaveSamplerData::_seek_end_gap() {
 		}
 
 	} else {
-		// TODO: See notes in _seek_head_silence, they apply here as well.
+		// SUS: See notes in _seek_head_silence, they apply here as well.
 
 		for (; i >= 0;) {
 			double ms = _wave_data[i] * _wave_data[i];

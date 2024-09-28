@@ -72,7 +72,13 @@ bool MMLExecutor::pitch_bend_from(int p_note, int p_tick_length) {
 
 	int tick_length = p_tick_length;
 	if (_note_event->get_length() != 0) {
-		// TODO: This looks suspicious.
+		// SUS: This check and following adjustments seem inconsistent to me.
+		// If the note event has length, but the bend event is shorter than that, we
+		// make the bend event almost as long as the note event, and make the note
+		// event one tick long.
+		// However, if the bend event is longer than the note event, then we keep it
+		// as is, and make the note event shorter by the bend event's length, meaning
+		// that the note event now has negative length.
 		if (tick_length < _note_event->get_length()) {
 			tick_length = _note_event->get_length() - 1;
 		}
