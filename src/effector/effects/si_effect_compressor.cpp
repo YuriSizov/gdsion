@@ -46,9 +46,9 @@ int SiEffectCompressor::process(int p_channels, Vector<double> *r_buffer, int p_
 		double value_right = (*r_buffer)[i + 1];
 
 		_window_rms_list = _window_rms_list->next();
-		_window_rms_total -= _window_rms_list->value;
-		_window_rms_list->value = value_left * value_left + value_right * value_right;
-		_window_rms_total += _window_rms_list->value;
+		_window_rms_total -= _window_rms_list->get()->value;
+		_window_rms_list->get()->value = value_left * value_left + value_right * value_right;
+		_window_rms_total += _window_rms_list->get()->value;
 
 		double rms_value = _window_rms_total * _window_rms_averaging;
 		_gain *= (rms_value > _threshold_squared ? _attack_rate : _release_rate);

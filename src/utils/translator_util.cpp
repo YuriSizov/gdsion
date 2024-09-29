@@ -1554,7 +1554,7 @@ TranslatorUtil::MMLTableNumbers TranslatorUtil::parse_table_numbers(String p_tab
 				}
 				for (int j = loop_count; j > 0; j--) {
 					for (SinglyLinkedList<int> *l = loop_head; l != loop_tail->next(); l = l->next()) {
-						last = last->append(l->value);
+						last = last->append(l->get()->value);
 					}
 				}
 			}
@@ -1586,7 +1586,7 @@ void TranslatorUtil::parse_wav(String p_table_numbers, String p_postfix, Vector<
 	int i = 0;
 	SinglyLinkedList<int> *value_base = res.head;
 	for (; i < data_length && value_base != nullptr; i++) {
-		double value = (value_base->value + 0.5) * 0.0078125;
+		double value = (value_base->get()->value + 0.5) * 0.0078125;
 		r_data->write[i] = CLAMP(value, -1, 1);
 
 		value_base = value_base->next();

@@ -43,11 +43,11 @@ int SiOPMWaveSamplerData::_seek_head_silence() {
 		double ms = 0;
 
 		for (; i < _wave_data.size(); i++) {
-			ms -= ms_window->value;
+			ms -= ms_window->get()->value;
 
 			ms_window = ms_window->next();
-			ms_window->value = _wave_data[i] * _wave_data[i];
-			ms += ms_window->value;
+			ms_window->get()->value = _wave_data[i] * _wave_data[i];
+			ms += ms_window->get()->value;
 
 			if (ms > 0.0011) {
 				break;
@@ -58,18 +58,18 @@ int SiOPMWaveSamplerData::_seek_head_silence() {
 		double ms = 0;
 
 		for (; i < _wave_data.size();) {
-			ms -= ms_window->value;
+			ms -= ms_window->get()->value;
 
 			// SUS: For the mono version we would break the loop before the final increment.
 			// Here we would increment and then break. This is inconsistent and needs to be validated.
 			// Keeping as in the original implementation for now.
 
 			ms_window = ms_window->next();
-			ms_window->value = _wave_data[i] * _wave_data[i];
+			ms_window->get()->value = _wave_data[i] * _wave_data[i];
 			i++;
-			ms_window->value += _wave_data[i] * _wave_data[i];
+			ms_window->get()->value += _wave_data[i] * _wave_data[i];
 			i++;
-			ms += ms_window->value;
+			ms += ms_window->get()->value;
 
 			if (ms > 0.0022) {
 				break;

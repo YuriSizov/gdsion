@@ -303,7 +303,7 @@ void SiOPMChannelPCM::_process_operator_mono(int p_length, bool p_mix) {
 	// Noop.
 	if (_operator->get_pcm_end_point() <= 0) {
 		for (int i = 0; i < p_length; i++) {
-			out_pipe->value = base_pipe->value;
+			out_pipe->get()->value = base_pipe->get()->value;
 			out_pipe = out_pipe->next();
 			base_pipe = base_pipe->next();
 		}
@@ -336,7 +336,7 @@ void SiOPMChannelPCM::_process_operator_mono(int p_length, bool p_mix) {
 
 					// Fast forward.
 					for (; i < p_length; i++) {
-						out_pipe->value = 0;
+						out_pipe->get()->value = 0;
 						out_pipe = out_pipe->next();
 					}
 					break;
@@ -354,7 +354,7 @@ void SiOPMChannelPCM::_process_operator_mono(int p_length, bool p_mix) {
 
 		// Output and increment pointers.
 		{
-			out_pipe->value = output + base_pipe->value;
+			out_pipe->get()->value = output + base_pipe->get()->value;
 			out_pipe = out_pipe->next();
 			base_pipe = base_pipe->next();
 		}
@@ -372,11 +372,11 @@ void SiOPMChannelPCM::_process_operator_stereo(int p_length, bool p_mix) {
 	// Noop.
 	if (_operator->get_pcm_end_point() <= 0) {
 		for (int i = 0; i < p_length; i++) {
-			out_pipe->value = base_pipe->value;
+			out_pipe->get()->value = base_pipe->get()->value;
 			out_pipe = out_pipe->next();
 			base_pipe = base_pipe->next();
 
-			out_pipe2->value = base_pipe2->value;
+			out_pipe2->get()->value = base_pipe2->get()->value;
 			out_pipe2 = out_pipe2->next();
 			base_pipe2 = base_pipe2->next();
 		}
@@ -411,9 +411,9 @@ void SiOPMChannelPCM::_process_operator_stereo(int p_length, bool p_mix) {
 
 					// Fast forward.
 					for (; i < p_length; i++) {
-						out_pipe->value = 0;
+						out_pipe->get()->value = 0;
 						out_pipe = out_pipe->next();
-						out_pipe2->value = 0;
+						out_pipe2->get()->value = 0;
 						out_pipe2 = out_pipe2->next();
 					}
 					break;
@@ -443,11 +443,11 @@ void SiOPMChannelPCM::_process_operator_stereo(int p_length, bool p_mix) {
 
 		// Output and increment pointers.
 		{
-			out_pipe->value = output_left + base_pipe->value;
+			out_pipe->get()->value = output_left + base_pipe->get()->value;
 			out_pipe = out_pipe->next();
 			base_pipe = base_pipe->next();
 
-			out_pipe2->value = output_right + base_pipe2->value;
+			out_pipe2->get()->value = output_right + base_pipe2->get()->value;
 			out_pipe2 = out_pipe2->next();
 			base_pipe2 = base_pipe2->next();
 		}

@@ -566,7 +566,7 @@ void SiOPMChannelFM::set_feedback(int p_level, int p_connection) {
 		}
 
 		_in_pipe = _operators[p_connection]->get_feed_pipe();
-		_in_pipe->value = 0;
+		_in_pipe->get()->value = 0;
 		_input_level = p_level + 6;
 		_input_mode = INPUT_FEEDBACK;
 	} else {
@@ -805,18 +805,18 @@ void SiOPMChannelFM::_process_operator1_lfo_off(int p_length) {
 		// Update PG.
 		{
 			ope0->tick_pulse_generator();
-			int t = ((ope0->get_phase() + (in_pipe->value << _input_level)) & SiOPMRefTable::PHASE_FILTER) >> ope0->get_wave_fixed_bits();
+			int t = ((ope0->get_phase() + (in_pipe->get()->value << _input_level)) & SiOPMRefTable::PHASE_FILTER) >> ope0->get_wave_fixed_bits();
 
 			int log_idx = ope0->get_wave_value(t);
 			log_idx += ope0->get_eg_output();
 			output = _table->log_table[log_idx];
 
-			ope0->get_feed_pipe()->value = output;
+			ope0->get_feed_pipe()->get()->value = output;
 		}
 
 		// Output and increment pointers.
 		{
-			out_pipe->value = output + base_pipe->value;
+			out_pipe->get()->value = output + base_pipe->get()->value;
 
 			in_pipe = in_pipe->next();
 			base_pipe = base_pipe->next();
@@ -848,18 +848,18 @@ void SiOPMChannelFM::_process_operator1_lfo_on(int p_length) {
 		// Update PG.
 		{
 			ope0->tick_pulse_generator();
-			int t = ((ope0->get_phase() + (in_pipe->value << _input_level)) & SiOPMRefTable::PHASE_FILTER) >> ope0->get_wave_fixed_bits();
+			int t = ((ope0->get_phase() + (in_pipe->get()->value << _input_level)) & SiOPMRefTable::PHASE_FILTER) >> ope0->get_wave_fixed_bits();
 
 			int log_idx = ope0->get_wave_value(t);
 			log_idx += ope0->get_eg_output() + (_amplitude_modulation_output_level >> ope0->get_amplitude_modulation_shift());
 			output = _table->log_table[log_idx];
 
-			ope0->get_feed_pipe()->value = output;
+			ope0->get_feed_pipe()->get()->value = output;
 		}
 
 		// Output and increment pointers.
 		{
-			out_pipe->value = output + base_pipe->value;
+			out_pipe->get()->value = output + base_pipe->get()->value;
 			in_pipe = in_pipe->next();
 			base_pipe = base_pipe->next();
 			out_pipe = out_pipe->next();
@@ -881,7 +881,7 @@ void SiOPMChannelFM::_process_operator2(int p_length) {
 
 	for (int i = 0; i < p_length; i++) {
 		// Clear pipes.
-		_pipe0->value = 0;
+		_pipe0->get()->value = 0;
 
 		// Update LFO.
 		_update_lfo(2);
@@ -894,14 +894,14 @@ void SiOPMChannelFM::_process_operator2(int p_length) {
 			// Update PG.
 			{
 				ope0->tick_pulse_generator();
-				int t = ((ope0->get_phase() + (in_pipe->value << _input_level)) & SiOPMRefTable::PHASE_FILTER) >> ope0->get_wave_fixed_bits();
+				int t = ((ope0->get_phase() + (in_pipe->get()->value << _input_level)) & SiOPMRefTable::PHASE_FILTER) >> ope0->get_wave_fixed_bits();
 
 				int log_idx = ope0->get_wave_value(t);
 				log_idx += ope0->get_eg_output() + (_amplitude_modulation_output_level >> ope0->get_amplitude_modulation_shift());
 				int output = _table->log_table[log_idx];
 
-				ope0->get_feed_pipe()->value = output;
-				ope0->get_out_pipe()->value  = output + ope0->get_base_pipe()->value;
+				ope0->get_feed_pipe()->get()->value = output;
+				ope0->get_out_pipe()->get()->value  = output + ope0->get_base_pipe()->get()->value;
 			}
 		}
 
@@ -913,20 +913,20 @@ void SiOPMChannelFM::_process_operator2(int p_length) {
 			// Update PG.
 			{
 				ope1->tick_pulse_generator();
-				int t = ((ope1->get_phase() + (ope1->get_in_pipe()->value << ope1->get_fm_shift())) & SiOPMRefTable::PHASE_FILTER) >> ope1->get_wave_fixed_bits();
+				int t = ((ope1->get_phase() + (ope1->get_in_pipe()->get()->value << ope1->get_fm_shift())) & SiOPMRefTable::PHASE_FILTER) >> ope1->get_wave_fixed_bits();
 
 				int log_idx = ope1->get_wave_value(t);
 				log_idx += ope1->get_eg_output() + (_amplitude_modulation_output_level >> ope1->get_amplitude_modulation_shift());
 				int output = _table->log_table[log_idx];
 
-				ope1->get_feed_pipe()->value = output;
-				ope1->get_out_pipe()->value  = output + ope1->get_base_pipe()->value;
+				ope1->get_feed_pipe()->get()->value = output;
+				ope1->get_out_pipe()->get()->value  = output + ope1->get_base_pipe()->get()->value;
 			}
 		}
 
 		// Output and increment pointers.
 		{
-			out_pipe->value = _pipe0->value + base_pipe->value;
+			out_pipe->get()->value = _pipe0->get()->value + base_pipe->get()->value;
 			in_pipe = in_pipe->next();
 			base_pipe = base_pipe->next();
 			out_pipe = out_pipe->next();
@@ -949,8 +949,8 @@ void SiOPMChannelFM::_process_operator3(int p_length) {
 
 	for (int i = 0; i < p_length; i++) {
 		// Clear pipes.
-		_pipe0->value = 0;
-		_pipe1->value = 0;
+		_pipe0->get()->value = 0;
+		_pipe1->get()->value = 0;
 
 		// Update LFO.
 		_update_lfo(3);
@@ -963,14 +963,14 @@ void SiOPMChannelFM::_process_operator3(int p_length) {
 			// Update PG.
 			{
 				ope0->tick_pulse_generator();
-				int t = ((ope0->get_phase() + (in_pipe->value << _input_level)) & SiOPMRefTable::PHASE_FILTER) >> ope0->get_wave_fixed_bits();
+				int t = ((ope0->get_phase() + (in_pipe->get()->value << _input_level)) & SiOPMRefTable::PHASE_FILTER) >> ope0->get_wave_fixed_bits();
 
 				int log_idx = ope0->get_wave_value(t);
 				log_idx += ope0->get_eg_output() + (_amplitude_modulation_output_level >> ope0->get_amplitude_modulation_shift());
 				int output = _table->log_table[log_idx];
 
-				ope0->get_feed_pipe()->value = output;
-				ope0->get_out_pipe()->value  = output + ope0->get_base_pipe()->value;
+				ope0->get_feed_pipe()->get()->value = output;
+				ope0->get_out_pipe()->get()->value  = output + ope0->get_base_pipe()->get()->value;
 			}
 		}
 
@@ -982,14 +982,14 @@ void SiOPMChannelFM::_process_operator3(int p_length) {
 			// Update PG.
 			{
 				ope1->tick_pulse_generator();
-				int t = ((ope1->get_phase() + (ope1->get_in_pipe()->value << ope1->get_fm_shift())) & SiOPMRefTable::PHASE_FILTER) >> ope1->get_wave_fixed_bits();
+				int t = ((ope1->get_phase() + (ope1->get_in_pipe()->get()->value << ope1->get_fm_shift())) & SiOPMRefTable::PHASE_FILTER) >> ope1->get_wave_fixed_bits();
 
 				int log_idx = ope1->get_wave_value(t);
 				log_idx += ope1->get_eg_output() + (_amplitude_modulation_output_level >> ope1->get_amplitude_modulation_shift());
 				int output = _table->log_table[log_idx];
 
-				ope1->get_feed_pipe()->value = output;
-				ope1->get_out_pipe()->value  = output + ope1->get_base_pipe()->value;
+				ope1->get_feed_pipe()->get()->value = output;
+				ope1->get_out_pipe()->get()->value  = output + ope1->get_base_pipe()->get()->value;
 			}
 		}
 
@@ -1001,21 +1001,21 @@ void SiOPMChannelFM::_process_operator3(int p_length) {
 			// Update PG.
 			{
 				ope2->tick_pulse_generator();
-				int t = ((ope2->get_phase() + (ope2->get_in_pipe()->value << ope2->get_fm_shift())) & SiOPMRefTable::PHASE_FILTER) >> ope2->get_wave_fixed_bits();
+				int t = ((ope2->get_phase() + (ope2->get_in_pipe()->get()->value << ope2->get_fm_shift())) & SiOPMRefTable::PHASE_FILTER) >> ope2->get_wave_fixed_bits();
 
 				int log_idx = ope2->get_wave_value(t);
 				log_idx += ope2->get_eg_output() + (_amplitude_modulation_output_level >> ope2->get_amplitude_modulation_shift());
 				int output = _table->log_table[log_idx];
 
-				ope2->get_feed_pipe()->value = output;
-				ope2->get_out_pipe()->value  = output + ope2->get_base_pipe()->value;
+				ope2->get_feed_pipe()->get()->value = output;
+				ope2->get_out_pipe()->get()->value  = output + ope2->get_base_pipe()->get()->value;
 			}
 		}
 
 
 		// Output and increment pointers.
 		{
-			out_pipe->value = _pipe0->value + base_pipe->value;
+			out_pipe->get()->value = _pipe0->get()->value + base_pipe->get()->value;
 			in_pipe = in_pipe->next();
 			base_pipe = base_pipe->next();
 			out_pipe = out_pipe->next();
@@ -1039,8 +1039,8 @@ void SiOPMChannelFM::_process_operator4(int p_length) {
 
 	for (int i = 0; i < p_length; i++) {
 		// Clear pipes.
-		_pipe0->value = 0;
-		_pipe1->value = 0;
+		_pipe0->get()->value = 0;
+		_pipe1->get()->value = 0;
 
 		// Update LFO.
 		_update_lfo(4);
@@ -1053,14 +1053,14 @@ void SiOPMChannelFM::_process_operator4(int p_length) {
 			// Update PG.
 			{
 				ope0->tick_pulse_generator();
-				int t = ((ope0->get_phase() + (in_pipe->value << _input_level)) & SiOPMRefTable::PHASE_FILTER) >> ope0->get_wave_fixed_bits();
+				int t = ((ope0->get_phase() + (in_pipe->get()->value << _input_level)) & SiOPMRefTable::PHASE_FILTER) >> ope0->get_wave_fixed_bits();
 
 				int log_idx = ope0->get_wave_value(t);
 				log_idx += ope0->get_eg_output() + (_amplitude_modulation_output_level >> ope0->get_amplitude_modulation_shift());
 				int output = _table->log_table[log_idx];
 
-				ope0->get_feed_pipe()->value = output;
-				ope0->get_out_pipe()->value  = output + ope0->get_base_pipe()->value;
+				ope0->get_feed_pipe()->get()->value = output;
+				ope0->get_out_pipe()->get()->value  = output + ope0->get_base_pipe()->get()->value;
 			}
 		}
 
@@ -1072,14 +1072,14 @@ void SiOPMChannelFM::_process_operator4(int p_length) {
 			// Update PG.
 			{
 				ope1->tick_pulse_generator();
-				int t = ((ope1->get_phase() + (ope1->get_in_pipe()->value << ope1->get_fm_shift())) & SiOPMRefTable::PHASE_FILTER) >> ope1->get_wave_fixed_bits();
+				int t = ((ope1->get_phase() + (ope1->get_in_pipe()->get()->value << ope1->get_fm_shift())) & SiOPMRefTable::PHASE_FILTER) >> ope1->get_wave_fixed_bits();
 
 				int log_idx = ope1->get_wave_value(t);
 				log_idx += ope1->get_eg_output() + (_amplitude_modulation_output_level >> ope1->get_amplitude_modulation_shift());
 				int output = _table->log_table[log_idx];
 
-				ope1->get_feed_pipe()->value = output;
-				ope1->get_out_pipe()->value  = output + ope1->get_base_pipe()->value;
+				ope1->get_feed_pipe()->get()->value = output;
+				ope1->get_out_pipe()->get()->value  = output + ope1->get_base_pipe()->get()->value;
 			}
 		}
 
@@ -1091,14 +1091,14 @@ void SiOPMChannelFM::_process_operator4(int p_length) {
 			// Update PG.
 			{
 				ope2->tick_pulse_generator();
-				int t = ((ope2->get_phase() + (ope2->get_in_pipe()->value << ope2->get_fm_shift())) & SiOPMRefTable::PHASE_FILTER) >> ope2->get_wave_fixed_bits();
+				int t = ((ope2->get_phase() + (ope2->get_in_pipe()->get()->value << ope2->get_fm_shift())) & SiOPMRefTable::PHASE_FILTER) >> ope2->get_wave_fixed_bits();
 
 				int log_idx = ope2->get_wave_value(t);
 				log_idx += ope2->get_eg_output() + (_amplitude_modulation_output_level >> ope2->get_amplitude_modulation_shift());
 				int output = _table->log_table[log_idx];
 
-				ope2->get_feed_pipe()->value = output;
-				ope2->get_out_pipe()->value  = output + ope2->get_base_pipe()->value;
+				ope2->get_feed_pipe()->get()->value = output;
+				ope2->get_out_pipe()->get()->value  = output + ope2->get_base_pipe()->get()->value;
 			}
 		}
 
@@ -1110,21 +1110,21 @@ void SiOPMChannelFM::_process_operator4(int p_length) {
 			// Update PG.
 			{
 				ope3->tick_pulse_generator();
-				int t = ((ope3->get_phase() + (ope3->get_in_pipe()->value << ope3->get_fm_shift())) & SiOPMRefTable::PHASE_FILTER) >> ope3->get_wave_fixed_bits();
+				int t = ((ope3->get_phase() + (ope3->get_in_pipe()->get()->value << ope3->get_fm_shift())) & SiOPMRefTable::PHASE_FILTER) >> ope3->get_wave_fixed_bits();
 
 				int log_idx = ope3->get_wave_value(t);
 				log_idx += ope3->get_eg_output() + (_amplitude_modulation_output_level >> ope3->get_amplitude_modulation_shift());
 				int output = _table->log_table[log_idx];
 
-				ope3->get_feed_pipe()->value = output;
-				ope3->get_out_pipe()->value  = output + ope3->get_base_pipe()->value;
+				ope3->get_feed_pipe()->get()->value = output;
+				ope3->get_out_pipe()->get()->value  = output + ope3->get_base_pipe()->get()->value;
 			}
 
 		}
 
 		// Output and increment pointers.
 		{
-			out_pipe->value = _pipe0->value + base_pipe->value;
+			out_pipe->get()->value = _pipe0->get()->value + base_pipe->get()->value;
 			in_pipe = in_pipe->next();
 			base_pipe = base_pipe->next();
 			out_pipe = out_pipe->next();
@@ -1152,7 +1152,7 @@ void SiOPMChannelFM::_process_pcm_lfo_off(int p_length) {
 		// Update PG.
 		{
 			ope0->tick_pulse_generator();
-			int t = (ope0->get_phase() + (in_pipe->value << _input_level)) >> ope0->get_wave_fixed_bits();
+			int t = (ope0->get_phase() + (in_pipe->get()->value << _input_level)) >> ope0->get_wave_fixed_bits();
 
 			if (t >= ope0->get_pcm_end_point()) {
 				if (ope0->get_pcm_loop_point() == -1) {
@@ -1161,7 +1161,7 @@ void SiOPMChannelFM::_process_pcm_lfo_off(int p_length) {
 
 					// Fast forward.
 					for (; i < p_length; i++) {
-						out_pipe->value = base_pipe->value;
+						out_pipe->get()->value = base_pipe->get()->value;
 						in_pipe = in_pipe->next();
 						base_pipe = base_pipe->next();
 						out_pipe = out_pipe->next();
@@ -1178,12 +1178,12 @@ void SiOPMChannelFM::_process_pcm_lfo_off(int p_length) {
 			log_idx += ope0->get_eg_output();
 			output = _table->log_table[log_idx];
 
-			ope0->get_feed_pipe()->value = output;
+			ope0->get_feed_pipe()->get()->value = output;
 		}
 
 		// Output and increment pointers.
 		{
-			out_pipe->value = output + base_pipe->value;
+			out_pipe->get()->value = output + base_pipe->get()->value;
 			in_pipe = in_pipe->next();
 			base_pipe = base_pipe->next();
 			out_pipe = out_pipe->next();
@@ -1214,7 +1214,7 @@ void SiOPMChannelFM::_process_pcm_lfo_on(int p_length) {
 		// Update PG.
 		{
 			ope0->tick_pulse_generator();
-			int t = (ope0->get_phase() + (in_pipe->value<<_input_level)) >> ope0->get_wave_fixed_bits();
+			int t = (ope0->get_phase() + (in_pipe->get()->value<<_input_level)) >> ope0->get_wave_fixed_bits();
 
 			if (t >= ope0->get_pcm_end_point()) {
 				if (ope0->get_pcm_loop_point() == -1) {
@@ -1223,7 +1223,7 @@ void SiOPMChannelFM::_process_pcm_lfo_on(int p_length) {
 
 					// Fast forward.
 					for (; i < p_length; i++) {
-						out_pipe->value = base_pipe->value;
+						out_pipe->get()->value = base_pipe->get()->value;
 						in_pipe = in_pipe->next();
 						base_pipe = base_pipe->next();
 						out_pipe = out_pipe->next();
@@ -1240,12 +1240,12 @@ void SiOPMChannelFM::_process_pcm_lfo_on(int p_length) {
 			log_idx += ope0->get_eg_output() + (_amplitude_modulation_output_level>>ope0->get_amplitude_modulation_shift());
 			output = _table->log_table[log_idx];
 
-			ope0->get_feed_pipe()->value = output;
+			ope0->get_feed_pipe()->get()->value = output;
 		}
 
 		// Output and increment pointers.
 		{
-			out_pipe->value = output + base_pipe->value;
+			out_pipe->get()->value = output + base_pipe->get()->value;
 			in_pipe = in_pipe->next();
 			base_pipe = base_pipe->next();
 			out_pipe = out_pipe->next();
@@ -1281,7 +1281,7 @@ void SiOPMChannelFM::_process_analog_like(int p_length) {
 			// Operator 0.
 			{
 				ope0->tick_pulse_generator();
-				int t = ((ope0->get_phase() + (in_pipe->value << _input_level)) & SiOPMRefTable::PHASE_FILTER) >> ope0->get_wave_fixed_bits();
+				int t = ((ope0->get_phase() + (in_pipe->get()->value << _input_level)) & SiOPMRefTable::PHASE_FILTER) >> ope0->get_wave_fixed_bits();
 
 				int log_idx = ope0->get_wave_value(t);
 				log_idx += ope0->get_eg_output() + (_amplitude_modulation_output_level >> ope0->get_amplitude_modulation_shift());
@@ -1298,12 +1298,12 @@ void SiOPMChannelFM::_process_analog_like(int p_length) {
 				output1 = _table->log_table[log_idx];
 			}
 
-			ope0->get_feed_pipe()->value = output0;
+			ope0->get_feed_pipe()->get()->value = output0;
 		}
 
 		// Output and increment pointers.
 		{
-			out_pipe->value = output0 + output1 + base_pipe->value;
+			out_pipe->get()->value = output0 + output1 + base_pipe->get()->value;
 			in_pipe = in_pipe->next();
 			base_pipe = base_pipe->next();
 			out_pipe = out_pipe->next();
@@ -1340,7 +1340,7 @@ void SiOPMChannelFM::_process_ring(int p_length) {
 			// Operator 0.
 			{
 				ope0->tick_pulse_generator();
-				int t = ((ope0->get_phase() + (in_pipe->value << _input_level)) & SiOPMRefTable::PHASE_FILTER) >> ope0->get_wave_fixed_bits();
+				int t = ((ope0->get_phase() + (in_pipe->get()->value << _input_level)) & SiOPMRefTable::PHASE_FILTER) >> ope0->get_wave_fixed_bits();
 				log_idx = ope0->get_wave_value(t);
 			}
 
@@ -1354,12 +1354,12 @@ void SiOPMChannelFM::_process_ring(int p_length) {
 				output = _table->log_table[log_idx];
 			}
 
-			ope0->get_feed_pipe()->value = output;
+			ope0->get_feed_pipe()->get()->value = output;
 		}
 
 		// Output and increment pointers.
 		{
-			out_pipe->value = output + base_pipe->value;
+			out_pipe->get()->value = output + base_pipe->get()->value;
 			in_pipe = in_pipe->next();
 			base_pipe = base_pipe->next();
 			out_pipe = out_pipe->next();
@@ -1393,7 +1393,7 @@ void SiOPMChannelFM::_process_sync(int p_length) {
 		{
 			// Operator 0.
 			{
-				ope0->tick_pulse_generator(in_pipe->value << _input_level);
+				ope0->tick_pulse_generator(in_pipe->get()->value << _input_level);
 				if (ope0->get_phase() & SiOPMRefTable::PHASE_MAX) {
 					ope1->set_phase(ope1->get_key_on_phase_raw());
 				}
@@ -1411,12 +1411,12 @@ void SiOPMChannelFM::_process_sync(int p_length) {
 				output = _table->log_table[log_idx];
 			}
 
-			ope0->get_feed_pipe()->value = output;
+			ope0->get_feed_pipe()->get()->value = output;
 		}
 
 		// Output and increment pointers.
 		{
-			out_pipe->value = output + base_pipe->value;
+			out_pipe->get()->value = output + base_pipe->get()->value;
 			in_pipe = in_pipe->next();
 			base_pipe = base_pipe->next();
 			out_pipe = out_pipe->next();

@@ -22,7 +22,7 @@ void SiMMLEnvelopeTable::to_vector(int p_length, Vector<int> *r_destination, int
 	for (int i = 0; i < p_length; i++) {
 		int value = 0;
 		if (current) {
-			value = current->value;
+			value = current->get()->value;
 			current = current->next();
 		}
 
@@ -44,7 +44,7 @@ void SiMMLEnvelopeTable::copy_from(const Ref<SiMMLEnvelopeTable> &p_source) {
 	SinglyLinkedList<int> *current = p_source->head->next();
 
 	while (current != p_source->tail) {
-		target = target->append(current->value);
+		target = target->append(current->get()->value);
 		current = current->next();
 	}
 }
@@ -86,10 +86,10 @@ SiMMLEnvelopeTable::SiMMLEnvelopeTable(Vector<int> p_table, int p_loop_point) {
 			loop = tail;
 		}
 
-		tail->value = p_table[i];
+		tail->get()->value = p_table[i];
 		tail = tail->next();
 	}
 
-	tail->value = p_table[i];
+	tail->get()->value = p_table[i];
 	tail->link(loop);
 }

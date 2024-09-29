@@ -216,7 +216,7 @@ SinglyLinkedList<int> *SiMMLTrack::_make_modulation_table(int p_depth, int p_end
 	SinglyLinkedList<int> *element = list;
 	if (p_delay != 0) {
 		for (int i = 0; i < p_delay; i++) {
-			element->value = p_depth;
+			element->get()->value = p_depth;
 			element = element->next();
 		}
 	}
@@ -226,13 +226,13 @@ SinglyLinkedList<int> *SiMMLTrack::_make_modulation_table(int p_depth, int p_end
 		int step = ((p_end_depth << FIXED_BITS) - depth) / p_term;
 
 		for (int i = 0; i < p_term; i++) {
-			element->value = depth >> FIXED_BITS;
+			element->get()->value = depth >> FIXED_BITS;
 			depth += step;
 			element = element->next();
 		}
 	}
 
-	element->value = p_end_depth;
+	element->get()->value = p_end_depth;
 
 	return list;
 }
@@ -531,7 +531,7 @@ int SiMMLTrack::_buffer_envelope(int p_length, int p_step) {
 		if (_envelope_exp && _counter_exp == 1) {
 			_counter_exp--;
 
-			int expression = CLAMP(_envelope_exp_offset + _envelope_exp->value, 0, 128);
+			int expression = CLAMP(_envelope_exp_offset + _envelope_exp->get()->value, 0, 128);
 			_channel->offset_volume(expression, _velocity);
 
 			_envelope_exp = _envelope_exp->next();
@@ -540,7 +540,7 @@ int SiMMLTrack::_buffer_envelope(int p_length, int p_step) {
 
 		// Update pitch/note.
 		if (_envelope_pitch_active) {
-			_channel->set_pitch(_envelope_pitch->value + (_envelope_note->value << 6) + (_sweep_pitch >> FIXED_BITS));
+			_channel->set_pitch(_envelope_pitch->get()->value + (_envelope_note->get()->value << 6) + (_sweep_pitch >> FIXED_BITS));
 
 			if (_counter_pitch == 1) {
 				_counter_pitch--;
@@ -570,7 +570,7 @@ int SiMMLTrack::_buffer_envelope(int p_length, int p_step) {
 		if (_envelope_filter && _counter_filter == 1) {
 			_counter_filter--;
 
-			_channel->offset_filter(_envelope_filter->value);
+			_channel->offset_filter(_envelope_filter->get()->value);
 
 			_envelope_filter = _envelope_filter->next();
 			_counter_filter = _max_counter_filter;
@@ -580,7 +580,7 @@ int SiMMLTrack::_buffer_envelope(int p_length, int p_step) {
 		if (_envelope_voice && _counter_voice == 1) {
 			_counter_voice--;
 
-			_channel_settings->select_tone(this, _envelope_voice->value);
+			_channel_settings->select_tone(this, _envelope_voice->get()->value);
 
 			_envelope_voice = _envelope_voice->next();
 			_counter_voice = _max_counter_voice;
@@ -588,11 +588,11 @@ int SiMMLTrack::_buffer_envelope(int p_length, int p_step) {
 
 		// Update modulations.
 		if (_envelope_mod_amp) {
-			_channel->set_amplitude_modulation(_envelope_mod_amp->value);
+			_channel->set_amplitude_modulation(_envelope_mod_amp->get()->value);
 			_envelope_mod_amp =_envelope_mod_amp->next();
 		}
 		if (_envelope_mod_pitch) {
-			_channel->set_pitch_modulation(_envelope_mod_pitch->value);
+			_channel->set_pitch_modulation(_envelope_mod_pitch->get()->value);
 			_envelope_mod_pitch = _envelope_mod_pitch->next();
 		}
 

@@ -26,21 +26,27 @@ class SinglyLinkedList {
 	// In other words, this is going to leak on exit, unless memory is properly managed.
 	static SinglyLinkedList<T> *_free_list;
 
+public:
+	class Element {
+	public:
+		T value = 0;
+	};
+
+private:
+	Element *_element = nullptr;
+
 	SinglyLinkedList<T> *_next = nullptr;
 
 public:
-	// NOTE: Original code called it `i`. There is no special accessor, so we opt for a better public name.
-	T value = 0;
-
 	static SinglyLinkedList<T> *alloc(T p_value) {
 		SinglyLinkedList<T> *ret;
 
 		if (_free_list) {
 			ret = _free_list;
-			_free_list = _free_list->_next;
+			_free_list = _free_list->next();
 
-			ret->value = p_value;
-			ret->_next = nullptr;
+			ret->get()->value = p_value;
+			ret->unlink();
 		} else {
 			ret = memnew(SinglyLinkedList<T>(p_value));
 		}
@@ -57,7 +63,7 @@ public:
 		}
 
 		if (p_ring) {
-			elem->_next = head; // Loop makes the ring.
+			elem->link(head); // Loop makes the ring.
 		}
 
 		return head;
@@ -68,7 +74,7 @@ public:
 		// handle the list itself gracefully and you may leave bad pointers unattended as a result.
 
 		// Append the current allocated free list and then assume its position.
-		p_element->_next = _free_list;
+		p_element->link(_free_list);
 		_free_list = p_element;
 	}
 
@@ -82,7 +88,7 @@ public:
 		SinglyLinkedList<T> *tail = p_head->last();
 
 		// Append the current allocated free list and then assume its position.
-		tail->_next = _free_list;
+		tail->link(_free_list);
 		_free_list = p_head;
 	}
 
@@ -96,21 +102,22 @@ public:
 		SinglyLinkedList<T> *first = const_cast<SinglyLinkedList<T> *>(this);
 		SinglyLinkedList<T> *elem = first;
 
-		while (elem->_next && elem->_next != first) {
-			elem = elem->_next;
+		while (elem->next() && elem->next() != first) {
+			elem = elem->next();
 		}
 
 		return elem;
 	}
 
 	SinglyLinkedList<T> *append(T p_value) {
-		_next = alloc(p_value);
-		return _next;
+		SinglyLinkedList<T> *tail = alloc(p_value);
+		link(tail);
+		return next();
 	}
 
 	SinglyLinkedList<T> *prepend(T p_value) {
 		SinglyLinkedList<T> *head = alloc(p_value);
-		head->_next = this;
+		head->link(this);
 		return head;
 	}
 
@@ -124,23 +131,37 @@ public:
 
 	//
 
+	Element *get() const {
+		return _element;
+	}
+
+	//
+
 	SinglyLinkedList<T> *index(int p_index) const {
 		SinglyLinkedList<T> *element = const_cast<SinglyLinkedList<T> *>(this);
 
 		// This isn't very efficient, but should be fast enough for now.
 		for (int i = 0; i < p_index; i++) {
-			element = element->_next;
+			element = element->next();
 		}
 
 		return element;
 	}
 
 	SinglyLinkedList<T> *clone_element() {
-		return alloc(value);
+		return alloc(_element->value);
 	}
 
 	SinglyLinkedList(T p_value) {
-		value = p_value;
+		_element = memnew(Element);
+		_element->value = p_value;
+	}
+
+	~SinglyLinkedList() {
+		if (_element) {
+			memdelete(_element);
+			_element = nullptr;
+		}
 	}
 };
 

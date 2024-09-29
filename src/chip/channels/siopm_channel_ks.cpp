@@ -163,10 +163,10 @@ void SiOPMChannelKS::_apply_karplus_strong(SinglyLinkedList<int> *p_target, int 
 		int buffer_index = (int)_ks_delay_buffer_index;
 
 		_output *= _decay;
-		_output += (_ks_delay_buffer[buffer_index] - _output) * _decay_lpf + target->value;
+		_output += (_ks_delay_buffer[buffer_index] - _output) * _decay_lpf + target->get()->value;
 
 		_ks_delay_buffer.write[buffer_index] = _output;
-		target->value = (int)_output;
+		target->get()->value = (int)_output;
 		target = target->next();
 	}
 }

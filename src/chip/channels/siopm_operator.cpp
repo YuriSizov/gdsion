@@ -584,7 +584,7 @@ void SiOPMOperator::initialize() {
 	_final = true;
 	_in_pipe   = _sound_chip->get_zero_buffer();
 	_base_pipe = _sound_chip->get_zero_buffer();
-	_feed_pipe->value = 0;
+	_feed_pipe->get()->value = 0;
 
 	// Reset all parameters.
 	set_operator_params(_sound_chip->get_init_operator_params());

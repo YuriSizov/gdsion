@@ -45,9 +45,9 @@ void SiOPMStream::write(SinglyLinkedList<int> *p_data, int p_start, int p_length
 
 		SinglyLinkedList<int> *current = p_data;
 		for (int i = p_start << 1; i < buffer_size;) {
-			buffer.write[i] += current->value * volume_left;
+			buffer.write[i] += current->get()->value * volume_left;
 			i++;
-			buffer.write[i] += current->value * volume_right;
+			buffer.write[i] += current->get()->value * volume_right;
 			i++;
 
 			current = current->next();
@@ -55,9 +55,9 @@ void SiOPMStream::write(SinglyLinkedList<int> *p_data, int p_start, int p_length
 	} else if (channels == 1) { // mono
 		SinglyLinkedList<int> *current = p_data;
 		for (int i = p_start << 1; i < buffer_size;) {
-			buffer.write[i] += current->value * volume;
+			buffer.write[i] += current->get()->value * volume;
 			i++;
-			buffer.write[i] += current->value * volume;
+			buffer.write[i] += current->get()->value * volume;
 			i++;
 
 			current = current->next();
@@ -78,9 +78,9 @@ void SiOPMStream::write_stereo(SinglyLinkedList<int> *p_left, SinglyLinkedList<i
 		SinglyLinkedList<int> *current_right = p_right;
 
 		for (int i = p_start << 1; i < buffer_size;) {
-			buffer.write[i] += current_left->value * volume_left;
+			buffer.write[i] += current_left->get()->value * volume_left;
 			i++;
-			buffer.write[i] += current_right->value * volume_right;
+			buffer.write[i] += current_right->get()->value * volume_right;
 			i++;
 
 			current_left = current_left->next();
@@ -93,9 +93,9 @@ void SiOPMStream::write_stereo(SinglyLinkedList<int> *p_left, SinglyLinkedList<i
 		SinglyLinkedList<int> *current_right = p_right;
 
 		for (int i = p_start << 1; i < buffer_size;) {
-			buffer.write[i] += (current_left->value + current_right->value) * volume;
+			buffer.write[i] += (current_left->get()->value + current_right->get()->value) * volume;
 			i++;
-			buffer.write[i] += (current_left->value + current_right->value) * volume;
+			buffer.write[i] += (current_left->get()->value + current_right->get()->value) * volume;
 			i++;
 
 			current_left = current_left->next();

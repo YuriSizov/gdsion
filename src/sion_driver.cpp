@@ -444,9 +444,9 @@ void SiONDriver::_streaming() {
 
 	// Calculate an average processing time.
 	_performance_stats.streaming_time = start_time;
-	_performance_stats.total_processing_time -= _performance_stats.processing_time_data->value;
-	_performance_stats.processing_time_data->value = Time::get_singleton()->get_ticks_msec() - start_time;
-	_performance_stats.total_processing_time += _performance_stats.processing_time_data->value;
+	_performance_stats.total_processing_time -= _performance_stats.processing_time_data->get()->value;
+	_performance_stats.processing_time_data->get()->value = Time::get_singleton()->get_ticks_msec() - start_time;
+	_performance_stats.total_processing_time += _performance_stats.processing_time_data->get()->value;
 	_performance_stats.processing_time_data = _performance_stats.processing_time_data->next();
 	_performance_stats.average_processing_time = _performance_stats.total_processing_time * _performance_stats.total_processing_time_ratio;
 
@@ -606,7 +606,7 @@ void SiONDriver::play(const Variant &p_data, bool p_reset_effector) {
 
 	_performance_stats.total_processing_time = 0;
 	for (int i = 0; i < TIME_AVERAGING_COUNT; i++) {
-		_performance_stats.processing_time_data->value = 0;
+		_performance_stats.processing_time_data->get()->value = 0;
 		_performance_stats.processing_time_data = _performance_stats.processing_time_data->next();
 	}
 

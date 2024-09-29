@@ -131,7 +131,7 @@ MMLEvent *MMLExecutor::on_repeat_begin(MMLEvent *p_event) {
 }
 
 MMLEvent *MMLExecutor::on_repeat_break(MMLEvent *p_event) {
-	if (_repeat_counters->value == 1) {
+	if (_repeat_counters->get()->value == 1) {
 		SinglyLinkedList<int> *counter = _repeat_counters->next();
 		SinglyLinkedList<int>::free(_repeat_counters);
 		_repeat_counters = counter;
@@ -144,8 +144,8 @@ MMLEvent *MMLExecutor::on_repeat_break(MMLEvent *p_event) {
 }
 
 MMLEvent *MMLExecutor::on_repeat_end(MMLEvent *p_event) {
-	_repeat_counters->value -= 1;
-	if (_repeat_counters->value == 0) {
+	_repeat_counters->get()->value -= 1;
+	if (_repeat_counters->get()->value == 0) {
 		SinglyLinkedList<int> *counter = _repeat_counters->next();
 		SinglyLinkedList<int>::free(_repeat_counters);
 		_repeat_counters = counter;

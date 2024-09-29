@@ -301,7 +301,7 @@ void SiOPMChannelBase::_apply_ring_modulation(SinglyLinkedList<int> *p_target, i
 	SinglyLinkedList<int> *target = p_target;
 
 	for (int i = 0; i < p_length; i++) {
-		target->value *= pipe->value * _ringmod_level;
+		target->get()->value *= pipe->get()->value * _ringmod_level;
 		pipe = pipe->next();
 		target = target->next();
 	}
@@ -322,11 +322,11 @@ void SiOPMChannelBase::_apply_sv_filter(SinglyLinkedList<int> *p_target, int p_l
 	while (length >= step) {
 		// Process.
 		for (int i = 0; i < step; i++) {
-			r_variables[2] = (double)target->value - r_variables[0] - r_variables[1] * feedback_value;
+			r_variables[2] = (double)target->get()->value - r_variables[0] - r_variables[1] * feedback_value;
 			r_variables[1] += r_variables[2] * cutoff_value;
 			r_variables[0] += r_variables[1] * cutoff_value;
 
-			target->value = (int)r_variables[_filter_type];
+			target->get()->value = (int)r_variables[_filter_type];
 			target = target->next();
 		}
 		length -= step;
@@ -347,11 +347,11 @@ void SiOPMChannelBase::_apply_sv_filter(SinglyLinkedList<int> *p_target, int p_l
 
 	// Process the remainder.
 	for (int i = 0; i < length; i++) {
-		r_variables[2] = (double)target->value - r_variables[0] - r_variables[1] * feedback_value;
+		r_variables[2] = (double)target->get()->value - r_variables[0] - r_variables[1] * feedback_value;
 		r_variables[1] += r_variables[2] * cutoff_value;
 		r_variables[0] += r_variables[1] * cutoff_value;
 
-		target->value = (int)r_variables[_filter_type];
+		target->get()->value = (int)r_variables[_filter_type];
 		target = target->next();
 	}
 
