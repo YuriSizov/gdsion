@@ -26,7 +26,7 @@ void SiEffectAutopan::set_params(double p_frequency, double p_stereo_width) {
 		_p_left = _p_left->next();
 	}
 
-	// Right phase shift.
+	// Right is in the same buffer, but shifted.
 	_p_right = _p_left;
 	for (int i = 0; i < 128; i++) {
 		_p_right = _p_right->next();

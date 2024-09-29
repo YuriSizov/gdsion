@@ -434,6 +434,7 @@ void SiONDriver::_streaming() {
 	}
 
 	int start_time = Time::get_singleton()->get_ticks_msec();
+	_performance_stats.streaming_time = start_time;
 
 	// Processing.
 	sound_chip->begin_process();
@@ -443,12 +444,16 @@ void SiONDriver::_streaming() {
 	sound_chip->end_process();
 
 	// Calculate an average processing time.
-	_performance_stats.streaming_time = start_time;
-	_performance_stats.total_processing_time -= _performance_stats.processing_time_data->get()->value;
-	_performance_stats.processing_time_data->get()->value = Time::get_singleton()->get_ticks_msec() - start_time;
-	_performance_stats.total_processing_time += _performance_stats.processing_time_data->get()->value;
+
+	const int frame_time = Time::get_singleton()->get_ticks_msec() - start_time;
+	SinglyLinkedList<int>::Element *frame_record = _performance_stats.processing_time_data->get();
+
+	_performance_stats.total_processing_time -= frame_record->value;
+	frame_record->value = frame_time;
+	_performance_stats.total_processing_time += frame_record->value;
 	_performance_stats.processing_time_data = _performance_stats.processing_time_data->next();
-	_performance_stats.average_processing_time = _performance_stats.total_processing_time * _performance_stats.total_processing_time_ratio;
+
+	_performance_stats.update_average_processing_time();
 
 	// Write samples.
 	Vector<double> *output_buffer = sound_chip->get_output_buffer_ptr();
@@ -605,10 +610,7 @@ void SiONDriver::play(const Variant &p_data, bool p_reset_effector) {
 	_prepare_process(p_data, p_reset_effector);
 
 	_performance_stats.total_processing_time = 0;
-	for (int i = 0; i < TIME_AVERAGING_COUNT; i++) {
-		_performance_stats.processing_time_data->get()->value = 0;
-		_performance_stats.processing_time_data = _performance_stats.processing_time_data->next();
-	}
+	_performance_stats.processing_time_data->reset();
 
 	_is_paused = false;
 	_is_finish_sequence_dispatched = (p_data.get_type() == Variant::NIL);

@@ -135,6 +135,17 @@ public:
 		return _element;
 	}
 
+	void reset() {
+		SinglyLinkedList<T> *first = this;
+		SinglyLinkedList<T> *elem = first;
+
+		while (elem->next() && elem->next() != first) {
+			elem->get()->value = 0;
+			elem = elem->next();
+		}
+		elem->get()->value = 0;
+	}
+
 	//
 
 	SinglyLinkedList<T> *index(int p_index) const {

@@ -255,6 +255,10 @@ private:
 		int frame_timestamp = 0;
 		// Frame rate, ms.
 		int frame_rate = 1;
+
+		void update_average_processing_time() {
+			average_processing_time = total_processing_time * total_processing_time_ratio;
+		}
 	} _performance_stats;
 
 	//

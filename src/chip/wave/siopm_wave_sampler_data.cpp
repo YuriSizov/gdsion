@@ -36,18 +36,25 @@ int SiOPMWaveSamplerData::_seek_head_silence() {
 		return 0;
 	}
 
+	// Note: Original code is pretty much broken here. The intent seems to be to keep track of the
+	// last 22 sample points and check if their sum goes over a threshold. However, the order of
+	// calls was wrong, and we ended up adding and immediately removing the value from the sum, and
+	// constantly overriding our ring buffer without reusing its values.
+	// This method has been adjusted to fix the code according to the assumed intent. But it's not
+	// tested, and I can't say if the original idea behind the code is wrong somehow.
+
 	SinglyLinkedList<double> *ms_window = SinglyLinkedList<double>::alloc_list(22, 0.0, true); // 0.5ms
 	int i = 0;
 
 	if (_channel_count == 1) {
-		double ms = 0;
+		double ms = 0.0;
 
 		for (; i < _wave_data.size(); i++) {
 			ms -= ms_window->get()->value;
-
-			ms_window = ms_window->next();
 			ms_window->get()->value = _wave_data[i] * _wave_data[i];
 			ms += ms_window->get()->value;
+
+			ms_window = ms_window->next();
 
 			if (ms > 0.0011) {
 				break;
@@ -55,31 +62,23 @@ int SiOPMWaveSamplerData::_seek_head_silence() {
 		}
 
 	} else {
-		double ms = 0;
+		double ms = 0.0;
 
-		for (; i < _wave_data.size();) {
+		for (; i < _wave_data.size(); i += 2) {
 			ms -= ms_window->get()->value;
-
-			// SUS: For the mono version we would break the loop before the final increment.
-			// Here we would increment and then break. This is inconsistent and needs to be validated.
-			// Keeping as in the original implementation for now.
+			ms_window->get()->value  = _wave_data[i]     * _wave_data[i];
+			ms_window->get()->value += _wave_data[i + 1] * _wave_data[i + 1];
+			ms += ms_window->get()->value;
 
 			ms_window = ms_window->next();
-			ms_window->get()->value = _wave_data[i] * _wave_data[i];
-			i++;
-			ms_window->get()->value += _wave_data[i] * _wave_data[i];
-			i++;
-			ms += ms_window->get()->value;
 
 			if (ms > 0.0022) {
 				break;
 			}
 		}
 
-		// To add to above, maybe this is why there is this step?
 		i >>= 1;
 	}
-
 
 	SinglyLinkedList<double>::free_list(ms_window);
 	return i - 22;
@@ -100,15 +99,10 @@ int SiOPMWaveSamplerData::_seek_end_gap() {
 				break;
 			}
 		}
-
 	} else {
-		// SUS: See notes in _seek_head_silence, they apply here as well.
-
-		for (; i >= 0;) {
-			double ms = _wave_data[i] * _wave_data[i];
-			i--;
-			ms += _wave_data[i] * _wave_data[i];
-			i--;
+		for (; i >= 0; i -= 2) {
+			double ms = _wave_data[i]     * _wave_data[i];
+			ms       += _wave_data[i - 1] * _wave_data[i - 1];
 
 			if (ms > 0.0002) {
 				break;
@@ -118,6 +112,7 @@ int SiOPMWaveSamplerData::_seek_end_gap() {
 		i >>= 1;
 	}
 
+	// SUS: What is 1152? Should be extracted into a clearly named constant.
 	return MAX(i, (get_length() - 1152));
 }
 
