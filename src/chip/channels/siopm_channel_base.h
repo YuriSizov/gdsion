@@ -128,10 +128,9 @@ protected:
 	Vector<int> _lfo_wave_table;
 	int _lfo_wave_shape = 0;
 
-	SinglyLinkedList<int> *_rotate_pipe(SinglyLinkedList<int> *p_pipe, int p_length);
-	void _apply_ring_modulation(SinglyLinkedList<int> *p_target, int p_length);
+	void _apply_ring_modulation(SinglyLinkedList<int>::Element *p_buffer_start, int p_length);
 	// NOTE: Original code would implicitly use the filter variables if nothing was passed as the 3rd argument. We make this explicit.
-	void _apply_sv_filter(SinglyLinkedList<int> *p_target, int p_length, double (&r_variables)[3]);
+	void _apply_sv_filter(SinglyLinkedList<int>::Element *p_buffer_start, int p_length, double (&r_variables)[3]);
 	void _reset_sv_filter_state();
 	bool _try_shift_sv_filter_state(int p_state);
 	void _shift_sv_filter_state(int p_state);

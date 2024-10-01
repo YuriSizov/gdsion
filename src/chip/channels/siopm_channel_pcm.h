@@ -50,8 +50,8 @@ class SiOPMChannelPCM : public SiOPMChannelBase {
 	void _process_operator_mono(int p_length, bool p_mix);
 	void _process_operator_stereo(int p_length, bool p_mix);
 
-	void _write_stream_mono(SinglyLinkedList<int> *p_output, int p_length);
-	void _write_stream_stereo(SinglyLinkedList<int> *p_output_left, SinglyLinkedList<int> *p_output_right, int p_length);
+	void _write_stream_mono(SinglyLinkedList<int>::Element *p_output, int p_length);
+	void _write_stream_stereo(SinglyLinkedList<int>::Element *p_output_left, SinglyLinkedList<int>::Element *p_output_right, int p_length);
 
 protected:
 	static void _bind_methods();

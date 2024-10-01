@@ -155,19 +155,14 @@ void SiOPMChannelBase::set_ring_modulation(int p_level, int p_pipe_index) {
 }
 
 void SiOPMChannelBase::set_output(OutputMode p_output_mode, int p_pipe_index) {
-	bool flag_add = false;
 	int pipe_index = p_pipe_index & 3;
-
 	if (p_output_mode == OutputMode::OUTPUT_STANDARD) {
 		pipe_index = 4;   // pipe[4] is used.
-		flag_add = false; // Ovewrite mode.
-	} else {
-		flag_add = (p_output_mode == OutputMode::OUTPUT_ADD);
 	}
 
 	_output_mode = p_output_mode;
 	_out_pipe = _sound_chip->get_pipe(pipe_index, _buffer_index);
-	_base_pipe = flag_add ? _out_pipe : _sound_chip->get_zero_buffer();
+	_base_pipe = (_output_mode == OutputMode::OUTPUT_ADD ? _out_pipe : _sound_chip->get_zero_buffer());
 }
 
 void SiOPMChannelBase::set_volume_tables(int (&p_velocity_table)[SiOPMRefTable::TL_TABLE_SIZE], int (&p_expression_table)[SiOPMRefTable::TL_TABLE_SIZE]) {
@@ -261,34 +256,24 @@ void SiOPMChannelBase::note_off() {
 	_is_note_on = false;
 }
 
-SinglyLinkedList<int> *SiOPMChannelBase::_rotate_pipe(SinglyLinkedList<int> *p_pipe, int p_length) {
-	SinglyLinkedList<int> *pipe = p_pipe;
-	for (int i = 0; i < p_length; i++) {
-		pipe = pipe->next();
-	}
-	return pipe;
-}
-
 void SiOPMChannelBase::_no_process(int p_length) {
-	SinglyLinkedList<int> *pipe = nullptr;
-
 	// Rotate the output buffer.
 	if (_output_mode == OutputMode::OUTPUT_STANDARD) {
 		int pipe_index = (_buffer_index + p_length) & (_sound_chip->get_buffer_length() - 1);
 		_out_pipe = _sound_chip->get_pipe(4, pipe_index);
 	} else {
-		_out_pipe = _rotate_pipe(_out_pipe, p_length);
-		_base_pipe = _output_mode == OutputMode::OUTPUT_ADD ? pipe : _sound_chip->get_zero_buffer();
+		_out_pipe->advance(p_length);
+		_base_pipe = (_output_mode == OutputMode::OUTPUT_ADD ? _out_pipe : _sound_chip->get_zero_buffer());
 	}
 
 	// Rotate the input buffer when connected by @i.
 	if (_input_mode == InputMode::INPUT_PIPE) {
-		_in_pipe = _rotate_pipe(_in_pipe, p_length);
+		_in_pipe->advance(p_length);
 	}
 
 	// Rotate the ring buffer.
 	if (_ring_pipe) {
-		_ring_pipe = _rotate_pipe(_ring_pipe, p_length);
+		_ring_pipe->advance(p_length);
 	}
 }
 
@@ -296,20 +281,17 @@ void SiOPMChannelBase::reset_channel_buffer_status() {
 	_buffer_index = 0;
 }
 
-void SiOPMChannelBase::_apply_ring_modulation(SinglyLinkedList<int> *p_target, int p_length) {
-	SinglyLinkedList<int> *pipe = _ring_pipe;
-	SinglyLinkedList<int> *target = p_target;
+void SiOPMChannelBase::_apply_ring_modulation(SinglyLinkedList<int>::Element *p_buffer_start, int p_length) {
+	SinglyLinkedList<int>::Element *target = p_buffer_start;
 
 	for (int i = 0; i < p_length; i++) {
-		target->get()->value *= pipe->get()->value * _ringmod_level;
-		pipe = pipe->next();
+		target->value *= _ring_pipe->get()->value * _ringmod_level;
 		target = target->next();
+		_ring_pipe->next();
 	}
-
-	_ring_pipe = pipe;
 }
 
-void SiOPMChannelBase::_apply_sv_filter(SinglyLinkedList<int> *p_target, int p_length, double (&r_variables)[3]) {
+void SiOPMChannelBase::_apply_sv_filter(SinglyLinkedList<int>::Element *p_buffer_start, int p_length, double (&r_variables)[3]) {
 	int cutoff = CLAMP(_cutoff_frequency + _cutoff_offset, 0, 128);
 	double cutoff_value = _table->filter_cutoff_table[cutoff];
 	double feedback_value = _resonance; // * _table->filter_feedback_table[out]; // This is commented out in original code.
@@ -317,16 +299,16 @@ void SiOPMChannelBase::_apply_sv_filter(SinglyLinkedList<int> *p_target, int p_l
 	// Previous setting.
 	int step = _filter_eg_residue;
 
-	SinglyLinkedList<int> *target = p_target;
+	SinglyLinkedList<int>::Element *target = p_buffer_start;
 	int length = p_length;
 	while (length >= step) {
 		// Process.
 		for (int i = 0; i < step; i++) {
-			r_variables[2] = (double)target->get()->value - r_variables[0] - r_variables[1] * feedback_value;
+			r_variables[2] = (double)target->value - r_variables[0] - r_variables[1] * feedback_value;
 			r_variables[1] += r_variables[2] * cutoff_value;
 			r_variables[0] += r_variables[1] * cutoff_value;
 
-			target->get()->value = (int)r_variables[_filter_type];
+			target->value = (int)r_variables[_filter_type];
 			target = target->next();
 		}
 		length -= step;
@@ -347,11 +329,11 @@ void SiOPMChannelBase::_apply_sv_filter(SinglyLinkedList<int> *p_target, int p_l
 
 	// Process the remainder.
 	for (int i = 0; i < length; i++) {
-		r_variables[2] = (double)target->get()->value - r_variables[0] - r_variables[1] * feedback_value;
+		r_variables[2] = (double)target->value - r_variables[0] - r_variables[1] * feedback_value;
 		r_variables[1] += r_variables[2] * cutoff_value;
 		r_variables[0] += r_variables[1] * cutoff_value;
 
-		target->get()->value = (int)r_variables[_filter_type];
+		target->value = (int)r_variables[_filter_type];
 		target = target->next();
 	}
 
@@ -366,7 +348,8 @@ void SiOPMChannelBase::buffer(int p_length) {
 	}
 
 	// Preserve the start of the output pipe.
-	SinglyLinkedList<int> *mono_out = _out_pipe;
+	SinglyLinkedList<int>::Element *mono_out = _out_pipe->get();
+
 	// Update the output pipe for the provided length.
 	if (_process_function.is_valid()) {
 		_process_function.call(p_length);

@@ -14,11 +14,10 @@
 class SiControllableFilterBase : public SiEffectBase {
 	GDCLASS(SiControllableFilterBase, SiEffectBase)
 
-	static SinglyLinkedList<int> *_increment_envelope_table;
-	static SinglyLinkedList<int> *_decrement_envelope_table;
-
-	SinglyLinkedList<int> *_cutoff_ptr = nullptr;
-	SinglyLinkedList<int> *_resonance_ptr = nullptr;
+	// These are referencing external data, and we don't want to mess the internal cursor
+	// in that data. So we keep our own pointers.
+	SinglyLinkedList<int>::Element *_cutoff_ptr = nullptr;
+	SinglyLinkedList<int>::Element *_resonance_ptr = nullptr;
 
 	int _lfo_step = 0;
 	int _lfo_residue_step = 0;

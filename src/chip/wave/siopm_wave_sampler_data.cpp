@@ -43,7 +43,7 @@ int SiOPMWaveSamplerData::_seek_head_silence() {
 	// This method has been adjusted to fix the code according to the assumed intent. But it's not
 	// tested, and I can't say if the original idea behind the code is wrong somehow.
 
-	SinglyLinkedList<double> *ms_window = SinglyLinkedList<double>::alloc_list(22, 0.0, true); // 0.5ms
+	SinglyLinkedList<double> *ms_window = memnew(SinglyLinkedList<double>(22, 0.0, true)); // 0.5ms
 	int i = 0;
 
 	if (_channel_count == 1) {
@@ -54,7 +54,7 @@ int SiOPMWaveSamplerData::_seek_head_silence() {
 			ms_window->get()->value = _wave_data[i] * _wave_data[i];
 			ms += ms_window->get()->value;
 
-			ms_window = ms_window->next();
+			ms_window->next();
 
 			if (ms > 0.0011) {
 				break;
@@ -70,7 +70,7 @@ int SiOPMWaveSamplerData::_seek_head_silence() {
 			ms_window->get()->value += _wave_data[i + 1] * _wave_data[i + 1];
 			ms += ms_window->get()->value;
 
-			ms_window = ms_window->next();
+			ms_window->next();
 
 			if (ms > 0.0022) {
 				break;
@@ -80,7 +80,7 @@ int SiOPMWaveSamplerData::_seek_head_silence() {
 		i >>= 1;
 	}
 
-	SinglyLinkedList<double>::free_list(ms_window);
+	memdelete(ms_window);
 	return i - 22;
 }
 

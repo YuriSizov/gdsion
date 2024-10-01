@@ -297,18 +297,18 @@ void SiOPMChannelPCM::_update_lfo() {
 }
 
 void SiOPMChannelPCM::_process_operator_mono(int p_length, bool p_mix) {
-	SinglyLinkedList<int> *base_pipe = (p_mix ? _out_pipe : _sound_chip->get_zero_buffer());
-	SinglyLinkedList<int> *out_pipe  = _out_pipe;
+	SinglyLinkedList<int>::Element *base_pipe = (p_mix ? _out_pipe : _sound_chip->get_zero_buffer())->get();
+	SinglyLinkedList<int>::Element *out_pipe  = _out_pipe->get();
 
 	// Noop.
 	if (_operator->get_pcm_end_point() <= 0) {
 		for (int i = 0; i < p_length; i++) {
-			out_pipe->get()->value = base_pipe->get()->value;
+			out_pipe->value = base_pipe->value;
 			out_pipe = out_pipe->next();
 			base_pipe = base_pipe->next();
 		}
 
-		_out_pipe = out_pipe;
+		_out_pipe->set(out_pipe);
 		return;
 	}
 
@@ -336,7 +336,7 @@ void SiOPMChannelPCM::_process_operator_mono(int p_length, bool p_mix) {
 
 					// Fast forward.
 					for (; i < p_length; i++) {
-						out_pipe->get()->value = 0;
+						out_pipe->value = 0;
 						out_pipe = out_pipe->next();
 					}
 					break;
@@ -354,35 +354,35 @@ void SiOPMChannelPCM::_process_operator_mono(int p_length, bool p_mix) {
 
 		// Output and increment pointers.
 		{
-			out_pipe->get()->value = output + base_pipe->get()->value;
+			out_pipe->value = output + base_pipe->value;
 			out_pipe = out_pipe->next();
 			base_pipe = base_pipe->next();
 		}
 	}
 
-	_out_pipe = out_pipe;
+	_out_pipe->set(out_pipe);
 }
 
 void SiOPMChannelPCM::_process_operator_stereo(int p_length, bool p_mix) {
-	SinglyLinkedList<int> *base_pipe = (p_mix ? _out_pipe : _sound_chip->get_zero_buffer());
-	SinglyLinkedList<int> *out_pipe  = _out_pipe;
-	SinglyLinkedList<int> *base_pipe2 = (p_mix ? _out_pipe2 : _sound_chip->get_zero_buffer());
-	SinglyLinkedList<int> *out_pipe2  = _out_pipe2;
+	SinglyLinkedList<int>::Element *base_pipe = (p_mix ? _out_pipe : _sound_chip->get_zero_buffer())->get();
+	SinglyLinkedList<int>::Element *out_pipe  = _out_pipe->get();
+	SinglyLinkedList<int>::Element *base_pipe2 = (p_mix ? _out_pipe2 : _sound_chip->get_zero_buffer())->get();
+	SinglyLinkedList<int>::Element *out_pipe2  = _out_pipe2->get();
 
 	// Noop.
 	if (_operator->get_pcm_end_point() <= 0) {
 		for (int i = 0; i < p_length; i++) {
-			out_pipe->get()->value = base_pipe->get()->value;
+			out_pipe->value = base_pipe->value;
 			out_pipe = out_pipe->next();
 			base_pipe = base_pipe->next();
 
-			out_pipe2->get()->value = base_pipe2->get()->value;
+			out_pipe2->value = base_pipe2->value;
 			out_pipe2 = out_pipe2->next();
 			base_pipe2 = base_pipe2->next();
 		}
 
-		_out_pipe = out_pipe;
-		_out_pipe2 = out_pipe2;
+		_out_pipe->set(out_pipe);
+		_out_pipe2->set(out_pipe2);
 		return;
 	}
 
@@ -411,9 +411,9 @@ void SiOPMChannelPCM::_process_operator_stereo(int p_length, bool p_mix) {
 
 					// Fast forward.
 					for (; i < p_length; i++) {
-						out_pipe->get()->value = 0;
+						out_pipe->value = 0;
 						out_pipe = out_pipe->next();
-						out_pipe2->get()->value = 0;
+						out_pipe2->value = 0;
 						out_pipe2 = out_pipe2->next();
 					}
 					break;
@@ -443,21 +443,21 @@ void SiOPMChannelPCM::_process_operator_stereo(int p_length, bool p_mix) {
 
 		// Output and increment pointers.
 		{
-			out_pipe->get()->value = output_left + base_pipe->get()->value;
+			out_pipe->value = output_left + base_pipe->value;
 			out_pipe = out_pipe->next();
 			base_pipe = base_pipe->next();
 
-			out_pipe2->get()->value = output_right + base_pipe2->get()->value;
+			out_pipe2->value = output_right + base_pipe2->value;
 			out_pipe2 = out_pipe2->next();
 			base_pipe2 = base_pipe2->next();
 		}
 	}
 
-	_out_pipe = out_pipe;
-	_out_pipe2 = out_pipe2;
+	_out_pipe->set(out_pipe);
+	_out_pipe2->set(out_pipe2);
 }
 
-void SiOPMChannelPCM::_write_stream_mono(SinglyLinkedList<int> *p_output, int p_length) {
+void SiOPMChannelPCM::_write_stream_mono(SinglyLinkedList<int>::Element *p_output, int p_length) {
 	double volume_coef = _sample_volume * _sound_chip->get_pcm_volume();
 	int pan = CLAMP(_pan + _sample_pan, 0, 128);
 
@@ -476,7 +476,7 @@ void SiOPMChannelPCM::_write_stream_mono(SinglyLinkedList<int> *p_output, int p_
 	}
 }
 
-void SiOPMChannelPCM::_write_stream_stereo(SinglyLinkedList<int> *p_output_left, SinglyLinkedList<int> *p_output_right, int p_length) {
+void SiOPMChannelPCM::_write_stream_stereo(SinglyLinkedList<int>::Element *p_output_left, SinglyLinkedList<int>::Element *p_output_right, int p_length) {
 	double volume_coef = _sample_volume * _sound_chip->get_pcm_volume();
 	int pan = CLAMP(_pan + _sample_pan, 0, 128);
 
@@ -523,7 +523,7 @@ void SiOPMChannelPCM::buffer(int p_length) {
 
 	if (_operator->get_pcm_channel_num() == 1) {
 		// Preserve the start of the output pipe.
-		SinglyLinkedList<int> *mono_out = _out_pipe;
+		SinglyLinkedList<int>::Element *mono_out = _out_pipe->get();
 
 		_process_operator_mono(p_length, false);
 
@@ -535,11 +535,10 @@ void SiOPMChannelPCM::buffer(int p_length) {
 			_write_stream_mono(mono_out, p_length);
 		}
 
-
 	} else {
 		// Preserve the start of output pipes.
-		SinglyLinkedList<int> *left_out = _out_pipe;
-		SinglyLinkedList<int> *right_out = _out_pipe2;
+		SinglyLinkedList<int>::Element *left_out = _out_pipe->get();
+		SinglyLinkedList<int>::Element *right_out = _out_pipe2->get();
 
 		_process_operator_stereo(p_length, false);
 

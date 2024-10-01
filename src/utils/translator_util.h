@@ -98,8 +98,7 @@ public:
 	static List<Ref<MMLSystemCommand>> extract_system_command(String p_mml);
 
 	struct MMLTableNumbers {
-		SinglyLinkedList<int> *head =  nullptr;
-		SinglyLinkedList<int> *tail =  nullptr;
+		SinglyLinkedList<int> *data = nullptr;
 		int length = 0;
 		bool repeated = false;
 	};

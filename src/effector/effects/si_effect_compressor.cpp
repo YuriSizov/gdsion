@@ -12,6 +12,11 @@ void SiEffectCompressor::set_params(double p_threshold, double p_window_time, do
 	_window_samples = (int)(p_window_time * 44.1);
 	_window_rms_averaging = 1.0 / _window_samples;
 
+	if (_window_rms_list) {
+		memdelete(_window_rms_list);
+	}
+	_window_rms_list = memnew(SinglyLinkedList<double>(_window_samples, 0.0, true));
+
 	_attack_rate = 0.5;
 	if (p_attack_time != 0) {
 		_attack_rate = Math::pow(2, -1.0 / (p_attack_time * 44.1));
@@ -27,10 +32,7 @@ void SiEffectCompressor::set_params(double p_threshold, double p_window_time, do
 }
 
 int SiEffectCompressor::prepare_process() {
-	if (_window_rms_list) {
-		SinglyLinkedList<double>::free_list(_window_rms_list);
-	}
-	_window_rms_list = SinglyLinkedList<double>::alloc_list(_window_samples, 0.0, true);
+	_window_rms_list->reset();
 	_window_rms_total = 0;
 	_gain = 2;
 
@@ -45,7 +47,7 @@ int SiEffectCompressor::process(int p_channels, Vector<double> *r_buffer, int p_
 		double value_left = (*r_buffer)[i];
 		double value_right = (*r_buffer)[i + 1];
 
-		_window_rms_list = _window_rms_list->next();
+		_window_rms_list->next();
 		_window_rms_total -= _window_rms_list->get()->value;
 		_window_rms_list->get()->value = value_left * value_left + value_right * value_right;
 		_window_rms_total += _window_rms_list->get()->value;

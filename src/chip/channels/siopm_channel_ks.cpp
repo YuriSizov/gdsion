@@ -131,8 +131,8 @@ void SiOPMChannelKS::reset_channel_buffer_status() {
 	_is_idling = false;
 }
 
-void SiOPMChannelKS::_apply_karplus_strong(SinglyLinkedList<int> *p_target, int p_length) {
-	SinglyLinkedList<int> *target = p_target;
+void SiOPMChannelKS::_apply_karplus_strong(SinglyLinkedList<int>::Element *p_buffer_start, int p_length) {
+	SinglyLinkedList<int>::Element *target = p_buffer_start;
 	const int pitch_idx_max = SiOPMRefTable::PITCH_TABLE_SIZE - 1;
 
 	int pitch_idx = _ks_pitch_index + _operators[0]->get_detune() + _pitch_modulation_output_level;
@@ -163,10 +163,10 @@ void SiOPMChannelKS::_apply_karplus_strong(SinglyLinkedList<int> *p_target, int 
 		int buffer_index = (int)_ks_delay_buffer_index;
 
 		_output *= _decay;
-		_output += (_ks_delay_buffer[buffer_index] - _output) * _decay_lpf + target->get()->value;
+		_output += (_ks_delay_buffer[buffer_index] - _output) * _decay_lpf + target->value;
 
 		_ks_delay_buffer.write[buffer_index] = _output;
-		target->get()->value = (int)_output;
+		target->value = (int)_output;
 		target = target->next();
 	}
 }
@@ -180,7 +180,8 @@ void SiOPMChannelKS::buffer(int p_length) {
 	}
 
 	// Preserve the start of the output pipe.
-	SinglyLinkedList<int> *mono_out = _out_pipe;
+	SinglyLinkedList<int>::Element *mono_out = _out_pipe->get();
+
 	// Update the output pipe for the provided length.
 	if (_process_function.is_valid()) {
 		_process_function.call(p_length);

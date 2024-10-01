@@ -34,30 +34,30 @@ void SiOPMStream::quantize(int p_bitrate) {
 	}
 }
 
-void SiOPMStream::write(SinglyLinkedList<int> *p_data, int p_start, int p_length, double p_volume, int p_pan) {
+void SiOPMStream::write(SinglyLinkedList<int>::Element *p_data_start, int p_offset, int p_length, double p_volume, int p_pan) {
 	double volume = p_volume * SiOPMRefTable::get_instance()->i2n;
-	int buffer_size = (p_start + p_length) << 1;
+	int buffer_size = (p_offset + p_length) << 1;
 
 	if (channels == 2) { // stereo
 		double (&pan_table)[129] = SiOPMRefTable::get_instance()->pan_table;
 		double volume_left = pan_table[128 - p_pan] * volume;
 		double volume_right = pan_table[p_pan] * volume;
 
-		SinglyLinkedList<int> *current = p_data;
-		for (int i = p_start << 1; i < buffer_size;) {
-			buffer.write[i] += current->get()->value * volume_left;
+		SinglyLinkedList<int>::Element *current = p_data_start;
+		for (int i = p_offset << 1; i < buffer_size;) {
+			buffer.write[i] += current->value * volume_left;
 			i++;
-			buffer.write[i] += current->get()->value * volume_right;
+			buffer.write[i] += current->value * volume_right;
 			i++;
 
 			current = current->next();
 		}
 	} else if (channels == 1) { // mono
-		SinglyLinkedList<int> *current = p_data;
-		for (int i = p_start << 1; i < buffer_size;) {
-			buffer.write[i] += current->get()->value * volume;
+		SinglyLinkedList<int>::Element *current = p_data_start;
+		for (int i = p_offset << 1; i < buffer_size;) {
+			buffer.write[i] += current->value * volume;
 			i++;
-			buffer.write[i] += current->get()->value * volume;
+			buffer.write[i] += current->value * volume;
 			i++;
 
 			current = current->next();
@@ -65,22 +65,22 @@ void SiOPMStream::write(SinglyLinkedList<int> *p_data, int p_start, int p_length
 	}
 }
 
-void SiOPMStream::write_stereo(SinglyLinkedList<int> *p_left, SinglyLinkedList<int> *p_right, int p_start, int p_length, double p_volume, int p_pan) {
+void SiOPMStream::write_stereo(SinglyLinkedList<int>::Element *p_left_start, SinglyLinkedList<int>::Element *p_right_start, int p_offset, int p_length, double p_volume, int p_pan) {
 	double volume = p_volume * SiOPMRefTable::get_instance()->i2n;
-	int buffer_size = (p_start + p_length) << 1;
+	int buffer_size = (p_offset + p_length) << 1;
 
 	if (channels == 2) { // stereo
 		double (&pan_table)[129] = SiOPMRefTable::get_instance()->pan_table;
 		double volume_left = pan_table[128 - p_pan] * p_volume;
 		double volume_right = pan_table[p_pan] * p_volume;
 
-		SinglyLinkedList<int> *current_left = p_left;
-		SinglyLinkedList<int> *current_right = p_right;
+		SinglyLinkedList<int>::Element *current_left = p_left_start;
+		SinglyLinkedList<int>::Element *current_right = p_right_start;
 
-		for (int i = p_start << 1; i < buffer_size;) {
-			buffer.write[i] += current_left->get()->value * volume_left;
+		for (int i = p_offset << 1; i < buffer_size;) {
+			buffer.write[i] += current_left->value * volume_left;
 			i++;
-			buffer.write[i] += current_right->get()->value * volume_right;
+			buffer.write[i] += current_right->value * volume_right;
 			i++;
 
 			current_left = current_left->next();
@@ -89,13 +89,13 @@ void SiOPMStream::write_stereo(SinglyLinkedList<int> *p_left, SinglyLinkedList<i
 	} else if (channels == 1) { // mono
 		volume *= 0.5;
 
-		SinglyLinkedList<int> *current_left = p_left;
-		SinglyLinkedList<int> *current_right = p_right;
+		SinglyLinkedList<int>::Element *current_left = p_left_start;
+		SinglyLinkedList<int>::Element *current_right = p_right_start;
 
-		for (int i = p_start << 1; i < buffer_size;) {
-			buffer.write[i] += (current_left->get()->value + current_right->get()->value) * volume;
+		for (int i = p_offset << 1; i < buffer_size;) {
+			buffer.write[i] += (current_left->value + current_right->value) * volume;
 			i++;
-			buffer.write[i] += (current_left->get()->value + current_right->get()->value) * volume;
+			buffer.write[i] += (current_left->value + current_right->value) * volume;
 			i++;
 
 			current_left = current_left->next();

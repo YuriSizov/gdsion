@@ -105,11 +105,13 @@ private:
 
 	int _setting_process_mode[2] = {};
 
-	Vector<SinglyLinkedList<int> *> _setting_envelope_exp;
-	Vector<SinglyLinkedList<int> *> _setting_envelope_voice;
-	Vector<SinglyLinkedList<int> *> _setting_envelope_note;
-	Vector<SinglyLinkedList<int> *> _setting_envelope_pitch;
-	Vector<SinglyLinkedList<int> *> _setting_envelope_filter;
+	// Keeping element pointers because this references external data, so we want to have our own iterators.
+	Vector<SinglyLinkedList<int>::Element *> _setting_envelope_exp;
+	Vector<SinglyLinkedList<int>::Element *> _setting_envelope_voice;
+	Vector<SinglyLinkedList<int>::Element *> _setting_envelope_note;
+	Vector<SinglyLinkedList<int>::Element *> _setting_envelope_pitch;
+	Vector<SinglyLinkedList<int>::Element *> _setting_envelope_filter;
+
 	bool _setting_exp_offset[2] = {};
 	// PNS (pitch, note, sweep)
 	bool _setting_pns_or[2] = {};
@@ -128,11 +130,12 @@ private:
 
 	// Envelopes.
 
-	SinglyLinkedList<int> *_envelope_exp = nullptr;
-	SinglyLinkedList<int> *_envelope_voice = nullptr;
-	SinglyLinkedList<int> *_envelope_note = nullptr;
-	SinglyLinkedList<int> *_envelope_pitch = nullptr;
-	SinglyLinkedList<int> *_envelope_filter = nullptr;
+	// Keeping element pointers because this references external data, so we want to have our own iterators.
+	SinglyLinkedList<int>::Element *_envelope_exp = nullptr;
+	SinglyLinkedList<int>::Element *_envelope_voice = nullptr;
+	SinglyLinkedList<int>::Element *_envelope_note = nullptr;
+	SinglyLinkedList<int>::Element *_envelope_pitch = nullptr;
+	SinglyLinkedList<int>::Element *_envelope_filter = nullptr;
 
 	int _counter_exp = 0;
 	int _max_counter_exp = 0;
@@ -211,6 +214,9 @@ public:
 		DRIVER_BACKGROUND = 0x50000, // SiONDriver's background sound tracks
 		USER_CONTROLLED   = 0x60000, // User controlled tracks
 	};
+
+	static void initialize();
+	static void finalize();
 
 	// Properties and data.
 

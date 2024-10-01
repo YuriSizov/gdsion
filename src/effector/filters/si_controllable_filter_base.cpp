@@ -9,15 +9,12 @@
 #include "sequencer/simml_envelope_table.h"
 #include "sequencer/simml_ref_table.h"
 
-SinglyLinkedList<int> *SiControllableFilterBase::_increment_envelope_table = nullptr;
-SinglyLinkedList<int> *SiControllableFilterBase::_decrement_envelope_table = nullptr;
-
 void SiControllableFilterBase::set_params(int p_cutoff, int p_resonance, double p_fps) {
 	_cutoff_ptr = nullptr;
 	if (p_cutoff >= 0 && p_cutoff < 255) {
 		Ref<SiMMLEnvelopeTable> table = SiMMLRefTable::get_instance()->get_envelope_table(p_cutoff);
 		if (table.is_valid()) {
-			_cutoff_ptr = table->head;
+			_cutoff_ptr = table->get_head();
 		}
 	}
 
@@ -25,12 +22,12 @@ void SiControllableFilterBase::set_params(int p_cutoff, int p_resonance, double 
 	if (p_resonance >= 0 && p_resonance < 255) {
 		Ref<SiMMLEnvelopeTable> table = SiMMLRefTable::get_instance()->get_envelope_table(p_resonance);
 		if (table.is_valid()) {
-			_resonance_ptr = table->head;
+			_resonance_ptr = table->get_head();
 		}
 	}
 
-	_cutoff_index = (_cutoff_ptr ? _cutoff_ptr->get()->value : 128);
-	_resonance = (_resonance_ptr ? _resonance_ptr->get()->value * 0.007751937984496124 : 0); // 0.007751937984496124 = 1/129
+	_cutoff_index = (_cutoff_ptr ? _cutoff_ptr->value : 128);
+	_resonance = (_resonance_ptr ? _resonance_ptr->value * 0.007751937984496124 : 0); // 0.007751937984496124 = 1/129
 
 	_lfo_step = (int)(44100 / p_fps);
 	if (_lfo_step <= 44) {
@@ -84,12 +81,12 @@ int SiControllableFilterBase::process(int p_channels, Vector<double> *r_buffer, 
 
 		if (_cutoff_ptr) {
 			_cutoff_ptr = _cutoff_ptr->next();
-			_cutoff_index = (_cutoff_ptr ? _cutoff_ptr->get()->value : 128);
+			_cutoff_index = (_cutoff_ptr ? _cutoff_ptr->value : 128);
 		}
 
 		if (_resonance_ptr) {
 			_resonance_ptr = _resonance_ptr->next();
-			_resonance = (_resonance_ptr ? _resonance_ptr->get()->value * 0.007751937984496124 : 0);
+			_resonance = (_resonance_ptr ? _resonance_ptr->value * 0.007751937984496124 : 0);
 		}
 
 		i += step;
@@ -121,19 +118,4 @@ void SiControllableFilterBase::_bind_methods() {
 
 SiControllableFilterBase::SiControllableFilterBase() :
 		SiEffectBase() {
-	if (_increment_envelope_table == nullptr) {
-		_increment_envelope_table = SinglyLinkedList<int>::alloc_list(129);
-		_decrement_envelope_table = SinglyLinkedList<int>::alloc_list(129);
-
-		SinglyLinkedList<int> *inc_ptr = _increment_envelope_table;
-		SinglyLinkedList<int> *dec_ptr = _decrement_envelope_table;
-
-		for (int i = 0; i < 129; i++) {
-			inc_ptr->get()->value = i;
-			dec_ptr->get()->value = 128 - i;
-
-			inc_ptr = inc_ptr->next();
-			dec_ptr = dec_ptr->next();
-		}
-	}
 }

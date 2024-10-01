@@ -13,6 +13,8 @@
 class SiEffectAutopan : public SiEffectBase {
 	GDCLASS(SiEffectAutopan, SiEffectBase)
 
+	static const int BUFFER_SIZE = 256;
+
 	bool _stereo = false;
 	int _lfo_step = 0;
 	int _lfo_residue_step = 0;

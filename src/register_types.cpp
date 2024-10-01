@@ -73,6 +73,8 @@
 #include "sequencer/simml_voice.h"
 #include "utils/sion_voice_preset_util.h"
 
+#include "templates/singly_linked_list.h"
+
 using namespace godot;
 
 void initialize_sion_module(ModuleInitializationLevel p_level) {
@@ -87,89 +89,98 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 	// Also, all of these classes must have a constructor that has no required
 	// arguments. Even if this is not a supported case for the class itself.
 
-	// Chip.
+	{
+		// Chip.
 
-	ClassDB::register_abstract_class<SiOPMChannelBase>();
-	ClassDB::register_abstract_class<SiOPMChannelFM>();
-	ClassDB::register_abstract_class<SiOPMChannelKS>();
-	ClassDB::register_abstract_class<SiOPMChannelPCM>();
-	ClassDB::register_abstract_class<SiOPMChannelSampler>();
-	ClassDB::register_abstract_class<SiOPMChannelParams>();
-	ClassDB::register_abstract_class<SiOPMSoundChip>();
-	ClassDB::register_abstract_class<SiOPMWaveBase>();
-	ClassDB::register_abstract_class<SiOPMWavePCMData>();
-	ClassDB::register_abstract_class<SiOPMWavePCMTable>();
-	ClassDB::register_abstract_class<SiOPMWaveSamplerData>();
-	ClassDB::register_abstract_class<SiOPMWaveSamplerTable>();
-	ClassDB::register_abstract_class<SiOPMWaveTable>();
+		ClassDB::register_abstract_class<SiOPMChannelBase>();
+		ClassDB::register_abstract_class<SiOPMChannelFM>();
+		ClassDB::register_abstract_class<SiOPMChannelKS>();
+		ClassDB::register_abstract_class<SiOPMChannelPCM>();
+		ClassDB::register_abstract_class<SiOPMChannelSampler>();
+		ClassDB::register_abstract_class<SiOPMChannelParams>();
+		ClassDB::register_abstract_class<SiOPMSoundChip>();
+		ClassDB::register_abstract_class<SiOPMWaveBase>();
+		ClassDB::register_abstract_class<SiOPMWavePCMData>();
+		ClassDB::register_abstract_class<SiOPMWavePCMTable>();
+		ClassDB::register_abstract_class<SiOPMWaveSamplerData>();
+		ClassDB::register_abstract_class<SiOPMWaveSamplerTable>();
+		ClassDB::register_abstract_class<SiOPMWaveTable>();
 
-	// Effector.
+		// Effector.
 
-	ClassDB::register_abstract_class<SiEffector>();
+		ClassDB::register_abstract_class<SiEffector>();
 
-	ClassDB::register_abstract_class<SiEffectBase>();
-	ClassDB::register_abstract_class<SiControllableFilterBase>();
-	ClassDB::register_abstract_class<SiFilterBase>();
+		ClassDB::register_abstract_class<SiEffectBase>();
+		ClassDB::register_abstract_class<SiControllableFilterBase>();
+		ClassDB::register_abstract_class<SiFilterBase>();
 
-	ClassDB::register_class<SiControllableFilterHighPass>();
-	ClassDB::register_class<SiControllableFilterLowPass>();
-	ClassDB::register_class<SiEffectAutopan>();
-	ClassDB::register_class<SiEffectComposite>();
-	ClassDB::register_class<SiEffectCompressor>();
-	ClassDB::register_class<SiEffectDistortion>();
-	ClassDB::register_class<SiEffectDownsampler>();
-	ClassDB::register_class<SiEffectEqualizer>();
-	ClassDB::register_class<SiEffectSpeakerSimulator>();
-	ClassDB::register_class<SiEffectStereoChorus>();
-	ClassDB::register_class<SiEffectStereoDelay>();
-	ClassDB::register_class<SiEffectStereoExpander>();
-	ClassDB::register_class<SiEffectStereoReverb>();
-	ClassDB::register_class<SiEffectWaveShaper>();
-	ClassDB::register_class<SiFilterAllPass>();
-	ClassDB::register_class<SiFilterBandPass>();
-	ClassDB::register_class<SiFilterHighBoost>();
-	ClassDB::register_class<SiFilterHighPass>();
-	ClassDB::register_class<SiFilterLowBoost>();
-	ClassDB::register_class<SiFilterLowPass>();
-	ClassDB::register_class<SiFilterNotch>();
-	ClassDB::register_class<SiFilterPeak>();
-	ClassDB::register_class<SiFilterVowel>();
+		ClassDB::register_class<SiControllableFilterHighPass>();
+		ClassDB::register_class<SiControllableFilterLowPass>();
+		ClassDB::register_class<SiEffectAutopan>();
+		ClassDB::register_class<SiEffectComposite>();
+		ClassDB::register_class<SiEffectCompressor>();
+		ClassDB::register_class<SiEffectDistortion>();
+		ClassDB::register_class<SiEffectDownsampler>();
+		ClassDB::register_class<SiEffectEqualizer>();
+		ClassDB::register_class<SiEffectSpeakerSimulator>();
+		ClassDB::register_class<SiEffectStereoChorus>();
+		ClassDB::register_class<SiEffectStereoDelay>();
+		ClassDB::register_class<SiEffectStereoExpander>();
+		ClassDB::register_class<SiEffectStereoReverb>();
+		ClassDB::register_class<SiEffectWaveShaper>();
+		ClassDB::register_class<SiFilterAllPass>();
+		ClassDB::register_class<SiFilterBandPass>();
+		ClassDB::register_class<SiFilterHighBoost>();
+		ClassDB::register_class<SiFilterHighPass>();
+		ClassDB::register_class<SiFilterLowBoost>();
+		ClassDB::register_class<SiFilterLowPass>();
+		ClassDB::register_class<SiFilterNotch>();
+		ClassDB::register_class<SiFilterPeak>();
+		ClassDB::register_class<SiFilterVowel>();
 
-	// Events.
+		// Events.
 
-	ClassDB::register_abstract_class<SiONEvent>();
-	ClassDB::register_abstract_class<SiONTrackEvent>();
+		ClassDB::register_abstract_class<SiONEvent>();
+		ClassDB::register_abstract_class<SiONTrackEvent>();
 
-	// Sequencer.
+		// Sequencer.
 
-	ClassDB::register_class<BeatsPerMinute>();
-	ClassDB::register_abstract_class<MMLData>();
-	ClassDB::register_class<MMLEvent>();
-	ClassDB::register_class<MMLSequence>();
-	ClassDB::register_class<MMLSequenceGroup>();
-	ClassDB::register_abstract_class<MMLSequencer>();
-	ClassDB::register_abstract_class<MMLSystemCommand>();
-	ClassDB::register_abstract_class<SiMMLData>();
-	ClassDB::register_abstract_class<SiMMLEnvelopeTable>();
-	ClassDB::register_abstract_class<SiMMLSequencer>();
-	ClassDB::register_abstract_class<SiMMLTrack>();
-	ClassDB::register_abstract_class<SiMMLVoice>();
+		ClassDB::register_class<BeatsPerMinute>();
+		ClassDB::register_abstract_class<MMLData>();
+		ClassDB::register_class<MMLEvent>();
+		ClassDB::register_class<MMLSequence>();
+		ClassDB::register_class<MMLSequenceGroup>();
+		ClassDB::register_abstract_class<MMLSequencer>();
+		ClassDB::register_abstract_class<MMLSystemCommand>();
+		ClassDB::register_abstract_class<SiMMLData>();
+		ClassDB::register_abstract_class<SiMMLEnvelopeTable>();
+		ClassDB::register_abstract_class<SiMMLSequencer>();
+		ClassDB::register_abstract_class<SiMMLTrack>();
+		ClassDB::register_abstract_class<SiMMLVoice>();
 
-	// Utils.
+		// Utils.
 
-	ClassDB::register_class<SiONVoicePresetUtil>();
+		ClassDB::register_class<SiONVoicePresetUtil>();
 
-	// Main SiON API classes.
+		// Main SiON API classes.
 
-	ClassDB::register_class<SiONData>();
-	ClassDB::register_class<SiONDriver>();
-	ClassDB::register_class<SiONVoice>();
+		ClassDB::register_class<SiONData>();
+		ClassDB::register_class<SiONDriver>();
+		ClassDB::register_class<SiONVoice>();
+	}
 
-	// Initialize singletons before the execution.
+	// Initialization.
+
+	// SUS: This is a bit ugly, but I don't have a better idea yet.
+	SinglyLinkedList<int>::initialize_pool();
+	SinglyLinkedList<double>::initialize_pool();
+
+	// Initialize singletons and static members before the execution.
 	MMLParser::initialize();
 	MMLSequencer::initialize();
 	SiOPMRefTable::initialize();
 	SiMMLRefTable::initialize();
+	SiMMLTrack::initialize();
 }
 
 void uninitialize_sion_module(ModuleInitializationLevel p_level) {
@@ -177,7 +188,14 @@ void uninitialize_sion_module(ModuleInitializationLevel p_level) {
 		return;
 	}
 
-	// Finalize singletons after the execution.
+	// Finalization.
+
+	// SUS: This is a bit ugly, but I don't have a better idea yet.
+	SinglyLinkedList<int>::finalize_pool();
+	SinglyLinkedList<double>::finalize_pool();
+
+	// Finalize singletons and static members after the execution.
+	SiMMLTrack::finalize();
 	SiMMLRefTable::finalize();
 	SiOPMRefTable::finalize();
 	MMLSequencer::finalize();

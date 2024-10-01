@@ -30,8 +30,7 @@ void MMLExecutor::reset_pointer() {
 	_repeat_end_counter = 0;
 	_repeat_point = nullptr;
 
-	SinglyLinkedList<int>::free_list(_repeat_counters);
-	_repeat_counters = nullptr;
+	_repeat_counters->clear();
 	_current_tick_count = 0;
 	_residue_sample_count = 0;
 	_decimal_fraction_sample_count = 0;
@@ -60,8 +59,7 @@ void MMLExecutor::execute_single_note(int p_note, int p_tick_length) {
 	_repeat_end_counter = 0;
 	_repeat_point = nullptr;
 
-	SinglyLinkedList<int>::free_list(_repeat_counters);
-	_repeat_counters = nullptr;
+	_repeat_counters->clear();
 	_current_tick_count = 0;
 }
 
@@ -125,18 +123,16 @@ MMLEvent *MMLExecutor::on_repeat_all(MMLEvent *p_event) {
 }
 
 MMLEvent *MMLExecutor::on_repeat_begin(MMLEvent *p_event) {
-	_repeat_counters = _repeat_counters->prepend(p_event->get_data());
+	_repeat_counters->prepend(p_event->get_data());
 
 	return p_event->get_next();
 }
 
 MMLEvent *MMLExecutor::on_repeat_break(MMLEvent *p_event) {
 	if (_repeat_counters->get()->value == 1) {
-		SinglyLinkedList<int> *counter = _repeat_counters->next();
-		SinglyLinkedList<int>::free(_repeat_counters);
-		_repeat_counters = counter;
+		_repeat_counters->remove_front();
 
-		// Jump to repeat start -> repeat end -> next.
+		// Jump back to the repeat start, then to the repeat end, and exit the loop.
 		return p_event->get_jump()->get_jump()->get_next();
 	}
 
@@ -146,14 +142,13 @@ MMLEvent *MMLExecutor::on_repeat_break(MMLEvent *p_event) {
 MMLEvent *MMLExecutor::on_repeat_end(MMLEvent *p_event) {
 	_repeat_counters->get()->value -= 1;
 	if (_repeat_counters->get()->value == 0) {
-		SinglyLinkedList<int> *counter = _repeat_counters->next();
-		SinglyLinkedList<int>::free(_repeat_counters);
-		_repeat_counters = counter;
+		_repeat_counters->remove_front();
 
+		// Exit the repeat loop.
 		return p_event->get_next();
 	}
 
-	// Jump to repeat start -> next.
+	// Jump back to the repeat start.
 	return p_event->get_jump()->get_next();
 }
 
@@ -181,8 +176,7 @@ void MMLExecutor::clear() {
 	_repeat_end_counter = 0;
 	_repeat_point = nullptr;
 
-	SinglyLinkedList<int>::free_list(_repeat_counters);
-	_repeat_counters = nullptr;
+	_repeat_counters->clear();
 	_current_tick_count = 0;
 	_residue_sample_count = 0;
 	_decimal_fraction_sample_count = 0;
@@ -197,6 +191,8 @@ MMLExecutor::MMLExecutor() {
 
 	_bend_from_event->set_next(_bend_event);
 	_bend_event->set_next(_note_event);
+
+	_repeat_counters = memnew(SinglyLinkedList<int>);
 }
 
 MMLExecutor::~MMLExecutor() {
@@ -211,4 +207,6 @@ MMLExecutor::~MMLExecutor() {
 	_note_event = nullptr;
 	_bend_from_event = nullptr;
 	_bend_event = nullptr;
+
+	memdelete(_repeat_counters);
 }

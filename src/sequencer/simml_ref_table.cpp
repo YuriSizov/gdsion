@@ -43,7 +43,6 @@ void SiMMLRefTable::finalize() {
 void SiMMLRefTable::reset_all_user_tables() {
 	for (int i = 0; i < ENVELOPE_TABLE_MAX; i++) {
 		if (_master_envelopes[i].is_valid()) {
-			_master_envelopes[i]->free();
 			_master_envelopes.write[i] = Ref<SiMMLEnvelopeTable>();
 		}
 	}

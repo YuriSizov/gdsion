@@ -13,170 +13,348 @@
 using namespace godot;
 
 // A singly-linked list implementation (used for ints and doubles).
-// TODO: Consider replacing with one of the native Godot/GDExtension types.
-// FIXME: This implementation assumes we would never keep a pointer to any number in the list, other than the first one.
-// This is because when we "free" elements of this singly-linked list, whatever number references this element will be left with a bad memory pointer.
-// This is perhaps expected with an SLL, but makes code relying on this type dangerous.
-// It may be better to move to a different data structure, unless there is a really good reason not to.
 template <class T>
 class SinglyLinkedList {
 
 	// Reusable to reduce the number of allocations.
-	// FIXME: There is no mechanism to free this memory at any point. Original code probably relies on some automatic memory freeing.
-	// In other words, this is going to leak on exit, unless memory is properly managed.
-	static SinglyLinkedList<T> *_free_list;
+	static SinglyLinkedList<T> *_element_pool;
 
 public:
 	class Element {
+		friend class SinglyLinkedList<T>;
+
+		Element *_next_ptr = nullptr;
+
 	public:
 		T value = 0;
+
+		// Returns the next linked element. Can be safely used without moving the cursor (e.g. for checks).
+		Element *next() const {
+			return _next_ptr;
+		}
 	};
 
 private:
-	Element *_element = nullptr;
+	Element *_first = nullptr;
+	Element *_last = nullptr;
+	Element *_current = nullptr;
+	int _size = 0;
 
-	SinglyLinkedList<T> *_next = nullptr;
+	// Creates or reuses an instance of Element and returns it with the new value assigned.
+	Element *_alloc_element(T p_value) {
+		Element *ret;
 
-public:
-	static SinglyLinkedList<T> *alloc(T p_value) {
-		SinglyLinkedList<T> *ret;
-
-		if (_free_list) {
-			ret = _free_list;
-			_free_list = _free_list->next();
-
-			ret->get()->value = p_value;
-			ret->unlink();
+		if (_element_pool && _element_pool->has_any()) {
+			ret = _element_pool->pop_front_element();
 		} else {
-			ret = memnew(SinglyLinkedList<T>(p_value));
+			ret = memnew(Element);
 		}
+
+		ret->value = p_value;
 
 		return ret;
 	}
 
-	static SinglyLinkedList<T> *alloc_list(int p_size, T p_default_value = 0, bool p_ring = false) {
-		SinglyLinkedList<T> *head = alloc(p_default_value);
+	// Unlinks the element from the next and adds it to the element pool. Does NOT handle existing references to this element!
+	void _release_element(Element *p_element) {
+		p_element->_next_ptr = nullptr;
 
-		SinglyLinkedList<T> *elem = head;
-		for (int i = 1; i < p_size; i++) {
-			elem = elem->append(p_default_value);
+		if (_element_pool) {
+			_element_pool->push_back_element(p_element);
 		}
-
-		if (p_ring) {
-			elem->link(head); // Loop makes the ring.
-		}
-
-		return head;
 	}
 
-	static void free(SinglyLinkedList<T> *p_element) {
-		// If this element is part of a list, you must be careful here, as this method does NOT
-		// handle the list itself gracefully and you may leave bad pointers unattended as a result.
+public:
 
-		// Append the current allocated free list and then assume its position.
-		p_element->link(_free_list);
-		_free_list = p_element;
+	// Initializes the static element pool for this templated type.
+	static void initialize_pool() {
+		_element_pool = memnew(SinglyLinkedList<T>);
 	}
 
-	static void free_list(SinglyLinkedList<T> *p_head) {
-		if (!p_head) {
+	// Frees the static element pool for this templated type.
+	static void finalize_pool() {
+		if (!_element_pool) {
 			return;
 		}
 
-		// For a ring list, the argument can be any element. In a non-ring, it MUST be the first
-		// element in the list, otherwise we leave bad pointers unattended.
-		SinglyLinkedList<T> *tail = p_head->last();
+		while (_element_pool->has_any()) {
+			Element *elem = _element_pool->pop_front_element();
+			memdelete(elem);
+		}
 
-		// Append the current allocated free list and then assume its position.
-		tail->link(_free_list);
-		_free_list = p_head;
+		memdelete(_element_pool);
 	}
 
 	//
 
-	SinglyLinkedList<T> *next() const {
-		return _next;
+	int size() const {
+		return _size;
 	}
 
-	SinglyLinkedList<T> *last() const {
-		SinglyLinkedList<T> *first = const_cast<SinglyLinkedList<T> *>(this);
-		SinglyLinkedList<T> *elem = first;
+	bool has_any() const {
+		return _size > 0;
+	}
 
-		while (elem->next() && elem->next() != first) {
+	bool is_empty() const {
+		return _size == 0;
+	}
+
+	// Resets the cursor to the first element and returns it.
+	Element *front() {
+		if (_size == 0) {
+			return nullptr;
+		}
+
+		_current = _first;
+		return _current;
+	}
+
+	// Resets the cursor to the last element and returns it.
+	Element *back() {
+		if (_size == 0) {
+			return nullptr;
+		}
+
+		_current = _last;
+		return _current;
+	}
+
+	// Moves the cursor to the next element and returns it.
+	Element *next() {
+		if (_size == 0) {
+			return nullptr;
+		}
+		if (!_current) {
+			return nullptr;
+		}
+
+		_current = _current->_next_ptr;
+		return _current;
+	}
+
+	// Moves the cursor to the next element and returns it. Hard stops on the last element, avoiding loops.
+	Element *next_safe() {
+		if (_size == 0) {
+			return nullptr;
+		}
+
+		if (_current == _last) {
+			return nullptr;
+		}
+
+		_current = _current->_next_ptr;
+		return _current;
+	}
+
+	// Moves the cursor by the given distance and returns the current element. Follows loops; can end early
+	// if the distance is beyond the length of the list.
+	Element *advance(int p_distance) {
+		if (_size == 0) {
+			return nullptr;
+		}
+		if (!_current) {
+			return nullptr;
+		}
+
+		for (int i = 0; i < p_distance && _current; i++) {
+			_current = _current->_next_ptr;
+		}
+		return _current;
+	}
+
+	//
+
+	// Returns the current element.
+	Element *get() const {
+		if (_size == 0) {
+			return nullptr;
+		}
+
+		return _current;
+	}
+
+	// Sets the cursor to the given element in the list. There is no check whether the element belongs to
+	// this list, use with care.
+	void set(Element *p_element) {
+		if (_size == 0) {
+			return; // This is just wrong...
+		}
+
+		// FIXME: There is currently no quick check to make sure it belongs to this list.
+		_current = p_element;
+	}
+
+	// Returns the first element.
+	Element *get_front() const {
+		if (_size == 0) {
+			return nullptr;
+		}
+
+		return _first;
+	}
+
+	// Returns the last element.
+	Element *get_back() const {
+		if (_size == 0) {
+			return nullptr;
+		}
+
+		return _last;
+	}
+
+	Element *get_index(int p_index) const {
+		if (_size == 0 || p_index >= _size) {
+			return nullptr;
+		}
+
+		Element *elem = _first;
+		for (int i = 0; i < p_index; i++) {
 			elem = elem->next();
 		}
 
 		return elem;
 	}
 
-	SinglyLinkedList<T> *append(T p_value) {
-		SinglyLinkedList<T> *tail = alloc(p_value);
-		link(tail);
-		return next();
+	// Adds a new value to the end of the list and returns the element.
+	Element *append(T p_value) {
+		Element *elem = _alloc_element(p_value);
+
+		push_back_element(elem);
+		_current = _last;
+
+		return elem;
 	}
 
-	SinglyLinkedList<T> *prepend(T p_value) {
-		SinglyLinkedList<T> *head = alloc(p_value);
-		head->link(this);
-		return head;
+	// Adds a new value to the start of the list and returns the element.
+	Element *prepend(T p_value) {
+		Element *elem = _alloc_element(p_value);
+
+		push_front_element(elem);
+		_current = _first;
+
+		return elem;
 	}
 
-	void link(SinglyLinkedList<T> *p_element) {
-		_next = p_element;
-	}
-
-	void unlink() {
-		_next = nullptr;
+	// Removes the first element from the list. This is the only element that can be safely removed in SLL.
+	void remove_front() {
+		Element *elem = pop_front_element();
+		_release_element(elem);
 	}
 
 	//
 
-	Element *get() const {
-		return _element;
+	// Adds an existing element to the end of the list. Does NOT handle existing references to this element!
+	void push_back_element(Element *p_element) {
+		if (_size == 0) {
+			_first = p_element;
+			_last = p_element;
+		} else {
+			_last->_next_ptr = p_element;
+			_last = _last->_next_ptr;
+		}
+
+		_size += 1;
 	}
 
+	// Adds an existing element to the start of the list. Does NOT handle existing references to this element!
+	void push_front_element(Element *p_element) {
+		if (_size == 0) {
+			_first = p_element;
+			_last = p_element;
+		} else {
+			p_element->_next_ptr = _first;
+			_first = p_element;
+		}
+
+		_size += 1;
+	}
+
+	// Removes the first element from the list and returns it. The cursor is updated if it points to this element.
+	Element *pop_front_element() {
+		if (_size == 0) {
+			return nullptr;
+		}
+
+		Element *elem = _first;
+		_size -= 1;
+
+		if (_size == 0) {
+			_first = nullptr;
+			_last = nullptr;
+			_current = nullptr;
+		} else {
+			_first = elem->_next_ptr;
+
+			if (_current == elem) {
+				_current = _first;
+			}
+		}
+
+		// Unlink.
+		elem->_next_ptr = nullptr;
+
+		return elem;
+	}
+
+	void loop(Element *p_element = nullptr) {
+		if (_size == 0) {
+			return;
+		}
+
+		Element *loop_point = p_element;
+		if (!loop_point) {
+			loop_point = _first;
+		}
+
+		_last->_next_ptr = loop_point;
+	}
+
+	//
+
+	// Resets all values in the list to zero.
 	void reset() {
-		SinglyLinkedList<T> *first = this;
-		SinglyLinkedList<T> *elem = first;
-
-		while (elem->next() && elem->next() != first) {
-			elem->get()->value = 0;
-			elem = elem->next();
+		for (Element *elem = front(); elem; elem = next_safe()) {
+			elem->value = 0;
 		}
-		elem->get()->value = 0;
 	}
 
-	//
-
-	SinglyLinkedList<T> *index(int p_index) const {
-		SinglyLinkedList<T> *element = const_cast<SinglyLinkedList<T> *>(this);
-
-		// This isn't very efficient, but should be fast enough for now.
-		for (int i = 0; i < p_index; i++) {
-			element = element->next();
+	// Removes all elements from the list and resets its size.
+	void clear() {
+		for (Element *elem = front(); elem; elem = next_safe()) {
+			_release_element(elem);
 		}
 
-		return element;
+		_first = nullptr;
+		_last = nullptr;
+		_current = nullptr;
+		_size = 0;
 	}
 
-	SinglyLinkedList<T> *clone_element() {
-		return alloc(_element->value);
+	SinglyLinkedList() {
 	}
 
-	SinglyLinkedList(T p_value) {
-		_element = memnew(Element);
-		_element->value = p_value;
+	SinglyLinkedList(int p_size, T p_default_value = 0, bool p_ring = false) {
+		if (p_size <= 0) {
+			return;
+		}
+
+		for (int i = 0; i < p_size; i++) {
+			append(p_default_value);
+		}
+
+		if (p_ring) { // Loop makes the ring.
+			_last->_next_ptr = _first;
+		}
+
+		front();
 	}
 
 	~SinglyLinkedList() {
-		if (_element) {
-			memdelete(_element);
-			_element = nullptr;
-		}
+		clear();
 	}
 };
 
 template <class T>
-SinglyLinkedList<T> *SinglyLinkedList<T>::_free_list = nullptr;
+SinglyLinkedList<T> *SinglyLinkedList<T>::_element_pool = nullptr;
 
 #endif // SION_SLL_INT_H

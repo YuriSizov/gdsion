@@ -352,7 +352,7 @@ void SiMMLSequencer::_on_table_parse(MMLEvent *p_prev, String p_table) {
 
 	Ref<SiMMLEnvelopeTable> env_table = memnew(SiMMLEnvelopeTable);
 	env_table->parse_mml(data, postfix);
-	ERR_FAIL_COND_MSG(!env_table->head, vformat("SiMMLSequencer: Invalid table parameter '%s' in the {..} command.", data));
+	ERR_FAIL_COND_MSG(!env_table->get_data(), vformat("SiMMLSequencer: Invalid table parameter '%s' in the {..} command.", data));
 
 	Ref<SiMMLData> simml_data = mml_data;
 	simml_data->set_envelope_table(_internal_table_index, env_table);
@@ -803,7 +803,7 @@ bool SiMMLSequencer::_parse_system_command_before(String p_command, String p_par
 
 		Ref<SiMMLEnvelopeTable> env_table = memnew(SiMMLEnvelopeTable);
 		env_table->parse_mml(content, postfix);
-		ERR_FAIL_COND_V_MSG(!env_table->head, true, vformat("SiMMLSequencer: Invalid parameter '%s' for command '%s'.", content, p_command));
+		ERR_FAIL_COND_V_MSG(!env_table->get_data(), true, vformat("SiMMLSequencer: Invalid parameter '%s' for command '%s'.", content, p_command));
 
 		Ref<SiMMLData> simml_data = mml_data;
 		simml_data->set_envelope_table(number, env_table);

@@ -51,7 +51,7 @@ class SiOPMChannelKS : public SiOPMChannelFM {
 
 	// Processing.
 
-	void _apply_karplus_strong(SinglyLinkedList<int> *p_target, int p_length);
+	void _apply_karplus_strong(SinglyLinkedList<int>::Element *p_buffer_start, int p_length);
 
 protected:
 	static void _bind_methods() {}

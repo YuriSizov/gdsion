@@ -1447,10 +1447,7 @@ String TranslatorUtil::get_voice_setting_as_mml(const Ref<SiMMLVoice> &p_voice) 
 
 TranslatorUtil::MMLTableNumbers TranslatorUtil::parse_table_numbers(String p_table_numbers, String p_postfix, int p_max_index) {
 	MMLTableNumbers parsed_table;
-
-	SinglyLinkedList<int> *head = SinglyLinkedList<int>::alloc(0);
-	SinglyLinkedList<int> *last = head;
-	SinglyLinkedList<int> *repeat = nullptr;
+	parsed_table.data = memnew(SinglyLinkedList<int>);
 
 	// Magnification.
 	Ref<RegEx> re_postfix = RegEx::create_from_string("(\\d+)?(\\*(-?[\\d.]+))?([+-][\\d.]+)?");
@@ -1475,13 +1472,15 @@ TranslatorUtil::MMLTableNumbers TranslatorUtil::parse_table_numbers(String p_tab
 	Ref<RegEx> re_table = RegEx::create_from_string("(\\(\\s*([,\\-\\d\\s]+)\\)[,\\s]*(\\d+))|(-?\\d+)|(\\||\\[|\\](\\d*))");
 	TypedArray<RegExMatch> numbers = re_table->search_all(p_table_numbers);
 
+	SinglyLinkedList<int>::Element *repeat = nullptr;
+	List<SinglyLinkedList<int>::Element *> loop_stack;
+
 	int index = 0;
 	for (int n = 0; n < numbers.size() && index < p_max_index; n++) {
 		Ref<RegExMatch> parsed_number = numbers[n];
 
+		// Interpolation: "(match[2]..),match[3]"
 		if (!parsed_number->get_string(1).is_empty()) {
-			// Interpolation: "(match[2]..),match[3]"
-
 			PackedStringArray arr = split_string_by_regex(parsed_number->get_string(2), "[,\\s]+");
 			int inter_size = parsed_number->get_string(3).to_int();
 			ERR_FAIL_COND_V_MSG((inter_size < 2 || arr.size() < 1), parsed_table, "Translator: Failed to parse provided MML table, interpolation data is invalid.");
@@ -1505,7 +1504,7 @@ TranslatorUtil::MMLTableNumbers TranslatorUtil::parse_table_numbers(String p_tab
 					value = (int)(value * postfix_coef + postfix_offset + 0.5);
 
 					for (int j = 0; j < postfix_size; j++) {
-						last = last->append(value);
+						parsed_table.data->append(value);
 					}
 					index += postfix_size;
 
@@ -1516,45 +1515,51 @@ TranslatorUtil::MMLTableNumbers TranslatorUtil::parse_table_numbers(String p_tab
 
 				for (int i = 0; i < inter_size && index < p_max_index; i++) {
 					for (int j = 0; j < postfix_size; j++) {
-						last = last->append(value);
+						parsed_table.data->append(value);
 					}
 					index += postfix_size;
 				}
 			}
+
+		// Single number.
 		} else if (!parsed_number->get_string(4).is_empty()) {
-			// Single number.
 			int value = parsed_number->get_string(4).to_int();
 			value = (int)(value * postfix_coef + postfix_offset + 0.5);
 
 			for (int j = 0; j < postfix_size; j++) {
-				last = last->append(value);
+				parsed_table.data->append(value);
 			}
 			index++;
-		} else if (!parsed_number->get_string(5).is_empty()) {
-			List<SinglyLinkedList<int> *> loop_stack;
-			SinglyLinkedList<int> *loop_head = nullptr;
-			SinglyLinkedList<int> *loop_tail = nullptr;
 
-			String token = parsed_number->get_string(5);
-			if (token == "|") {        // Repeat point.
-				repeat = last;
-			} else if (token == "[") { // Being loop.
-				loop_stack.push_back(last);
-			} else {                   // End loop.
+		// Loop control characters.
+		} else if (!parsed_number->get_string(5).is_empty()) {
+			const String token = parsed_number->get_string(5);
+
+			// Loop repeat point.
+			if (token == "|") {
+				repeat = parsed_table.data->get();
+
+			// Loop start.
+			} else if (token == "[") {
+				loop_stack.push_back(parsed_table.data->get());
+
+			// Loop end.
+			} else {
 				ERR_FAIL_COND_V_MSG(loop_stack.is_empty(), parsed_table, "Translator: Failed to parse provided MML table, loop data is invalid.");
 
-				loop_head = loop_stack.back()->get()->next();
+				SinglyLinkedList<int>::Element *loop_tail = parsed_table.data->get();
+				SinglyLinkedList<int>::Element *loop_head = (loop_stack.back()->get())->next();
 				loop_stack.pop_back();
 				ERR_FAIL_COND_V_MSG(!loop_head, parsed_table, "Translator: Failed to parse provided MML table, loop data is invalid.");
 
-				loop_tail = last;
 				int loop_count = 2;
 				if (!parsed_number->get_string(6).is_empty()) {
 					loop_count = parsed_number->get_string(6).to_int();
 				}
+
 				for (int j = loop_count; j > 0; j--) {
-					for (SinglyLinkedList<int> *l = loop_head; l != loop_tail->next(); l = l->next()) {
-						last = last->append(l->get()->value);
+					for (SinglyLinkedList<int>::Element *l = loop_head; l != loop_tail->next(); l = l->next()) {
+						parsed_table.data->append(l->value);
 					}
 				}
 			}
@@ -1564,32 +1569,30 @@ TranslatorUtil::MMLTableNumbers TranslatorUtil::parse_table_numbers(String p_tab
 	}
 
 	if (repeat) {
-		last->link(repeat->next());
+		parsed_table.data->loop(repeat->next());
 	}
 
-	parsed_table.head = head->next();
-	parsed_table.tail = last;
 	parsed_table.length = index;
 	parsed_table.repeated = (repeat != nullptr);
 	return parsed_table;
 }
 
 void TranslatorUtil::parse_wav(String p_table_numbers, String p_postfix, Vector<double> *r_data) {
-	MMLTableNumbers res = parse_table_numbers(p_table_numbers, p_postfix, 1024);
+	MMLTableNumbers table = parse_table_numbers(p_table_numbers, p_postfix, 1024);
 
 	int data_length = 2;
-	while (data_length < 1024 && data_length < res.length) {
+	while (data_length < 1024 && data_length < table.length) {
 		data_length <<= 1;
 	}
 	r_data->resize_zeroed(data_length);
 
 	int i = 0;
-	SinglyLinkedList<int> *value_base = res.head;
-	for (; i < data_length && value_base != nullptr; i++) {
-		double value = (value_base->get()->value + 0.5) * 0.0078125;
+	table.data->front();
+	for (; i < data_length && table.data->get(); i++) {
+		double value = (table.data->get()->value + 0.5) * 0.0078125;
 		r_data->write[i] = CLAMP(value, -1, 1);
 
-		value_base = value_base->next();
+		table.data->next();
 	}
 
 	for (; i < data_length; i++) {
