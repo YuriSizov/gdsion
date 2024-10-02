@@ -1,5 +1,5 @@
 ###################################################
-# Part of GDSiON example project                  #
+# Part of GDSiON tests                            #
 # Copyright (c) 2024 Yuri Sizov and contributors  #
 # Provided under MIT                              #
 ###################################################

@@ -34,8 +34,11 @@ private:
 	int operator_count = 0;
 	bool analog_like = false;
 
+	// Algorithm [0,15]
 	int algorithm = 0;
+	// Feedback [0,7]
 	int feedback = 0;
+	// Feedback connection [0,3]
 	int feedback_connection = 0;
 	int envelope_frequency_ratio = 100;
 	int lfo_wave_shape = 0;

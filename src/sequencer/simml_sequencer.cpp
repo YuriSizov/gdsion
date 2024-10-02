@@ -711,7 +711,7 @@ bool SiMMLSequencer::_parse_system_command_before(String p_command, String p_par
 	}
 
 	if (p_command == "#@") {
-		PARSE_TONE_PARAMS(TranslatorUtil::parse_params);
+		PARSE_TONE_PARAMS(TranslatorUtil::parse_siopm_params);
 		return true;
 	}
 	if (p_command == "#OPM@") {

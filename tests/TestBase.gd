@@ -1,5 +1,5 @@
 ###################################################
-# Part of GDSiON example project                  #
+# Part of GDSiON tests                            #
 # Copyright (c) 2024 Yuri Sizov and contributors  #
 # Provided under MIT                              #
 ###################################################
@@ -101,31 +101,37 @@ func _print_fail(label: String, result: String) -> void:
 
 # Assert helpers.
 
-func _assert_equal(label: String, value: Variant, against: Variant) -> void:
+func _assert_equal(label: String, value: Variant, against: Variant) -> bool:
 	asserts_total += 1
 
 	if value == against:
 		asserts_success += 1
 		_print_ok(label, "'%s' == '%s'" % [ value, against ])
+		return true
 	else:
 		_print_fail(label, "'%s' != '%s'" % [ value, against ])
+		return false
 
 
-func _assert_null(label: String, value: Object) -> void:
+func _assert_null(label: String, value: Object) -> bool:
 	asserts_total += 1
 
 	if value == null:
 		asserts_success += 1
 		_print_ok(label, "value is null")
+		return true
 	else:
 		_print_fail(label, "value is %s" % [ value ])
+		return false
 
 
-func _assert_not_null(label: String, value: Object) -> void:
+func _assert_not_null(label: String, value: Object) -> bool:
 	asserts_total += 1
 
 	if value != null:
 		asserts_success += 1
 		_print_ok(label, "value is %s" % [ value ])
+		return true
 	else:
 		_print_fail(label, "value is null")
+		return false

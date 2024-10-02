@@ -99,7 +99,7 @@ public:
 		{-1,-1, 5, 2, 0, 3, 2, 2,-1,-1,-1,-1,-1,-1,-1,-1},
 		{-1,-1, 7, 2, 0, 4, 8, 9,-1,-1,-1,-1,-1,-1,-1,-1}
 	};
-	// Algorithm table for OPX. LSB4 is the flag of feedback connection.
+	// Algorithm table for OPX. LSB is the flag of feedback connection.
 	int algorithm_opx[4][16] = {
 		{ 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
 		{ 0,16, 1, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},

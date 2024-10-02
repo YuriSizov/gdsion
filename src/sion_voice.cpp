@@ -24,7 +24,7 @@
 
 void SiONVoice::set_params(TypedArray<int> p_args) {
 	Vector<int> data = make_vector_from_typed_array<int>(p_args);
-	TranslatorUtil::set_params(channel_params, data);
+	TranslatorUtil::set_siopm_params(channel_params, data);
 	chip_type = SiONChipType::CHIP_SIOPM;
 }
 
@@ -67,7 +67,7 @@ void SiONVoice::set_params_al(TypedArray<int> p_args) {
 }
 
 TypedArray<int> SiONVoice::get_params() const {
-	Vector<int> data = TranslatorUtil::get_params(channel_params);
+	Vector<int> data = TranslatorUtil::get_siopm_params(channel_params);
 	return make_typed_array_from_vector<int>(data);
 }
 
@@ -110,7 +110,7 @@ String SiONVoice::get_mml(int p_index, SiONChipType p_chip_type, bool p_append_p
 	String mml;
 	switch (type) {
 		case SiONChipType::CHIP_SIOPM:
-			mml = "#@"    + itos(p_index) + TranslatorUtil::get_params_as_mml(channel_params, " ", "\n", _name);
+			mml = "#@"    + itos(p_index) + TranslatorUtil::get_siopm_params_as_mml(channel_params, " ", "\n", _name);
 			break;
 		case SiONChipType::CHIP_OPL:
 			mml = "#OPL@" + itos(p_index) + TranslatorUtil::get_opl_params_as_mml(channel_params, " ", "\n", _name);
@@ -160,7 +160,7 @@ int SiONVoice::set_by_mml(String p_mml) {
 	String data = res->get_string(3);
 
 	if (command == "#@") {
-		TranslatorUtil::parse_params(channel_params, data);
+		TranslatorUtil::parse_siopm_params(channel_params, data);
 		chip_type = SiONChipType::CHIP_SIOPM;
 	} else if (command == "#OPL@") {
 		TranslatorUtil::parse_opl_params(channel_params, data);

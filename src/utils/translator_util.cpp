@@ -61,11 +61,33 @@ void TranslatorUtil::_check_operator_count(const Ref<SiOPMChannelParams> &p_para
 	p_params->set_operator_count(op_count);
 }
 
-int TranslatorUtil::_get_params_algorithm(int (&p_algorithms)[4][16], int p_operator_count, int p_data_value, const String &p_command) {
+int TranslatorUtil::_sanitize_param_loop(int p_value, int p_min, int p_max, const String &p_label) {
+	if (unlikely(p_value < p_min || p_value > p_max)) {
+		ERR_PRINT(vformat("Translator: Parameter '%s' value (%d) is outside of valid range (%d : %d). Value will be looped.", p_label, p_value, p_min, p_max));
+	}
+
+	// Special case when -1 is allowed. Other negative values still loop, which is ehhh...
+	// But that's how the original is, so why not. We still report all invalid values here.
+	if (p_min == -1 && p_value == -1) {
+		return p_value;
+	}
+
+	return p_value & p_max;
+}
+
+int TranslatorUtil::_sanitize_param_clamp(int p_value, int p_min, int p_max, const String &p_label) {
+	if (unlikely(p_value < p_min || p_value > p_max)) {
+		ERR_PRINT(vformat("Translator: Parameter '%s' value (%d) is outside of valid range (%d : %d). Value will be clamped.", p_label, p_value, p_min, p_max));
+	}
+
+	return CLAMP(p_value, p_min, p_max);
+}
+
+int TranslatorUtil::_get_params_algorithm(int (&p_algorithms)[4][16], int p_operator_count, int p_data_value, int p_max_value, const String &p_command) {
 	int alg_index = p_operator_count - 1;
 	ERR_FAIL_INDEX_V_MSG(alg_index, 4, -1, vformat("Translator: Invalid algorithm parameter %d in '%s'.", p_data_value, p_command));
 
-	int alg_data = p_data_value & 15;
+	int alg_data = _sanitize_param_loop(p_data_value, 0, p_max_value, "AL");
 	ERR_FAIL_INDEX_V_MSG(alg_data, 16, -1, vformat("Translator: Invalid algorithm parameter %d in '%s'.", p_data_value, p_command));
 
 	int algorithm = p_algorithms[alg_index][alg_data];
@@ -74,253 +96,267 @@ int TranslatorUtil::_get_params_algorithm(int (&p_algorithms)[4][16], int p_oper
 	return algorithm;
 }
 
-// #@
-// alg[0-15], fb[0-7], fbc[0-3],
-// (ws[0-511], ar[0-63], dr[0-63], sr[0-63], rr[0-63], sl[0-15], tl[0-127], ksr[0-3], ksl[0-3], mul[], dt1[0-7], detune[], ams[0-3], phase[-1-255], fixedNote[0-127]) x operator_count
-void TranslatorUtil::_set_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
+void TranslatorUtil::_set_siopm_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
 	if (p_params->operator_count == 0) {
 		return;
 	}
 
-	p_params->algorithm = p_data[0];
-	p_params->feedback = p_data[1];
-	p_params->feedback_connection = p_data[2];
+	// #@ (SiOPM) signature:
+	// AL[0-15], FB[0-7], FC[0-3],
+	// (WS[0-511], AR[0-63], DR[0-63], SR[0-63], RR[0-63], SL[0-15], TL[0-127], KR[0-3], KL[0-3], ML[], D1[0-7], D2[], AM[0-3], PH[-1-255], FN[0-127]) x operator_count
+
+	p_params->algorithm           = _sanitize_param_loop(p_data[0], 0, 15, "AL");
+	p_params->feedback            = _sanitize_param_loop(p_data[1], 0, 7,  "FB");
+	p_params->feedback_connection = _sanitize_param_loop(p_data[2], 0, 3,  "FC");
 
 	int data_index = 3;
 	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
 		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
 
-		op_params->set_pulse_generator_type    (p_data[data_index++] & 511);       // 1
-		op_params->attack_rate                = p_data[data_index++] & 63;         // 2
-		op_params->decay_rate                 = p_data[data_index++] & 63;         // 3
-		op_params->sustain_rate               = p_data[data_index++] & 63;         // 4
-		op_params->release_rate               = p_data[data_index++] & 63;         // 5
-		op_params->sustain_level              = p_data[data_index++] & 15;         // 6
-		op_params->total_level                = p_data[data_index++] & 127;        // 7
-		op_params->key_scaling_rate           = p_data[data_index++] & 3;          // 8
-		op_params->key_scaling_level          = p_data[data_index++] & 3;          // 9
+		op_params->set_pulse_generator_type    (_sanitize_param_loop(p_data[data_index++], 0, 511, "WS"));        // 1
+		op_params->attack_rate                = _sanitize_param_loop(p_data[data_index++], 0, 63,  "AR");         // 2
+		op_params->decay_rate                 = _sanitize_param_loop(p_data[data_index++], 0, 63,  "DR");         // 3
+		op_params->sustain_rate               = _sanitize_param_loop(p_data[data_index++], 0, 63,  "SR");         // 4
+		op_params->release_rate               = _sanitize_param_loop(p_data[data_index++], 0, 63,  "RR");         // 5
+		op_params->sustain_level              = _sanitize_param_loop(p_data[data_index++], 0, 15,  "SL");         // 6
+		op_params->total_level                = _sanitize_param_loop(p_data[data_index++], 0, 127, "TL");         // 7
+		op_params->key_scaling_rate           = _sanitize_param_loop(p_data[data_index++], 0, 3,   "KR");         // 8
+		op_params->key_scaling_level          = _sanitize_param_loop(p_data[data_index++], 0, 3,   "KL");         // 9
 
 		// Note: Original code briefly converts this value to a Number type, which is
 		// equivalent to double. However, it's unclear if this is intentional or not.
 		// Fine multiple (fmul) is stored and set as an int in the class definition.
 		int n = p_data[data_index++];
-		op_params->fine_multiple = (n == 0) ? 64 : n * 128;                         // 10
-		op_params->detune1                    = p_data[data_index++] & 7;           // 11
-		op_params->detune                     = p_data[data_index++];               // 12
-		op_params->amplitude_modulation_shift = p_data[data_index++] & 3;           // 13
+		op_params->fine_multiple = (n == 0) ? 64 : n * 128;                                                       // 10
 
-		int i = p_data[data_index++];
-		op_params->initial_phase = (i == -1) ? i : (i & 255);                       // 14
-		op_params->fixed_pitch                = (p_data[data_index++] & 127) << 6;  // 15
+		op_params->detune1                    = _sanitize_param_loop(p_data[data_index++], 0, 7,    "D1");        // 11
+		op_params->detune                     = p_data[data_index++];                                             // 12
+		op_params->amplitude_modulation_shift = _sanitize_param_loop(p_data[data_index++], 0, 3,    "D2");        // 13
+		op_params->initial_phase              = _sanitize_param_loop(p_data[data_index++], -1, 255, "PH");        // 14
+		op_params->fixed_pitch                = (_sanitize_param_loop(p_data[data_index++], 0, 127, "FN")) << 6;  // 15
 	}
 }
 
-// #OPL@
-// alg[0-5], fb[0-7],
-// (ws[0-7], ar[0-15], dr[0-15], rr[0-15], egt[0,1], sl[0-15], tl[0-63], ksr[0,1], ksl[0-3], mul[0-15], ams[0-3]) x operator_count
 void TranslatorUtil::_set_opl_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
 	if (p_params->operator_count == 0) {
 		return;
 	}
 
-	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opl, p_params->operator_count, p_data[0], "#OPL@");
+	// #OPL@ signature:
+	// AL[0-5], FB[0-7],
+	// (WS[0-31], AR[0-15], DR[0-15], RR[0-15], EG[0,1], SL[0-15], TL[0-63], KR[0,1], KL[0-3], ML[0-15], AM[0-3]) x operator_count
+
+	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opl, p_params->operator_count, p_data[0], 5, "#OPL@");
 	if (algorithm == -1) {
 		return;
 	}
 
 	p_params->envelope_frequency_ratio = 133;
 	p_params->algorithm = algorithm;
-	p_params->feedback = p_data[1];
+	p_params->feedback = _sanitize_param_loop(p_data[1], 0, 7, "FB");
 
 	int data_index = 2;
 	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
 		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
 
-		op_params->set_pulse_generator_type(SiONPulseGeneratorType::PULSE_MA3_WAVE + (p_data[data_index++] & 31)); // 1
-		op_params->attack_rate                                      = (p_data[data_index++] << 2) & 63;  // 2
-		op_params->decay_rate                                       = (p_data[data_index++] << 2) & 63;  // 3
-		op_params->release_rate                                     = (p_data[data_index++] << 2) & 63;  // 4
+		int pg_type = SiONPulseGeneratorType::PULSE_MA3_WAVE + _sanitize_param_loop(p_data[data_index++], 0, 31, "WS");
+		op_params->set_pulse_generator_type(pg_type);                                                                                  // 1
 
-		// egt=0;decaying tone / egt=1;holding tone
-		int n = p_data[data_index++];
-		op_params->sustain_rate = (n != 0) ? 0 : op_params->release_rate;                                // 5
-		op_params->sustain_level                                     = p_data[data_index++] & 15;        // 6
-		op_params->total_level                                       = p_data[data_index++] & 63;        // 7
-		op_params->key_scaling_rate                                 = (p_data[data_index++] << 1) & 3;   // 8
-		op_params->key_scaling_level                                 = p_data[data_index++] & 3;         // 9
+		op_params->attack_rate                                      = (_sanitize_param_loop(p_data[data_index++], 0, 15, "AR") << 2);  // 2
+		op_params->decay_rate                                       = (_sanitize_param_loop(p_data[data_index++], 0, 15, "DR") << 2);  // 3
+		op_params->release_rate                                     = (_sanitize_param_loop(p_data[data_index++], 0, 15, "RR") << 2);  // 4
 
-		int i = p_data[data_index++] & 15;
-		op_params->set_multiple((i == 11 || i == 13) ? (i - 1) : (i == 14) ? (i + 1) : i);               // 10
-		op_params->amplitude_modulation_shift                        = p_data[data_index++] & 3;         // 11
+		// If EG is 0 — decaying tone, if EG is 1 — holding tone.
+		int n = _sanitize_param_loop(p_data[data_index++], 0, 1, "EG");
+		op_params->sustain_rate = (n != 0) ? 0 : op_params->release_rate;                                                              // 5
+		op_params->sustain_level                                    = _sanitize_param_loop(p_data[data_index++], 0, 15, "SL");         // 6
+		op_params->total_level                                      = _sanitize_param_loop(p_data[data_index++], 0, 63, "TL");         // 7
+		op_params->key_scaling_rate                                 = (_sanitize_param_loop(p_data[data_index++], 0, 1, "KR") << 1);   // 8
+		op_params->key_scaling_level                                = _sanitize_param_loop(p_data[data_index++], 0, 3, "KL");          // 9
+
+		int i = _sanitize_param_loop(p_data[data_index++], 0, 15, "ML");
+		op_params->set_multiple((i == 11 || i == 13) ? (i - 1) : (i == 14) ? (i + 1) : i);                                             // 10
+		op_params->amplitude_modulation_shift                       = _sanitize_param_loop(p_data[data_index++], 0, 3, "AM");          // 11
 	}
 }
 
-// #OPM@
-// alg[0-7], fb[0-7],
-// (ar[0-31], dr[0-31], sr[0-31], rr[0-15], sl[0-15], tl[0-127], ks[0-3], mul[0-15], dt1[0-7], dt2[0-3], ams[0-3]) x operator_count
 void TranslatorUtil::_set_opm_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
 	if (p_params->operator_count == 0) {
 		return;
 	}
 
-	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opm, p_params->operator_count, p_data[0], "#OPM@");
+	// #OPM@ signature:
+	// AL[0-7], FB[0-7],
+	// (AR[0-31], DR[0-31], SR[0-31], RR[0-15], SL[0-15], TL[0-127], KR[0-3], ML[0-15], D1[0-7], D2[0-3], AM[0-3]) x operator_count
+
+	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opm, p_params->operator_count, p_data[0], 7, "#OPM@");
 	if (algorithm == -1) {
 		return;
 	}
 
 	p_params->algorithm = algorithm;
-	p_params->feedback = p_data[1];
+	p_params->feedback = _sanitize_param_loop(p_data[1], 0, 7, "FB");
 
 	int data_index = 2;
 	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
 		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
 
-		op_params->attack_rate               = (p_data[data_index++] << 1) & 63;       // 1
-		op_params->decay_rate                = (p_data[data_index++] << 1) & 63;       // 2
-		op_params->sustain_rate              = (p_data[data_index++] << 1) & 63;       // 3
-		op_params->release_rate             = ((p_data[data_index++] << 2) + 2) & 63;  // 4
-		op_params->sustain_level              = p_data[data_index++] & 15;             // 5
-		op_params->total_level                = p_data[data_index++] & 127;            // 6
-		op_params->key_scaling_rate           = p_data[data_index++] & 3;              // 7
-		op_params->set_multiple                (p_data[data_index++] & 15);            // 8
-		op_params->detune1                    = p_data[data_index++] & 7;              // 9
+		op_params->attack_rate               = (_sanitize_param_loop(p_data[data_index++], 0, 31, "AR") << 1);       // 1
+		op_params->decay_rate                = (_sanitize_param_loop(p_data[data_index++], 0, 31, "DR") << 1);       // 2
+		op_params->sustain_rate              = (_sanitize_param_loop(p_data[data_index++], 0, 31, "SR") << 1);       // 3
+		op_params->release_rate             = ((_sanitize_param_loop(p_data[data_index++], 0, 15, "RR") << 2) + 2);  // 4
+		op_params->sustain_level             = _sanitize_param_loop(p_data[data_index++], 0, 15,  "SL");             // 5
+		op_params->total_level               = _sanitize_param_loop(p_data[data_index++], 0, 127, "TL");             // 6
+		op_params->key_scaling_rate          = _sanitize_param_loop(p_data[data_index++], 0, 3,   "KR");             // 7
+		op_params->set_multiple               (_sanitize_param_loop(p_data[data_index++], 0, 15,  "ML"));            // 8
+		op_params->detune1                   = _sanitize_param_loop(p_data[data_index++], 0, 7,   "D1");             // 9
 
-		int n = p_data[data_index++] & 3;
-		op_params->detune = SiOPMRefTable::get_instance()->dt2_table[n];               // 10
-		op_params->amplitude_modulation_shift = p_data[data_index++] & 3;              // 11
+		int n = _sanitize_param_loop(p_data[data_index++], 0, 3, "D2");
+		op_params->detune = SiOPMRefTable::get_instance()->dt2_table[n];                                             // 10
+		op_params->amplitude_modulation_shift = _sanitize_param_loop(p_data[data_index++], 0, 3, "AM");              // 11
 	}
 }
 
-// #OPN@
-// alg[0-7], fb[0-7],
-// (ar[0-31], dr[0-31], sr[0-31], rr[0-15], sl[0-15], tl[0-127], ks[0-3], mul[0-15], dt1[0-7], ams[0-3]) x operator_count
 void TranslatorUtil::_set_opn_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
 	if (p_params->operator_count == 0) {
 		return;
 	}
 
+	// #OPN@ signature:
+	// AL[0-7], FB[0-7],
+	// (AR[0-31], DR[0-31], SR[0-31], RR[0-15], SL[0-15], TL[0-127], KR[0-3], ML[0-15], D1[0-7], AM[0-3]) x operator_count
+
 	// Note: OPM and OPN share the algo list.
-	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opm, p_params->operator_count, p_data[0], "#OPN@");
+	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opm, p_params->operator_count, p_data[0], 7, "#OPN@");
 	if (algorithm == -1) {
 		return;
 	}
 
 	p_params->algorithm = algorithm;
-	p_params->feedback = p_data[1];
+	p_params->feedback = _sanitize_param_loop(p_data[1], 0, 7, "FB");
 
 	int data_index = 2;
 	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
 		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
 
-		op_params->attack_rate               = (p_data[data_index++] << 1) & 63;       // 1
-		op_params->decay_rate                = (p_data[data_index++] << 1) & 63;       // 2
-		op_params->sustain_rate              = (p_data[data_index++] << 1) & 63;       // 3
-		op_params->release_rate             = ((p_data[data_index++] << 2) + 2) & 63;  // 4
-		op_params->sustain_level              = p_data[data_index++] & 15;             // 5
-		op_params->total_level                = p_data[data_index++] & 127;            // 6
-		op_params->key_scaling_rate           = p_data[data_index++] & 3;              // 7
-		op_params->set_multiple                (p_data[data_index++] & 15);            // 8
-		op_params->detune1                    = p_data[data_index++] & 7;              // 9
-		op_params->amplitude_modulation_shift = p_data[data_index++] & 3;              // 10
-
+		op_params->attack_rate                = (_sanitize_param_loop(p_data[data_index++], 0, 31, "AR") << 1);       // 1
+		op_params->decay_rate                 = (_sanitize_param_loop(p_data[data_index++], 0, 31, "DR") << 1);       // 2
+		op_params->sustain_rate               = (_sanitize_param_loop(p_data[data_index++], 0, 31, "SR") << 1);       // 3
+		op_params->release_rate              = ((_sanitize_param_loop(p_data[data_index++], 0, 15, "RR") << 2) + 2);  // 4
+		op_params->sustain_level              = _sanitize_param_loop(p_data[data_index++], 0, 15,  "SL");             // 5
+		op_params->total_level                = _sanitize_param_loop(p_data[data_index++], 0, 127, "TL");             // 6
+		op_params->key_scaling_rate           = _sanitize_param_loop(p_data[data_index++], 0, 3,   "KR");             // 7
+		op_params->set_multiple                (_sanitize_param_loop(p_data[data_index++], 0, 15,  "ML"));            // 8
+		op_params->detune1                    = _sanitize_param_loop(p_data[data_index++], 0, 7,   "D1");             // 9
+		op_params->amplitude_modulation_shift = _sanitize_param_loop(p_data[data_index++], 0, 3,   "AM");             // 10
 	}
 }
 
-// #OPX@
-// alg[0-15], fb[0-7],
-// (ws[0-7], ar[0-31], dr[0-31], sr[0-31], rr[0-15], sl[0-15], tl[0-127], ks[0-3], mul[0-15], dt1[0-7], detune[], ams[0-3]) x operator_count
 void TranslatorUtil::_set_opx_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
 	if (p_params->operator_count == 0) {
 		return;
 	}
 
-	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opx, p_params->operator_count, p_data[0], "#OPX@");
+	// #OPX@ signature:
+	// AL[0-15], FB[0-7],
+	// (WS[0-7?], AR[0-31], DR[0-31], SR[0-31], RR[0-15], SL[0-15], TL[0-127], KR[0-3], ML[0-15], D1[0-7], D2[], AM[0-3]) x operator_count
+
+	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opx, p_params->operator_count, p_data[0], 15, "#OPX@");
 	if (algorithm == -1) {
 		return;
 	}
 
+	// LSB is the flag of feedback connection.
 	p_params->algorithm = (algorithm & 15);
-	p_params->feedback = p_data[1];
+	p_params->feedback = _sanitize_param_loop(p_data[1], 0, 7, "FB");
 	p_params->feedback_connection = (algorithm & 16) ? 1 : 0;
 
 	int data_index = 2;
 	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
 		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
 
-		int i = p_data[data_index++];
-		int i1 = SiONPulseGeneratorType::PULSE_MA3_WAVE + (i & 7);
-		int i2 = SiONPulseGeneratorType::PULSE_CUSTOM + (i - 7);
-		op_params->set_pulse_generator_type((i < 7) ? i1 : i2);                        // 1
-		op_params->attack_rate               = (p_data[data_index++] << 1) & 63;       // 2
-		op_params->decay_rate                = (p_data[data_index++] << 1) & 63;       // 3
-		op_params->sustain_rate              = (p_data[data_index++] << 1) & 63;       // 4
-		op_params->release_rate             = ((p_data[data_index++] << 2) + 2) & 63;  // 5
-		op_params->sustain_level              = p_data[data_index++] & 15;             // 6
-		op_params->total_level                = p_data[data_index++] & 127;            // 7
-		op_params->key_scaling_rate           = p_data[data_index++] & 3;              // 8
-		op_params->set_multiple                (p_data[data_index++] & 15);            // 9
-		op_params->detune1                    = p_data[data_index++] & 7;              // 10
-		op_params->detune                     = p_data[data_index++];                  // 11
-		op_params->amplitude_modulation_shift = p_data[data_index++] & 3;              // 12
+		// Standard supported values are in the [0-7] range. Values beyond that are supported for custom waves.
+		int wave_shape = p_data[data_index++];
+		if (wave_shape < 8) {
+			int pg_type = SiONPulseGeneratorType::PULSE_MA3_WAVE + _sanitize_param_loop(wave_shape, 0, 7, "WS");
+			op_params->set_pulse_generator_type(pg_type);                                                             // 1
+		} else {
+			int pg_type = SiONPulseGeneratorType::PULSE_CUSTOM + _sanitize_param_clamp(wave_shape - 8, 0, 127, "WS");
+			op_params->set_pulse_generator_type(pg_type);                                                             // 1
+		}
+
+		op_params->attack_rate                = (_sanitize_param_loop(p_data[data_index++], 0, 31, "AR") << 1);       // 2
+		op_params->decay_rate                 = (_sanitize_param_loop(p_data[data_index++], 0, 31, "DR") << 1);       // 3
+		op_params->sustain_rate               = (_sanitize_param_loop(p_data[data_index++], 0, 31, "SR") << 1);       // 4
+		op_params->release_rate              = ((_sanitize_param_loop(p_data[data_index++], 0, 15, "RR") << 2) + 2);  // 5
+		op_params->sustain_level              = _sanitize_param_loop(p_data[data_index++], 0, 15,  "SL");             // 6
+		op_params->total_level                = _sanitize_param_loop(p_data[data_index++], 0, 127, "TL");             // 7
+		op_params->key_scaling_rate           = _sanitize_param_loop(p_data[data_index++], 0, 3,   "KR");             // 8
+		op_params->set_multiple                (_sanitize_param_loop(p_data[data_index++], 0, 15,  "ML"));            // 9
+		op_params->detune1                    = _sanitize_param_loop(p_data[data_index++], 0, 7,   "D1");             // 10
+		op_params->detune                     = p_data[data_index++];                                                 // 11
+		op_params->amplitude_modulation_shift = _sanitize_param_loop(p_data[data_index++], 0, 3,   "AM");             // 12
 	}
 }
 
-// #MA@
-// alg[0-15], fb[0-7],
-// (ws[0-31], ar[0-15], dr[0-15], sr[0-15], rr[0-15], sl[0-15], tl[0-63], ksr[0,1], ksl[0-3], mul[0-15], dt1[0-7], ams[0-3]) x operator_count
 void TranslatorUtil::_set_ma3_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
 	if (p_params->operator_count == 0) {
 		return;
 	}
 
-	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_ma3, p_params->operator_count, p_data[0], "#MA@");
+	// #MA@ signature:
+	// AL[0-15], FB[0-7],
+	// (WS[0-31], AR[0-15], DR[0-15], SR[0-15], RR[0-15], SL[0-15], TL[0-63], KR[0,1], KL[0-3], ML[0-15], D1[0-7], AM[0-3]) x operator_count
+
+	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_ma3, p_params->operator_count, p_data[0], 15, "#MA@");
 	if (algorithm == -1) {
 		return;
 	}
 
 	p_params->envelope_frequency_ratio = 133;
 	p_params->algorithm = algorithm;
-	p_params->feedback = p_data[1];
+	p_params->feedback = _sanitize_param_loop(p_data[1], 0, 7, "FB");
 
 	int data_index = 2;
 	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
 		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
 
-		int n = p_data[data_index++] & 31;
-		op_params->set_pulse_generator_type(SiONPulseGeneratorType::PULSE_MA3_WAVE + n);    // 1
-		op_params->attack_rate                       = (p_data[data_index++] << 2) & 63;    // 2
-		op_params->decay_rate                        = (p_data[data_index++] << 2) & 63;    // 3
-		op_params->sustain_rate                      = (p_data[data_index++] << 2) & 63;    // 4
-		op_params->release_rate                      = (p_data[data_index++] << 2) & 63;    // 5
-		op_params->sustain_level                      = p_data[data_index++] & 15;          // 6
-		op_params->total_level                        = p_data[data_index++] & 63;          // 7
-		op_params->key_scaling_rate                  = (p_data[data_index++]<<1) & 3;       // 8
-		op_params->key_scaling_level                  = p_data[data_index++] & 3;           // 9
+		int pg_type = SiONPulseGeneratorType::PULSE_MA3_WAVE + _sanitize_param_loop(p_data[data_index++], 0, 31, "WS");
+		op_params->set_pulse_generator_type(pg_type);                                                                     // 1
 
-		int i = p_data[data_index++] & 15;
-		op_params->set_multiple((i == 11 || i == 13) ? (i - 1) : (i == 14) ? (i + 1) : i);  // 10
-		op_params->detune1                            = p_data[data_index++] & 7;           // 11
-		op_params->amplitude_modulation_shift         = p_data[data_index++] & 3;           // 12
+		op_params->attack_rate                       = (_sanitize_param_loop(p_data[data_index++], 0, 15, "AR") << 2);    // 2
+		op_params->decay_rate                        = (_sanitize_param_loop(p_data[data_index++], 0, 15, "DR") << 2);    // 3
+		op_params->sustain_rate                      = (_sanitize_param_loop(p_data[data_index++], 0, 15, "SR") << 2);    // 4
+		op_params->release_rate                      = (_sanitize_param_loop(p_data[data_index++], 0, 15, "RR") << 2);    // 5
+		op_params->sustain_level                     = _sanitize_param_loop(p_data[data_index++], 0, 15, "SL");           // 6
+		op_params->total_level                       = _sanitize_param_loop(p_data[data_index++], 0, 63, "TL");           // 7
+		op_params->key_scaling_rate                  = (_sanitize_param_loop(p_data[data_index++], 0, 1, "KR") << 1);     // 8
+		op_params->key_scaling_level                 = _sanitize_param_loop(p_data[data_index++], 0, 3, "KL");            // 9
+
+		int i = _sanitize_param_loop(p_data[data_index++], 0, 15, "ML");
+		op_params->set_multiple((i == 11 || i == 13) ? (i - 1) : (i == 14) ? (i + 1) : i);                                // 10
+		op_params->detune1                           = _sanitize_param_loop(p_data[data_index++], 0, 7, "D1");            // 11
+		op_params->amplitude_modulation_shift        = _sanitize_param_loop(p_data[data_index++], 0, 3, "AM");            // 12
 	}
 }
 
-// #AL@
-// con[0-2], ws1[0-511], ws2[0-511], balance[-64-+64], vco2pitch[]
-// ar[0-63], dr[0-63], sl[0-15], rr[0-63]
 void TranslatorUtil::_set_al_params_by_array(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
 	p_params->set_operator_count(2);
 	p_params->set_analog_like(true);
 
-	int connection_type = p_data[0];
-	p_params->algorithm = (connection_type >= 0 && connection_type <= 2) ? connection_type : 0;
+	// #AL@ signature:
+	// AL[0-2], W1[0-511], W2[0-511], BL[-64-+64], DT[]
+	// AR[0-63], DR[0-63], SL[0-15], RR[0-63]
+
+	p_params->algorithm = _sanitize_param_loop(p_data[0], 0, 2, "AL");
 
 	SiOPMOperatorParams *op_params0 = p_params->operator_params[0];
 	SiOPMOperatorParams *op_params1 = p_params->operator_params[1];
 
-	op_params0->set_pulse_generator_type(p_data[1]);
-	op_params1->set_pulse_generator_type(p_data[2]);
+	op_params0->set_pulse_generator_type(_sanitize_param_loop(p_data[1], 0, 511, "W1"));
+	op_params1->set_pulse_generator_type(_sanitize_param_loop(p_data[2], 0, 511, "W2"));
 
-	int balance = CLAMP(p_data[3], -64, 64);
+	int balance = _sanitize_param_clamp(p_data[3], -64, 64, "BL");
 	int (&tl_table)[129] = SiOPMRefTable::get_instance()->eg_linear_to_total_level_table;
 	op_params0->total_level = tl_table[64 - balance];
 	op_params1->total_level = tl_table[balance + 64];
@@ -328,15 +364,15 @@ void TranslatorUtil::_set_al_params_by_array(const Ref<SiOPMChannelParams> &p_pa
 	op_params0->detune = 0;
 	op_params1->detune = p_data[4];
 
-	op_params0->attack_rate   = p_data[5] & 63;
-	op_params0->decay_rate    = p_data[6] & 63;
+	op_params0->attack_rate   = _sanitize_param_loop(p_data[5], 0, 63, "AR");
+	op_params0->decay_rate    = _sanitize_param_loop(p_data[6], 0, 63, "DR");
 	op_params0->sustain_rate  = 0;
-	op_params0->release_rate  = p_data[8] & 15;
-	op_params0->sustain_level = p_data[7] & 63;
+	op_params0->release_rate  = _sanitize_param_loop(p_data[8], 0, 15, "RR");
+	op_params0->sustain_level = _sanitize_param_loop(p_data[7], 0, 63, "SL");
 }
 
-void TranslatorUtil::parse_params(const Ref<SiOPMChannelParams> &p_params, const String &p_data_string) {
-	return _set_params_by_array(p_params, _split_data_string(p_params, p_data_string, 3, 15, "#@"));
+void TranslatorUtil::parse_siopm_params(const Ref<SiOPMChannelParams> &p_params, const String &p_data_string) {
+	return _set_siopm_params_by_array(p_params, _split_data_string(p_params, p_data_string, 3, 15, "#@"));
 }
 
 void TranslatorUtil::parse_opl_params(const Ref<SiOPMChannelParams> &p_params, const String &p_data_string) {
@@ -363,9 +399,9 @@ void TranslatorUtil::parse_al_params(const Ref<SiOPMChannelParams> &p_params, co
 	return _set_al_params_by_array(p_params, _split_data_string(p_params, p_data_string, 9, 0, "#AL@"));
 }
 
-void TranslatorUtil::set_params(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
+void TranslatorUtil::set_siopm_params(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
 	_check_operator_count(p_params, p_data.size(), 3, 15, "#@");
-	return _set_params_by_array(p_params, p_data);
+	return _set_siopm_params_by_array(p_params, p_data);
 }
 
 void TranslatorUtil::set_opl_params(const Ref<SiOPMChannelParams> &p_params, Vector<int> p_data) {
@@ -413,20 +449,27 @@ int TranslatorUtil::_get_algorithm_index(int p_operator_count, int p_algorithm, 
 }
 
 int TranslatorUtil::_get_ma3_from_pg_type(int p_pulse_generator_type, const String &p_command) {
+	// Standard wave types.
 	int wave_shape = p_pulse_generator_type - SiONPulseGeneratorType::PULSE_MA3_WAVE;
 	if (wave_shape >= 0 && wave_shape <= 31) {
 		return wave_shape;
 	}
 
+	// Custom wave types.
+	int custom_type = p_pulse_generator_type - SiONPulseGeneratorType::PULSE_CUSTOM;
+	if (custom_type >= 0 && custom_type <= 127) {
+		return custom_type;
+	}
+
+	// Known PG types compatible with wave types.
 	switch (p_pulse_generator_type) {
-		case 0:                               return 0;   // Sin
+		case 0:                               return 0;   // Sine
 		case 1: case 2:   case 128: case 255: return 24;  // Saw
-		case 4: case 192: case 191:           return 16;  // Triangle
+		case 4: case 191: case 192:           return 16;  // Triangle
 		case 5: case 72:                      return 6;   // Square
 	}
 
-
-	ERR_FAIL_V_MSG(-1, vformat("Translator: Invalid parameter 'ws%d' in '%s'.", p_pulse_generator_type, p_command));
+	ERR_FAIL_V_MSG(-1, vformat("Translator: Cannot convert pulse generator type (%d) into a wave shape in '%s'.", p_pulse_generator_type, p_command));
 }
 
 int TranslatorUtil::_get_nearest_dt2(int p_detune) {
@@ -462,7 +505,7 @@ int TranslatorUtil::_balance_total_levels(int p_level0, int p_level1) {
 	return 64;
 }
 
-Vector<int> TranslatorUtil::get_params(const Ref<SiOPMChannelParams> &p_params) {
+Vector<int> TranslatorUtil::get_siopm_params(const Ref<SiOPMChannelParams> &p_params) {
 	if (p_params->operator_count == 0) {
 		return Vector<int>();
 	}
@@ -758,7 +801,7 @@ TranslatorUtil::OperatorParamsSizes TranslatorUtil::_get_operator_params_sizes(c
 	return sizes;
 }
 
-String TranslatorUtil::get_params_as_mml(const Ref<SiOPMChannelParams> &p_params, String p_separator, String p_line_end, String p_comment) {
+String TranslatorUtil::get_siopm_params_as_mml(const Ref<SiOPMChannelParams> &p_params, String p_separator, String p_line_end, String p_comment) {
 	if (p_params->get_operator_count() == 0) {
 		return "";
 	}
