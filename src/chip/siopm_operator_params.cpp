@@ -19,7 +19,7 @@ int SiOPMOperatorParams::get_multiple() const {
 }
 
 void SiOPMOperatorParams::set_multiple(int p_value) {
-	fine_multiple = p_value ? (p_value << 7) : 64;
+	fine_multiple = (p_value == 0 ? 64 : (p_value << 7));
 }
 
 String SiOPMOperatorParams::to_string() const {

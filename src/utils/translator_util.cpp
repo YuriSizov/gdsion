@@ -103,7 +103,7 @@ void TranslatorUtil::_set_siopm_params_by_array(const Ref<SiOPMChannelParams> &p
 
 	// #@ (SiOPM) signature:
 	// AL[0-15], FB[0-7], FC[0-3],
-	// (WS[0-511], AR[0-63], DR[0-63], SR[0-63], RR[0-63], SL[0-15], TL[0-127], KR[0-3], KL[0-3], ML[], D1[0-7], D2[], AM[0-3], PH[-1-255], FN[0-127]) x operator_count
+	// (WS[0-511], AR[0-63], DR[0-63], SR[0-63], RR[0-63], SL[0-15], TL[0-127], KR[0-3], KL[0-3], ML[0-15], D1[0-7], D2[], AM[0-3], PH[-1-255], FN[0-127]) x operator_count
 
 	p_params->algorithm           = _sanitize_param_loop(p_data[0], 0, 15, "AL");
 	p_params->feedback            = _sanitize_param_loop(p_data[1], 0, 7,  "FB");
@@ -113,22 +113,16 @@ void TranslatorUtil::_set_siopm_params_by_array(const Ref<SiOPMChannelParams> &p
 	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
 		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
 
-		op_params->set_pulse_generator_type    (_sanitize_param_loop(p_data[data_index++], 0, 511, "WS"));        // 1
-		op_params->attack_rate                = _sanitize_param_loop(p_data[data_index++], 0, 63,  "AR");         // 2
-		op_params->decay_rate                 = _sanitize_param_loop(p_data[data_index++], 0, 63,  "DR");         // 3
-		op_params->sustain_rate               = _sanitize_param_loop(p_data[data_index++], 0, 63,  "SR");         // 4
-		op_params->release_rate               = _sanitize_param_loop(p_data[data_index++], 0, 63,  "RR");         // 5
-		op_params->sustain_level              = _sanitize_param_loop(p_data[data_index++], 0, 15,  "SL");         // 6
-		op_params->total_level                = _sanitize_param_loop(p_data[data_index++], 0, 127, "TL");         // 7
-		op_params->key_scaling_rate           = _sanitize_param_loop(p_data[data_index++], 0, 3,   "KR");         // 8
-		op_params->key_scaling_level          = _sanitize_param_loop(p_data[data_index++], 0, 3,   "KL");         // 9
-
-		// Note: Original code briefly converts this value to a Number type, which is
-		// equivalent to double. However, it's unclear if this is intentional or not.
-		// Fine multiple (fmul) is stored and set as an int in the class definition.
-		int n = p_data[data_index++];
-		op_params->fine_multiple = (n == 0) ? 64 : n * 128;                                                       // 10
-
+		op_params->set_pulse_generator_type    (_sanitize_param_loop(p_data[data_index++], 0, 511,  "WS"));       // 1
+		op_params->attack_rate                = _sanitize_param_loop(p_data[data_index++], 0, 63,   "AR");        // 2
+		op_params->decay_rate                 = _sanitize_param_loop(p_data[data_index++], 0, 63,   "DR");        // 3
+		op_params->sustain_rate               = _sanitize_param_loop(p_data[data_index++], 0, 63,   "SR");        // 4
+		op_params->release_rate               = _sanitize_param_loop(p_data[data_index++], 0, 63,   "RR");        // 5
+		op_params->sustain_level              = _sanitize_param_loop(p_data[data_index++], 0, 15,   "SL");        // 6
+		op_params->total_level                = _sanitize_param_loop(p_data[data_index++], 0, 127,  "TL");        // 7
+		op_params->key_scaling_rate           = _sanitize_param_loop(p_data[data_index++], 0, 3,    "KR");        // 8
+		op_params->key_scaling_level          = _sanitize_param_loop(p_data[data_index++], 0, 3,    "KL");        // 9
+		op_params->set_multiple                (_sanitize_param_loop(p_data[data_index++], 0, 15,   "ML"));       // 10
 		op_params->detune1                    = _sanitize_param_loop(p_data[data_index++], 0, 7,    "D1");        // 11
 		op_params->detune                     = p_data[data_index++];                                             // 12
 		op_params->amplitude_modulation_shift = _sanitize_param_loop(p_data[data_index++], 0, 3,    "D2");        // 13
