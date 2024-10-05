@@ -621,7 +621,6 @@ void SiONDriver::play(const Variant &p_data, bool p_reset_effector) {
 	_audio_playback = _audio_player->get_stream_playback();
 
 	_set_processing_immediate();
-	_update_node_processing();
 }
 
 void SiONDriver::stop() {
@@ -636,11 +635,10 @@ void SiONDriver::stop() {
 	_preserve_stop = false;
 	_is_paused = false;
 	_is_streaming = false;
-	_data = Ref<SiONData>(); // Original SiON doesn't do that, but that seems like an oversight.
 
+	clear_data(); // Original SiON doesn't do that, but that seems like an oversight.
 	clear_background_sound();
 	_clear_processing();
-	_update_node_processing();
 
 	_fader->stop();
 	_fader_volume = 1;
@@ -890,8 +888,8 @@ void SiONDriver::_prepare_process(const Variant &p_data, bool p_reset_effector) 
 
 	// Order of operations below is critical.
 
-	sound_chip->initialize(_channel_num, _bitrate, _buffer_length);    // Initialize DSP.
-	sound_chip->reset();                                                 // Reset all channels.
+	sound_chip->initialize(_channel_num, _bitrate, _buffer_length);  // Initialize DSP.
+	sound_chip->reset();                                             // Reset all channels.
 
 	if (p_reset_effector) {                                          // Initialize or reset effectors.
 		effector->initialize();
@@ -1327,6 +1325,9 @@ void SiONDriver::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("note_off", "note", "track_id", "delay", "quantize", "stop_immediately"), &SiONDriver::note_off, DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("sequence_on", "data", "voice", "length", "delay", "quantize", "track_id", "disposable"), &SiONDriver::sequence_on, DEFVAL((Object *)nullptr), DEFVAL(0), DEFVAL(0), DEFVAL(1), DEFVAL(0), DEFVAL(true));
 	ClassDB::bind_method(D_METHOD("sequence_off", "track_id", "delay", "quantize", "stop_with_reset"), &SiONDriver::sequence_off, DEFVAL(0), DEFVAL(1), DEFVAL(false));
+
+	ClassDB::bind_method(D_METHOD("get_data"), &SiONDriver::get_data);
+	ClassDB::bind_method(D_METHOD("clear_data"), &SiONDriver::clear_data);
 
 	// Execution queue.
 

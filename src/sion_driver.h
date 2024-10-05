@@ -294,6 +294,7 @@ public:
 	// Compiling only.
 	String get_mml_string() const { return _mml_string; }
 	Ref<SiONData> get_data() const { return _data; }
+	void clear_data() { _data = Ref<SiONData>(); }
 
 	Ref<SiOPMWaveTable> set_wave_table(int p_index, Vector<double> p_table);
 	Ref<SiOPMWavePCMData> set_pcm_wave(int p_index, const Variant &p_data, double p_sampling_note = 69, int p_key_range_from = 0, int p_key_range_to = 127, int p_src_channel_num = 2, int p_channel_num = 0);
