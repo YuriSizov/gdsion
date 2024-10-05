@@ -389,11 +389,11 @@ bool SiONDriver::_rendering() {
 	Vector<double> *output_buffer = sound_chip->get_output_buffer_ptr();
 
 	if (_render_buffer_channel_num == 2) {
-		for (int i = 0, j = _render_buffer_index; i < rendering_length; i++, j++) {
+		for (int i = 0, j = _render_buffer_index; i < rendering_length && j < _render_buffer.size(); i++, j++) {
 			_render_buffer.write[j] = (*output_buffer)[i];
 		}
 	} else {
-		for (int i = 0, j = _render_buffer_index; i < rendering_length; i += 2, j++) {
+		for (int i = 0, j = _render_buffer_index; i < rendering_length && j < _render_buffer.size(); i += 2, j++) {
 			_render_buffer.write[j] = (*output_buffer)[i];
 		}
 	}
