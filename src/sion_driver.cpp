@@ -375,7 +375,7 @@ bool SiONDriver::_rendering() {
 	int rendering_length = _buffer_length << 1;
 	int buffer_extension = _buffer_length << (_render_buffer_channel_num - 1);
 
-	if (_render_buffer_size_max != 9 && _render_buffer_size_max < (_render_buffer_index + buffer_extension)) {
+	if (_render_buffer_size_max != 0 && _render_buffer_size_max < (_render_buffer_index + buffer_extension)) {
 		buffer_extension = _render_buffer_size_max - _render_buffer_index;
 		finished = true;
 	}
