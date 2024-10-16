@@ -72,6 +72,7 @@ int TranslatorUtil::_sanitize_param_loop(int p_value, int p_min, int p_max, cons
 		return p_value;
 	}
 
+	// WARN: Max value must be a bitmask, e.g. 0xFF. In other words, it's power-of-2 minus 1 (1, 3, 7, 15, 31, 63, 127, 255, 511).
 	return p_value & p_max;
 }
 
@@ -85,13 +86,14 @@ int TranslatorUtil::_sanitize_param_clamp(int p_value, int p_min, int p_max, con
 
 int TranslatorUtil::_get_params_algorithm(int (&p_algorithms)[4][16], int p_operator_count, int p_data_value, int p_max_value, const String &p_command) {
 	int alg_index = p_operator_count - 1;
-	ERR_FAIL_INDEX_V_MSG(alg_index, 4, -1, vformat("Translator: Invalid algorithm parameter %d in '%s'.", p_data_value, p_command));
+	ERR_FAIL_INDEX_V_MSG(alg_index, 4, -1, vformat("Translator: Invalid operator count (%d) for the algorithm in '%s'.", p_operator_count, p_command));
 
+	// WARN: Max value must be a bitmask, e.g. 0xFF. In other words, it's power-of-2 minus 1 (1, 3, 7, 15, 31, 63, 127, 255, 511).
 	int alg_data = _sanitize_param_loop(p_data_value, 0, p_max_value, "AL");
 	ERR_FAIL_INDEX_V_MSG(alg_data, 16, -1, vformat("Translator: Invalid algorithm parameter %d in '%s'.", p_data_value, p_command));
 
 	int algorithm = p_algorithms[alg_index][alg_data];
-	ERR_FAIL_COND_V_MSG(algorithm == -1, -1, vformat("Translator: Invalid algorithm parameter %d in '%s'.", p_data_value, p_command));
+	ERR_FAIL_COND_V_MSG(algorithm == -1, -1, vformat("Translator: Unsupported algorithm parameter %d in '%s'.", p_data_value, p_command));
 
 	return algorithm;
 }
@@ -137,10 +139,10 @@ void TranslatorUtil::_set_opl_params_by_array(const Ref<SiOPMChannelParams> &p_p
 	}
 
 	// #OPL@ signature:
-	// AL[0-5], FB[0-7],
+	// AL[0-3], FB[0-7],
 	// (WS[0-31], AR[0-15], DR[0-15], RR[0-15], EG[0,1], SL[0-15], TL[0-63], KR[0,1], KL[0-3], ML[0-15], AM[0-3]) x operator_count
 
-	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opl, p_params->operator_count, p_data[0], 5, "#OPL@");
+	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opl, p_params->operator_count, p_data[0], 3, "#OPL@");
 	if (algorithm == -1) {
 		return;
 	}
@@ -299,10 +301,10 @@ void TranslatorUtil::_set_ma3_params_by_array(const Ref<SiOPMChannelParams> &p_p
 	}
 
 	// #MA@ signature:
-	// AL[0-15], FB[0-7],
+	// AL[0-7], FB[0-7],
 	// (WS[0-31], AR[0-15], DR[0-15], SR[0-15], RR[0-15], SL[0-15], TL[0-63], KR[0,1], KL[0-3], ML[0-15], D1[0-7], AM[0-3]) x operator_count
 
-	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_ma3, p_params->operator_count, p_data[0], 15, "#MA@");
+	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_ma3, p_params->operator_count, p_data[0], 7, "#MA@");
 	if (algorithm == -1) {
 		return;
 	}
@@ -339,10 +341,16 @@ void TranslatorUtil::_set_al_params_by_array(const Ref<SiOPMChannelParams> &p_pa
 	p_params->set_analog_like(true);
 
 	// #AL@ signature:
-	// AL[0-2], W1[0-511], W2[0-511], BL[-64-+64], DT[]
+	// CN[0-2], W1[0-511], W2[0-511], BL[-64-+64], DT[]
 	// AR[0-63], DR[0-63], SL[0-15], RR[0-63]
 
-	p_params->algorithm = _sanitize_param_loop(p_data[0], 0, 2, "AL");
+	// Can't use _sanitize_param_loop here because 2 is not a valid number for the max value. So hack something ad-hoc together instead.
+	if (unlikely(p_data[0] < 0 || p_data[0] > 2)) {
+		ERR_PRINT(vformat("Translator: Parameter '%s' value (%d) is outside of valid range (%d : %d).", "CN", p_data[0], 0, 2));
+		p_params->algorithm = 0;
+	} else {
+		p_params->algorithm = p_data[0];
+	}
 
 	SiOPMOperatorParams *op_params0 = p_params->operator_params[0];
 	SiOPMOperatorParams *op_params1 = p_params->operator_params[1];
