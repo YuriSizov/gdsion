@@ -38,10 +38,10 @@ class SiOPMChannelFM : public SiOPMChannelBase {
 
 	static const int IDLING_THRESHOLD = 5120; // = 256(resolution)*10(2^10=1024)*2(p/n) = volume<1/1024
 
-	static List<SiOPMOperator *> _free_operators;
+	static List<SiOPMOperator *> _operator_pool;
 
-	SiOPMOperator *_alloc_fm_operator();
-	void _free_fm_operator(SiOPMOperator *p_operator);
+	SiOPMOperator *_alloc_operator();
+	void _release_operator(SiOPMOperator *p_operator);
 
 	int _algorithm = 0;
 
@@ -120,6 +120,8 @@ protected:
 	int _lfo_timer_initial = 0; // LFO_TIMER_INITIAL * freq_ratio
 
 public:
+	static void finalize_pool();
+
 	virtual void get_channel_params(const Ref<SiOPMChannelParams> &p_params) const override;
 	virtual void set_channel_params(const Ref<SiOPMChannelParams> &p_params, bool p_with_volume, bool p_with_modulation = true) override;
 	void set_params_by_value(int p_ar, int p_dr, int p_sr, int p_rr, int p_sl, int p_tl, int p_ksr, int p_ksl, int p_mul, int p_dt1, int p_detune, int p_ams, int p_phase, int p_fix_note);
@@ -172,6 +174,7 @@ public:
 	virtual void reset() override;
 
 	SiOPMChannelFM(SiOPMSoundChip *p_chip = nullptr);
+	~SiOPMChannelFM();
 };
 
 #endif // SIOPM_CHANNEL_FM_H

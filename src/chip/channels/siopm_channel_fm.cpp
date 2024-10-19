@@ -14,12 +14,19 @@
 #include "chip/wave/siopm_wave_pcm_table.h"
 #include "chip/wave/siopm_wave_table.h"
 
-List<SiOPMOperator *> SiOPMChannelFM::_free_operators;
+List<SiOPMOperator *> SiOPMChannelFM::_operator_pool;
 
-SiOPMOperator *SiOPMChannelFM::_alloc_fm_operator() {
-	if (_free_operators.size() > 0) {
-		SiOPMOperator *op = _free_operators.back()->get();
-		_free_operators.pop_back();
+void SiOPMChannelFM::finalize_pool() {
+	for (SiOPMOperator *op : _operator_pool) {
+		memdelete(op);
+	}
+	_operator_pool.clear();
+}
+
+SiOPMOperator *SiOPMChannelFM::_alloc_operator() {
+	if (_operator_pool.size() > 0) {
+		SiOPMOperator *op = _operator_pool.back()->get();
+		_operator_pool.pop_back();
 
 		return op;
 	} else {
@@ -27,8 +34,8 @@ SiOPMOperator *SiOPMChannelFM::_alloc_fm_operator() {
 	}
 }
 
-void SiOPMChannelFM::_free_fm_operator(SiOPMOperator *p_operator) {
-	_free_operators.push_back(p_operator);
+void SiOPMChannelFM::_release_operator(SiOPMOperator *p_operator) {
+	_operator_pool.push_back(p_operator);
 }
 
 //
@@ -40,12 +47,12 @@ void SiOPMChannelFM::_update_process_function() {
 void SiOPMChannelFM::_update_operator_count(int p_count) {
 	if (_operator_count < p_count) {
 		for (int i = _operator_count; i < p_count; i++) {
-			_operators.write[i] = _alloc_fm_operator();
+			_operators.write[i] = _alloc_operator();
 			_operators[i]->initialize();
 		}
 	} else if (_operator_count > p_count) {
 		for (int i = p_count; i < _operator_count; i++) {
-			_free_fm_operator(_operators[i]);
+			_release_operator(_operators[i]);
 			_operators.write[i] = nullptr;
 		}
 	}
@@ -716,17 +723,10 @@ void SiOPMChannelFM::initialize_lfo(int p_waveform, Vector<int> p_custom_wave_ta
 	_amplitude_modulation_output_level = 0;
 	_pitch_modulation_output_level = 0;
 
-	if (_operators[0]) {
-		_operators[0]->set_detune2(0);
-	}
-	if (_operators[1]) {
-		_operators[1]->set_detune2(0);
-	}
-	if (_operators[2]) {
-		_operators[2]->set_detune2(0);
-	}
-	if (_operators[3]) {
-		_operators[3]->set_detune2(0);
+	for (SiOPMOperator *op : _operators) {
+		if (op) {
+			op->set_detune2(0);
+		}
 	}
 }
 
@@ -744,17 +744,10 @@ void SiOPMChannelFM::set_pitch_modulation(int p_depth) {
 	_set_lfo_state(_pitch_modulation_depth != 0 || _amplitude_modulation_depth > 0);
 
 	if (_pitch_modulation_depth == 0) {
-		if (_operators[0]) {
-			_operators[0]->set_detune2(0);
-		}
-		if (_operators[1]) {
-			_operators[1]->set_detune2(0);
-		}
-		if (_operators[2]) {
-			_operators[2]->set_detune2(0);
-		}
-		if (_operators[3]) {
-			_operators[3]->set_detune2(0);
+		for (SiOPMOperator *op : _operators) {
+			if (op) {
+				op->set_detune2(0);
+			}
 		}
 	}
 }
@@ -1532,14 +1525,10 @@ SiOPMChannelFM::SiOPMChannelFM(SiOPMSoundChip *p_chip) : SiOPMChannelBase(p_chip
 		}
 	};
 
-	_operators.resize_zeroed(4);
-	_operators.write[0] = _alloc_fm_operator();
-	_operators.write[1] = nullptr;
-	_operators.write[2] = nullptr;
-	_operators.write[3] = nullptr;
-
-	_active_operator = _operators[0];
 	_operator_count = 1;
+	_operators.resize_zeroed(4);
+	_operators.write[0] = _alloc_operator();
+	_active_operator = _operators[0];
 
 	_update_process_function();
 
@@ -1547,4 +1536,18 @@ SiOPMChannelFM::SiOPMChannelFM(SiOPMSoundChip *p_chip) : SiOPMChannelBase(p_chip
 	_pipe1 = memnew(SinglyLinkedList<int>(1, 0, true));
 
 	initialize(nullptr, 0);
+}
+
+SiOPMChannelFM::~SiOPMChannelFM() {
+	_active_operator = nullptr;
+
+	for (SiOPMOperator *op : _operators) {
+		if (op) {
+			_release_operator(op);
+		}
+	}
+	_operators.clear();
+
+	memdelete(_pipe0);
+	memdelete(_pipe1);
 }

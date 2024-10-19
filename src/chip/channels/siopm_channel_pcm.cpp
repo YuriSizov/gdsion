@@ -603,3 +603,8 @@ SiOPMChannelPCM::SiOPMChannelPCM(SiOPMSoundChip *p_chip) : SiOPMChannelBase(p_ch
 
 	initialize(nullptr, 0);
 }
+
+SiOPMChannelPCM::~SiOPMChannelPCM() {
+	memdelete(_operator);
+	_operator = nullptr;
+}

@@ -108,6 +108,7 @@ public:
 	virtual void reset() override;
 
 	SiOPMChannelPCM(SiOPMSoundChip *p_chip = nullptr);
+	~SiOPMChannelPCM();
 };
 
 #endif // SIOPM_CHANNEL_PCM_H

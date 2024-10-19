@@ -199,6 +199,7 @@ void uninitialize_sion_module(ModuleInitializationLevel p_level) {
 	SinglyLinkedList<double>::finalize_pool();
 
 	// Finalize singletons and static members after the execution.
+	SiOPMChannelFM::finalize_pool();
 	SiMMLTrack::finalize();
 	SiMMLRefTable::finalize();
 	SiOPMRefTable::finalize();
