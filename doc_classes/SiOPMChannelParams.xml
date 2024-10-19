@@ -15,6 +15,13 @@
 				Returns the master value of the volume at the given index. There are no more than [constant SiOPMSoundChip.STREAM_SEND_SIZE] volume slots.
 			</description>
 		</method>
+		<method name="get_operator_params">
+			<return type="SiOPMOperatorParams" />
+			<param index="0" name="index" type="int" />
+			<description>
+				Returns parameters for the processing operator at the given index. See also [member operator_count].
+			</description>
+		</method>
 		<method name="set_master_volume">
 			<return type="void" />
 			<param index="0" name="index" type="int" />
@@ -84,6 +91,7 @@
 		</member>
 		<member name="operator_count" type="int" setter="set_operator_count" getter="get_operator_count">
 			Number of processing operators used by the channel. There can be no more than [constant MAX_OPERATORS]. Setting this value to [code]0[/code] disables all operator parameters.
+			See also [method get_operator_params].
 		</member>
 		<member name="pan" type="int" setter="set_pan" getter="get_pan">
 			Panning strength. Can be set by a pan MML command ([code]p[/code] or [code]@p[/code])

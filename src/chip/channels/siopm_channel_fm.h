@@ -105,6 +105,8 @@ class SiOPMChannelFM : public SiOPMChannelBase {
 protected:
 	static void _bind_methods();
 
+	String _to_string() const;
+
 	Vector<SiOPMOperator *> _operators;
 	SiOPMOperator *_active_operator = nullptr;
 	int _operator_count = 0;
@@ -165,8 +167,6 @@ public:
 	virtual void reset_channel_buffer_status() override;
 
 	//
-
-	virtual String to_string() const override;
 
 	virtual void initialize(SiOPMChannelBase *p_prev, int p_buffer_index) override;
 	virtual void reset() override;

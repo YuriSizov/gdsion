@@ -101,10 +101,6 @@ MMLEvent *MMLEvent::get_parameters(Vector<int> *r_params, int p_length) const {
 	return event;
 }
 
-String MMLEvent::to_string() const {
-	return "#" + itos(id) + "; " + itos(data);
-}
-
 // Object management.
 
 void MMLEvent::initialize(int p_id, int p_data, int p_length) {
@@ -114,6 +110,18 @@ void MMLEvent::initialize(int p_id, int p_data, int p_length) {
 
 	next = nullptr;
 	jump = nullptr;
+}
+
+String MMLEvent::as_text() const {
+	return "#" + itos(id) + "{" + itos(data) + "," + itos(length) + "}";
+}
+
+String MMLEvent::_to_string() const {
+	String chain_str = "";
+	chain_str += "next=" + (next ? itos(next->id) : "null") + ", ";
+	chain_str += "jump=" + (jump ? itos(jump->id) : "null");
+
+	return vformat("MMLEvent: id=%d, data=%d, len=%d, %s", id, length, data, chain_str);
 }
 
 void MMLEvent::_bind_methods() {

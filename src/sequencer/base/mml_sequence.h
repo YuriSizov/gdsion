@@ -50,6 +50,8 @@ class MMLSequence : public Object {
 protected:
 	static void _bind_methods();
 
+	String _to_string() const;
+
 public:
 	// Chain of sequences.
 
@@ -98,7 +100,6 @@ public:
 
 	//
 
-	String to_string() const;
 	List<MMLEvent *> to_vector(int p_max_length = 0, int p_offset = 0, int p_event_id = -1);
 	void from_vector(List<MMLEvent *> p_events);
 

@@ -56,6 +56,8 @@ class SiOPMChannelKS : public SiOPMChannelFM {
 protected:
 	static void _bind_methods() {}
 
+	String _to_string() const;
+
 public:
 	void set_karplus_strong_params(int p_attack_rate = 48, int p_decay_rate = 48, int p_total_level = 0, int p_fixed_pitch = 0, int p_wave_shape = -1, int p_tension = 8);
 
@@ -83,8 +85,6 @@ public:
 	virtual void buffer(int p_length) override;
 
 	//
-
-	virtual String to_string() const override;
 
 	virtual void initialize(SiOPMChannelBase *p_prev, int p_buffer_index) override;
 	virtual void reset() override;

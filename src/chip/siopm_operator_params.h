@@ -7,13 +7,16 @@
 #ifndef SIOPM_OPERATOR_PARAMS_H
 #define SIOPM_OPERATOR_PARAMS_H
 
+#include <godot_cpp/classes/object.hpp>
 #include <godot_cpp/variant/string.hpp>
 #include "sion_enums.h"
 
 using namespace godot;
 
 // Operator parameters for SiONVoice.
-class SiOPMOperatorParams {
+// FIXME: Should likely be RefCounted instead, just like channel params.
+class SiOPMOperatorParams : public Object {
+	GDCLASS(SiOPMOperatorParams, Object)
 
 	friend class SiOPMChannelParams;
 	friend class TranslatorUtil;
@@ -59,6 +62,12 @@ class SiOPMOperatorParams {
 	// Frequency modulation level [0,7]. 5 means standard modulation.
 	int frequency_modulation_level = 5;
 	bool envelope_reset_on_attack = false;
+
+protected:
+	// TODO: Expose methods and properties for this class.
+	static void _bind_methods() {}
+
+	String _to_string() const;
 
 public:
 	int get_pulse_generator_type() const { return pulse_generator_type; }
@@ -112,8 +121,6 @@ public:
 
 	bool is_envelope_reset_on_attack() const { return envelope_reset_on_attack; }
 	void set_envelope_reset_on_attack(bool p_reset) { envelope_reset_on_attack = p_reset; }
-
-	String to_string() const;
 
 	void initialize();
 	void copy_from(SiOPMOperatorParams *p_params);

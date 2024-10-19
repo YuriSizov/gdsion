@@ -237,23 +237,6 @@ void MMLSequence::update_mml_string() {
 
 //
 
-String MMLSequence::to_string() const {
-	if (_is_terminal) {
-		return "terminator";
-	}
-
-	MMLEvent *event = _head_event->get_next();
-	String str;
-
-	// Print first 32 events in the sequence.
-	for (int i = 0; i < 32 && event; i++) {
-		str += itos(event->get_id()) + " ";
-		event = event->get_next();
-	}
-
-	return str;
-}
-
 List<MMLEvent *> MMLSequence::to_vector(int p_max_length, int p_offset, int p_event_id) {
 	if (!_head_event) {
 		return List<MMLEvent *>();
@@ -314,6 +297,26 @@ void MMLSequence::clear() {
 	}
 
 	_mml_string = "";
+}
+
+String MMLSequence::_to_string() const {
+	if (_is_terminal) {
+		return "MMLSequence: terminator";
+	}
+
+	MMLEvent *event = _head_event->get_next();
+	String str;
+
+	// Print first 32 events in the sequence.
+	for (int i = 0; i < 32 && event; i++) {
+		str += itos(event->get_id()) + " ";
+		event = event->get_next();
+	}
+	if (event) {
+		str += "...";
+	}
+
+	return vformat("MMLSequence: chain=(%s)", str);
 }
 
 void MMLSequence::_bind_methods() {

@@ -56,6 +56,8 @@ class SiOPMChannelPCM : public SiOPMChannelBase {
 protected:
 	static void _bind_methods();
 
+	String _to_string() const;
+
 public:
 	virtual void get_channel_params(const Ref<SiOPMChannelParams> &p_params) const override;
 	virtual void set_channel_params(const Ref<SiOPMChannelParams> &p_params, bool p_with_volume, bool p_with_modulation = true) override;
@@ -101,8 +103,6 @@ public:
 	virtual void buffer_no_process(int p_length) override;
 
 	//
-
-	virtual String to_string() const override;
 
 	virtual void initialize(SiOPMChannelBase *p_prev, int p_buffer_index) override;
 	virtual void reset() override;

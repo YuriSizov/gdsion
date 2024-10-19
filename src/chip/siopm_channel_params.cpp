@@ -141,40 +141,6 @@ void SiOPMChannelParams::set_by_opm_register(int p_channel, int p_address, int p
 	}
 }
 
-String SiOPMChannelParams::to_string() const {
-	// Class was renamed to say "params", but this may be needed for compatibility,
-	// so keeping the old name here.
-	String str = "SiOPMChannelParam : ";
-	str += "opeCount=" + itos(operator_count) + "\n";
-
-#define FORMAT_VALUE(m_name, m_value)                          \
-	str += "  " + String(m_name) + "=" + itos(m_value) + "\n";
-
-#define FORMAT_VALUE_PAIR(m_name1, m_value1, m_name2, m_value2)                                                   \
-	str += "  " + String(m_name1) + "=" + itos(m_value1) + " / " + String(m_name2) + "=" + itos(m_value2) + "\n";
-
-	FORMAT_VALUE("freq.ratio", envelope_frequency_ratio);
-	FORMAT_VALUE("alg", algorithm);
-	FORMAT_VALUE_PAIR("fb ", feedback,  "fbc", feedback_connection);
-	FORMAT_VALUE_PAIR("lws", lfo_wave_shape, "lfq", SiOPMRefTable::LFO_TIMER_INITIAL * 0.005782313 / lfo_frequency_step);
-	FORMAT_VALUE_PAIR("amd", amplitude_modulation_depth, "pmd", pitch_modulation_depth);
-	FORMAT_VALUE_PAIR("vol", master_volumes[0],  "pan", pan - 64);
-	FORMAT_VALUE("filter type", filter_type);
-	FORMAT_VALUE_PAIR("co", filter_cutoff, "res", filter_resonance);
-
-#undef FORMAT_VALUE
-#undef FORMAT_VALUE_PAIR
-
-	str += "fenv=" + itos(filter_attack_rate) + "/" + itos(filter_decay_rate1) + "/"+ itos(filter_decay_rate2) + "/"+ itos(filter_release_rate) + "\n";
-	str += "feco=" + itos(filter_decay_offset1) + "/"+ itos(filter_decay_offset2) + "/"+ itos(filter_sustain_offset) + "/"+ itos(filter_release_offset) + "\n";
-
-	for (int i = 0; i < operator_count; i++) {
-		str += operator_params[i]->to_string() + "\n";
-	}
-
-	return str;
-}
-
 void SiOPMChannelParams::initialize() {
 	operator_count = 1;
 
@@ -252,9 +218,34 @@ void SiOPMChannelParams::copy_from(const Ref<SiOPMChannelParams> &p_params) {
 	init_sequence->clear();
 }
 
+String SiOPMChannelParams::_to_string() const {
+	String params = "";
+
+	params += "ops=" + itos(operator_count) + ", ";
+	params += "alg=" + itos(algorithm) + ", ";
+	params += "feedback=(" + itos(feedback) + ", " + itos(feedback_connection) + "), ";
+	params += "fratio=" + itos(envelope_frequency_ratio) + ", ";
+
+	const double lfo_frequency = SiOPMRefTable::LFO_TIMER_INITIAL * 0.005782313 / lfo_frequency_step;
+	params += "lfo=(" + itos(lfo_wave_shape) + ", " + rtos(lfo_frequency) + "), ";
+
+	params += "amp=" + itos(amplitude_modulation_depth) + ", ";
+	params += "pitch=" + itos(pitch_modulation_depth) + ", ";
+	params += "vol=" + rtos(master_volumes[0]) + ", ";
+	params += "pan=" + itos(pan - 64) + ", ";
+
+	params += "filter=(" + itos(filter_type) + ", " + itos(filter_cutoff) + ", " + itos(filter_resonance) + "), ";
+	params += "frate=("   + itos(filter_attack_rate) + ", "   + itos(filter_decay_rate1) + ", "   + itos(filter_decay_rate2) + ", "    + itos(filter_release_rate) + "), ";
+	params += "foffset=(" + itos(filter_decay_offset1) + ", " + itos(filter_decay_offset2) + ", " + itos(filter_sustain_offset) + ", " + itos(filter_release_offset) + ")";
+
+	return "SiOPMChannelParams: " + params;
+}
+
 void SiOPMChannelParams::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_operator_count"), &SiOPMChannelParams::get_operator_count);
 	ClassDB::bind_method(D_METHOD("set_operator_count", "value"), &SiOPMChannelParams::set_operator_count);
+
+	ClassDB::bind_method(D_METHOD("get_operator_params", "index"), &SiOPMChannelParams::get_operator_params);
 
 	ClassDB::bind_method(D_METHOD("is_analog_like"), &SiOPMChannelParams::is_analog_like);
 	ClassDB::bind_method(D_METHOD("set_analog_like", "value"), &SiOPMChannelParams::set_analog_like);

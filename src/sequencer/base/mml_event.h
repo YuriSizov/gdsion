@@ -77,6 +77,8 @@ private:
 protected:
 	static void _bind_methods();
 
+	String _to_string() const;
+
 public:
 	static int get_id_from_mml(String p_mml);
 
@@ -93,9 +95,9 @@ public:
 	void set_jump(MMLEvent *p_event) { jump = p_event; }
 
 	MMLEvent *get_parameters(Vector<int> *r_params, int p_length) const;
-	String to_string() const;
 
 	void initialize(int p_id, int p_data, int p_length);
+	String as_text() const;
 
 	MMLEvent(int p_id = 0, int p_data = 0, int p_length = 0);
 	~MMLEvent();

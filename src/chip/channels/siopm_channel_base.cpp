@@ -447,6 +447,16 @@ void SiOPMChannelBase::reset() {
 	_is_idling = true;
 }
 
+String SiOPMChannelBase::_to_string() const {
+	String params = "";
+
+	params += "feedback=" + itos(_input_level - 6) + ", ";
+	params += "vol=" + rtos(_volumes[0]) + ", ";
+	params += "pan=" + itos(_pan - 64) + "";
+
+	return "SiOPMChannelBase: " + params;
+}
+
 void SiOPMChannelBase::_bind_methods() {
 	// To be used as callables.
 	ClassDB::bind_method(D_METHOD("_no_process", "length"), &SiOPMChannelBase::_no_process);

@@ -67,6 +67,8 @@ private:
 protected:
 	static void _bind_methods();
 
+	String _to_string() const;
+
 	//
 
 	SiOPMRefTable *_table = nullptr;
@@ -221,8 +223,6 @@ public:
 	virtual void buffer_no_process(int p_length);
 
 	//
-
-	virtual String to_string() const { return "SiOPMChannelBase"; }
 
 	virtual void initialize(SiOPMChannelBase *p_prev, int p_buffer_index);
 	virtual void reset();

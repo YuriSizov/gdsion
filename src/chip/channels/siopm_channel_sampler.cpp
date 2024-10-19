@@ -163,14 +163,6 @@ void SiOPMChannelSampler::buffer_no_process(int p_length) {
 
 //
 
-String SiOPMChannelSampler::to_string() const {
-	String str = "SiOPMChannelSampler : ";
-
-	str += "  vol=" + itos(_volumes[0] * _expression) + " / pan=" + itos(_pan - 64) + "\n";
-
-	return str;
-}
-
 void SiOPMChannelSampler::initialize(SiOPMChannelBase *p_prev, int p_buffer_index) {
 	SiOPMChannelBase::initialize(p_prev, p_buffer_index);
 	reset();
@@ -190,6 +182,15 @@ void SiOPMChannelSampler::reset() {
 	_sample_start_phase = 0;
 	_sample_index = 0;
 	_sample_pan = 0;
+}
+
+String SiOPMChannelSampler::_to_string() const {
+	String params = "";
+
+	params += "vol=" + rtos(_volumes[0] * _expression) + ", ";
+	params += "pan=" + itos(_pan - 64) + "";
+
+	return "SiOPMChannelSampler: " + params;
 }
 
 SiOPMChannelSampler::SiOPMChannelSampler(SiOPMSoundChip *p_chip) : SiOPMChannelBase(p_chip) {

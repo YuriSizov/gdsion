@@ -560,15 +560,6 @@ void SiOPMChannelPCM::buffer_no_process(int p_length) {
 
 //
 
-String SiOPMChannelPCM::to_string() const {
-	String str = "SiOPMChannelPCM : \n";
-
-	str += "  vol=" + itos(_volumes[0]) + " / pan=" + itos(_pan - 64) + "\n";
-	str += _operator->to_string() + "\n";
-
-	return str;
-}
-
 void SiOPMChannelPCM::initialize(SiOPMChannelBase *p_prev, int p_buffer_index) {
 	_operator->initialize();
 
@@ -590,6 +581,15 @@ void SiOPMChannelPCM::reset() {
 	_operator->reset();
 	_is_note_on = false;
 	_is_idling = true;
+}
+
+String SiOPMChannelPCM::_to_string() const {
+	String params = "";
+
+	params += "vol=" + rtos(_volumes[0]) + ", ";
+	params += "pan=" + itos(_pan - 64) + "";
+
+	return "SiOPMChannelPCM: " + params;
 }
 
 void SiOPMChannelPCM::_bind_methods() {

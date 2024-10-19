@@ -7,6 +7,7 @@
 #ifndef SIOPM_OPERATOR_H
 #define SIOPM_OPERATOR_H
 
+#include <godot_cpp/classes/object.hpp>
 #include <godot_cpp/templates/vector.hpp>
 #include "sion_enums.h"
 #include "templates/singly_linked_list.h"
@@ -26,7 +27,8 @@ class SiOPMWaveTable;
 // 3) You can set the key scale level;
 // 4) You can fix the pitch;
 // 5) You can set SGG envelope control in OPNA.
-class SiOPMOperator {
+class SiOPMOperator : public Object {
+	GDCLASS(SiOPMOperator, Object)
 
 public:
 	enum EGState {
@@ -160,6 +162,11 @@ private:
 	SinglyLinkedList<int> *_base_pipe = nullptr;
 	SinglyLinkedList<int> *_out_pipe = nullptr;
 	SinglyLinkedList<int> *_feed_pipe = nullptr;
+
+protected:
+	static void _bind_methods() {}
+
+	String _to_string() const;
 
 public:
 	static const int PCM_WAVE_FIXED_BITS = 11;
@@ -311,12 +318,10 @@ public:
 
 	//
 
-	String to_string() const;
-
 	void initialize();
 	void reset();
 
-	SiOPMOperator(SiOPMSoundChip *p_chip);
+	SiOPMOperator(SiOPMSoundChip *p_chip = nullptr);
 	~SiOPMOperator() {}
 };
 

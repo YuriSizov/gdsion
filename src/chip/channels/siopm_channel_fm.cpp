@@ -1463,29 +1463,6 @@ void SiOPMChannelFM::reset_channel_buffer_status() {
 
 //
 
-String SiOPMChannelFM::to_string() const {
-	String str = "SiOPMChannelFM : operatorCount=";
-
-	str += itos(_operator_count) + "\n";
-	str += "  fb=" + itos(_input_level - 6) + "\n";
-	str += "  vol=" + itos(_volumes[0]) + " / pan=" + itos(_pan - 64) + "\n";
-
-	if (_operators[0]) {
-		str += _operators[0]->to_string() + "\n";
-	}
-	if (_operators[1]) {
-		str += _operators[1]->to_string() + "\n";
-	}
-	if (_operators[2]) {
-		str += _operators[2]->to_string() + "\n";
-	}
-	if (_operators[3]) {
-		str += _operators[3]->to_string() + "\n";
-	}
-
-	return str;
-}
-
 void SiOPMChannelFM::initialize(SiOPMChannelBase *p_prev, int p_buffer_index) {
 	_update_operator_count(1);
 	_operators[0]->initialize();
@@ -1501,6 +1478,18 @@ void SiOPMChannelFM::reset() {
 
 	_is_note_on = false;
 	_is_idling = true;
+}
+
+String SiOPMChannelFM::_to_string() const {
+	String params = "";
+
+	params += "ops=" + itos(_operator_count) + ", ";
+
+	params += "feedback=" + itos(_input_level - 6) + ", ";
+	params += "vol=" + rtos(_volumes[0]) + ", ";
+	params += "pan=" + itos(_pan - 64) + "";
+
+	return "SiOPMChannelFM: " + params;
 }
 
 void SiOPMChannelFM::_bind_methods() {

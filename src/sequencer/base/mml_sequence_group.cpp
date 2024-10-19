@@ -37,7 +37,7 @@ MMLSequence *MMLSequenceGroup::append_new_sequence() {
 MMLEvent *MMLSequenceGroup::populate_sequences(MMLEvent *p_head_event) {
 	MMLEvent *event = p_head_event;
 	while (event && event->get_jump()) {
-		ERR_FAIL_COND_V_MSG(event->get_id() != MMLEvent::SEQUENCE_HEAD, event, vformat("MMLSequenceGroup: Invalid event in the head event sequence (%s).", event->to_string()));
+		ERR_FAIL_COND_V_MSG(event->get_id() != MMLEvent::SEQUENCE_HEAD, event, vformat("MMLSequenceGroup: Invalid event in the head event sequence (%s).", event->as_text()));
 
 		MMLSequence *sequence = append_new_sequence();
 		event = sequence->cutout(event);
@@ -48,8 +48,8 @@ MMLEvent *MMLSequenceGroup::populate_sequences(MMLEvent *p_head_event) {
 	if (event) {
 		// This can happen normally, as we always add an extra head after finishing previous sequence. But anything else
 		// is a problem with data or a bug.
-		ERR_FAIL_COND_V_MSG(event->get_id() != MMLEvent::SEQUENCE_HEAD, event, vformat("MMLSequenceGroup: Invalid events at the end of the sequence (starting with %s).", event->to_string()));
-		ERR_FAIL_COND_V_MSG(event->get_next(), event, vformat("MMLSequenceGroup: Invalid events at the end of the sequence (starting with %s).", event->get_next()->to_string()));
+		ERR_FAIL_COND_V_MSG(event->get_id() != MMLEvent::SEQUENCE_HEAD, event, vformat("MMLSequenceGroup: Invalid events at the end of the sequence (starting with %s).", event->as_text()));
+		ERR_FAIL_COND_V_MSG(event->get_next(), event, vformat("MMLSequenceGroup: Invalid events at the end of the sequence (starting with %s).", event->get_next()->as_text()));
 	}
 
 	// Return the remainder, if any, so the caller can decide what to do with it.

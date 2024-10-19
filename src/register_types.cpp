@@ -19,7 +19,9 @@
 #include "chip/channels/siopm_channel_ks.h"
 #include "chip/channels/siopm_channel_pcm.h"
 #include "chip/channels/siopm_channel_sampler.h"
+#include "chip/channels/siopm_operator.h"
 #include "chip/siopm_channel_params.h"
+#include "chip/siopm_operator_params.h"
 #include "chip/siopm_ref_table.h"
 #include "chip/siopm_sound_chip.h"
 #include "chip/wave/siopm_wave_base.h"
@@ -98,6 +100,8 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 		ClassDB::register_abstract_class<SiOPMChannelPCM>();
 		ClassDB::register_abstract_class<SiOPMChannelSampler>();
 		ClassDB::register_abstract_class<SiOPMChannelParams>();
+		ClassDB::register_abstract_class<SiOPMOperator>();
+		ClassDB::register_abstract_class<SiOPMOperatorParams>();
 		ClassDB::register_abstract_class<SiOPMSoundChip>();
 		ClassDB::register_abstract_class<SiOPMWaveBase>();
 		ClassDB::register_abstract_class<SiOPMWavePCMData>();

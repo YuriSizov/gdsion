@@ -64,6 +64,8 @@ private:
 protected:
 	static void _bind_methods();
 
+	String _to_string() const;
+
 public:
 	MMLSequence *get_init_sequence() const { return init_sequence; }
 
@@ -130,8 +132,6 @@ public:
 	void set_lfo_frame(int p_fps);
 
 	void set_by_opm_register(int p_channel, int p_address, int p_data);
-
-	String to_string() const;
 
 	void initialize();
 	void copy_from(const Ref<SiOPMChannelParams> &p_params);

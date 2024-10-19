@@ -218,29 +218,6 @@ void SiOPMChannelKS::buffer(int p_length) {
 
 //
 
-String SiOPMChannelKS::to_string() const {
-	String str = "SiOPMChannelKS : operatorCount=";
-
-	str += itos(_operator_count) + "\n";
-	str += "  fb=" + itos(_input_level - 6) + "\n";
-	str += "  vol=" + itos(_volumes[0]) + " / pan=" + itos(_pan - 64) + "\n";
-
-	if (_operators[0]) {
-		str += _operators[0]->to_string() + "\n";
-	}
-	if (_operators[1]) {
-		str += _operators[1]->to_string() + "\n";
-	}
-	if (_operators[2]) {
-		str += _operators[2]->to_string() + "\n";
-	}
-	if (_operators[3]) {
-		str += _operators[3]->to_string() + "\n";
-	}
-
-	return str;
-}
-
 void SiOPMChannelKS::initialize(SiOPMChannelBase *p_prev, int p_buffer_index) {
 	_ks_delay_buffer_index = 0;
 	_ks_pitch_index = 0;
@@ -269,6 +246,18 @@ void SiOPMChannelKS::reset() {
 	_ks_delay_buffer.fill(0);
 
 	SiOPMChannelFM::reset();
+}
+
+String SiOPMChannelKS::_to_string() const {
+	String params = "";
+
+	params += "ops=" + itos(_operator_count) + ", ";
+
+	params += "feedback=" + itos(_input_level - 6) + ", ";
+	params += "vol=" + rtos(_volumes[0]) + ", ";
+	params += "pan=" + itos(_pan - 64) + "";
+
+	return "SiOPMChannelKS: " + params;
 }
 
 SiOPMChannelKS::SiOPMChannelKS(SiOPMSoundChip *p_chip) : SiOPMChannelFM(p_chip) {

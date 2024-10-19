@@ -556,29 +556,6 @@ void SiOPMOperator::note_off() {
 
 //
 
-String SiOPMOperator::to_string() const {
-	String str = "SiOPMOperator : ";
-
-	str += itos(get_pulse_generator_type()) + "/";
-	str += itos(get_attack_rate()) + "/";
-	str += itos(get_decay_rate()) + "/";
-	str += itos(get_sustain_rate()) + "/";
-	str += itos(get_release_rate()) + "/";
-	str += itos(get_sustain_level()) + "/";
-	str += itos(get_total_level()) + "/";
-	str += itos(get_key_scaling_rate()) + "/";
-	str += itos(get_key_scaling_level()) + "/";
-	str += itos(get_fine_multiple()) + "/";
-	str += itos(get_dt1()) + "/";
-	str += itos(get_detune()) + "/";
-	str += itos(get_amplitude_modulation_shift()) + "/";
-	str += itos(get_ssg_type_envelope_control()) + "/";
-	str += itos(get_key_on_phase()) + "/";
-	str += itos(is_pitch_fixed());
-
-	return str;
-}
-
 void SiOPMOperator::initialize() {
 	// Reset operator connections.
 	_final = true;
@@ -611,6 +588,34 @@ void SiOPMOperator::reset() {
 	_eg_ssgec_state = 0;
 
 	_phase = 0;
+}
+
+String SiOPMOperator::_to_string() const {
+	String params = "";
+
+	params += "pg=" + itos(_pg_type) + ", ";
+	params += "pt=" + itos(_pt_type) + ", ";
+
+	params += "ar=" + itos(_attack_rate) + ", ";
+	params += "dr=" + itos(_decay_rate) + ", ";
+	params += "sr=" + itos(_sustain_rate) + ", ";
+	params += "rr=" + itos(_release_rate) + ", ";
+	params += "sl=" + itos(_sustain_level) + ", ";
+	params += "tl=" + itos(_total_level) + ", ";
+
+	params += "keyscale=(" + itos(get_key_scaling_rate()) + ", " + itos(get_key_scaling_level()) + "), ";
+	params += "fmul=" + itos(get_fine_multiple()) + ", ";
+	params += "detune=(" + itos(get_dt1()) + ", " + itos(get_detune()) + "), ";
+
+	params += "amp=" + itos(get_amplitude_modulation_shift()) + ", ";
+	params += "phase=" + itos(get_key_on_phase()) + ", ";
+	params += "note=" + String(is_pitch_fixed() ? "yes" : "no") + ", ";
+
+	params += "ssg=" + itos(_ssg_type_envelope_control) + ", ";
+	params += "mute=" + itos(_mute) + ", ";
+	params += "reset=" + String(_envelope_reset_on_attack ? "yes" : "no");
+
+	return "SiOPMOperator: " + params;
 }
 
 SiOPMOperator::SiOPMOperator(SiOPMSoundChip *p_chip) {

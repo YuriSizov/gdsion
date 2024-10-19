@@ -22,21 +22,6 @@ void SiOPMOperatorParams::set_multiple(int p_value) {
 	fine_multiple = (p_value == 0 ? 64 : (p_value << 7));
 }
 
-String SiOPMOperatorParams::to_string() const {
-	// Class was renamed to say "params", but this may be needed for compatibility,
-	// so keeping the old name here.
-	String str = "SiOPMOperatorParam : ";
-
-	str += vformat("%d(%d) : ", pulse_generator_type, pitch_table_type);
-	str += vformat("%d/%d/%d/%d/%d/%d : ", attack_rate, decay_rate, sustain_rate, release_rate, sustain_level, total_level);
-	str += vformat("%d/%d : ", key_scaling_rate, key_scaling_level);
-	str += vformat("%d/%d/%d : ", fine_multiple, detune1, detune);
-	str += vformat("%d/%d/%d : ", amplitude_modulation_shift, initial_phase, fixed_pitch);
-	str += vformat("%d/%s/%s", ssg_type_envelope_control, mute, envelope_reset_on_attack);
-
-	return str;
-}
-
 void SiOPMOperatorParams::initialize() {
 	pulse_generator_type = SiONPulseGeneratorType::PULSE_SINE;
 	pitch_table_type = SiONPitchTableType::PITCH_TABLE_OPM;
@@ -91,6 +76,34 @@ void SiOPMOperatorParams::copy_from(SiOPMOperatorParams *p_params) {
 	ssg_type_envelope_control  = p_params->ssg_type_envelope_control;
 	frequency_modulation_level = p_params->frequency_modulation_level;
 	envelope_reset_on_attack   = p_params->envelope_reset_on_attack;
+}
+
+String SiOPMOperatorParams::_to_string() const {
+	String params = "";
+
+	params += "pg=" + itos(pulse_generator_type) + ", ";
+	params += "pt=" + itos(pitch_table_type) + ", ";
+
+	params += "ar=" + itos(attack_rate) + ", ";
+	params += "dr=" + itos(decay_rate) + ", ";
+	params += "sr=" + itos(sustain_rate) + ", ";
+	params += "rr=" + itos(release_rate) + ", ";
+	params += "sl=" + itos(sustain_level) + ", ";
+	params += "tl=" + itos(total_level) + ", ";
+
+	params += "keyscale=(" + itos(key_scaling_rate) + ", " + itos(key_scaling_level) + "), ";
+	params += "fmul=" + itos(fine_multiple) + ", ";
+	params += "detune=(" + itos(detune1) + ", " + itos(detune) + "), ";
+
+	params += "amp=" + itos(amplitude_modulation_shift) + ", ";
+	params += "phase=" + itos(initial_phase) + ", ";
+	params += "note=" + itos(fixed_pitch) + ", ";
+
+	params += "ssg=" + itos(ssg_type_envelope_control) + ", ";
+	params += "mute=" + String(mute ? "yes" : "no") + ", ";
+	params += "reset=" + String(envelope_reset_on_attack ? "yes" : "no");
+
+	return "SiOPMOperatorParams: " + params;
 }
 
 SiOPMOperatorParams::SiOPMOperatorParams() {
