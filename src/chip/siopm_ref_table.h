@@ -43,7 +43,7 @@ class SiOPMRefTable {
 	void _create_eg_tables();
 	void _create_pg_tables();
 	void _create_wave_samples();
-	void _expand_ma3_waves(int p_index);
+	void _create_ma3_waveset(int p_index, const Ref<SiOPMWaveTable> &p_table);
 	void _create_lfo_tables();
 	void _create_filter_tables();
 

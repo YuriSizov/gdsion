@@ -75,10 +75,11 @@ void SiOPMRefTable::register_wave_table(int p_index, const Ref<SiOPMWaveTable> &
 	int index = p_index & (WAVE_TABLE_MAX - 1);
 	_custom_wave_tables.write[index] = p_table;
 
-	// Update PULSE_MA3_WAVE waveform 15,23,31.
+	// MA-3 waveforms support up to 3 user defined values. If this table is one of the first
+	// 3 custom tables, use it.
 	if (index < 3) {
-		// index=0,1,2 are same as PULSE_MA3 waveform 15,23,31.
-		wave_tables.write[15 + index * 8 + SiONPulseGeneratorType::PULSE_MA3_WAVE] = p_table;
+		// User defined waves are at offsets 15,23,31.
+		wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_SINE + 15 + index * 8] = p_table;
 	}
 }
 
@@ -1028,14 +1029,13 @@ void SiOPMRefTable::_create_wave_samples() {
 
 	// MA3 wave tables.
 	{
-		// Waveforms 0-5 = sine wave
-		wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_WAVE] = wave_tables[SiONPulseGeneratorType::PULSE_SINE];
-		_expand_ma3_waves(0);
+		// 0-5 - sine waves.
+		_create_ma3_waveset(SiONPulseGeneratorType::PULSE_MA3_SINE, wave_tables[SiONPulseGeneratorType::PULSE_SINE]);
 
-		// Waveform 6 = square
-		wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_WAVE+6] = wave_tables[SiONPulseGeneratorType::PULSE_SQUARE];
+		// 6 - square wave.
+		wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_SQUARE] = wave_tables[SiONPulseGeneratorType::PULSE_SQUARE];
 
-		// Waveform 7 ???
+		// 7 - downwards saw wave with sine flattening. Best name I can come up with, not sure if there is a more common description.
 		{
 			Vector<int> table1;
 			table1.resize_zeroed(SAMPLING_TABLE_SIZE);
@@ -1058,10 +1058,10 @@ void SiOPMRefTable::_create_wave_samples() {
 				value_base += value_delta;
 			}
 
-			wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_WAVE + 7] = Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(table1)));
+			wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_SAW_SINE] = Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(table1)));
 		}
 
-		// Waveforms 8-13 = bi-triangle modulated sine ?
+		// 8-13 - triangle modulated sine
 		{
 			Vector<int> base_table = wave_tables[SiONPulseGeneratorType::PULSE_SINE]->get_wavelet();
 			Vector<int> table;
@@ -1073,54 +1073,55 @@ void SiOPMRefTable::_create_wave_samples() {
 				j += 1 - (((i >> (SAMPLING_TABLE_BITS - 3)) + 1) & 2); // triangle wave
 			}
 
-			wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_WAVE + 8] = Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(table)));
-			_expand_ma3_waves(8);
+			_create_ma3_waveset(SiONPulseGeneratorType::PULSE_MA3_TRI_SINE, Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(table))));
 		}
 
-		// Waveform 14 = half square
+		// 14 - half square
 		{
 			int value = calculate_log_table_index(1);
 			Vector<int> table = { value, LOG_TABLE_BOTTOM };
 
-			wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_WAVE + 14] = Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(table)));
+			wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_SQUARE_HALF] = Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(table)));
 		}
 
-		// Waveforms 16-21 = triangle wave
-		wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_WAVE + 16] = wave_tables[SiONPulseGeneratorType::PULSE_TRIANGLE];
-		_expand_ma3_waves(16);
+		// 16-21 - triangle waves
+		_create_ma3_waveset(SiONPulseGeneratorType::PULSE_MA3_TRI, wave_tables[SiONPulseGeneratorType::PULSE_TRIANGLE]);
 
-		// Waveform 22 = twice of half square
+		// 22 - quarter square doubled.
 		{
 			int value = calculate_log_table_index(1);
 			Vector<int> table = { value, LOG_TABLE_BOTTOM, value, LOG_TABLE_BOTTOM };
 
-			wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_WAVE + 22] = Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(table)));
+			wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_SQUARE_QUART_DOUBLE] = Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(table)));
 		}
 
-		// Waveforms 24-29 = saw wave
-		wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_WAVE + 24] = wave_tables[SiONPulseGeneratorType::PULSE_SAW_UP];
-		_expand_ma3_waves(24);
+		// 24-29 - upwards saw waves.
+		_create_ma3_waveset(SiONPulseGeneratorType::PULSE_MA3_SAW, wave_tables[SiONPulseGeneratorType::PULSE_SAW_UP]);
 
-		// Waveform 30 = quarter square
+		// 30 - quarter square wave.
 		{
 			int value = calculate_log_table_index(1);
 			Vector<int> table = { value, LOG_TABLE_BOTTOM, LOG_TABLE_BOTTOM, LOG_TABLE_BOTTOM };
 
-			wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_WAVE+30] = Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(table)));
+			wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_SQUARE_QUART] = Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(table)));
 		}
 
-		// Waveforms 15,23,31 = custom waveform 0-2 (not available)
-		wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_WAVE + 15] = no_wave_table;
-		wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_WAVE + 23] = no_wave_table;
-		wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_WAVE + 31] = no_wave_table;
+		// 15,23,31 - user defined waves.
+		wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_USER1] = no_wave_table;
+		wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_USER2] = no_wave_table;
+		wave_tables.write[SiONPulseGeneratorType::PULSE_MA3_USER3] = no_wave_table;
 	}
 }
 
-void SiOPMRefTable::_expand_ma3_waves(int p_index) {
-	int wave_index = SiONPulseGeneratorType::PULSE_MA3_WAVE + p_index;
-	Vector<int> basic_waveform = wave_tables[wave_index]->get_wavelet();
+void SiOPMRefTable::_create_ma3_waveset(int p_index, const Ref<SiOPMWaveTable> &p_table) {
+	// MA-3 waveforms contain 4 sets with the same basic premise. We take the base one,
+	// then modify it via the same transforms to get 5 variations.
 
-	// Waveform 1
+	// 0 - Full wave.
+	wave_tables.write[p_index] = p_table;
+	Vector<int> basic_waveform = p_table->get_wavelet();
+
+	// 1 - Half wave.
 	{
 		Vector<int> table;
 		table.resize_zeroed(SAMPLING_TABLE_SIZE);
@@ -1129,10 +1130,10 @@ void SiOPMRefTable::_expand_ma3_waves(int p_index) {
 			table.write[i]                = basic_waveform[i];
 			table.write[i + table_offset] = LOG_TABLE_BOTTOM;
 		}
-		wave_tables.write[wave_index + 1] = Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(table)));
+		wave_tables.write[p_index + 1] = Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(table)));
 	}
 
-	// Waveform 2
+	// 2 - Half wave doubled.
 	{
 		Vector<int> table;
 		table.resize_zeroed(SAMPLING_TABLE_SIZE);
@@ -1141,10 +1142,10 @@ void SiOPMRefTable::_expand_ma3_waves(int p_index) {
 			table.write[i]                = basic_waveform[i];
 			table.write[i + table_offset] = basic_waveform[i];
 		}
-		wave_tables.write[wave_index + 2] = Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(table)));
+		wave_tables.write[p_index + 2] = Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(table)));
 	}
 
-	// Waveform 3
+	// 3 - Quarter wave doubled.
 	{
 		Vector<int> table;
 		table.resize_zeroed(SAMPLING_TABLE_SIZE);
@@ -1155,10 +1156,10 @@ void SiOPMRefTable::_expand_ma3_waves(int p_index) {
 			table.write[i + table_offset * 2] = basic_waveform[i];
 			table.write[i + table_offset * 3] = LOG_TABLE_BOTTOM;
 		}
-		wave_tables.write[wave_index + 3] = Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(table)));
+		wave_tables.write[p_index + 3] = Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(table)));
 	}
 
-	// Waveform 4
+	// 4 - Sped up wave.
 	{
 		Vector<int> table;
 		table.resize_zeroed(SAMPLING_TABLE_SIZE);
@@ -1167,10 +1168,10 @@ void SiOPMRefTable::_expand_ma3_waves(int p_index) {
 			table.write[i]                = basic_waveform[i << 1];
 			table.write[i + table_offset] = LOG_TABLE_BOTTOM;
 		}
-		wave_tables.write[wave_index + 4] = Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(table)));
+		wave_tables.write[p_index + 4] = Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(table)));
 	}
 
-	// Waveform 5
+	// 5 - Sped up half wave doubled.
 	{
 		Vector<int> table;
 		table.resize_zeroed(SAMPLING_TABLE_SIZE);
@@ -1181,7 +1182,7 @@ void SiOPMRefTable::_expand_ma3_waves(int p_index) {
 			table.write[i + table_offset * 2] = LOG_TABLE_BOTTOM;
 			table.write[i + table_offset * 3] = LOG_TABLE_BOTTOM;
 		}
-		wave_tables.write[wave_index + 5] = Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(table)));
+		wave_tables.write[p_index + 5] = Ref<SiOPMWaveTable>(memnew(SiOPMWaveTable(table)));
 	}
 }
 

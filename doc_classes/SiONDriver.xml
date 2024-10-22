@@ -504,7 +504,7 @@
 			OPX sound chip type.
 		</constant>
 		<constant name="CHIP_MA3" value="5" enum="SiONChipType">
-			MA3 sound chip type.
+			MA-3 sound chip type.
 		</constant>
 		<constant name="CHIP_PMS_GUITAR" value="6" enum="SiONChipType">
 			PMS guitar sound chip type.
@@ -525,7 +525,7 @@
 			Noise wave module type.
 		</constant>
 		<constant name="MODULE_MA3" value="3" enum="SiONModuleType">
-			MA3 module type.
+			MA-3 module type.
 		</constant>
 		<constant name="MODULE_SCC" value="4" enum="SiONModuleType">
 			SCC-like wave table module type.
@@ -615,7 +615,7 @@
 			Downwards saw wave pulse generator.
 		</constant>
 		<constant name="PULSE_TRIANGLE_FC" value="3" enum="SiONPulseGeneratorType">
-			Triangle wave pulse generator quantized by 4 bit.
+			Triangle wave pulse generator quantized by 4 bits.
 		</constant>
 		<constant name="PULSE_TRIANGLE" value="4" enum="SiONPulseGeneratorType">
 			Triangle wave pulse generator.
@@ -639,7 +639,7 @@
 			Offset pulse generator.
 		</constant>
 		<constant name="PULSE_SAW_VC6" value="11" enum="SiONPulseGeneratorType">
-			VC6 saw pulse generator (32 samples saw).
+			VC6 saw pulse generator (32-sample saw).
 		</constant>
 		<constant name="PULSE_NOISE_WHITE" value="16" enum="SiONPulseGeneratorType">
 			16k white noise pulse generator.
@@ -668,8 +668,101 @@
 		<constant name="PULSE_PC_NZ_OPM" value="26" enum="SiONPulseGeneratorType">
 			Pitch-controllable pulse noise with OPM noise table pulse generator.
 		</constant>
-		<constant name="PULSE_MA3_WAVE" value="32" enum="SiONPulseGeneratorType">
-			This and the next [code]32[/code] values are MA3 waveform pulse generators.
+		<constant name="PULSE_MA3_SINE" value="32" enum="SiONPulseGeneratorType">
+			MA-3 sine wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_SINE_HALF" value="33" enum="SiONPulseGeneratorType">
+			MA-3 half sine wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_SINE_HALF_DOUBLE" value="34" enum="SiONPulseGeneratorType">
+			MA-3 half sine doubled wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_SINE_QUART_DOUBLE" value="35" enum="SiONPulseGeneratorType">
+			MA-3 quarter sine doubled wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_SINE_X2" value="36" enum="SiONPulseGeneratorType">
+			MA-3 sine sped up (half phase) wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_SINE_HALF_DOUBLE_X2" value="37" enum="SiONPulseGeneratorType">
+			MA-3 half sine doubled sped up (half phase) wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_SQUARE" value="38" enum="SiONPulseGeneratorType">
+			MA-3 square wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_SAW_SINE" value="39" enum="SiONPulseGeneratorType">
+			MA-3 downwards saw wave with sine flattening pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_TRI_SINE" value="40" enum="SiONPulseGeneratorType">
+			MA-3 triangle modulated sine wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_TRI_SINE_HALF" value="41" enum="SiONPulseGeneratorType">
+			MA-3 half triangle modulated sine wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_TRI_SINE_HALF_DOUBLE" value="42" enum="SiONPulseGeneratorType">
+			MA-3 half triangle modulated sine doubled wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_TRI_SINE_QUART_DOUBLE" value="43" enum="SiONPulseGeneratorType">
+			MA-3 quarter triangle modulated sine doubled wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_TRI_SINE_X2" value="44" enum="SiONPulseGeneratorType">
+			MA-3 triangle modulated sine sped up (half phase) wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_TRI_SINE_HALF_DOUBLE_X2" value="45" enum="SiONPulseGeneratorType">
+			MA-3 half triangle modulated sine doubled sped up (half phase) wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_SQUARE_HALF" value="46" enum="SiONPulseGeneratorType">
+			MA-3 half square wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_USER1" value="47" enum="SiONPulseGeneratorType">
+			MA-3 user defined wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_TRI" value="48" enum="SiONPulseGeneratorType">
+			MA-3 triangle wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_TRI_HALF" value="49" enum="SiONPulseGeneratorType">
+			MA-3 half triangle wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_TRI_HALF_DOUBLE" value="50" enum="SiONPulseGeneratorType">
+			MA-3 half triangle doubled wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_TRI_QUART_DOUBLE" value="51" enum="SiONPulseGeneratorType">
+			MA-3 quarter triangle doubled wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_TRI_X2" value="52" enum="SiONPulseGeneratorType">
+			MA-3 triangle sped up (half phase) wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_TRI_HALF_DOUBLE_X2" value="53" enum="SiONPulseGeneratorType">
+			MA-3 half triangle doubled sped up (half phase) wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_SQUARE_QUART_DOUBLE" value="54" enum="SiONPulseGeneratorType">
+			MA-3 quarter square doubled wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_USER2" value="55" enum="SiONPulseGeneratorType">
+			MA-3 user defined wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_SAW" value="56" enum="SiONPulseGeneratorType">
+			MA-3 upwards saw wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_SAW_HALF" value="57" enum="SiONPulseGeneratorType">
+			MA-3 half upwards saw wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_SAW_HALF_DOUBLE" value="58" enum="SiONPulseGeneratorType">
+			MA-3 half upwards saw doubled wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_SAW_QUART_DOUBLE" value="59" enum="SiONPulseGeneratorType">
+			MA-3 quarter upwards saw doubled wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_SAW_X2" value="60" enum="SiONPulseGeneratorType">
+			MA-3 upwards saw sped up (half phase) wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_SAW_HALF_DOUBLE_X2" value="61" enum="SiONPulseGeneratorType">
+			MA-3 half upwards saw doubled sped up (half phase) wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_SQUARE_QUART" value="62" enum="SiONPulseGeneratorType">
+			MA-3 quarter square wave pulse generator.
+		</constant>
+		<constant name="PULSE_MA3_USER3" value="63" enum="SiONPulseGeneratorType">
+			MA-3 user defined wave pulse generator.
 		</constant>
 		<constant name="PULSE_PULSE" value="64" enum="SiONPulseGeneratorType">
 			This and the next [code]16[/code] values are square pulse wave pulse generators.
@@ -678,7 +771,7 @@
 			This and the next [code]16[/code] values are square pulse wave with spike pulse generators.
 		</constant>
 		<constant name="PULSE_RAMP" value="128" enum="SiONPulseGeneratorType">
-			This and the next [code]128[/code] values are ramp wave pulse generators.
+			This and the next [code]128[/code] values are ramp wave pulse generators. Values [code]0-4[/code] are equivalent to an upwards saw wave. Values [code]124-127[/code] are equivalent to a downwards saw wave. Value [code]64[/code] is equivalent to a triangle wave.
 		</constant>
 		<constant name="PULSE_CUSTOM" value="256" enum="SiONPulseGeneratorType">
 			This and the next [code]128[/code] values are custom wave table pulse generators.

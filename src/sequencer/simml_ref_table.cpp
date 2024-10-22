@@ -175,8 +175,8 @@ void SiMMLRefTable::_dump_ym2413_register(const Ref<SiMMLVoice> &p_voice, uint32
 
 	channel_params->set_feedback((p_u0 >> 0) & 7);
 
-	op_params0->set_pulse_generator_type(SiONPulseGeneratorType::PULSE_MA3_WAVE + ((p_u0 >> 3)&1));
-	op_params1->set_pulse_generator_type(SiONPulseGeneratorType::PULSE_MA3_WAVE + ((p_u0 >> 4)&1));
+	op_params0->set_pulse_generator_type(SiONPulseGeneratorType::PULSE_MA3_SINE + ((p_u0 >> 3)&1));
+	op_params1->set_pulse_generator_type(SiONPulseGeneratorType::PULSE_MA3_SINE + ((p_u0 >> 4)&1));
 
 	op_params0->set_attack_rate(((p_u1 >> 28) & 15) << 2);
 	op_params1->set_attack_rate(((p_u1 >> 20) & 15) << 2);
@@ -204,7 +204,7 @@ SiMMLRefTable::SiMMLRefTable() {
 		channel_settings_map[SiONModuleType::MODULE_PSG]        = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_PSG,        SiONPulseGeneratorType::PULSE_SQUARE,      3,   1, 4));
 		channel_settings_map[SiONModuleType::MODULE_APU]        = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_APU,        SiONPulseGeneratorType::PULSE_PULSE,       11,  2, 4));
 		channel_settings_map[SiONModuleType::MODULE_NOISE]      = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_NOISE,      SiONPulseGeneratorType::PULSE_NOISE_WHITE, 16,  1, 16));
-		channel_settings_map[SiONModuleType::MODULE_MA3]        = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_MA3,        SiONPulseGeneratorType::PULSE_MA3_WAVE,    32,  1, 32));
+		channel_settings_map[SiONModuleType::MODULE_MA3]        = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_MA3,        SiONPulseGeneratorType::PULSE_MA3_SINE,    32,  1, 32));
 		channel_settings_map[SiONModuleType::MODULE_SCC]        = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_SCC,        SiONPulseGeneratorType::PULSE_CUSTOM,      256, 1, 256));
 		channel_settings_map[SiONModuleType::MODULE_GENERIC_PG] = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_GENERIC_PG, SiONPulseGeneratorType::PULSE_SINE,        512, 1, 512));
 		channel_settings_map[SiONModuleType::MODULE_FM]         = memnew(SiMMLChannelSettings(SiONModuleType::MODULE_FM,         SiONPulseGeneratorType::PULSE_SINE,        1,   1, 1));

@@ -155,7 +155,7 @@ void TranslatorUtil::_set_opl_params_by_array(const Ref<SiOPMChannelParams> &p_p
 	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
 		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
 
-		int pg_type = SiONPulseGeneratorType::PULSE_MA3_WAVE + _sanitize_param_loop(p_data[data_index++], 0, 31, "WS");
+		int pg_type = SiONPulseGeneratorType::PULSE_MA3_SINE + _sanitize_param_loop(p_data[data_index++], 0, 31, "WS");
 		op_params->set_pulse_generator_type(pg_type);                                                                                  // 1
 
 		op_params->attack_rate                                      = (_sanitize_param_loop(p_data[data_index++], 0, 15, "AR") << 2);  // 2
@@ -274,7 +274,7 @@ void TranslatorUtil::_set_opx_params_by_array(const Ref<SiOPMChannelParams> &p_p
 		// Standard supported values are in the [0-7] range. Values beyond that are supported for custom waves.
 		int wave_shape = p_data[data_index++];
 		if (wave_shape < 8) {
-			int pg_type = SiONPulseGeneratorType::PULSE_MA3_WAVE + _sanitize_param_loop(wave_shape, 0, 7, "WS");
+			int pg_type = SiONPulseGeneratorType::PULSE_MA3_SINE + _sanitize_param_loop(wave_shape, 0, 7, "WS");
 			op_params->set_pulse_generator_type(pg_type);                                                             // 1
 		} else {
 			int pg_type = SiONPulseGeneratorType::PULSE_CUSTOM + _sanitize_param_clamp(wave_shape - 8, 0, 127, "WS");
@@ -317,7 +317,7 @@ void TranslatorUtil::_set_ma3_params_by_array(const Ref<SiOPMChannelParams> &p_p
 	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
 		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
 
-		int pg_type = SiONPulseGeneratorType::PULSE_MA3_WAVE + _sanitize_param_loop(p_data[data_index++], 0, 31, "WS");
+		int pg_type = SiONPulseGeneratorType::PULSE_MA3_SINE + _sanitize_param_loop(p_data[data_index++], 0, 31, "WS");
 		op_params->set_pulse_generator_type(pg_type);                                                                     // 1
 
 		op_params->attack_rate                       = (_sanitize_param_loop(p_data[data_index++], 0, 15, "AR") << 2);    // 2
@@ -452,7 +452,7 @@ int TranslatorUtil::_get_algorithm_index(int p_operator_count, int p_algorithm, 
 
 int TranslatorUtil::_get_ma3_from_pg_type(int p_pulse_generator_type, const String &p_command) {
 	// Standard wave types.
-	int wave_shape = p_pulse_generator_type - SiONPulseGeneratorType::PULSE_MA3_WAVE;
+	int wave_shape = p_pulse_generator_type - SiONPulseGeneratorType::PULSE_MA3_SINE;
 	if (wave_shape >= 0 && wave_shape <= 31) {
 		return wave_shape;
 	}

@@ -58,7 +58,7 @@
 		<method name="get_params_ma3" qualifiers="const">
 			<return type="int[]" />
 			<description>
-				Returns a configuration of this voice as an array of integers. The voice is treated as an MA3 voice.
+				Returns a configuration of this voice as an array of integers. The voice is treated as an MA-3 voice.
 			</description>
 		</method>
 		<method name="get_params_opl" qualifiers="const">
@@ -160,7 +160,7 @@
 			<return type="void" />
 			<param index="0" name="args" type="int[]" />
 			<description>
-				Sets the configuration of this voice as an array of integers. The voice is treated as an MA3 voice.
+				Sets the configuration of this voice as an array of integers. The voice is treated as an MA-3 voice.
 			</description>
 		</method>
 		<method name="set_params_opl">

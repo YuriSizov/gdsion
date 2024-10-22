@@ -167,7 +167,7 @@ func _register_voices() -> void:
 	_register_voice("CHIPTUNE", "Konami Wave", "konami", 4, 3)
 	_register_voice("CHIPTUNE", "Ramp Wave", "ramp", 4, 18)
 	_register_voice("CHIPTUNE", "Pulse Wave", "beep", 4, 29)
-	_register_voice("CHIPTUNE", "MA3 Wave", "ma1", 4, 25)
+	_register_voice("CHIPTUNE", "MA-3 Wave", "ma1", 4, 25)
 	_register_voice("CHIPTUNE", "Noise (Bass)", "bassdrumm", 20, 115)
 	_register_voice("CHIPTUNE", "Noise (Snare)", "snare", 20, 118)
 	_register_voice("CHIPTUNE", "Noise (Hi-Hat)", "closedhh", 20, 126)
