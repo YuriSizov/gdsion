@@ -70,7 +70,7 @@ enum SiONPulseGeneratorType : int {
 	PULSE_KNM_BUBBLE		= 7,    // Konami bubble system wave.
 	PULSE_SYNC_LOW			= 8,    // pseudo sync (low frequency).
 	PULSE_SYNC_HIGH			= 9,    // pseudo sync (high frequency).
-	PULSE_OFFSET			= 10,   // offset.
+	PULSE_OFFSET			= 10,   // reserved value, unused.
 	PULSE_SAW_VC6			= 11,   // VC6 saw (32-sample saw).
 									// ( 12- 15) reserved.
 

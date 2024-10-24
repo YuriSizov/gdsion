@@ -636,7 +636,7 @@
 			High frequency pseudo sync pulse generator.
 		</constant>
 		<constant name="PULSE_OFFSET" value="10" enum="SiONPulseGeneratorType">
-			Offset pulse generator.
+			Reserved value.
 		</constant>
 		<constant name="PULSE_SAW_VC6" value="11" enum="SiONPulseGeneratorType">
 			VC6 saw pulse generator (32-sample saw).
