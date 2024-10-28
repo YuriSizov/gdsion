@@ -140,7 +140,7 @@ void TranslatorUtil::_set_opl_params_by_array(const Ref<SiOPMChannelParams> &p_p
 
 	// #OPL@ signature:
 	// AL[0-3], FB[0-7],
-	// (WS[0-31], AR[0-15], DR[0-15], RR[0-15], EG[0,1], SL[0-15], TL[0-63], KR[0,1], KL[0-3], ML[0-15], AM[0-3]) x operator_count
+	// (WS[0-31], AR[0-15], DR[0-15], RR[0-15], ET[0,1], SL[0-15], TL[0-63], KR[0,1], KL[0-3], ML[0-15], AM[0-3]) x operator_count
 
 	int algorithm = _get_params_algorithm(SiMMLRefTable::get_instance()->algorithm_opl, p_params->operator_count, p_data[0], 3, "#OPL@");
 	if (algorithm == -1) {
@@ -162,8 +162,8 @@ void TranslatorUtil::_set_opl_params_by_array(const Ref<SiOPMChannelParams> &p_p
 		op_params->decay_rate                                       = (_sanitize_param_loop(p_data[data_index++], 0, 15, "DR") << 2);  // 3
 		op_params->release_rate                                     = (_sanitize_param_loop(p_data[data_index++], 0, 15, "RR") << 2);  // 4
 
-		// If EG is 0 — decaying tone, if EG is 1 — holding tone.
-		int n = _sanitize_param_loop(p_data[data_index++], 0, 1, "EG");
+		// If envelope waveform type is 0 — decaying sound, if it is 1 — sustained sound.
+		int n = _sanitize_param_loop(p_data[data_index++], 0, 1, "ET");
 		op_params->sustain_rate = (n != 0) ? 0 : op_params->release_rate;                                                              // 5
 		op_params->sustain_level                                    = _sanitize_param_loop(p_data[data_index++], 0, 15, "SL");         // 6
 		op_params->total_level                                      = _sanitize_param_loop(p_data[data_index++], 0, 63, "TL");         // 7
