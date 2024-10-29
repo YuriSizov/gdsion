@@ -11,10 +11,7 @@ The name of the synthesizer should be pronounced like the word "_scion_".
 
 This project is in the _beta_ phase. This means it's feature complete, but still requires some bug fixing and testing. Please make backups when working with prerelease libraries! [Bug reports](https://github.com/YuriSizov/gdsion/issues) are highly appreciated.
 
-The project is compatible with **Godot 4.3**.
-
-> [!NOTE]
-> As _Godot 4.3_ is still being developed, there might be compatibility issues between _GDSiON_ and available builds of the engine. The project has been developed and tested with the [4.3-stable](https://godotengine.org/download/archive/4.3-stable/) release, so this is the minimum recommended version for now.
+The project is compatible with **[Godot 4.3](https://godotengine.org/download/archive/4.3-stable/)**.
 
 ### Current release: 0.7-beta4
 
