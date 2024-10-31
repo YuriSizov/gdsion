@@ -65,6 +65,7 @@ _The example project archive contains GDSiON binaries for all platforms. May req
 Another way to learn more about _GDSiON_'s capabilities is to try one of the projects below:
 
 * **[Bosca Ceoil Blue](https://github.com/YuriSizov/boscaceoil-blue)** — a beginner-friendly music making app.
+* **[Glasan FX](https://github.com/YuriSizov/glasan-fx) — a simple sound effects tool.
 
 ## Building
 
