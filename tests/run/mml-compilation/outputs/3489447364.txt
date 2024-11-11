@@ -1,0 +1,10 @@
+ERROR: Translator: Parameter 'D1' value (-1) is outside of valid range (0 : 7). Value will be looped.
+   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
+ERROR: Translator: Parameter 'SL' value (60) is outside of valid range (0 : 15). Value will be looped.
+   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
+ERROR: Translator: Parameter 'SL' value (60) is outside of valid range (0 : 15). Value will be looped.
+   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
+ERROR: Translator: Parameter 'SL' value (60) is outside of valid range (0 : 15). Value will be looped.
+   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
+ERROR: Translator: Parameter 'SL' value (60) is outside of valid range (0 : 15). Value will be looped.
+   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)

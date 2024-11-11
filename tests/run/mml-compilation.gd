@@ -12,6 +12,7 @@ var name: String = "Compilation"
 signal loading_completed()
 
 const TUNES_URL := "https://raw.githubusercontent.com/YuriSizov/SiONMML/refs/heads/master/mmltalks_mml.json"
+const OUTPUTS_PATH := "./run/mml-compilation/outputs"
 
 var _tunes: Array[TuneItem] = []
 
@@ -27,18 +28,28 @@ func run(scene_tree: SceneTree) -> void:
 	http_request.request_completed.connect(_load_tunes_completed)
 
 	var error := http_request.request(TUNES_URL)
-
 	if _assert_equal("request sent", error, OK):
 		await loading_completed
 
 		for tune_item in _tunes:
-			# Currently there is no easy way to validate the actual results. We could possibly
-			# read the sequences from the data object, serialize them somehow and compare just
-			# like we compare the voice data. But for now the main purpose is to highlight the
-			# errors raised by the translator util and MML parser.
+			var tune_hash := tune_item.mml_string.hash()
+			var output_path := OUTPUTS_PATH.path_join("%d.txt" % [ tune_hash ])
 
-			prints("Compiling", tune_item.title, "by", tune_item.author)
-			driver.compile(tune_item.mml_string)
+			# This is painfully slow, but allows us to read the errors and match them against the expected result.
+			var errors := _run_subscript("./run/mml-compilation/compile-mml-song.gd", [ tune_item.mml_string ])
+			var expected := _load_tune_output(output_path)
+			var errors_match := (errors == expected)
+
+			if expected.is_empty():
+				_assert_equal("compiled w/o errors: %s - %s" % [ tune_item.title, tune_item.author ], errors_match, true)
+			else:
+				_assert_equal("compiled w/  errors: %s - %s" % [ tune_item.title, tune_item.author ], errors_match, true)
+
+			if not errors_match:
+				_append_extra_to_output("Expected:")
+				_append_extra_to_output(expected)
+				_append_extra_to_output("Got:")
+				_append_extra_to_output(errors)
 
 	# Cleanup.
 
@@ -49,7 +60,7 @@ func run(scene_tree: SceneTree) -> void:
 
 
 func _load_tunes_completed(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
-	if not _assert_equal("request success", result, HTTPRequest.RESULT_SUCCESS):
+	if not _assert_equal("request received", result, HTTPRequest.RESULT_SUCCESS):
 		loading_completed.emit()
 		return
 
@@ -79,6 +90,25 @@ func _load_tunes_completed(result: int, response_code: int, _headers: PackedStri
 		_tunes.push_back(tune_item)
 
 	loading_completed.emit()
+
+
+func _store_tune_output(file_name: String, output: String) -> void:
+	if output.is_empty():
+		return
+
+	var file := FileAccess.open(file_name, FileAccess.WRITE)
+	file.resize(0)
+
+	file.store_string(output)
+
+
+func _load_tune_output(file_name: String) -> String:
+	var file := FileAccess.open(file_name, FileAccess.READ)
+	if not file:
+		return ""
+
+	file.seek(0)
+	return file.get_as_text(true)
 
 
 class TuneItem:

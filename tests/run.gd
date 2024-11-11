@@ -36,13 +36,25 @@ func _init():
 		_quit_fatal("Fatal Error: Unable to list files at '%s' (code %d)." % [ RUN_ROOT, DirAccess.get_open_error() ])
 		return
 
+	# Passing `-- --case script_filename_sans_ext` should only run that one script.
+	# Multiple `--case script_filename_sans_ext` entries are also allowed.
+	var selected_scripts := _get_args_scripts()
+
 	start_time = Time.get_ticks_msec()
 	start_memory = OS.get_static_memory_usage()
 
 	var file_name := fs.get_next()
 	while not file_name.is_empty():
+		if fs.dir_exists(file_name):
+			file_name = fs.get_next() # Advance.
+			continue # This is a directory, skipping.
+
+		var script_base := file_name.get_basename()
 		var script_name := RUN_ROOT.path_join(file_name)
 		file_name = fs.get_next() # Advance.
+
+		if not selected_scripts.is_empty() && not selected_scripts.has(script_base):
+			continue
 
 		tests_total += 1
 
@@ -65,6 +77,26 @@ func _init():
 
 	fs.list_dir_end()
 	_quit_with_status()
+
+
+func _get_args_scripts() -> PackedStringArray:
+	var scripts := PackedStringArray()
+
+	var args := OS.get_cmdline_user_args()
+	var i := 0
+	while i < args.size():
+		var arg_key := args[i]
+
+		if arg_key == "--case":
+			i += 1
+
+			var arg_value := args[i]
+			if not arg_value.begins_with("--"):
+				scripts.push_back(arg_value)
+
+		i += 1
+
+	return scripts
 
 
 func _quit_fatal(message: String) -> void:

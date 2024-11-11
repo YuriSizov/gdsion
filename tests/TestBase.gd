@@ -19,6 +19,7 @@ class OutputBufferRecord:
 	var label: String = ""
 	var result: String = ""
 	var tabs: int = 1
+	var extra: String = ""
 
 var _output_buffer: Array[OutputBufferRecord] = []
 
@@ -76,6 +77,9 @@ func print_output() -> void:
 		elif not record.success:
 			print_rich("[color=red]FAIL[/color]: [[color=gray]%s[/color]]%s%s" % [ record.label, tabs_sep, record.result ])
 
+		if not record.extra.is_empty():
+			print(record.extra)
+
 	print_rich("[color=blue]TOTAL[/color]: [b]%d[/b] / [b]%d[/b]" % [ asserts_success, asserts_total ])
 	print_rich("[color=gray]Memory used: [b]%s[/b] / [b]%s[/b][/color]" % [ String.humanize_size(_start_memory), String.humanize_size(final_memory) ])
 	print_rich("[color=gray]Finished in %.3f sec.[/color]" % [ execution_time / 1000.0 ])
@@ -97,6 +101,14 @@ func _print_fail(label: String, result: String) -> void:
 	record.result = result
 
 	_output_buffer.push_back(record)
+
+
+func _append_extra_to_output(extra: String) -> void:
+	if _output_buffer.is_empty():
+		return
+
+	var last_record := _output_buffer[_output_buffer.size() - 1]
+	last_record.extra += extra + "\n"
 
 
 # Assert helpers.
@@ -135,3 +147,25 @@ func _assert_not_null(label: String, value: Object) -> bool:
 	else:
 		_print_fail(label, "value is null")
 		return false
+
+
+# Subroutine helpers.
+
+func _run_subscript(path: String, arguments: PackedStringArray) -> String:
+	var exec_path := OS.get_executable_path()
+
+	var exec_args := PackedStringArray()
+	exec_args.push_back("-q") # Errors only.
+	exec_args.push_back("--headless")
+	exec_args.push_back("--script")
+	exec_args.push_back(path)
+
+	if not arguments.is_empty():
+		exec_args.push_back("--")
+		exec_args.append_array(arguments)
+
+	var output := []
+	OS.execute(exec_path, exec_args, output, true)
+
+	# Normalize the EOL sequences.
+	return output[0].replace("\r", "")

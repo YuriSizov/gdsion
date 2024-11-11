@@ -1,0 +1,6 @@
+ERROR: Translator: Parameter 'RR' value (27) is outside of valid range (0 : 15). Value will be looped.
+   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
+ERROR: Translator: Parameter 'RR' value (27) is outside of valid range (0 : 15). Value will be looped.
+   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
+ERROR: Translator: Parameter 'RR' value (27) is outside of valid range (0 : 15). Value will be looped.
+   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)

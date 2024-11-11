@@ -1,0 +1,2 @@
+ERROR: Translator: Parameter 'FB' value (8) is outside of valid range (0 : 7). Value will be looped.
+   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
