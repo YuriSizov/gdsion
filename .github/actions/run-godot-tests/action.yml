@@ -10,6 +10,12 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Import assets, scripts, extensions
+      shell: bash
+      continue-on-error: true
+      run: |
+        godot --headless --path ${{ inputs.project-path }} --import
+
     - name: Run the project script
       shell: bash
       run: |
