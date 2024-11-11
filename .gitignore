@@ -6,7 +6,7 @@ example/.references/
 example/bin/
 example/export/
 tests/bin/
-tests/voice_graphs/
+tests/run/voices-sound-consistency/graphs/
 src/**/*.gen.cpp
 
 ### Godot project development ###

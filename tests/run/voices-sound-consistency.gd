@@ -9,6 +9,9 @@ extends "res://TestBase.gd"
 var group: String = "SiONVoice"
 var name: String = "Sound Consistency"
 
+const DATA_OUTPUT_PATH := "./run/voices-sound-consistency/data"
+const GRAPHS_OUTPUT_PATH := "./run/voices-sound-consistency/graphs"
+
 const SAMPLE_LENGTH := 2 # In 1/16th of a beat.
 const SAMPLE_RUNS := 1 # Disabling multiple runs for now.
 const INT16_MAX := 32767
@@ -102,7 +105,7 @@ func _validate_sampled_voices(voice_name: String) -> void:
 
 
 func _store_voice_data(voice_name: String) -> void:
-	var file_name := "res://voice_data/%s.dat" % [ voice_name ]
+	var file_name := DATA_OUTPUT_PATH.path_join("%s.dat" % [ voice_name ])
 	var file := FileAccess.open(file_name, FileAccess.WRITE)
 	file.resize(0)
 
@@ -112,7 +115,7 @@ func _store_voice_data(voice_name: String) -> void:
 
 
 func _load_voice_data(voice_name: String) -> PackedInt32Array:
-	var file_name := "res://voice_data/%s.dat" % [ voice_name ]
+	var file_name := DATA_OUTPUT_PATH.path_join("%s.dat" % [ voice_name ])
 	var file := FileAccess.open(file_name, FileAccess.READ)
 
 	file.seek(0)
@@ -161,7 +164,7 @@ func _create_voice_graph(voice_name: String) -> void:
 	# Save the graph to the file.
 
 	var image := Image.create_from_data(image_width, image_height, false, Image.FORMAT_RGBA8, image_data)
-	var image_file := "res://voice_graphs/%s.graph.png" % [ voice_name ]
+	var image_file := GRAPHS_OUTPUT_PATH.path_join("%s.graph.png" % [ voice_name ])
 
 	var error := image.save_png(image_file)
 	if error != OK:
