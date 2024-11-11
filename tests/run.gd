@@ -43,21 +43,15 @@ func _init():
 	start_time = Time.get_ticks_msec()
 	start_memory = OS.get_static_memory_usage()
 
-	var file_name := fs.get_next()
-	while not file_name.is_empty():
-		if fs.dir_exists(file_name):
-			file_name = fs.get_next() # Advance.
-			continue # This is a directory, skipping.
-
+	var run_files := fs.get_files()
+	for file_name in run_files:
 		var script_base := file_name.get_basename()
-		var script_name := RUN_ROOT.path_join(file_name)
-		file_name = fs.get_next() # Advance.
-
 		if not selected_scripts.is_empty() && not selected_scripts.has(script_base):
 			continue
 
 		tests_total += 1
 
+		var script_name := RUN_ROOT.path_join(file_name)
 		var script: GDScript = load(script_name)
 		if not script:
 			printerr("Warning: Failed to load script at '%s'." % [ script_name ])
