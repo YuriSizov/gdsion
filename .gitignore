@@ -6,6 +6,7 @@ example/.references/
 example/bin/
 example/export/
 tests/bin/
+tests/run/mml-compilation/inputs/
 tests/run/voices-sound-consistency/graphs/
 src/**/*.gen.cpp
 

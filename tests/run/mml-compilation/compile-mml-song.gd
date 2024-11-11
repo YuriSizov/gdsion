@@ -6,6 +6,8 @@
 
 extends SceneTree
 
+const INPUTS_PATH := "./run/mml-compilation/inputs"
+
 
 func _init():
 	# Delay everything by one frame so the initialization is complete before we run tests.
@@ -30,4 +32,10 @@ func _get_mml_string() -> String:
 	if args.is_empty():
 		return ""
 
-	return args[0]
+	var input_path := INPUTS_PATH.path_join("%s.mml" % [ args[0] ])
+	var file := FileAccess.open(input_path, FileAccess.READ)
+	if not file:
+		return ""
+
+	file.seek(0)
+	return file.get_as_text(true)

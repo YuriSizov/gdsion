@@ -13,6 +13,7 @@ signal loading_completed()
 
 const TUNES_URL := "https://raw.githubusercontent.com/YuriSizov/SiONMML/refs/heads/master/mmltalks_mml.json"
 const OUTPUTS_PATH := "./run/mml-compilation/outputs"
+const INPUTS_PATH := "./run/mml-compilation/inputs"
 
 var _tunes: Array[TuneItem] = []
 
@@ -31,12 +32,20 @@ func run(scene_tree: SceneTree) -> void:
 	if _assert_equal("request sent", error, OK):
 		await loading_completed
 
+		# Ensure that the folder exists.
+		var fs := DirAccess.open(".")
+		fs.make_dir_recursive(INPUTS_PATH)
+
 		for tune_item in _tunes:
 			var tune_hash := tune_item.mml_string.hash()
+			var input_path := INPUTS_PATH.path_join("%d.mml" % [ tune_hash ])
 			var output_path := OUTPUTS_PATH.path_join("%d.txt" % [ tune_hash ])
 
+			# Store the MML in a file to avoid any weirdness from passing it via CLI arguments.
+			_store_tune_mml(input_path, tune_item.mml_string)
+
 			# This is painfully slow, but allows us to read the errors and match them against the expected result.
-			var received := _run_subscript("./run/mml-compilation/compile-mml-song.gd", [ tune_item.mml_string ])
+			var received := _run_subscript("./run/mml-compilation/compile-mml-song.gd", [ tune_hash ])
 			received = _extract_godot_errors(received)
 			var expected := _load_tune_output(output_path)
 			expected = _extract_godot_errors(expected)
@@ -93,6 +102,13 @@ func _load_tunes_completed(result: int, response_code: int, _headers: PackedStri
 		_tunes.push_back(tune_item)
 
 	loading_completed.emit()
+
+
+func _store_tune_mml(file_name: String, mml: String) -> void:
+	var file := FileAccess.open(file_name, FileAccess.WRITE)
+	file.resize(0)
+
+	file.store_string(mml)
 
 
 func _store_tune_output(file_name: String, output: String) -> void:
