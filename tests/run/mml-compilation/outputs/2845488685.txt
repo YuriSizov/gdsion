@@ -1,316 +1,158 @@
 ERROR: Translator: Parameter 'AR' value (41) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (45) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (43) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (39) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (39) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (45) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (40) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (33) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (38) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (38) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (45) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (36) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (46) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (57) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (46) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (46) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (50) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (49) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (45) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (49) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (43) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (43) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (49) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (45) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (41) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (41) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (49) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (53) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (45) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (49) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (46) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (43) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (52) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (49) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (46) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (46) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (53) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (43) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (43) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (40) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (40) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (46) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (32) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (41) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (45) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (41) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (41) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (49) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (50) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (50) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (52) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (45) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (53) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (53) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (48) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (48) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (48) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (52) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (45) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (41) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (41) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (38) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (43) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (40) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (52) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (40) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (46) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (50) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (43) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (45) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (53) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (50) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (43) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (52) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (48) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (48) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (53) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (50) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (52) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (49) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (49) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (41) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (53) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (61) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (38) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (50) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (45) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (57) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (38) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (40) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (38) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (45) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (36) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (49) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (41) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (43) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (40) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (40) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (43) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (38) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (45) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (43) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (41) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (41) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (40) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (40) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (38) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (36) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (33) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (36) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (41) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (40) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (38) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (43) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (46) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (38) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (39) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (38) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (43) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (53) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (55) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (57) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (53) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (55) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (62) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (55) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (57) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (41) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (43) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (32) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (45) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (41) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (45) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (43) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (38) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (43) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (49) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (62) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (41) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (36) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (60) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (36) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (36) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (50) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (34) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (50) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (50) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (54) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (58) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (33) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'AR' value (36) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (33) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (33) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (33) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (37) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (40) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'DR' value (38) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'SR' value (41) is outside of valid range (0 : 31). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)

@@ -1,54 +1,27 @@
 ERROR: MMLParser: Command 'q' has argument (16) outside of valid range (0 : 8).
-   at: (src\sequencer\base\mml_parser.cpp:679)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Command 'q' has argument (16) outside of valid range (0 : 8).
-   at: (src\sequencer\base\mml_parser.cpp:679)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Command 'q' has argument (16) outside of valid range (0 : 8).
-   at: (src\sequencer\base\mml_parser.cpp:679)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)
 ERROR: MMLParser: Unknown standard event: '/'.
-   at: (src\sequencer\base\mml_parser.cpp:534)

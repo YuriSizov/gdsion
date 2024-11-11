@@ -169,3 +169,14 @@ func _run_subscript(path: String, arguments: PackedStringArray) -> String:
 
 	# Normalize the EOL sequences.
 	return output[0].replace("\r", "")
+
+
+func _extract_godot_errors(buffer: String) -> String:
+	var errors := ""
+	var lines := buffer.split("\n", false)
+
+	for line in lines:
+		if line.begins_with("ERROR: "):
+			errors += line + "\n"
+
+	return errors

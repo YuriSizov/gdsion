@@ -1,20 +1,10 @@
 ERROR: Translator: Parameter 'D2' value (7) is outside of valid range (0 : 3). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'D2' value (-3) is outside of valid range (0 : 3). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'D1' value (-3) is outside of valid range (0 : 7). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'D2' value (7) is outside of valid range (0 : 3). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'D2' value (-3) is outside of valid range (0 : 3). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'D1' value (-3) is outside of valid range (0 : 7). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'D2' value (7) is outside of valid range (0 : 3). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'D1' value (-3) is outside of valid range (0 : 7). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'FB' value (8) is outside of valid range (0 : 7). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)
 ERROR: Translator: Parameter 'D1' value (-3) is outside of valid range (0 : 7). Value will be looped.
-   at: TranslatorUtil::_sanitize_param_loop (src\utils\translator_util.cpp:66)

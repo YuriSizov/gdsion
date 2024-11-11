@@ -36,9 +36,12 @@ func run(scene_tree: SceneTree) -> void:
 			var output_path := OUTPUTS_PATH.path_join("%d.txt" % [ tune_hash ])
 
 			# This is painfully slow, but allows us to read the errors and match them against the expected result.
-			var errors := _run_subscript("./run/mml-compilation/compile-mml-song.gd", [ tune_item.mml_string ])
+			var received := _run_subscript("./run/mml-compilation/compile-mml-song.gd", [ tune_item.mml_string ])
+			received = _extract_godot_errors(received)
 			var expected := _load_tune_output(output_path)
-			var errors_match := (errors == expected)
+			expected = _extract_godot_errors(expected)
+
+			var errors_match := (received == expected)
 
 			if expected.is_empty():
 				_assert_equal("compiled w/o errors: %s - %s" % [ tune_item.title, tune_item.author ], errors_match, true)
@@ -49,7 +52,7 @@ func run(scene_tree: SceneTree) -> void:
 				_append_extra_to_output("Expected:")
 				_append_extra_to_output(expected)
 				_append_extra_to_output("Got:")
-				_append_extra_to_output(errors)
+				_append_extra_to_output(received)
 
 	# Cleanup.
 
