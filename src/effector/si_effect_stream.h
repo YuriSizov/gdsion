@@ -32,7 +32,7 @@ class SiEffectStream {
 	Vector<SiOPMStream *> _output_streams;
 
 	void _add_effect(String p_cmd, Vector<double> p_args, int p_argc);
-	void _set_volume(int p_slot, String p_cmd, Vector<double> p_args, int p_argc);
+	void _set_postfix_param(int p_slot, String p_cmd, Vector<double> p_args, int p_argc);
 
 public:
 	List<Ref<SiEffectBase>> get_chain() const { return _chain; }

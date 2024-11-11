@@ -114,9 +114,7 @@ int SiEffectStream::process(int p_start_idx, int p_length, bool p_write_in_strea
 //
 
 void SiEffectStream::_add_effect(String p_cmd, Vector<double> p_args, int p_argc) {
-	if (p_argc == 0) {
-		return;
-	}
+	ERR_FAIL_COND_MSG(p_cmd.is_empty(), "SiEffectStream: Trying to add an effect with no name.");
 
 	Ref<SiEffectBase> effect = SiEffector::get_effect_instance(p_cmd);
 	if (effect.is_valid()) {
@@ -125,15 +123,13 @@ void SiEffectStream::_add_effect(String p_cmd, Vector<double> p_args, int p_argc
 	}
 }
 
-void SiEffectStream::_set_volume(int p_slot, String p_cmd, Vector<double> p_args, int p_argc) {
-	if (p_argc == 0) {
-		return;
-	}
+void SiEffectStream::_set_postfix_param(int p_slot, String p_cmd, Vector<double> p_args, int p_argc) {
+	ERR_FAIL_COND_MSG(p_cmd.is_empty(), vformat("SiEffectStream: Trying to set an effect param with no name in slot %d.", p_slot));
 
 	if (p_cmd == "p") {
-		_pan = (((int)p_args[0]) << 4) - 64;
+		set_pan((((int)p_args[0]) << 4) - 64);
 	} else if (p_cmd == "@p") {
-		_pan = (int)p_args[0];
+		set_pan((int)p_args[0]);
 	} else if (p_cmd == "@v") {
 		double value = ((int)p_args[0]) * 0.0078125;
 		set_stream_send(0, CLAMP(value, 0, 1));
@@ -147,27 +143,39 @@ void SiEffectStream::_set_volume(int p_slot, String p_cmd, Vector<double> p_args
 			value = ((int)p_args[i]) * 0.0078125;
 			set_stream_send(i + p_slot, CLAMP(value, 0, 1));
 		}
+	} else {
+		ERR_PRINT(vformat("SiEffectStream: Trying to set an unknown effect param (%s) in slot %d.", p_cmd, p_slot));
 	}
 }
 
 void SiEffectStream::parse_mml(int p_slot, String p_mml, String p_postfix) {
 	const int max_argc = 16;
 
+	// SUS: Slot number is only used to set postfix params, but not the effect itself.
+	// It is possible that the given slot number is incorrect and thus the effect is
+	// added in a different position than the params are set in.
+
+	String command;
 	int argc = 0;
 	Vector<double> args;
 	args.resize_zeroed(max_argc);
 
 #define CLEAR_ARGS()                      \
+	command = "";                         \
 	for (int a = 0; a < max_argc; a++) {  \
 		args.write[a] = NAN;              \
 	}                                     \
 	argc = 0;
 
+#define CONSUME_ARG(m_index)                                     \
+	if (res->get_string(m_index).is_valid_float()) {             \
+		args.write[argc] = res->get_string(m_index).to_float();  \
+	}                                                            \
+	argc++;
+
 	// Reset and clear everything.
 	initialize(0);
 	CLEAR_ARGS();
-
-	String command;
 
 	Ref<RegEx> re_mml = RegEx::create_from_string("([a-zA-Z_]+|,)\\s*([.\\-\\d]+)?");
 	Ref<RegEx> re_postfix = RegEx::create_from_string("(p|@p|@v|,)\\s*([.\\-\\d]+)?");
@@ -179,19 +187,21 @@ void SiEffectStream::parse_mml(int p_slot, String p_mml, String p_postfix) {
 		Ref<RegExMatch> res = matches[i];
 
 		if (res->get_string(1) == ",") {
-			args.write[argc] = res->get_string(2).to_float();
-			argc++;
+			CONSUME_ARG(2);
 		} else {
-			_add_effect(command, args, argc);
+			if (!command.is_empty()) {
+				_add_effect(command, args, argc);
+			}
 			CLEAR_ARGS();
 
 			command = res->get_string(1);
-			args.write[0] = res->get_string(2).to_float();
-			argc = 1;
+			CONSUME_ARG(2);
 		}
 	}
 
-	_add_effect(command, args, argc);
+	if (!command.is_empty()) {
+		_add_effect(command, args, argc);
+	}
 	CLEAR_ARGS();
 
 	// Parse the postfix.
@@ -201,22 +211,25 @@ void SiEffectStream::parse_mml(int p_slot, String p_mml, String p_postfix) {
 		Ref<RegExMatch> res = matches[i];
 
 		if (res->get_string(1) == ",") {
-			args.write[argc] = res->get_string(2).to_float();
-			argc++;
+			CONSUME_ARG(2);
 		} else {
-			_set_volume(p_slot, command, args, argc);
+			if (!command.is_empty()) {
+				_set_postfix_param(p_slot, command, args, argc);
+			}
 			CLEAR_ARGS();
 
 			command = res->get_string(1);
-			args.write[0] = res->get_string(2).to_float();
-			argc = 1;
+			CONSUME_ARG(2);
 		}
 	}
 
-	_set_volume(p_slot, command, args, argc);
+	if (!command.is_empty()) {
+		_set_postfix_param(p_slot, command, args, argc);
+	}
 	CLEAR_ARGS();
 
 #undef CLEAR_ARGS
+#undef CONSUME_ARG
 }
 
 void SiEffectStream::initialize(int p_depth) {

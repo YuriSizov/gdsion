@@ -45,6 +45,7 @@ func _play_selected() -> void:
 
 	var selected_tune := _tunes[selected_items[0]]
 	Controller.music_player.play_tune(selected_tune.mml_string)
+
 	if selected_tune.author.is_empty():
 		_tune_status.text = "Now Playing: %s" % [ selected_tune.title ]
 	else:
