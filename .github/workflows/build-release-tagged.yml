@@ -47,11 +47,18 @@ jobs:
     with:
       git-base-ref: ${{ github.ref }}
 
+# Then, use the artifacts to do tests.
+
+  run-tests-project:
+    name: Run tests on target platforms
+    needs: [ build-linux, build-macos, build-windows, build-web, build-android ]
+    uses: ./.github/workflows/tests-run-project.yml
+
 # Then, make a draft release for the tag.
 
   release-all:
     name: Make a draft GitHub Release for the tag
-    needs: [ build-linux, build-macos, build-windows, build-web, build-android ]
+    needs: [ run-tests-project ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -32,7 +32,12 @@ jobs:
     name: Compile and upload Android version
     uses: ./.github/workflows/extension-build-android.yml
 
-# Then, use the artifacts to test the example project.
+# Then, use the artifacts to do tests.
+
+  run-tests-project:
+    name: Run tests on target platforms
+    needs: [ build-linux, build-macos, build-windows, build-web, build-android ]
+    uses: ./.github/workflows/tests-run-project.yml
 
   export-example-project:
     name: Export the example project for target platforms

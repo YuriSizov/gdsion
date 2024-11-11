@@ -46,18 +46,25 @@ jobs:
     with:
       git-base-ref: 'main'
 
+# Then, use the artifacts to do tests.
+
+  run-tests-project:
+    name: Run tests on target platforms
+    needs: [ build-linux, build-macos, build-windows, build-web, build-android ]
+    uses: ./.github/workflows/tests-run-project.yml
+
 # Then, use the artifacts to prepare the example project and publish the build.
 
   publish-all:
     name: Package and publish the extension
-    needs: [ build-linux, build-macos, build-windows, build-web, build-android ]
+    needs: [ run-tests-project ]
     uses: ./.github/workflows/extension-publish-all.yml
     with:
       release-version: 'latest-unstable'
 
   export-example-project:
     name: Export the example project for target platforms
-    needs: [ build-linux, build-macos, build-windows, build-web, build-android ]
+    needs: [ run-tests-project ]
     uses: ./.github/workflows/example-export-project.yml
     secrets: inherit
     with:

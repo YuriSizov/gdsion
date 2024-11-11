@@ -1,0 +1,54 @@
+name: Run Tests
+
+on:
+  workflow_call:
+
+# Make sure jobs cannot overlap.
+concurrency:
+  group: test-${{ github.ref }}-project
+  cancel-in-progress: true
+
+env:
+  GODOT_VERSION: "4.3.0-stable"
+
+jobs:
+  export-publish:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux
+            arch: x86_64
+            preset: "Linux - x86_64"
+            runs-on: ubuntu-latest
+
+    name: Run the tests project (${{ matrix.preset }})
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Set up prerequisites.
+
+      - name: Install Godot ${{ env.GODOT_VERSION }}
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: ${{ env.GODOT_VERSION }}
+          use-dotnet: false
+          include-templates: true
+
+      - name: Verify Godot
+        shell: bash
+        run: |
+          godot --version
+
+      - name: Download GDSiON artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: tests/bin
+          pattern: libgdsion-*
+          merge-multiple: true
+
+      # Run the tests.
+
+      - name: Run tests
+        uses: ./.github/actions/run-godot-tests

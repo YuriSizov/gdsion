@@ -1,0 +1,16 @@
+name: Run Godot tests
+description: Run a test project on the target platform.
+
+inputs:
+  project-path:
+    default: "./tests"
+  run-script:
+    default: "./run.gd"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run the project script
+      shell: bash
+      run: |
+        godot --headless --path ${{ inputs.project-path }} --script ${{ inputs.run-script }} --verbose
