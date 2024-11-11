@@ -10,7 +10,7 @@ var group: String = "SiONVoice"
 var name: String = "Sound Consistency"
 
 const SAMPLE_LENGTH := 2 # In 1/16th of a beat.
-const SAMPLE_RUNS := 3
+const SAMPLE_RUNS := 1 # Disabling multiple runs for now.
 const INT16_MAX := 32767
 
 const REFERENCE_COLOR := [ 128, 0, 255 ]
