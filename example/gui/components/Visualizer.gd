@@ -44,7 +44,17 @@ func _draw() -> void:
 	for i in range(1, VU_COUNT + 1):
 		var hz := i * FREQ_MAX / VU_COUNT;
 
-		var magnitude: float = _audio_spectrum.get_magnitude_for_frequency_range(prev_hz, hz).length()
+		# FIXME: This method can return garbage data after the playback has ended.
+		# This is because it uses some historic records to produce the result, and evidently
+		# when the playback stops, this historic data never gets overridden, resulting in
+		# ghost spikes in the spectrum. This is a Godot bug, but we can address it locally by
+		# only updating the spectrum when we have playback going on. That's a good change
+		# either way.
+		var magnitude_stereo := _audio_spectrum.get_magnitude_for_frequency_range(prev_hz, hz)
+		if not magnitude_stereo.is_finite(): # Edge case when something is wrong with the audio.
+			magnitude_stereo = Vector2.ZERO
+
+		var magnitude := magnitude_stereo.length()
 		var height := _get_height(i - 1, magnitude)
 		var color := _get_color(i - 1, height)
 
