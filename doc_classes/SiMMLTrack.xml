@@ -5,7 +5,6 @@
 	</brief_description>
 	<description>
 		Sequencers contain a collection of tracks to be able to process multiple overlapping commands at the same time. Tracks are used as they are needed by the sequence, and then become reserved for future reuse.
-		[b]Warning:[/b] This class currently has no intended use in the API. If you need this class and its unexposed methods in your project, please [b][url=https://github.com/YuriSizov/gdsion/issues]create a feature request with your use case[/url][/b]!
 	</description>
 	<tutorials>
 	</tutorials>

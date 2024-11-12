@@ -94,21 +94,23 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 	{
 		// Chip.
 
-		ClassDB::register_abstract_class<SiOPMChannelBase>();
-		ClassDB::register_abstract_class<SiOPMChannelFM>();
-		ClassDB::register_abstract_class<SiOPMChannelKS>();
-		ClassDB::register_abstract_class<SiOPMChannelPCM>();
-		ClassDB::register_abstract_class<SiOPMChannelSampler>();
+		ClassDB::register_internal_class<SiOPMWaveBase>();
+		ClassDB::register_internal_class<SiOPMWavePCMData>();
+		ClassDB::register_internal_class<SiOPMWavePCMTable>();
+		ClassDB::register_internal_class<SiOPMWaveSamplerData>();
+		ClassDB::register_internal_class<SiOPMWaveSamplerTable>();
+		ClassDB::register_internal_class<SiOPMWaveTable>();
+
+		ClassDB::register_internal_class<SiOPMChannelBase>();
+		ClassDB::register_internal_class<SiOPMChannelFM>();
+		ClassDB::register_internal_class<SiOPMChannelKS>();
+		ClassDB::register_internal_class<SiOPMChannelPCM>();
+		ClassDB::register_internal_class<SiOPMChannelSampler>();
+		ClassDB::register_internal_class<SiOPMOperator>();
+
 		ClassDB::register_abstract_class<SiOPMChannelParams>();
-		ClassDB::register_abstract_class<SiOPMOperator>();
 		ClassDB::register_abstract_class<SiOPMOperatorParams>();
 		ClassDB::register_abstract_class<SiOPMSoundChip>();
-		ClassDB::register_abstract_class<SiOPMWaveBase>();
-		ClassDB::register_abstract_class<SiOPMWavePCMData>();
-		ClassDB::register_abstract_class<SiOPMWavePCMTable>();
-		ClassDB::register_abstract_class<SiOPMWaveSamplerData>();
-		ClassDB::register_abstract_class<SiOPMWaveSamplerTable>();
-		ClassDB::register_abstract_class<SiOPMWaveTable>();
 
 		// Effector.
 
@@ -149,15 +151,16 @@ void initialize_sion_module(ModuleInitializationLevel p_level) {
 
 		// Sequencer.
 
-		ClassDB::register_class<BeatsPerMinute>();
+		ClassDB::register_internal_class<BeatsPerMinute>();
+		ClassDB::register_internal_class<MMLSystemCommand>();
+		ClassDB::register_internal_class<SiMMLEnvelopeTable>();
+
 		ClassDB::register_abstract_class<MMLData>();
 		ClassDB::register_class<MMLEvent>();
 		ClassDB::register_class<MMLSequence>();
 		ClassDB::register_class<MMLSequenceGroup>();
 		ClassDB::register_abstract_class<MMLSequencer>();
-		ClassDB::register_abstract_class<MMLSystemCommand>();
 		ClassDB::register_abstract_class<SiMMLData>();
-		ClassDB::register_abstract_class<SiMMLEnvelopeTable>();
 		ClassDB::register_abstract_class<SiMMLSequencer>();
 		ClassDB::register_abstract_class<SiMMLTrack>();
 		ClassDB::register_abstract_class<SiMMLVoice>();

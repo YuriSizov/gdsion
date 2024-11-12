@@ -17,22 +17,22 @@ using namespace godot;
 class SiOPMOperator;
 
 // FM sound channel.
-// Calculations in this class are based on OPM emulators (sources of mame, fmgen, and x68sound were referenced).
-// It also has several extensions to support other FM sound modules (OPNA, OPLL, OPL2, OPL3, OPX, MA3, MA5, MA7, TSS, and DX7):
-//   - stereo output (from TSS,DX7);
-//   - key scale level (from OPL3,OPX,MAx);
-//   - phase select (from TSS);
-//   - fixed frequency (from MAx);
-//   - ssgec (from OPNA);
-//   - wave shape select (from OPX,MAx,TSS);
-//   - custom wave shape (from MAx);
-//   - some more algorithms (from OPLx,OPX,MAx,DX7);
-//   - decimal multiple (from p-TSS);
-//   - feedback from op1-3 (from DX7);
-//   - channel independent LFO (from TSS);
-//   - low-pass filter envelope (from MAx);
-//   - flexible fm connections (from TSS);
-//   - ring modulation (from C64?);
+// This implementation is based on OPM emulation, referenced from sources of mame, fmgen, and x68sound.
+// It also introduces a few extensions to simulate several other FM sound modules (OPNA, OPLL, OPL2, OPL3, OPX, MA-3, MA-5, MA-7, TSS, and DX7), including:
+//   - stereo output (from TSS, DX7)
+//   - key scale level (from OPL3, OPX, MA-x)
+//   - phase selection (from TSS)
+//   - fixed frequency (from MA-x)
+//   - SSG envelope control (from OPNA)
+//   - wave shape selection (from OPX, MA-x, TSS)
+//   - custom wave shapes (from MA-x)
+//   - more supported algorithms (from OPLx, OPX, MA-x, DX7)
+//   - decimal multiple (from p-TSS)
+//   - feedback from operators 1-3 (from DX7)
+//   - channel independent LFO (from TSS)
+//   - low-pass filter envelope (from MA-x)
+//   - flexible FM connections (from TSS)
+//   - ring modulation (from C64?)
 class SiOPMChannelFM : public SiOPMChannelBase {
 	GDCLASS(SiOPMChannelFM, SiOPMChannelBase)
 

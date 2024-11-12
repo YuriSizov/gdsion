@@ -11,7 +11,7 @@
 
 using namespace godot;
 
-// Abstraction to calculate BPM-releated numbers automatically.
+// Abstraction to calculate BPM-related numbers automatically.
 class BeatsPerMinute : public RefCounted {
 	GDCLASS(BeatsPerMinute, RefCounted)
 
