@@ -8,7 +8,6 @@
 extends Control
 
 const FONT := preload("res://fonts/Kenney Future Narrow.ttf")
-const NOTE_LENGTH := 4
 
 var _keys: Array = []
 var _notes: PackedStringArray = PackedStringArray()
@@ -223,15 +222,20 @@ func _update_active_key(key: int) -> void:
 	if _active_key == key:
 		return
 
+	if _active_key != -1:
+		_clear_active_key()
 	_active_key = key
-	var note_length := NOTE_LENGTH
-	if is_drumkit:
-		note_length = NOTE_LENGTH * 2
 
-	Controller.music_player.play_note(_active_key, note_length)
+	# Notes are played continuously.
+	Controller.music_player.play_note(_active_key)
 	queue_redraw()
 
 func _clear_active_key() -> void:
+	if _active_key != -1:
+		var instrument := Controller.music_player.get_active_instrument()
+		if instrument.voice_held:
+			Controller.music_player.stop_note(_active_key)
+
 	_active_key = -1
 	queue_redraw()
 

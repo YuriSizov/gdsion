@@ -11,11 +11,12 @@ var category: String = ""
 var name: String = ""
 var type: int = 0
 
-var palette: int = 0
 var volume: int = 0
 var cutoff: int = 0
 var resonance: int = 0
+
 var voice: SiONVoice = null
+var voice_held: bool = false
 
 
 func _init() -> void:
@@ -28,10 +29,11 @@ func clear() -> void:
 	name = ""
 	type = 0
 
-	palette = 0
 	volume = 256
 	cutoff = 128
 	resonance = 0
+
+	voice_held = false
 
 
 func set_filter(cutoff_: int, resonance_: int) -> void:

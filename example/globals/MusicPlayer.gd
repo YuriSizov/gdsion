@@ -78,7 +78,7 @@ func _update_instrument() -> void:
 	_active_instrument.type = voice_data.type
 	_active_instrument.category = voice_data.category
 	_active_instrument.name = voice_data.name
-	_active_instrument.palette = voice_data.palette
+	_active_instrument.voice_held = voice_data.held
 
 	if _active_instrument.type == 0: # Drumkits don't use presets.
 		_active_instrument.voice = Controller.voice_manager.get_voice_preset(voice_data.preset)
@@ -197,11 +197,11 @@ func start_streaming() -> void:
 	print("Driver is streaming.")
 
 
-func play_note(note: int, length: int) -> void:
+func play_note(note: int) -> void:
 	# All instruments, except drumkits.
 	if _active_instrument.type == 0:
 		_active_instrument.update_filter()
-		_driver.note_on(note, _active_instrument.voice, length)
+		_driver.note_on(note, _active_instrument.voice)
 
 	# Drumkits.
 	else:
@@ -211,4 +211,8 @@ func play_note(note: int, length: int) -> void:
 
 		active_drumkit.update_filter(_active_instrument.cutoff, _active_instrument.resonance)
 		active_drumkit.update_volume(_active_instrument.volume)
-		_driver.note_on(active_drumkit.voice_note[note], active_drumkit.voice_list[note], length)
+		_driver.note_on(active_drumkit.voice_note[note], active_drumkit.voice_list[note])
+
+
+func stop_note(note: int) -> void:
+	_driver.note_off(note)
