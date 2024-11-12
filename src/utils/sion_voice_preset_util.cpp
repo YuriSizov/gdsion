@@ -835,7 +835,7 @@ void SiONVoicePresetUtil::_create_percussive_voice(const String &p_key, const St
 		voice->set_default_gate_time(0);
 	} else {
 		// gate time != 0
-		SiOPMOperatorParams *op_params = voice->get_channel_params()->get_operator_params(0);
+		Ref<SiOPMOperatorParams> op_params = voice->get_channel_params()->get_operator_params(0);
 		op_params->set_decay_rate(p_release_rate);
 		op_params->set_sustain_rate(p_release_rate);
 		op_params->set_release_rate(p_release_rate);

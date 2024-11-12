@@ -157,8 +157,8 @@ void SiMMLRefTable::_dump_ym2413_register(const Ref<SiMMLVoice> &p_voice, uint32
 	channel_params->set_operator_count(2);
 	channel_params->set_algorithm(0);
 
-	SiOPMOperatorParams *op_params0 = channel_params->get_operator_params(0);
-	SiOPMOperatorParams *op_params1 = channel_params->get_operator_params(1);
+	Ref<SiOPMOperatorParams> op_params0 = channel_params->get_operator_params(0);
+	Ref<SiOPMOperatorParams> op_params1 = channel_params->get_operator_params(1);
 
 	op_params0->set_amplitude_modulation_shift(((p_u0 >> 31) & 1) << 1);
 	op_params1->set_amplitude_modulation_shift(((p_u0 >> 23) & 1) << 1);

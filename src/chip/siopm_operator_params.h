@@ -7,16 +7,15 @@
 #ifndef SIOPM_OPERATOR_PARAMS_H
 #define SIOPM_OPERATOR_PARAMS_H
 
-#include <godot_cpp/classes/object.hpp>
+#include <godot_cpp/classes/ref_counted.hpp>
 #include <godot_cpp/variant/string.hpp>
 #include "sion_enums.h"
 
 using namespace godot;
 
 // Operator parameters for SiONVoice.
-// FIXME: Should likely be RefCounted instead, just like channel params.
-class SiOPMOperatorParams : public Object {
-	GDCLASS(SiOPMOperatorParams, Object)
+class SiOPMOperatorParams : public RefCounted {
+	GDCLASS(SiOPMOperatorParams, RefCounted)
 
 	friend class SiOPMChannelParams;
 	friend class TranslatorUtil;
@@ -64,8 +63,7 @@ class SiOPMOperatorParams : public Object {
 	bool envelope_reset_on_attack = false;
 
 protected:
-	// TODO: Expose methods and properties for this class.
-	static void _bind_methods() {}
+	static void _bind_methods();
 
 	String _to_string() const;
 
@@ -123,7 +121,7 @@ public:
 	void set_envelope_reset_on_attack(bool p_reset) { envelope_reset_on_attack = p_reset; }
 
 	void initialize();
-	void copy_from(SiOPMOperatorParams *p_params);
+	void copy_from(const Ref<SiOPMOperatorParams> &p_params);
 
 	SiOPMOperatorParams();
 	~SiOPMOperatorParams() {}

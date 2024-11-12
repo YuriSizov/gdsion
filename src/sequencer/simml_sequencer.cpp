@@ -1710,7 +1710,7 @@ void SiMMLSequencer::_register_event_listeners() {
 }
 
 void SiMMLSequencer::_reset_initial_operator_params() {
-	SiOPMOperatorParams *op_params = _sound_chip->get_init_operator_params();
+	Ref<SiOPMOperatorParams> op_params = _sound_chip->get_init_operator_params();
 
 	op_params->set_attack_rate(63);
 	op_params->set_decay_rate(0);

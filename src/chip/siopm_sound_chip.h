@@ -10,17 +10,17 @@
 #include <godot_cpp/core/object.hpp>
 #include <godot_cpp/templates/list.hpp>
 #include <godot_cpp/templates/vector.hpp>
+#include "chip/siopm_operator_params.h"
 #include "templates/singly_linked_list.h"
 
 using namespace godot;
 
-class SiOPMOperatorParams;
 class SiOPMStream;
 
 class SiOPMSoundChip : public Object {
 	GDCLASS(SiOPMSoundChip, Object)
 
-	SiOPMOperatorParams *init_operator_params = nullptr;
+	Ref<SiOPMOperatorParams> init_operator_params;
 	SinglyLinkedList<int> *zero_buffer = nullptr;
 
 	SiOPMStream *output_stream = nullptr;
@@ -42,7 +42,7 @@ public:
 	static const int STREAM_SEND_SIZE = 8;
 	static const int PIPE_SIZE = 5;
 
-	SiOPMOperatorParams *get_init_operator_params() const { return init_operator_params; }
+	Ref<SiOPMOperatorParams> get_init_operator_params() const { return init_operator_params; }
 	SinglyLinkedList<int> *get_zero_buffer() const { return zero_buffer; }
 
 	SiOPMStream *get_output_stream() const { return output_stream; }

@@ -30,7 +30,7 @@ private:
 	MMLSequence *init_sequence = nullptr;
 
 	// This list is exactly MAX_OPERATORS at all times, use operator_count to read only valid values.
-	List<SiOPMOperatorParams *> operator_params;
+	List<Ref<SiOPMOperatorParams>> operator_params;
 	int operator_count = 0;
 	bool analog_like = false;
 
@@ -69,7 +69,7 @@ protected:
 public:
 	MMLSequence *get_init_sequence() const { return init_sequence; }
 
-	SiOPMOperatorParams *get_operator_params(int p_index);
+	Ref<SiOPMOperatorParams> get_operator_params(int p_index);
 	int get_operator_count() const { return operator_count; }
 	void set_operator_count(int p_value);
 	bool is_analog_like() const { return analog_like; }

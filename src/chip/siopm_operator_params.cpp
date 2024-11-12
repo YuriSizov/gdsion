@@ -50,7 +50,7 @@ void SiOPMOperatorParams::initialize() {
 	envelope_reset_on_attack = false;
 }
 
-void SiOPMOperatorParams::copy_from(SiOPMOperatorParams *p_params) {
+void SiOPMOperatorParams::copy_from(const Ref<SiOPMOperatorParams> &p_params) {
 	pulse_generator_type = p_params->pulse_generator_type;
 	pitch_table_type     = p_params->pitch_table_type;
 
@@ -104,6 +104,10 @@ String SiOPMOperatorParams::_to_string() const {
 	params += "reset=" + String(envelope_reset_on_attack ? "yes" : "no");
 
 	return "SiOPMOperatorParams: " + params;
+}
+
+void SiOPMOperatorParams::_bind_methods() {
+	// TODO: Expose methods and properties for this class.
 }
 
 SiOPMOperatorParams::SiOPMOperatorParams() {

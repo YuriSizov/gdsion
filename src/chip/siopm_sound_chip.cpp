@@ -82,7 +82,7 @@ void SiOPMSoundChip::_bind_methods() {
 }
 
 SiOPMSoundChip::SiOPMSoundChip() {
-	init_operator_params = memnew(SiOPMOperatorParams);
+	init_operator_params.instantiate();
 
 	output_stream = memnew(SiOPMStream);
 
@@ -96,7 +96,6 @@ SiOPMSoundChip::SiOPMSoundChip() {
 }
 
 SiOPMSoundChip::~SiOPMSoundChip() {
-	memdelete(init_operator_params);
 	memdelete(output_stream);
 
 	memdelete(zero_buffer);

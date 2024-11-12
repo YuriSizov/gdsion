@@ -437,7 +437,7 @@ void SiOPMOperator::set_pipes(SinglyLinkedList<int> *p_out_pipe, SinglyLinkedLis
 
 //
 
-void SiOPMOperator::set_operator_params(SiOPMOperatorParams *p_params) {
+void SiOPMOperator::set_operator_params(const Ref<SiOPMOperatorParams> &p_params) {
 	// Some code here is duplicated from respective setters to avoid calling them
 	// and triggering side effects. Modify with care.
 
@@ -480,7 +480,7 @@ void SiOPMOperator::set_operator_params(SiOPMOperatorParams *p_params) {
 	_update_pitch();
 }
 
-void SiOPMOperator::get_operator_params(SiOPMOperatorParams *r_params) {
+void SiOPMOperator::get_operator_params(const Ref<SiOPMOperatorParams> &r_params) {
 	r_params->set_pulse_generator_type(_pg_type);
 	r_params->set_pitch_table_type(_pt_type);
 

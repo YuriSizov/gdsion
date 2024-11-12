@@ -15,7 +15,7 @@
 
 using namespace godot;
 
-SiOPMOperatorParams *SiOPMChannelParams::get_operator_params(int p_index) {
+Ref<SiOPMOperatorParams> SiOPMChannelParams::get_operator_params(int p_index) {
 	ERR_FAIL_INDEX_V(p_index, operator_count, nullptr);
 
 	return operator_params[p_index];
@@ -109,7 +109,7 @@ void SiOPMChannelParams::set_by_opm_register(int p_channel, int p_address, int p
 		} else { // Operator parameter
 			int ops[4] = { 3, 1, 2, 0 };
 			int op_index = ops[(p_address >> 3) & 3];
-			SiOPMOperatorParams *op_params = operator_params[op_index];
+			Ref<SiOPMOperatorParams> op_params = operator_params[op_index];
 
 			switch ((p_address - 0x40) >> 5) {
 				case 0: { // DT1:6-4 MUL:3-0
@@ -361,9 +361,5 @@ SiOPMChannelParams::~SiOPMChannelParams() {
 	memdelete(init_sequence);
 	init_sequence = nullptr;
 
-	for (int i = 0; i < MAX_OPERATORS; i++) {
-		memdelete(operator_params[i]);
-		operator_params[i] = nullptr;
-	}
 	operator_params.clear();
 }

@@ -113,7 +113,7 @@ void TranslatorUtil::_set_siopm_params_by_array(const Ref<SiOPMChannelParams> &p
 
 	int data_index = 3;
 	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
-		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
+		Ref<SiOPMOperatorParams> op_params = p_params->operator_params[op_index];
 
 		op_params->set_pulse_generator_type    (_sanitize_param_loop(p_data[data_index++], 0, 511,  "WS"));       // 1
 		op_params->attack_rate                = _sanitize_param_loop(p_data[data_index++], 0, 63,   "AR");        // 2
@@ -153,7 +153,7 @@ void TranslatorUtil::_set_opl_params_by_array(const Ref<SiOPMChannelParams> &p_p
 
 	int data_index = 2;
 	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
-		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
+		Ref<SiOPMOperatorParams> op_params = p_params->operator_params[op_index];
 
 		int pg_type = SiONPulseGeneratorType::PULSE_MA3_SINE + _sanitize_param_loop(p_data[data_index++], 0, 31, "WS");
 		op_params->set_pulse_generator_type(pg_type);                                                                                  // 1
@@ -195,7 +195,7 @@ void TranslatorUtil::_set_opm_params_by_array(const Ref<SiOPMChannelParams> &p_p
 
 	int data_index = 2;
 	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
-		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
+		Ref<SiOPMOperatorParams> op_params = p_params->operator_params[op_index];
 
 		op_params->attack_rate               = (_sanitize_param_loop(p_data[data_index++], 0, 31, "AR") << 1);       // 1
 		op_params->decay_rate                = (_sanitize_param_loop(p_data[data_index++], 0, 31, "DR") << 1);       // 2
@@ -233,7 +233,7 @@ void TranslatorUtil::_set_opn_params_by_array(const Ref<SiOPMChannelParams> &p_p
 
 	int data_index = 2;
 	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
-		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
+		Ref<SiOPMOperatorParams> op_params = p_params->operator_params[op_index];
 
 		op_params->attack_rate                = (_sanitize_param_loop(p_data[data_index++], 0, 31, "AR") << 1);       // 1
 		op_params->decay_rate                 = (_sanitize_param_loop(p_data[data_index++], 0, 31, "DR") << 1);       // 2
@@ -269,7 +269,7 @@ void TranslatorUtil::_set_opx_params_by_array(const Ref<SiOPMChannelParams> &p_p
 
 	int data_index = 2;
 	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
-		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
+		Ref<SiOPMOperatorParams> op_params = p_params->operator_params[op_index];
 
 		// Standard supported values are in the [0-7] range. Values beyond that are supported for custom waves.
 		int wave_shape = p_data[data_index++];
@@ -315,7 +315,7 @@ void TranslatorUtil::_set_ma3_params_by_array(const Ref<SiOPMChannelParams> &p_p
 
 	int data_index = 2;
 	for (int op_index = 0; op_index < p_params->operator_count; op_index++) {
-		SiOPMOperatorParams *op_params = p_params->operator_params[op_index];
+		Ref<SiOPMOperatorParams> op_params = p_params->operator_params[op_index];
 
 		int pg_type = SiONPulseGeneratorType::PULSE_MA3_SINE + _sanitize_param_loop(p_data[data_index++], 0, 31, "WS");
 		op_params->set_pulse_generator_type(pg_type);                                                                     // 1
@@ -352,8 +352,8 @@ void TranslatorUtil::_set_al_params_by_array(const Ref<SiOPMChannelParams> &p_pa
 		p_params->algorithm = p_data[0];
 	}
 
-	SiOPMOperatorParams *op_params0 = p_params->operator_params[0];
-	SiOPMOperatorParams *op_params1 = p_params->operator_params[1];
+	Ref<SiOPMOperatorParams> op_params0 = p_params->operator_params[0];
+	Ref<SiOPMOperatorParams> op_params1 = p_params->operator_params[1];
 
 	op_params0->set_pulse_generator_type(_sanitize_param_loop(p_data[1], 0, 511, "W1"));
 	op_params1->set_pulse_generator_type(_sanitize_param_loop(p_data[2], 0, 511, "W2"));
@@ -515,7 +515,7 @@ Vector<int> TranslatorUtil::get_siopm_params(const Ref<SiOPMChannelParams> &p_pa
 	Vector<int> res = { p_params->algorithm, p_params->feedback, p_params->feedback_connection };
 
 	for (int i = 0; i < p_params->operator_count; i++) {
-		SiOPMOperatorParams *op_params = p_params->operator_params[i];
+		Ref<SiOPMOperatorParams> op_params = p_params->operator_params[i];
 		res.append_array({
 			op_params->pulse_generator_type,
 			op_params->attack_rate,
@@ -551,7 +551,7 @@ Vector<int> TranslatorUtil::get_opl_params(const Ref<SiOPMChannelParams> &p_para
 	Vector<int> res = { alg_index, p_params->feedback };
 
 	for (int i = 0; i < p_params->operator_count; i++) {
-		SiOPMOperatorParams *op_params = p_params->operator_params[i];
+		Ref<SiOPMOperatorParams> op_params = p_params->operator_params[i];
 
 		int wave_shape = _get_ma3_from_pg_type(op_params->pulse_generator_type, "#OPL@");
 		if (wave_shape == -1) {
@@ -592,7 +592,7 @@ Vector<int> TranslatorUtil::get_opm_params(const Ref<SiOPMChannelParams> &p_para
 	Vector<int> res = { alg_index, p_params->feedback };
 
 	for (int i = 0; i < p_params->operator_count; i++) {
-		SiOPMOperatorParams *op_params = p_params->operator_params[i];
+		Ref<SiOPMOperatorParams> op_params = p_params->operator_params[i];
 
 		int	detune2 = _get_nearest_dt2(op_params->detune);
 
@@ -628,7 +628,7 @@ Vector<int> TranslatorUtil::get_opn_params(const Ref<SiOPMChannelParams> &p_para
 	Vector<int> res = { alg_index, p_params->feedback };
 
 	for (int i = 0; i < p_params->operator_count; i++) {
-		SiOPMOperatorParams *op_params = p_params->operator_params[i];
+		Ref<SiOPMOperatorParams> op_params = p_params->operator_params[i];
 
 		res.append_array({
 			op_params->attack_rate >> 1,
@@ -660,7 +660,7 @@ Vector<int> TranslatorUtil::get_opx_params(const Ref<SiOPMChannelParams> &p_para
 	Vector<int> res = { alg_index, p_params->feedback };
 
 	for (int i = 0; i < p_params->operator_count; i++) {
-		SiOPMOperatorParams *op_params = p_params->operator_params[i];
+		Ref<SiOPMOperatorParams> op_params = p_params->operator_params[i];
 
 		int wave_shape = _get_ma3_from_pg_type(op_params->pulse_generator_type, "#OPX@");
 		if (wave_shape == -1) {
@@ -699,7 +699,7 @@ Vector<int> TranslatorUtil::get_ma3_params(const Ref<SiOPMChannelParams> &p_para
 	Vector<int> res = { alg_index, p_params->feedback };
 
 	for (int i = 0; i < p_params->operator_count; i++) {
-		SiOPMOperatorParams *op_params = p_params->operator_params[i];
+		Ref<SiOPMOperatorParams> op_params = p_params->operator_params[i];
 
 		int wave_shape = _get_ma3_from_pg_type(op_params->pulse_generator_type, "#MA@");
 		if (wave_shape == -1) {
@@ -732,8 +732,8 @@ Vector<int> TranslatorUtil::get_al_params(const Ref<SiOPMChannelParams> &p_param
 		return Vector<int>();
 	}
 
-	SiOPMOperatorParams *op_params0 = p_params->operator_params[0];
-	SiOPMOperatorParams *op_params1 = p_params->operator_params[1];
+	Ref<SiOPMOperatorParams> op_params0 = p_params->operator_params[0];
+	Ref<SiOPMOperatorParams> op_params1 = p_params->operator_params[1];
 
 	int level_balance = _balance_total_levels(op_params0->total_level, op_params1->total_level);
 
@@ -789,7 +789,7 @@ TranslatorUtil::OperatorParamsSizes TranslatorUtil::_get_operator_params_sizes(c
 	}
 
 	for (int i = 0; i < p_params->operator_count; i++) {
-		SiOPMOperatorParams *op_params = p_params->operator_params[i];
+		Ref<SiOPMOperatorParams> op_params = p_params->operator_params[i];
 
 		MAX_PARAM_SIZE(pg_type, op_params->pulse_generator_type)
 		MAX_PARAM_SIZE(total_level, op_params->total_level)
@@ -826,7 +826,7 @@ String TranslatorUtil::get_siopm_params_as_mml(const Ref<SiOPMChannelParams> &p_
 	OperatorParamsSizes sizes = _get_operator_params_sizes(p_params);
 
 	for (int i = 0; i < p_params->get_operator_count(); i++) {
-		SiOPMOperatorParams *op_params = p_params->get_operator_params(i);
+		Ref<SiOPMOperatorParams> op_params = p_params->get_operator_params(i);
 
 		mml += p_line_end;
 
@@ -879,7 +879,7 @@ String TranslatorUtil::get_opl_params_as_mml(const Ref<SiOPMChannelParams> &p_pa
 	// Operator parameters.
 
 	for (int i = 0; i < p_params->get_operator_count(); i++) {
-		SiOPMOperatorParams *op_params = p_params->get_operator_params(i);
+		Ref<SiOPMOperatorParams> op_params = p_params->get_operator_params(i);
 
 		int wave_shape = _get_ma3_from_pg_type(op_params->pulse_generator_type, "#OPL@");
 		if (wave_shape == -1) {
@@ -937,7 +937,7 @@ String TranslatorUtil::get_opm_params_as_mml(const Ref<SiOPMChannelParams> &p_pa
 	OperatorParamsSizes sizes = _get_operator_params_sizes(p_params);
 
 	for (int i = 0; i < p_params->get_operator_count(); i++) {
-		SiOPMOperatorParams *op_params = p_params->get_operator_params(i);
+		Ref<SiOPMOperatorParams> op_params = p_params->get_operator_params(i);
 
 		mml += p_line_end;
 
@@ -990,7 +990,7 @@ String TranslatorUtil::get_opn_params_as_mml(const Ref<SiOPMChannelParams> &p_pa
 	OperatorParamsSizes sizes = _get_operator_params_sizes(p_params);
 
 	for (int i = 0; i < p_params->get_operator_count(); i++) {
-		SiOPMOperatorParams *op_params = p_params->get_operator_params(i);
+		Ref<SiOPMOperatorParams> op_params = p_params->get_operator_params(i);
 
 		mml += p_line_end;
 
@@ -1039,7 +1039,7 @@ String TranslatorUtil::get_opx_params_as_mml(const Ref<SiOPMChannelParams> &p_pa
 	OperatorParamsSizes sizes = _get_operator_params_sizes(p_params);
 
 	for (int i = 0; i < p_params->get_operator_count(); i++) {
-		SiOPMOperatorParams *op_params = p_params->get_operator_params(i);
+		Ref<SiOPMOperatorParams> op_params = p_params->get_operator_params(i);
 
 		int wave_shape = _get_ma3_from_pg_type(op_params->pulse_generator_type, "#OPX@");
 		if (wave_shape == -1) {
@@ -1093,7 +1093,7 @@ String TranslatorUtil::get_ma3_params_as_mml(const Ref<SiOPMChannelParams> &p_pa
 	// Operator parameters.
 
 	for (int i = 0; i < p_params->get_operator_count(); i++) {
-		SiOPMOperatorParams *op_params = p_params->get_operator_params(i);
+		Ref<SiOPMOperatorParams> op_params = p_params->get_operator_params(i);
 
 		int wave_shape = _get_ma3_from_pg_type(op_params->pulse_generator_type, "#MA@");
 		if (wave_shape == -1) {
@@ -1129,8 +1129,8 @@ String TranslatorUtil::get_al_params_as_mml(const Ref<SiOPMChannelParams> &p_par
 		return "";
 	}
 
-	SiOPMOperatorParams *op_params0 = p_params->operator_params[0];
-	SiOPMOperatorParams *op_params1 = p_params->operator_params[1];
+	Ref<SiOPMOperatorParams> op_params0 = p_params->operator_params[0];
+	Ref<SiOPMOperatorParams> op_params1 = p_params->operator_params[1];
 
 	// Open MML string.
 	String mml = "{";
@@ -1732,7 +1732,7 @@ bool TranslatorUtil::parse_pcm_voice(const Ref<SiMMLVoice> &p_voice, String p_mm
 	int release_rate       = PARSE_ARGUMENT(9, 63);
 	int sustain_level      = PARSE_ARGUMENT(10, 0);
 
-	SiOPMOperatorParams *op_params = p_voice->get_channel_params()->operator_params[0];
+	Ref<SiOPMOperatorParams> op_params = p_voice->get_channel_params()->operator_params[0];
 	op_params->attack_rate = attack_rate;
 	op_params->decay_rate = decay_rate;
 	op_params->sustain_rate = sustain_rate;

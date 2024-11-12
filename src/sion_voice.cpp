@@ -302,7 +302,7 @@ void SiONVoice::set_analog_like(int p_connection_type, int p_wave_shape1, int p_
 
 void SiONVoice::set_envelope(int p_attack_rate, int p_decay_rate, int p_sustain_rate, int p_release_rate, int p_sustain_level, int p_total_level) {
 	for (int i = 0; i < channel_params->get_operator_count(); i++) {
-		SiOPMOperatorParams *op_params = channel_params->get_operator_params(i);
+		Ref<SiOPMOperatorParams> op_params = channel_params->get_operator_params(i);
 		op_params->set_attack_rate(p_attack_rate);
 		op_params->set_decay_rate(p_decay_rate);
 		op_params->set_sustain_rate(p_sustain_rate);
