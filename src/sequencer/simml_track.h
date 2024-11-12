@@ -277,7 +277,6 @@ public:
 
 	int get_pitch_bend() const { return _pitch_bend; }
 	void set_pitch_bend(int p_value);
-	void start_pitch_bending(int p_note_from, int p_tick_length);
 
 	int get_pitch_shift() const { return _pitch_shift; }
 	void set_pitch_shift(int p_value) { _pitch_shift = p_value; }
@@ -374,6 +373,7 @@ public:
 
 	void key_on(int p_note, int p_tick_length = 0, int p_sample_delay = 0);
 	void key_off(int p_sample_delay = 0, bool p_with_reset = false);
+	void bend_note(int p_to_note, int p_tick_length);
 
 	void sequence_on(const Ref<SiMMLData> &p_data, MMLSequence *p_sequence, int p_sample_length = 0, int p_sample_delay = 0);
 	void sequence_off(int p_sample_delay = 0, bool p_with_reset = false);

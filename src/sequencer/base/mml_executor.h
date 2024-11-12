@@ -58,7 +58,7 @@ public:
 	void reset_pointer();
 	void stop();
 	void execute_single_note(int p_note, int p_tick_length);
-	bool pitch_bend_from(int p_note, int p_tick_length);
+	void bend_single_note(int p_to_note, int p_tick_length);
 
 	MMLEvent *publish_processing_event(MMLEvent *p_event);
 

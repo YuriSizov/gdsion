@@ -123,10 +123,6 @@ void SiMMLTrack::set_pitch_bend(int p_value) {
 	_channel->set_pitch(_pitch_index + _pitch_bend);
 }
 
-void SiMMLTrack::start_pitch_bending(int p_note_from, int p_tick_length) {
-	_executor->pitch_bend_from(p_note_from, p_tick_length);
-}
-
 void SiMMLTrack::set_note_immediately(int p_note, int p_sample_length, bool p_slur) {
 	// Play with key off when quantize_ratio == 0 or p_sample_length != 0.
 	if (!p_slur && (_quantize_ratio == 0 || p_sample_length > 0)) {
@@ -850,6 +846,10 @@ void SiMMLTrack::key_off(int p_sample_delay, bool p_with_reset) {
 			_channel->reset();
 		}
 	}
+}
+
+void SiMMLTrack::bend_note(int p_to_note, int p_tick_length) {
+	_executor->bend_single_note(p_to_note, p_tick_length);
 }
 
 void SiMMLTrack::sequence_on(const Ref<SiMMLData> &p_data, MMLSequence *p_sequence, int p_sample_length, int p_sample_delay) {

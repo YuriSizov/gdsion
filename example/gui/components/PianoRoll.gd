@@ -33,7 +33,7 @@ func _init() -> void:
 func _ready() -> void:
 	_update_instrument()
 	_update_positions()
-	
+
 	if not Engine.is_editor_hint():
 		Controller.music_player.instrument_changed.connect(_update_instrument)
 
@@ -85,7 +85,7 @@ func _update_keys() -> void:
 	if is_drumkit:
 		var instrument := Controller.music_player.get_active_instrument()
 		var active_drumkit := Controller.voice_manager.get_drumkit(instrument.type)
-		
+
 		_keys.resize(active_drumkit.size)
 		for i in active_drumkit.size:
 			_keys[i] = i
@@ -118,7 +118,7 @@ func _update_keys() -> void:
 func _update_instrument() -> void:
 	if Engine.is_editor_hint():
 		return
-	
+
 	var instrument := Controller.music_player.get_active_instrument()
 	is_drumkit = instrument.type != 0
 
@@ -135,7 +135,7 @@ func _update_positions() -> void:
 
 	var active_drumkit: Drumkit = null
 	var normal_key_count := 0
-	
+
 	if is_drumkit:
 		var instrument := Controller.music_player.get_active_instrument()
 		active_drumkit = Controller.voice_manager.get_drumkit(instrument.type)
@@ -227,7 +227,7 @@ func _update_active_key(key: int) -> void:
 	var note_length := NOTE_LENGTH
 	if is_drumkit:
 		note_length = NOTE_LENGTH * 2
-	
+
 	Controller.music_player.play_note(_active_key, note_length)
 	queue_redraw()
 

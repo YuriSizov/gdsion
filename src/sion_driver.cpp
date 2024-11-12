@@ -664,10 +664,8 @@ void SiONDriver::resume() {
 	_is_paused = false;
 }
 
-SiMMLTrack *SiONDriver::play_sound(int p_sample_number, double p_length, double p_delay, double p_quant, int p_track_id, bool p_disposable) {
-	ERR_FAIL_COND_V_MSG(!_is_streaming, nullptr, "SiONDriver: Driver is not streaming, you must call SiONDriver.play() first.");
-	ERR_FAIL_COND_V_MSG(p_length < 0, nullptr, "SiONDriver: Sound length cannot be less than zero.");
-	ERR_FAIL_COND_V_MSG(p_delay < 0, nullptr, "SiONDriver: Sound delay cannot be less than zero.");
+SiMMLTrack *SiONDriver::_find_or_create_track(int p_track_id, double p_delay, double p_quant, bool p_disposable, int *r_delay_samples) {
+	ERR_FAIL_COND_V_MSG(p_delay < 0, nullptr, "SiONDriver: Playback delay cannot be less than zero.");
 
 	int internal_track_id = (p_track_id & SiMMLTrack::TRACK_ID_FILTER) | SiMMLTrack::DRIVER_NOTE;
 	double delay_samples = sequencer->calculate_sample_delay(0, p_delay, p_quant);
@@ -691,14 +689,29 @@ SiMMLTrack *SiONDriver::play_sound(int p_sample_number, double p_length, double 
 		}
 	}
 
-	if (!track) {
-		track = sequencer->create_controllable_track(internal_track_id, p_disposable);
-	}
+	*r_delay_samples = delay_samples;
 
 	if (track) {
-		track->set_channel_module_type(SiONModuleType::MODULE_SAMPLE, 0);
-		track->key_on(p_sample_number, _convert_event_length(p_length), delay_samples);
+		return track;
 	}
+
+	track = sequencer->create_controllable_track(internal_track_id, p_disposable);
+	ERR_FAIL_NULL_V_MSG(track, nullptr, "SiONDriver: Failed to allocate a track for playback. Pushing the limits?");
+	return track;
+}
+
+SiMMLTrack *SiONDriver::sample_on(int p_sample_number, double p_length, double p_delay, double p_quant, int p_track_id, bool p_disposable) {
+	ERR_FAIL_COND_V_MSG(!_is_streaming, nullptr, "SiONDriver: Driver is not streaming, you must call SiONDriver.play() first.");
+	ERR_FAIL_COND_V_MSG(p_length < 0, nullptr, "SiONDriver: Sample length cannot be less than zero.");
+
+	int delay_samples = 0;
+	SiMMLTrack *track = _find_or_create_track(p_delay, p_quant, p_track_id, p_disposable, &delay_samples);
+	if (!track) {
+		return nullptr;
+	}
+
+	track->set_channel_module_type(SiONModuleType::MODULE_SAMPLE, 0);
+	track->key_on(p_sample_number, _convert_event_length(p_length), delay_samples);
 
 	return track;
 }
@@ -706,40 +719,37 @@ SiMMLTrack *SiONDriver::play_sound(int p_sample_number, double p_length, double 
 SiMMLTrack *SiONDriver::note_on(int p_note, const Ref<SiONVoice> &p_voice, double p_length, double p_delay, double p_quant, int p_track_id, bool p_disposable) {
 	ERR_FAIL_COND_V_MSG(!_is_streaming, nullptr, "SiONDriver: Driver is not streaming, you must call SiONDriver.play() first.");
 	ERR_FAIL_COND_V_MSG(p_length < 0, nullptr, "SiONDriver: Note length cannot be less than zero.");
-	ERR_FAIL_COND_V_MSG(p_delay < 0, nullptr, "SiONDriver: Note delay cannot be less than zero.");
 
-	int internal_track_id = (p_track_id & SiMMLTrack::TRACK_ID_FILTER) | SiMMLTrack::DRIVER_NOTE;
-	double delay_samples = sequencer->calculate_sample_delay(0, p_delay, p_quant);
-
-	SiMMLTrack *track = nullptr;
-
-	// Check track ID conflicts.
-	if (_note_on_exception_mode != NEM_IGNORE) {
-		// Find a track with the same sound timings.
-		track = sequencer->find_active_track(internal_track_id, delay_samples);
-
-		if (track && _note_on_exception_mode == NEM_REJECT) {
-			return nullptr;
-		}
-		if (track && _note_on_exception_mode == NEM_SHIFT) {
-			int step = sequencer->calculate_sample_length(p_quant);
-			while (track) {
-				delay_samples += step;
-				track = sequencer->find_active_track(internal_track_id, delay_samples);
-			}
-		}
-	}
-
+	int delay_samples = 0;
+	SiMMLTrack *track = _find_or_create_track(p_delay, p_quant, p_track_id, p_disposable, &delay_samples);
 	if (!track) {
-		track = sequencer->create_controllable_track(internal_track_id, p_disposable);
+		return nullptr;
 	}
 
-	if (track) {
-		if (p_voice.is_valid()) {
-			p_voice->update_track_voice(track);
-		}
-		track->key_on(p_note, _convert_event_length(p_length), delay_samples);
+	if (p_voice.is_valid()) {
+		p_voice->update_track_voice(track);
 	}
+	track->key_on(p_note, _convert_event_length(p_length), delay_samples);
+
+	return track;
+}
+
+SiMMLTrack *SiONDriver::note_on_with_bend(int p_note, int p_note_to, double p_bend_length, const Ref<SiONVoice> &p_voice, double p_length, double p_delay, double p_quant, int p_track_id, bool p_disposable) {
+	ERR_FAIL_COND_V_MSG(!_is_streaming, nullptr, "SiONDriver: Driver is not streaming, you must call SiONDriver.play() first.");
+	ERR_FAIL_COND_V_MSG(p_length < 0, nullptr, "SiONDriver: Note length cannot be less than zero.");
+	ERR_FAIL_COND_V_MSG(p_bend_length < 0, nullptr, "SiONDriver: Pitch bending length cannot be less than zero.");
+
+	int delay_samples = 0;
+	SiMMLTrack *track = _find_or_create_track(p_delay, p_quant, p_track_id, p_disposable, &delay_samples);
+	if (!track) {
+		return nullptr;
+	}
+
+	if (p_voice.is_valid()) {
+		p_voice->update_track_voice(track);
+	}
+	track->key_on(p_note, _convert_event_length(p_length), delay_samples);
+	track->bend_note(p_note_to, _convert_event_length(p_bend_length));
 
 	return track;
 }
@@ -749,7 +759,7 @@ TypedArray<SiMMLTrack> SiONDriver::note_off(int p_note, int p_track_id, double p
 	ERR_FAIL_COND_V_MSG(p_delay < 0, TypedArray<SiMMLTrack>(), "SiONDriver: Note off delay cannot be less than zero.");
 
 	int internal_track_id = (p_track_id & SiMMLTrack::TRACK_ID_FILTER) | SiMMLTrack::DRIVER_NOTE;
-	double delay_samples = sequencer->calculate_sample_delay(0, p_delay, p_quant);
+	int delay_samples = sequencer->calculate_sample_delay(0, p_delay, p_quant);
 
 	TypedArray<SiMMLTrack> tracks;
 	for (SiMMLTrack *track : sequencer->get_tracks()) {
@@ -776,7 +786,7 @@ TypedArray<SiMMLTrack> SiONDriver::sequence_on(const Ref<SiONData> &p_data, cons
 	ERR_FAIL_COND_V_MSG(p_delay < 0, TypedArray<SiMMLTrack>(), "SiONDriver: Sequence delay cannot be less than zero.");
 
 	int internal_track_id = (p_track_id & SiMMLTrack::TRACK_ID_FILTER) | SiMMLTrack::DRIVER_SEQUENCE;
-	double delay_samples = sequencer->calculate_sample_delay(0, p_delay, p_quant);
+	int delay_samples = sequencer->calculate_sample_delay(0, p_delay, p_quant);
 	int length_samples = sequencer->calculate_sample_length(p_length);
 
 	TypedArray<SiMMLTrack> tracks;
@@ -785,10 +795,13 @@ TypedArray<SiMMLTrack> SiONDriver::sequence_on(const Ref<SiONData> &p_data, cons
 	while (sequence) {
 		if (sequence->is_active()) {
 			SiMMLTrack *track =	sequencer->create_controllable_track(internal_track_id, p_disposable);
+			ERR_FAIL_NULL_V_MSG(track, tracks, "SiONDriver: Failed to allocate a track for playback. Pushing the limits?");
+
 			track->sequence_on(p_data, sequence, length_samples, delay_samples);
 			if (p_voice.is_valid()) {
 				p_voice->update_track_voice(track);
 			}
+
 			tracks.push_back(track);
 		}
 
@@ -802,7 +815,7 @@ TypedArray<SiMMLTrack> SiONDriver::sequence_off(int p_track_id, double p_delay, 
 	ERR_FAIL_COND_V_MSG(p_delay < 0, TypedArray<SiMMLTrack>(), "SiONDriver: Sequence off delay cannot be less than zero.");
 
 	int internal_track_id = (p_track_id & SiMMLTrack::TRACK_ID_FILTER) | SiMMLTrack::DRIVER_SEQUENCE;
-	double delay_samples = sequencer->calculate_sample_delay(0, p_delay, p_quant);
+	int delay_samples = sequencer->calculate_sample_delay(0, p_delay, p_quant);
 
 	TypedArray<SiMMLTrack> tracks;
 	for (SiMMLTrack *track : sequencer->get_tracks()) {
@@ -1320,9 +1333,11 @@ void SiONDriver::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("pause"), &SiONDriver::pause);
 	ClassDB::bind_method(D_METHOD("resume"), &SiONDriver::resume);
 
-	ClassDB::bind_method(D_METHOD("play_sound", "sample_number", "length", "delay", "quantize", "track_id", "disposable"), &SiONDriver::play_sound, DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("sample_on", "sample_number", "length", "delay", "quantize", "track_id", "disposable"), &SiONDriver::sample_on, DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(true));
 	ClassDB::bind_method(D_METHOD("note_on", "note", "voice", "length", "delay", "quantize", "track_id", "disposable"), &SiONDriver::note_on, DEFVAL((Object *)nullptr), DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("note_on_with_bend", "note", "note_to", "bend_length", "voice", "length", "delay", "quantize", "track_id", "disposable"), &SiONDriver::note_on_with_bend, DEFVAL((Object *)nullptr), DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(true));
 	ClassDB::bind_method(D_METHOD("note_off", "note", "track_id", "delay", "quantize", "stop_immediately"), &SiONDriver::note_off, DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(false));
+
 	ClassDB::bind_method(D_METHOD("sequence_on", "data", "voice", "length", "delay", "quantize", "track_id", "disposable"), &SiONDriver::sequence_on, DEFVAL((Object *)nullptr), DEFVAL(0), DEFVAL(0), DEFVAL(1), DEFVAL(0), DEFVAL(true));
 	ClassDB::bind_method(D_METHOD("sequence_off", "track_id", "delay", "quantize", "stop_with_reset"), &SiONDriver::sequence_off, DEFVAL(0), DEFVAL(1), DEFVAL(false));
 

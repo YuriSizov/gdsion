@@ -63,32 +63,28 @@ void MMLExecutor::execute_single_note(int p_note, int p_tick_length) {
 	_current_tick_count = 0;
 }
 
-bool MMLExecutor::pitch_bend_from(int p_note, int p_tick_length) {
+void MMLExecutor::bend_single_note(int p_to_note, int p_tick_length) {
 	if (_pointer != _note_event || p_tick_length == 0) {
-		return false;
+		return;
 	}
 
 	int tick_length = p_tick_length;
-	if (_note_event->get_length() != 0) {
-		// SUS: This check and following adjustments seem inconsistent to me.
-		// If the note event has length, but the bend event is shorter than that, we
-		// make the bend event almost as long as the note event, and make the note
-		// event one tick long.
-		// However, if the bend event is longer than the note event, then we keep it
-		// as is, and make the note event shorter by the bend event's length, meaning
-		// that the note event now has negative length.
-		if (tick_length < _note_event->get_length()) {
+	if (_note_event->get_length() > 0) {
+		// Bending cannot last longer than the note. But the trailing note
+		// must play for at least 1 tick.
+		if (tick_length > _note_event->get_length()) {
 			tick_length = _note_event->get_length() - 1;
 		}
 		_note_event->set_length(_note_event->get_length() - tick_length);
 	}
 
 	_bend_from_event->set_length(0);
-	_bend_from_event->set_data(p_note);
+	_bend_from_event->set_data(_note_event->get_data());
 	_bend_event->set_length(tick_length);
+	_note_event->set_data(p_to_note);
 	_pointer = _bend_from_event;
 
-	return true;
+	return;
 }
 
 MMLEvent *MMLExecutor::publish_processing_event(MMLEvent *p_event) {

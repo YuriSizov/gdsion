@@ -163,6 +163,8 @@ private:
 	// Send the CHANGE_BPM event when position changes.
 	bool _notify_change_bpm_on_position_changed = true;
 
+	SiMMLTrack *_find_or_create_track(int p_track_id, double p_delay, double p_quant, bool p_disposable, int *r_delay_samples);
+
 	void _update_volume();
 	void _fade_callback(double p_value);
 
@@ -384,9 +386,11 @@ public:
 	void pause();
 	void resume();
 
-	SiMMLTrack *play_sound(int p_sample_number, double p_length = 0, double p_delay = 0, double p_quant = 0, int p_track_id = 0, bool p_disposable = true);
+	SiMMLTrack *sample_on(int p_sample_number, double p_length = 0, double p_delay = 0, double p_quant = 0, int p_track_id = 0, bool p_disposable = true);
 	SiMMLTrack *note_on(int p_note, const Ref<SiONVoice> &p_voice = Ref<SiONVoice>(), double p_length = 0, double p_delay = 0, double p_quant = 0, int p_track_id = 0, bool p_disposable = true);
+	SiMMLTrack *note_on_with_bend(int p_note, int p_note_to, double p_bend_length, const Ref<SiONVoice> &p_voice = Ref<SiONVoice>(), double p_length = 0, double p_delay = 0, double p_quant = 0, int p_track_id = 0, bool p_disposable = true);
 	TypedArray<SiMMLTrack> note_off(int p_note, int p_track_id = 0, double p_delay = 0, double p_quant = 0, bool p_stop_immediately = false);
+
 	TypedArray<SiMMLTrack> sequence_on(const Ref<SiONData> &p_data, const Ref<SiONVoice> &p_voice = Ref<SiONVoice>(), double p_length = 0, double p_delay = 0, double p_quant = 1, int p_track_id = 0, bool p_disposable = true);
 	TypedArray<SiMMLTrack> sequence_off(int p_track_id, double p_delay = 0, double p_quant = 1, bool p_stop_with_reset = false);
 
