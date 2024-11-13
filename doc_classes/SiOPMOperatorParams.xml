@@ -60,7 +60,7 @@
 			Release rate of the pulse.
 		</member>
 		<member name="ssg_envelope_control" type="int" setter="set_ssg_envelope_control" getter="get_ssg_envelope_control">
-			Type of the SSG envelope control. This features uses the ADSR envelope to create a wave shape as the final envelope. The exact nature of the effect depends on this value.
+			Type of the SSG envelope control. This features uses the ADSR envelope to create a wave shape as the final envelope. Must be one of the [enum SSGEnvelopeControl] values, or another value in the valid range.
 		</member>
 		<member name="sustain_level" type="int" setter="set_sustain_level" getter="get_sustain_level">
 			Sustain level of the pulse.
@@ -72,4 +72,42 @@
 			Total level of the pulse.
 		</member>
 	</members>
+	<constants>
+		<constant name="SSG_DISABLED" value="0" enum="SSGEnvelopeControl">
+			SSG envelope control is disabled. Values [code]0[/code] through [code]7[/code] all mean that.
+		</constant>
+		<constant name="SSG_REPEAT_TO_ZERO" value="8" enum="SSGEnvelopeControl">
+			Repeat the ADSR envelope upon the volume reaching zero.
+		</constant>
+		<constant name="SSG_IGNORE" value="9" enum="SSGEnvelopeControl">
+			SSG envelope control is enabled, but the ADSR envelope is executed as is.
+		</constant>
+		<constant name="SSG_REPEAT_SHUTTLE" value="10" enum="SSGEnvelopeControl">
+			Repeat the ADSR envelope forward and backward, reversing the direction when the volume reaches zero or maximum.
+		</constant>
+		<constant name="SSG_ONCE_HOLD_HIGH" value="11" enum="SSGEnvelopeControl">
+			Execute the ADSR envelope as is, then stay at the maximum volume.
+		</constant>
+		<constant name="SSG_REPEAT_TO_MAX" value="12" enum="SSGEnvelopeControl">
+			Same as [constant SSG_REPEAT_TO_ZERO], but the direction is inverted.
+		</constant>
+		<constant name="SSG_INVERSE" value="13" enum="SSGEnvelopeControl">
+			Same as [constant SSG_IGNORE], but the direction is inverted.
+		</constant>
+		<constant name="SSG_REPEAT_SHUTTLE_INVERSE" value="14" enum="SSGEnvelopeControl">
+			Same as [constant SSG_REPEAT_SHUTTLE], but the direction is inverted.
+		</constant>
+		<constant name="SSG_ONCE_HOLD_LOW" value="15" enum="SSGEnvelopeControl">
+			Same as [constant SSG_ONCE_HOLD_HIGH], but the direction is inverted.
+		</constant>
+		<constant name="SSG_CONSTANT_HIGH" value="16" enum="SSGEnvelopeControl">
+			Custom mode that holds at the maximum volume throughout.
+		</constant>
+		<constant name="SSG_CONSTANT_LOW" value="17" enum="SSGEnvelopeControl">
+			Custom mode that holds at the zero volume throughout.
+		</constant>
+		<constant name="SSG_MAX" value="18" enum="SSGEnvelopeControl">
+			Total number of available SSG envelope control modes.
+		</constant>
+	</constants>
 </class>

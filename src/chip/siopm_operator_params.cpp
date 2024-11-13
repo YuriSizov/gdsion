@@ -22,6 +22,16 @@ void SiOPMOperatorParams::set_multiple(int p_value) {
 	fine_multiple = (p_value == 0 ? 64 : (p_value << 7));
 }
 
+void SiOPMOperatorParams::set_ssg_envelope_control(int p_value) {
+	if (p_value >= SSGEnvelopeControl::SSG_MAX) {
+		ssg_envelope_control = SSGEnvelopeControl::SSG_IGNORE;
+	} else if (p_value < SSGEnvelopeControl::SSG_REPEAT_TO_ZERO) {
+		ssg_envelope_control = SSGEnvelopeControl::SSG_DISABLED;
+	} else {
+		ssg_envelope_control = p_value;
+	}
+}
+
 void SiOPMOperatorParams::initialize() {
 	pulse_generator_type = SiONPulseGeneratorType::PULSE_SINE;
 	pitch_table_type = SiONPitchTableType::PITCH_TABLE_OPM;
@@ -45,7 +55,7 @@ void SiOPMOperatorParams::initialize() {
 	fixed_pitch = 0;
 
 	mute = false;
-	ssg_envelope_control = 0;
+	ssg_envelope_control = SSG_DISABLED;
 	frequency_modulation_level = 5;
 	envelope_reset_on_attack = false;
 }
@@ -183,6 +193,19 @@ void SiOPMOperatorParams::_bind_methods() {
 	ClassDB::add_property("SiOPMOperatorParams", PropertyInfo(Variant::INT, "ssg_envelope_control"), "set_ssg_envelope_control", "get_ssg_envelope_control");
 	ClassDB::add_property("SiOPMOperatorParams", PropertyInfo(Variant::INT, "frequency_modulation_level"), "set_frequency_modulation_level", "get_frequency_modulation_level");
 	ClassDB::add_property("SiOPMOperatorParams", PropertyInfo(Variant::BOOL, "envelope_reset_on_attack"), "set_envelope_reset_on_attack", "is_envelope_reset_on_attack");
+
+	BIND_ENUM_CONSTANT(SSG_DISABLED);
+	BIND_ENUM_CONSTANT(SSG_REPEAT_TO_ZERO);
+	BIND_ENUM_CONSTANT(SSG_IGNORE);
+	BIND_ENUM_CONSTANT(SSG_REPEAT_SHUTTLE);
+	BIND_ENUM_CONSTANT(SSG_ONCE_HOLD_HIGH);
+	BIND_ENUM_CONSTANT(SSG_REPEAT_TO_MAX);
+	BIND_ENUM_CONSTANT(SSG_INVERSE);
+	BIND_ENUM_CONSTANT(SSG_REPEAT_SHUTTLE_INVERSE);
+	BIND_ENUM_CONSTANT(SSG_ONCE_HOLD_LOW);
+	BIND_ENUM_CONSTANT(SSG_CONSTANT_HIGH);
+	BIND_ENUM_CONSTANT(SSG_CONSTANT_LOW);
+	BIND_ENUM_CONSTANT(SSG_MAX);
 }
 
 SiOPMOperatorParams::SiOPMOperatorParams() {

@@ -182,13 +182,13 @@ public:
 		/*16*/      { 1,1, 1,1, 1,1, 1,1 },  /* rates 15 0, 15 1, 15 2, 15 3 (increment by 8) */
 		/*17*/      { 0,0, 0,0, 0,0, 0,0 }   /* infinity rates for attack and decay(s) */
 	};
-	// EG table selector.
-	int eg_table_selector[128]; // 128 = 64 rates + 32 ks-rates + 32 dummies for dr,sr=0
-	// EG timer step.
-	int eg_timer_steps[128]; // 128 = 64 rates + 32 ks-rates + 32 dummies for dr,sr=0
+	// EG table selector. 128 = 64 rates + 32 ks-rates + 32 dummies for dr,sr=0
+	int eg_table_selector[128];
+	// EG timer step. 128 = 64 rates + 32 ks-rates + 32 dummies for dr,sr=0
+	int eg_timer_steps[128];
 	// EG table to calculate EG level tables.
 	int eg_level_tables[7][1 << ENV_BITS];
-	// EG table for SSG-type to EG level tables index.
+	// EG table for SSG-type to EG level tables index. 10 = 8 standard + 2 extra.
 	int eg_ssg_table_index[10][2][3] = {
 		// [w/ ar], [w/o ar]
 		{  {3,3,3}, {1,3,3}  },   // ssgec=8
@@ -199,8 +199,9 @@ public:
 		{  {2,5,5}, {2,5,5}  },   // ssgec=13
 		{  {1,2,1}, {2,1,2}  },   // ssgec=14
 		{  {1,6,6}, {2,6,6}  },   // ssgec=15
-		{  {1,1,1}, {1,1,1}  },   // ssgec=8+
-		{  {2,2,2}, {2,2,2}  }    // ssgec=12+
+
+		{  {1,1,1}, {1,1,1}  },   // ssgec=16
+		{  {2,2,2}, {2,2,2}  }    // ssgec=17
 	};
 	// EG sustain level table from 15 to 1024.
 	int eg_sustain_level_table[16];

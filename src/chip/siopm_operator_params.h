@@ -20,6 +20,30 @@ class SiOPMOperatorParams : public RefCounted {
 	friend class SiOPMChannelParams;
 	friend class TranslatorUtil;
 
+public:
+	// Explanations sourced from https://mml-guide.readthedocs.io/pmd/ssgeg/.
+	enum SSGEnvelopeControl {
+		SSG_DISABLED = 0, // Values 0-7 mean it's disabled.
+
+		SSG_REPEAT_TO_ZERO = 8,  // Repeats the ADSR envelope upon the volume reaching 0.
+		SSG_IGNORE         = 9,  // As if SSG-EG was disabled, though it is enabled.
+		SSG_REPEAT_SHUTTLE = 10, // Repeats the ADSR envelope forward and backward, reversing the direction when the volume reaches zero or maximum.
+		SSG_ONCE_HOLD_HIGH = 11, // Uses the ADSR envelope, then stays at the maximum volume.
+
+		// Same as above 4, but inverted (volume 0 is maximum, and vice versa).
+		SSG_REPEAT_TO_MAX          = 12,
+		SSG_INVERSE                = 13,
+		SSG_REPEAT_SHUTTLE_INVERSE = 14,
+		SSG_ONCE_HOLD_LOW          = 15,
+
+		// These are not standard, not exactly sure about their purpose.
+		SSG_CONSTANT_HIGH = 16,
+		SSG_CONSTANT_LOW  = 17,
+
+		SSG_MAX
+	};
+
+private:
 	// Pulse generator type [0,511]
 	int pulse_generator_type = SiONPulseGeneratorType::PULSE_SINE;
 	// Pitch table type [0,7]
@@ -113,7 +137,7 @@ public:
 	bool is_mute() const { return mute; }
 	void set_mute(bool p_mute) { mute = p_mute; }
 	int get_ssg_envelope_control() const { return ssg_envelope_control; }
-	void set_ssg_envelope_control(int p_value) { ssg_envelope_control = p_value; }
+	void set_ssg_envelope_control(int p_value);
 	int get_frequency_modulation_level() const { return frequency_modulation_level; }
 	void set_frequency_modulation_level(int p_value) { frequency_modulation_level = p_value; }
 	bool is_envelope_reset_on_attack() const { return envelope_reset_on_attack; }
@@ -125,5 +149,7 @@ public:
 	SiOPMOperatorParams();
 	~SiOPMOperatorParams() {}
 };
+
+VARIANT_ENUM_CAST(SiOPMOperatorParams::SSGEnvelopeControl);
 
 #endif // SIOPM_OPERATOR_PARAMS_H
