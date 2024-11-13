@@ -201,7 +201,7 @@ void SiOPMChannelPCM::set_fixed_pitch(int p_value) {
 }
 
 void SiOPMChannelPCM::set_ssg_envelope_control(int p_value) {
-	_operator->set_ssg_type_envelope_control(p_value);
+	_operator->set_ssg_type(p_value);
 }
 
 void SiOPMChannelPCM::set_envelope_reset(bool p_reset) {

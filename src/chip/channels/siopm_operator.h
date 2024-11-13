@@ -78,7 +78,8 @@ private:
 
 	// Mute [0 / SiOPMRefTable::ENV_BOTTOM].
 	int _mute = 0;
-	int _ssg_type_envelope_control = 0;
+	// SSG-type envelope control [0,17].
+	int _ssg_type = 0;
 	bool _envelope_reset_on_attack = false;
 
 	void _update_key_code(int p_value);
@@ -223,8 +224,8 @@ public:
 	bool is_mute() const;
 	void set_mute(bool p_mute);
 
-	int get_ssg_type_envelope_control() const { return _ssg_type_envelope_control; }
-	void set_ssg_type_envelope_control(int p_value);
+	int get_ssg_type() const { return _ssg_type; }
+	void set_ssg_type(int p_value);
 
 	bool is_envelope_reset_on_attack() const { return _envelope_reset_on_attack; }
 	void set_envelope_reset_on_attack(bool p_reset) { _envelope_reset_on_attack = p_reset; }

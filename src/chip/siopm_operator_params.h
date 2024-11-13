@@ -50,7 +50,7 @@ class SiOPMOperatorParams : public RefCounted {
 	// Detune 2 [0,...]
 	int detune2 = 0;
 
-	// Amp modulation shift [0-3]
+	// Amp modulation shift [0,3]
 	int amplitude_modulation_shift = 0;
 	// Initial phase [0,255]. 255 means no phase reset.
 	int initial_phase = 0;
@@ -58,7 +58,8 @@ class SiOPMOperatorParams : public RefCounted {
 	int fixed_pitch = 0;
 
 	bool mute = false;
-	int ssg_type_envelope_control = 0;
+	// SSG-type envelope control [0,17].
+	int ssg_envelope_control = 0;
 	// Frequency modulation level [0,7]. 5 means standard modulation.
 	int frequency_modulation_level = 5;
 	bool envelope_reset_on_attack = false;
@@ -111,8 +112,8 @@ public:
 
 	bool is_mute() const { return mute; }
 	void set_mute(bool p_mute) { mute = p_mute; }
-	int get_ssg_type_envelope_control() const { return ssg_type_envelope_control; }
-	void set_ssg_type_envelope_control(int p_value) { ssg_type_envelope_control = p_value; }
+	int get_ssg_envelope_control() const { return ssg_envelope_control; }
+	void set_ssg_envelope_control(int p_value) { ssg_envelope_control = p_value; }
 	int get_frequency_modulation_level() const { return frequency_modulation_level; }
 	void set_frequency_modulation_level(int p_value) { frequency_modulation_level = p_value; }
 	bool is_envelope_reset_on_attack() const { return envelope_reset_on_attack; }

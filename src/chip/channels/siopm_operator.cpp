@@ -25,7 +25,7 @@ const int SiOPMOperator::_eg_next_state_table[2][EG_MAX] = {
 void SiOPMOperator::set_attack_rate(int p_value) {
 	_attack_rate = p_value & 63;
 
-	if (_ssg_type_envelope_control == 8 || _ssg_type_envelope_control == 12) {
+	if (_ssg_type == 8 || _ssg_type == 12) {
 		_eg_ssgec_attack_rate = (_attack_rate >= 56) ? 1 : 0;
 	} else {
 		_eg_ssgec_attack_rate = (_attack_rate >= 60) ? 1 : 0;
@@ -151,16 +151,16 @@ void SiOPMOperator::set_mute(bool p_mute) {
 	_update_total_level();
 }
 
-void SiOPMOperator::set_ssg_type_envelope_control(int p_value) {
+void SiOPMOperator::set_ssg_type(int p_value) {
 	if (p_value > 7) {
 		_eg_state_table_index = 1;
-		_ssg_type_envelope_control = p_value;
-		if (_ssg_type_envelope_control > 17) {
-			_ssg_type_envelope_control = 9;
+		_ssg_type = p_value;
+		if (_ssg_type > 17) {
+			_ssg_type = 9;
 		}
 	} else {
 		_eg_state_table_index = 0;
-		_ssg_type_envelope_control = 0;
+		_ssg_type = 0;
 	}
 }
 
@@ -315,7 +315,7 @@ void SiOPMOperator::_shift_eg_state(EGState p_state) {
 			if (_eg_sustain_level) {
 				_eg_state = EG_DECAY;
 
-				if (_ssg_type_envelope_control != 0) {
+				if (_ssg_type != 0) {
 					_eg_level = 0;
 
 					_eg_state_shift_level = _eg_sustain_level >> 2;
@@ -323,7 +323,7 @@ void SiOPMOperator::_shift_eg_state(EGState p_state) {
 						_eg_state_shift_level = SiOPMRefTable::ENV_BOTTOM_SSGEC;
 					}
 
-					int level_index = _table->eg_ssg_table_index[_ssg_type_envelope_control - 8][_eg_ssgec_attack_rate][_eg_ssgec_state];
+					int level_index = _table->eg_ssg_table_index[_ssg_type - 8][_eg_ssgec_attack_rate][_eg_ssgec_state];
 					_eg_level_table = make_vector<int>(_table->eg_level_tables[level_index]);
 				} else {
 					_eg_level = 0;
@@ -342,11 +342,11 @@ void SiOPMOperator::_shift_eg_state(EGState p_state) {
 		case EG_SUSTAIN: {
 			_eg_state = EG_SUSTAIN;
 
-			if (_ssg_type_envelope_control != 0) {
+			if (_ssg_type != 0) {
 				_eg_level = _eg_sustain_level >> 2;
 				_eg_state_shift_level = SiOPMRefTable::ENV_BOTTOM_SSGEC;
 
-				int level_index = _table->eg_ssg_table_index[_ssg_type_envelope_control - 8][_eg_ssgec_attack_rate][_eg_ssgec_state];
+				int level_index = _table->eg_ssg_table_index[_ssg_type - 8][_eg_ssgec_attack_rate][_eg_ssgec_state];
 				_eg_level_table = make_vector<int>(_table->eg_level_tables[level_index]);
 			} else {
 				_eg_level = _eg_sustain_level;
@@ -363,7 +363,7 @@ void SiOPMOperator::_shift_eg_state(EGState p_state) {
 			if (_eg_level < SiOPMRefTable::ENV_BOTTOM) {
 				_eg_state = EG_RELEASE;
 				_eg_state_shift_level = SiOPMRefTable::ENV_BOTTOM;
-				_eg_level_table = make_vector<int>(_table->eg_level_tables[_ssg_type_envelope_control != 0 ? 1 : 0]);
+				_eg_level_table = make_vector<int>(_table->eg_level_tables[_ssg_type != 0 ? 1 : 0]);
 
 				int index = _release_rate + _eg_key_scale_rate;
 				_eg_increment_table = make_vector<int>(_table->eg_increment_tables[_table->eg_table_selector[index]]);
@@ -462,7 +462,7 @@ void SiOPMOperator::set_operator_params(const Ref<SiOPMOperatorParams> &p_params
 	_pitch_index_shift = p_params->get_detune2();
 
 	_mute = p_params->is_mute() ? SiOPMRefTable::ENV_BOTTOM : 0;
-	_ssg_type_envelope_control = p_params->get_ssg_type_envelope_control();
+	_ssg_type = p_params->get_ssg_envelope_control();
 	_envelope_reset_on_attack = p_params->is_envelope_reset_on_attack();
 
 	if (p_params->get_fixed_pitch() > 0) {
@@ -498,7 +498,7 @@ void SiOPMOperator::get_operator_params(const Ref<SiOPMOperatorParams> &r_params
 	r_params->set_detune2(get_ptss_detune());
 	r_params->set_amplitude_modulation_shift(get_amplitude_modulation_shift());
 
-	r_params->set_ssg_type_envelope_control(_ssg_type_envelope_control);
+	r_params->set_ssg_envelope_control(_ssg_type);
 	r_params->set_envelope_reset_on_attack(is_envelope_reset_on_attack());
 
 	r_params->set_initial_phase(get_key_on_phase());
@@ -611,7 +611,7 @@ String SiOPMOperator::_to_string() const {
 	params += "phase=" + itos(get_key_on_phase()) + ", ";
 	params += "note=" + String(is_pitch_fixed() ? "yes" : "no") + ", ";
 
-	params += "ssg=" + itos(_ssg_type_envelope_control) + ", ";
+	params += "ssgec=" + itos(_ssg_type) + ", ";
 	params += "mute=" + itos(_mute) + ", ";
 	params += "reset=" + String(_envelope_reset_on_attack ? "yes" : "no");
 

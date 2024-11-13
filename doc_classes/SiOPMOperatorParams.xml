@@ -4,8 +4,72 @@
 		Container for processing operator parameters within [SiOPMChannelParams].
 	</brief_description>
 	<description>
-		[b]Warning:[/b] This class currently has no intended use in the API. If you need this class and its unexposed methods in your project, please [b][url=https://github.com/YuriSizov/gdsion/issues]create a feature request with your use case[/url][/b]!
 	</description>
 	<tutorials>
 	</tutorials>
+	<members>
+		<member name="amplitude_modulation_shift" type="int" setter="set_amplitude_modulation_shift" getter="get_amplitude_modulation_shift">
+			Modulation shift for the amplitude.
+		</member>
+		<member name="attack_rate" type="int" setter="set_attack_rate" getter="get_attack_rate">
+			Attack rate of the pulse.
+		</member>
+		<member name="decay_rate" type="int" setter="set_decay_rate" getter="get_decay_rate">
+			Decay rate of the pulse.
+		</member>
+		<member name="detune1" type="int" setter="set_detune1" getter="get_detune1">
+			First detune factor of the pulse.
+		</member>
+		<member name="detune2" type="int" setter="set_detune2" getter="get_detune2">
+			Second detune factor of the pulse, typicaly a detune for pTSS.
+		</member>
+		<member name="envelope_reset_on_attack" type="bool" setter="set_envelope_reset_on_attack" getter="is_envelope_reset_on_attack">
+			Flag that enables envelope reset on attack.
+		</member>
+		<member name="fine_multiple" type="int" setter="set_fine_multiple" getter="get_fine_multiple">
+			Fine multiple factor.
+		</member>
+		<member name="fixed_pitch" type="int" setter="set_fixed_pitch" getter="get_fixed_pitch">
+			Fixed pitch value for the pulse. This makes the operator ignore the pitch/note played with the owner voice.
+		</member>
+		<member name="frequency_modulation_level" type="int" setter="set_frequency_modulation_level" getter="get_frequency_modulation_level">
+			Level for the frequency modulation. Value of [code]5[/code] means standard modulation.
+		</member>
+		<member name="initial_phase" type="int" setter="set_initial_phase" getter="get_initial_phase">
+			Initial phase of the pulse.
+		</member>
+		<member name="key_scaling_level" type="int" setter="set_key_scaling_level" getter="get_key_scaling_level">
+			Level for the key scaling.
+		</member>
+		<member name="key_scaling_rate" type="int" setter="set_key_scaling_rate" getter="get_key_scaling_rate">
+			Rate of the key scaling.
+		</member>
+		<member name="multiple" type="int" setter="set_multiple" getter="get_multiple">
+			Multiple factor.
+		</member>
+		<member name="mute" type="bool" setter="set_mute" getter="is_mute">
+			Mute flag.
+		</member>
+		<member name="pitch_table_type" type="int" setter="set_pitch_table_type" getter="get_pitch_table_type" enum="SiONPitchTableType">
+			Type of the pitch table used by the pulse.
+		</member>
+		<member name="pulse_generator_type" type="int" setter="set_pulse_generator_type" getter="get_pulse_generator_type">
+			Type of the pulse generator. Must be one of the [enum SiONPulseGeneratorType] values, or another value in the valid range.
+		</member>
+		<member name="release_rate" type="int" setter="set_release_rate" getter="get_release_rate">
+			Release rate of the pulse.
+		</member>
+		<member name="ssg_envelope_control" type="int" setter="set_ssg_envelope_control" getter="get_ssg_envelope_control">
+			Type of the SSG envelope control. This features uses the ADSR envelope to create a wave shape as the final envelope. The exact nature of the effect depends on this value.
+		</member>
+		<member name="sustain_level" type="int" setter="set_sustain_level" getter="get_sustain_level">
+			Sustain level of the pulse.
+		</member>
+		<member name="sustain_rate" type="int" setter="set_sustain_rate" getter="get_sustain_rate">
+			Sustain rate of the pulse. Allows for the pulse to change while being sustained.
+		</member>
+		<member name="total_level" type="int" setter="set_total_level" getter="get_total_level">
+			Total level of the pulse.
+		</member>
+	</members>
 </class>

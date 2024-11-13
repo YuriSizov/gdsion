@@ -188,7 +188,7 @@ public:
 	int eg_timer_steps[128]; // 128 = 64 rates + 32 ks-rates + 32 dummies for dr,sr=0
 	// EG table to calculate EG level tables.
 	int eg_level_tables[7][1 << ENV_BITS];
-	// EG table from sgg_type to eg_level_tables index.
+	// EG table for SSG-type to EG level tables index.
 	int eg_ssg_table_index[10][2][3] = {
 		// [w/ ar], [w/o ar]
 		{  {3,3,3}, {1,3,3}  },   // ssgec=8
@@ -200,7 +200,7 @@ public:
 		{  {1,2,1}, {2,1,2}  },   // ssgec=14
 		{  {1,6,6}, {2,6,6}  },   // ssgec=15
 		{  {1,1,1}, {1,1,1}  },   // ssgec=8+
-		{  {2,2,2}, {2,2,2}  }   // ssgec=12+
+		{  {2,2,2}, {2,2,2}  }    // ssgec=12+
 	};
 	// EG sustain level table from 15 to 1024.
 	int eg_sustain_level_table[16];
