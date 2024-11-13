@@ -45,9 +45,10 @@ class SiOPMOperatorParams : public RefCounted {
 
 	// Fine multiple [0,...]
 	int fine_multiple = 0;
-	// dt1 [0,7]
+	// Detune 1 [0,7]
 	int detune1 = 0;
-	int detune = 0;
+	// Detune 2 [0,...]
+	int detune2 = 0;
 
 	// Amp modulation shift [0-3]
 	int amplitude_modulation_shift = 0;
@@ -98,8 +99,8 @@ public:
 	void set_multiple(int p_value);
 	int get_detune1() const { return detune1; }
 	void set_detune1(int p_value) { detune1 = p_value; }
-	int get_detune() const { return detune; }
-	void set_detune(int p_value) { detune = p_value; }
+	int get_detune2() const { return detune2; }
+	void set_detune2(int p_value) { detune2 = p_value; }
 
 	int get_amplitude_modulation_shift() const { return amplitude_modulation_shift; }
 	void set_amplitude_modulation_shift(int p_value) { amplitude_modulation_shift = p_value; }
@@ -110,13 +111,10 @@ public:
 
 	bool is_mute() const { return mute; }
 	void set_mute(bool p_mute) { mute = p_mute; }
-
 	int get_ssg_type_envelope_control() const { return ssg_type_envelope_control; }
 	void set_ssg_type_envelope_control(int p_value) { ssg_type_envelope_control = p_value; }
-
 	int get_frequency_modulation_level() const { return frequency_modulation_level; }
 	void set_frequency_modulation_level(int p_value) { frequency_modulation_level = p_value; }
-
 	bool is_envelope_reset_on_attack() const { return envelope_reset_on_attack; }
 	void set_envelope_reset_on_attack(bool p_reset) { envelope_reset_on_attack = p_reset; }
 

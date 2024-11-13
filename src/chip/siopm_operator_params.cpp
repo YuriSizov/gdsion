@@ -38,7 +38,7 @@ void SiOPMOperatorParams::initialize() {
 
 	fine_multiple = 128;
 	detune1 = 0;
-	detune = 0;
+	detune2 = 0;
 
 	amplitude_modulation_shift = 0;
 	initial_phase = 0;
@@ -66,7 +66,7 @@ void SiOPMOperatorParams::copy_from(const Ref<SiOPMOperatorParams> &p_params) {
 
 	fine_multiple = p_params->fine_multiple;
 	detune1       = p_params->detune1;
-	detune        = p_params->detune;
+	detune2       = p_params->detune2;
 
 	amplitude_modulation_shift = p_params->amplitude_modulation_shift;
 	initial_phase              = p_params->initial_phase;
@@ -93,7 +93,7 @@ String SiOPMOperatorParams::_to_string() const {
 
 	params += "keyscale=(" + itos(key_scaling_rate) + ", " + itos(key_scaling_level) + "), ";
 	params += "fmul=" + itos(fine_multiple) + ", ";
-	params += "detune=(" + itos(detune1) + ", " + itos(detune) + "), ";
+	params += "detune=(" + itos(detune1) + ", " + itos(detune2) + "), ";
 
 	params += "amp=" + itos(amplitude_modulation_shift) + ", ";
 	params += "phase=" + itos(initial_phase) + ", ";

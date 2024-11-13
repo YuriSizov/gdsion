@@ -126,7 +126,7 @@ void TranslatorUtil::_set_siopm_params_by_array(const Ref<SiOPMChannelParams> &p
 		op_params->key_scaling_level          = _sanitize_param_loop(p_data[data_index++], 0, 3,    "KL");        // 9
 		op_params->set_multiple                (_sanitize_param_loop(p_data[data_index++], 0, 15,   "ML"));       // 10
 		op_params->detune1                    = _sanitize_param_loop(p_data[data_index++], 0, 7,    "D1");        // 11
-		op_params->detune                     = p_data[data_index++];                                             // 12
+		op_params->detune2                    = p_data[data_index++];                                             // 12
 		op_params->amplitude_modulation_shift = _sanitize_param_loop(p_data[data_index++], 0, 3,    "D2");        // 13
 		op_params->initial_phase              = _sanitize_param_loop(p_data[data_index++], -1, 255, "PH");        // 14
 		op_params->fixed_pitch                = (_sanitize_param_loop(p_data[data_index++], 0, 127, "FN")) << 6;  // 15
@@ -208,7 +208,7 @@ void TranslatorUtil::_set_opm_params_by_array(const Ref<SiOPMChannelParams> &p_p
 		op_params->detune1                   = _sanitize_param_loop(p_data[data_index++], 0, 7,   "D1");             // 9
 
 		int n = _sanitize_param_loop(p_data[data_index++], 0, 3, "D2");
-		op_params->detune = SiOPMRefTable::get_instance()->dt2_table[n];                                             // 10
+		op_params->detune2 = SiOPMRefTable::get_instance()->dt2_table[n];                                            // 10
 		op_params->amplitude_modulation_shift = _sanitize_param_loop(p_data[data_index++], 0, 3, "AM");              // 11
 	}
 }
@@ -290,7 +290,7 @@ void TranslatorUtil::_set_opx_params_by_array(const Ref<SiOPMChannelParams> &p_p
 		op_params->key_scaling_rate           = _sanitize_param_loop(p_data[data_index++], 0, 3,   "KR");             // 8
 		op_params->set_multiple                (_sanitize_param_loop(p_data[data_index++], 0, 15,  "ML"));            // 9
 		op_params->detune1                    = _sanitize_param_loop(p_data[data_index++], 0, 7,   "D1");             // 10
-		op_params->detune                     = p_data[data_index++];                                                 // 11
+		op_params->detune2                    = p_data[data_index++];                                                 // 11
 		op_params->amplitude_modulation_shift = _sanitize_param_loop(p_data[data_index++], 0, 3,   "AM");             // 12
 	}
 }
@@ -363,8 +363,8 @@ void TranslatorUtil::_set_al_params_by_array(const Ref<SiOPMChannelParams> &p_pa
 	op_params0->total_level = tl_table[64 - balance];
 	op_params1->total_level = tl_table[balance + 64];
 
-	op_params0->detune = 0;
-	op_params1->detune = p_data[4];
+	op_params0->detune2 = 0;
+	op_params1->detune2 = p_data[4];
 
 	op_params0->attack_rate   = _sanitize_param_loop(p_data[5], 0, 63, "AR");
 	op_params0->decay_rate    = _sanitize_param_loop(p_data[6], 0, 63, "DR");
@@ -528,7 +528,7 @@ Vector<int> TranslatorUtil::get_siopm_params(const Ref<SiOPMChannelParams> &p_pa
 			op_params->key_scaling_level,
 			op_params->get_multiple(),
 			op_params->detune1,
-			op_params->detune,
+			op_params->detune2,
 			op_params->amplitude_modulation_shift,
 			op_params->initial_phase,
 			op_params->fixed_pitch >> 6
@@ -594,7 +594,7 @@ Vector<int> TranslatorUtil::get_opm_params(const Ref<SiOPMChannelParams> &p_para
 	for (int i = 0; i < p_params->operator_count; i++) {
 		Ref<SiOPMOperatorParams> op_params = p_params->operator_params[i];
 
-		int	detune2 = _get_nearest_dt2(op_params->detune);
+		int	detune2 = _get_nearest_dt2(op_params->detune2);
 
 		res.append_array({
 			op_params->attack_rate >> 1,
@@ -678,7 +678,7 @@ Vector<int> TranslatorUtil::get_opx_params(const Ref<SiOPMChannelParams> &p_para
 			op_params->key_scaling_rate,
 			op_params->get_multiple(),
 			op_params->detune1,
-			op_params->detune,
+			op_params->detune2,
 			op_params->amplitude_modulation_shift
 		});
 	}
@@ -742,7 +742,7 @@ Vector<int> TranslatorUtil::get_al_params(const Ref<SiOPMChannelParams> &p_param
 		op_params0->pulse_generator_type,
 		op_params1->pulse_generator_type,
 		level_balance,
-		op_params1->detune,
+		op_params1->detune2,
 		op_params0->attack_rate,
 		op_params0->decay_rate,
 		op_params0->sustain_level,
@@ -791,10 +791,10 @@ TranslatorUtil::OperatorParamsSizes TranslatorUtil::_get_operator_params_sizes(c
 	for (int i = 0; i < p_params->operator_count; i++) {
 		Ref<SiOPMOperatorParams> op_params = p_params->operator_params[i];
 
-		MAX_PARAM_SIZE(pg_type, op_params->pulse_generator_type)
+		MAX_PARAM_SIZE(pg_type,     op_params->pulse_generator_type)
 		MAX_PARAM_SIZE(total_level, op_params->total_level)
-		MAX_PARAM_SIZE(detune, op_params->detune)
-		MAX_PARAM_SIZE(phase, op_params->initial_phase)
+		MAX_PARAM_SIZE(detune2,     op_params->detune2)
+		MAX_PARAM_SIZE(phase,       op_params->initial_phase)
 		MAX_PARAM_SIZE(fixed_pitch, op_params->fixed_pitch >> 6)
 	}
 
@@ -841,7 +841,7 @@ String TranslatorUtil::get_siopm_params_as_mml(const Ref<SiOPMChannelParams> &p_
 		mml += _format_mml_digit(op_params->key_scaling_level)                    + p_separator;
 		mml += _format_mml_digit(op_params->get_multiple(), 2)                    + p_separator;
 		mml += _format_mml_digit(op_params->detune1)                              + p_separator;
-		mml += _format_mml_digit(op_params->detune, sizes.detune)                 + p_separator;
+		mml += _format_mml_digit(op_params->detune2, sizes.detune2)               + p_separator;
 		mml += _format_mml_digit(op_params->amplitude_modulation_shift)           + p_separator;
 		mml += _format_mml_digit(op_params->initial_phase, sizes.phase)           + p_separator;
 		mml += _format_mml_digit(op_params->fixed_pitch >> 6, sizes.fixed_pitch);
@@ -951,7 +951,7 @@ String TranslatorUtil::get_opm_params_as_mml(const Ref<SiOPMChannelParams> &p_pa
 		mml += _format_mml_digit(op_params->get_multiple(), 2)              + p_separator;
 		mml += _format_mml_digit(op_params->detune1)                        + p_separator;
 
-		int	detune2 = _get_nearest_dt2(op_params->detune);
+		int	detune2 = _get_nearest_dt2(op_params->detune2);
 		mml += _format_mml_digit(detune2)                                   + p_separator;
 		mml += _format_mml_digit(op_params->amplitude_modulation_shift);
 	}
@@ -1058,7 +1058,7 @@ String TranslatorUtil::get_opx_params_as_mml(const Ref<SiOPMChannelParams> &p_pa
 		mml += _format_mml_digit(op_params->key_scaling_level)              + p_separator;
 		mml += _format_mml_digit(op_params->get_multiple(), 2)              + p_separator;
 		mml += _format_mml_digit(op_params->detune1)                        + p_separator;
-		mml += _format_mml_digit(op_params->detune, sizes.detune)           + p_separator;
+		mml += _format_mml_digit(op_params->detune2, sizes.detune2)         + p_separator;
 		mml += _format_mml_digit(op_params->amplitude_modulation_shift);
 	}
 
@@ -1143,7 +1143,7 @@ String TranslatorUtil::get_al_params_as_mml(const Ref<SiOPMChannelParams> &p_par
 
 	int balanced_levels = _balance_total_levels(op_params0->total_level, op_params1->total_level);
 	mml += _format_mml_digit(balanced_levels)                  + p_separator;
-	mml += _format_mml_digit(op_params1->detune)               + p_separator;
+	mml += _format_mml_digit(op_params1->detune2)              + p_separator;
 
 	// Custom comment message.
 

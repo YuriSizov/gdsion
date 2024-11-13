@@ -129,8 +129,8 @@ void SiOPMChannelParams::set_by_opm_register(int p_channel, int p_address, int p
 				} break;
 				case 4: { // DT2:76 SR:4-0
 					int options[4] = { 0, 384, 500, 608 };
-					op_params->detune = options[(p_data >> 6) & 3];
-					op_params->sustain_rate   = (p_data & 31) << 1;
+					op_params->detune2 = options[(p_data >> 6) & 3];
+					op_params->sustain_rate    = (p_data & 31) << 1;
 				} break;
 				case 5: { // SL:7-4 RR:3-0
 					op_params->sustain_level = (p_data >> 4) & 15;

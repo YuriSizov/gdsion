@@ -88,7 +88,7 @@ void SiOPMChannelPCM::set_channel_params(const Ref<SiOPMChannelParams> &p_params
 	_operator->set_operator_params(p_params->get_operator_params(0));
 }
 
-void SiOPMChannelPCM::set_params_by_value(int p_ar, int p_dr, int p_sr, int p_rr, int p_sl, int p_tl, int p_ksr, int p_ksl, int p_mul, int p_dt1, int p_detune, int p_ams, int p_phase, int p_fix_note) {
+void SiOPMChannelPCM::set_params_by_value(int p_ar, int p_dr, int p_sr, int p_rr, int p_sl, int p_tl, int p_ksr, int p_ksl, int p_mul, int p_dt1, int p_dt2, int p_ams, int p_phase, int p_fix_note) {
 #define SET_OP_PARAM(m_setter, m_value) \
 	if (m_value != INT32_MIN) {         \
 		_operator->m_setter(m_value);   \
@@ -103,8 +103,8 @@ void SiOPMChannelPCM::set_params_by_value(int p_ar, int p_dr, int p_sr, int p_rr
 	SET_OP_PARAM(set_key_scaling_rate,           p_ksr);
 	SET_OP_PARAM(set_key_scaling_level,          p_ksl);
 	SET_OP_PARAM(set_multiple,                   p_mul);
-	SET_OP_PARAM(set_dt1,                        p_dt1);
-	SET_OP_PARAM(set_detune,                     p_detune);
+	SET_OP_PARAM(set_detune1,                    p_dt1);
+	SET_OP_PARAM(set_ptss_detune,                p_dt2);
 	SET_OP_PARAM(set_amplitude_modulation_shift, p_ams);
 	SET_OP_PARAM(set_key_on_phase,               p_phase);
 
@@ -193,7 +193,7 @@ void SiOPMChannelPCM::set_phase(int p_value) {
 }
 
 void SiOPMChannelPCM::set_detune(int p_value) {
-	_operator->set_detune(p_value);
+	_operator->set_ptss_detune(p_value);
 }
 
 void SiOPMChannelPCM::set_fixed_pitch(int p_value) {
@@ -249,7 +249,7 @@ void SiOPMChannelPCM::initialize_lfo(int p_waveform, Vector<int> p_custom_wave_t
 	_pitch_modulation_output_level = 0;
 
 	_pcm_table = Ref<SiOPMWavePCMTable>();
-	_operator->set_detune2(0);
+	_operator->set_pm_detune(0);
 }
 
 void SiOPMChannelPCM::set_amplitude_modulation(int p_depth) {
@@ -266,7 +266,7 @@ void SiOPMChannelPCM::set_pitch_modulation(int p_depth) {
 	_set_lfo_state(_pitch_modulation_depth != 0 || _amplitude_modulation_depth > 0);
 
 	if (_pitch_modulation_depth == 0) {
-		_operator->set_detune2(0);
+		_operator->set_pm_detune(0);
 	}
 }
 
@@ -291,7 +291,7 @@ void SiOPMChannelPCM::_update_lfo() {
 	_amplitude_modulation_output_level = (value_base * _amplitude_modulation_depth) >> 7 << 3;
 	_pitch_modulation_output_level = (((value_base << 1) - 255) * _pitch_modulation_depth) >> 8;
 
-	_operator->set_detune2(_pitch_modulation_output_level);
+	_operator->set_pm_detune(_pitch_modulation_output_level);
 
 	_lfo_timer += _lfo_timer_initial;
 }

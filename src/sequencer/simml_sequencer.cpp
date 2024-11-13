@@ -1722,7 +1722,7 @@ void SiMMLSequencer::_reset_initial_operator_params() {
 	op_params->set_key_scaling_level(0);
 	op_params->set_fine_multiple(128);
 	op_params->set_detune1(0);
-	op_params->set_detune(0);
+	op_params->set_detune2(0);
 	op_params->set_amplitude_modulation_shift(1);
 	op_params->set_initial_phase(0);
 	op_params->set_fixed_pitch(0);

@@ -65,12 +65,12 @@ private:
 	int _key_scaling_rate = 0;
 	// Key scaling level [0,3].
 	int _key_scaling_level = 0;
-	// _multiple = (mul ? (mul << 7) : 64); [64,128,256,384,512...].
-	int _multiple = 0;
-	// dt1 [0,7].
-	int _dt1 = 0;
-	// dt2 [0,3]. This value is linked with _pitch_index_shift.
-	int _dt2 = 0;
+	// Fine multiple [64,128,256,384,512...].
+	int _fine_multiple = 0;
+	// Raw detune1 [0,7].
+	int _detune1 = 0;
+	// Raw detune2 [0,3].
+	int _detune2 = 0;
 	// Amp modulation shift [16,0].
 	int _amplitude_modulation_shift = 0;
 	// Key code = oct << 4 + note [0,127].
@@ -104,9 +104,9 @@ private:
 
 	// Pitch index = note * 64 + key fraction.
 	int _pitch_index = 0;
-	// This value is linked with dt2 and detune.
+	// Detune for pTSS. 1 halftone divides into 64 steps.
 	int _pitch_index_shift = 0;
-	// Pitch index shift by pitch modulation. This value is linked with dt2.
+	// Detune for pitch modulation.
 	int _pitch_index_shift2 = 0;
 	// Frequency modulation left-shift. 15 for FM, fb+6 for feedback.
 	int _fm_shift = 0;
@@ -202,14 +202,14 @@ public:
 	void set_multiple(int p_value);
 
 	// Fine multiple for pTSS. 128=x1.
-	int get_fine_multiple() const { return _multiple; }
+	int get_fine_multiple() const { return _fine_multiple; }
 	void set_fine_multiple(int p_value);
 
-	int get_dt1() const { return _dt1; }
-	void set_dt1(int p_value);
+	int get_detune1() const { return _detune1; }
+	void set_detune1(int p_value);
 
-	int get_dt2() const { return _dt2; }
-	void set_dt2(int p_value);
+	int get_detune2() const { return _detune2; }
+	void set_detune2(int p_value);
 
 	bool is_amplitude_modulation_enabled() const;
 	void set_amplitude_modulation_enabled(bool p_enabled);
@@ -251,12 +251,10 @@ public:
 	// Setting to 0 disables the pitch fixed flag.
 	void set_fixed_pitch_index(int p_value);
 
-	// Detune for pTSS. 1 halftone divides into 64 steps.
-	int get_detune() const { return _pitch_index_shift; }
-	void set_detune(int p_value);
-	// Detune for pitch modulation.
-	int get_detune2() const { return _pitch_index_shift2; }
-	void set_detune2(int p_value);
+	int get_ptss_detune() const { return _pitch_index_shift; }
+	void set_ptss_detune(int p_value);
+	int get_pm_detune() const { return _pitch_index_shift2; }
+	void set_pm_detune(int p_value);
 
 	int get_fm_shift() const { return _fm_shift; }
 

@@ -155,7 +155,7 @@ void SiOPMChannelFM::set_channel_params(const Ref<SiOPMChannelParams> &p_params,
 	}
 }
 
-void SiOPMChannelFM::set_params_by_value(int p_ar, int p_dr, int p_sr, int p_rr, int p_sl, int p_tl, int p_ksr, int p_ksl, int p_mul, int p_dt1, int p_detune, int p_ams, int p_phase, int p_fix_note) {
+void SiOPMChannelFM::set_params_by_value(int p_ar, int p_dr, int p_sr, int p_rr, int p_sl, int p_tl, int p_ksr, int p_ksl, int p_mul, int p_dt1, int p_dt2, int p_ams, int p_phase, int p_fix_note) {
 #define SET_OP_PARAM(m_setter, m_value)      \
 	if (m_value != INT32_MIN) {              \
 		_active_operator->m_setter(m_value); \
@@ -170,8 +170,8 @@ void SiOPMChannelFM::set_params_by_value(int p_ar, int p_dr, int p_sr, int p_rr,
 	SET_OP_PARAM(set_key_scaling_rate,           p_ksr);
 	SET_OP_PARAM(set_key_scaling_level,          p_ksl);
 	SET_OP_PARAM(set_multiple,                   p_mul);
-	SET_OP_PARAM(set_dt1,                        p_dt1);
-	SET_OP_PARAM(set_detune,                     p_detune);
+	SET_OP_PARAM(set_detune1,                    p_dt1);
+	SET_OP_PARAM(set_ptss_detune,                p_dt2);
 	SET_OP_PARAM(set_amplitude_modulation_shift, p_ams);
 	SET_OP_PARAM(set_key_on_phase,               p_phase);
 
@@ -293,7 +293,7 @@ void SiOPMChannelFM::_set_by_opm_register(int p_address, int p_data) {
 
 			switch ((p_address - 0x40) >> 5) {
 				case 0: { // DT1:6-4 MUL:3-0
-					op->set_dt1((p_data >> 4) & 7);
+					op->set_detune1((p_data >> 4) & 7);
 					op->set_multiple(p_data & 15);
 				} break;
 				case 1: { // TL:6-0
@@ -309,7 +309,7 @@ void SiOPMChannelFM::_set_by_opm_register(int p_address, int p_data) {
 				} break;
 				case 4: { // DT2:76 SR:4-0
 					int options[4] = { 0, 384, 500, 608 };
-					op->set_detune(options[(p_data >> 6) & 3]);
+					op->set_ptss_detune(options[(p_data >> 6) & 3]);
 					op->set_sustain_rate((p_data & 31) << 1);
 				} break;
 				case 5: { // SL:7-4 RR:3-0
@@ -655,7 +655,7 @@ void SiOPMChannelFM::set_phase(int p_value) {
 }
 
 void SiOPMChannelFM::set_detune(int p_value) {
-	_active_operator->set_detune(p_value);
+	_active_operator->set_ptss_detune(p_value);
 }
 
 void SiOPMChannelFM::set_fixed_pitch(int p_value) {
@@ -725,7 +725,7 @@ void SiOPMChannelFM::initialize_lfo(int p_waveform, Vector<int> p_custom_wave_ta
 
 	for (SiOPMOperator *op : _operators) {
 		if (op) {
-			op->set_detune2(0);
+			op->set_pm_detune(0);
 		}
 	}
 }
@@ -746,7 +746,7 @@ void SiOPMChannelFM::set_pitch_modulation(int p_depth) {
 	if (_pitch_modulation_depth == 0) {
 		for (SiOPMOperator *op : _operators) {
 			if (op) {
-				op->set_detune2(0);
+				op->set_pm_detune(0);
 			}
 		}
 	}
@@ -767,16 +767,16 @@ void SiOPMChannelFM::_update_lfo(int p_op_count) {
 	_pitch_modulation_output_level = (((value_base << 1) - 255) * _pitch_modulation_depth) >> 8;
 
 	if (p_op_count > 0 && _operators[0]) {
-		_operators[0]->set_detune2(_pitch_modulation_output_level);
+		_operators[0]->set_pm_detune(_pitch_modulation_output_level);
 	}
 	if (p_op_count > 1 && _operators[1]) {
-		_operators[1]->set_detune2(_pitch_modulation_output_level);
+		_operators[1]->set_pm_detune(_pitch_modulation_output_level);
 	}
 	if (p_op_count > 2 && _operators[2]) {
-		_operators[2]->set_detune2(_pitch_modulation_output_level);
+		_operators[2]->set_pm_detune(_pitch_modulation_output_level);
 	}
 	if (p_op_count > 3 && _operators[3]) {
-		_operators[3]->set_detune2(_pitch_modulation_output_level);
+		_operators[3]->set_pm_detune(_pitch_modulation_output_level);
 	}
 
 	_lfo_timer += _lfo_timer_initial;

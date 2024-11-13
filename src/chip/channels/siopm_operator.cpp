@@ -90,23 +90,23 @@ void SiOPMOperator::set_key_scaling_level(int p_value, bool p_silent) {
 }
 
 int SiOPMOperator::get_multiple() const {
-	return (_multiple >> 7);
+	return (_fine_multiple >> 7);
 }
 
 void SiOPMOperator::set_multiple(int p_value) {
 	int multiple = p_value & 15;
-	_multiple = (multiple != 0) ? (multiple << 7) : 64;
+	_fine_multiple = (multiple != 0) ? (multiple << 7) : 64;
 	_update_pitch();
 }
 
-void SiOPMOperator::set_dt1(int p_value) {
-	_dt1 = p_value & 7;
+void SiOPMOperator::set_detune1(int p_value) {
+	_detune1 = p_value & 7;
 	_update_pitch();
 }
 
-void SiOPMOperator::set_dt2(int p_value) {
-	_dt2 = p_value & 3;
-	_pitch_index_shift = _table->dt2_table[_dt2];
+void SiOPMOperator::set_detune2(int p_value) {
+	_detune2 = p_value & 3;
+	_pitch_index_shift = _table->dt2_table[_detune2];
 	_update_pitch();
 }
 
@@ -173,8 +173,8 @@ void SiOPMOperator::_update_pitch() {
 
 void SiOPMOperator::_update_phase_step(int p_step) {
 	_phase_step = p_step;
-	_phase_step += _table->dt1_table[_dt1][_key_code];
-	_phase_step *= _multiple;
+	_phase_step += _table->dt1_table[_detune1][_key_code];
+	_phase_step *= _fine_multiple;
 	_phase_step >>= (7 - _table->sample_rate_pitch_shift);  // 44kHz:1/128, 22kHz:1/256
 }
 
@@ -222,19 +222,19 @@ void SiOPMOperator::set_pitch_index(int p_value)
 	_update_pitch();
 }
 
-void SiOPMOperator::set_detune(int p_value) {
-	_dt2 = 0;
+void SiOPMOperator::set_ptss_detune(int p_value) {
+	_detune2 = 0;
 	_pitch_index_shift = p_value;
 	_update_pitch();
 }
 
-void SiOPMOperator::set_detune2(int p_value) {
+void SiOPMOperator::set_pm_detune(int p_value) {
 	_pitch_index_shift2 = p_value;
 	_update_pitch();
 }
 
 void SiOPMOperator::set_fine_multiple(int p_value) {
-	_multiple = p_value;
+	_fine_multiple = p_value;
 	_update_pitch();
 }
 
@@ -276,7 +276,7 @@ void SiOPMOperator::set_key_fraction(int p_value) {
 void SiOPMOperator::set_fnumber(int p_value) {
 	// Naive implementation.
 	_update_key_code((p_value >> 7) & 127);
-	_dt2 = 0;
+	_detune2 = 0;
 	_pitch_index = 0;
 	_pitch_index_shift = 0;
 	_update_phase_step((p_value & 2047) << ((p_value >> 11) & 7));
@@ -456,10 +456,10 @@ void SiOPMOperator::set_operator_params(const Ref<SiOPMOperatorParams> &p_params
 
 	set_amplitude_modulation_shift(p_params->get_amplitude_modulation_shift());
 
-	_multiple = p_params->get_fine_multiple();
+	_fine_multiple = p_params->get_fine_multiple();
 	_fm_shift = (p_params->get_frequency_modulation_level() & 7) + 10;
-	_dt1 = p_params->get_detune1() & 7;
-	_pitch_index_shift = p_params->get_detune();
+	_detune1 = p_params->get_detune1() & 7;
+	_pitch_index_shift = p_params->get_detune2();
 
 	_mute = p_params->is_mute() ? SiOPMRefTable::ENV_BOTTOM : 0;
 	_ssg_type_envelope_control = p_params->get_ssg_type_envelope_control();
@@ -494,8 +494,8 @@ void SiOPMOperator::get_operator_params(const Ref<SiOPMOperatorParams> &r_params
 	r_params->set_key_scaling_rate(get_key_scaling_rate());
 	r_params->set_key_scaling_level(_key_scaling_level);
 	r_params->set_fine_multiple(get_fine_multiple());
-	r_params->set_detune1(_dt1);
-	r_params->set_detune(get_detune());
+	r_params->set_detune1(_detune1);
+	r_params->set_detune2(get_ptss_detune());
 	r_params->set_amplitude_modulation_shift(get_amplitude_modulation_shift());
 
 	r_params->set_ssg_type_envelope_control(_ssg_type_envelope_control);
@@ -605,7 +605,7 @@ String SiOPMOperator::_to_string() const {
 
 	params += "keyscale=(" + itos(get_key_scaling_rate()) + ", " + itos(get_key_scaling_level()) + "), ";
 	params += "fmul=" + itos(get_fine_multiple()) + ", ";
-	params += "detune=(" + itos(get_dt1()) + ", " + itos(get_detune()) + "), ";
+	params += "detune=(" + itos(get_detune1()) + ", " + itos(get_ptss_detune()) + "), ";
 
 	params += "amp=" + itos(get_amplitude_modulation_shift()) + ", ";
 	params += "phase=" + itos(get_key_on_phase()) + ", ";

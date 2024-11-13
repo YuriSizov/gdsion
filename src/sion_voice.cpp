@@ -294,8 +294,8 @@ void SiONVoice::set_analog_like(int p_connection_type, int p_wave_shape1, int p_
 	channel_params->get_operator_params(0)->set_total_level(level_table[64 - balance]);
 	channel_params->get_operator_params(1)->set_total_level(level_table[balance + 64]);
 
-	channel_params->get_operator_params(0)->set_detune(0);
-	channel_params->get_operator_params(1)->set_detune(p_pitch_difference);
+	channel_params->get_operator_params(0)->set_detune2(0);
+	channel_params->get_operator_params(1)->set_detune2(p_pitch_difference);
 
 	chip_type = SiONChipType::CHIP_ANALOG_LIKE;
 }
@@ -419,6 +419,6 @@ SiONVoice::SiONVoice(SiONModuleType p_module_type, int p_channel_num, int p_atta
 		channel_params->set_algorithm(p_connection_type <= 2 ? p_connection_type : 0);
 		channel_params->get_operator_params(0)->set_pulse_generator_type(p_channel_num);
 		channel_params->get_operator_params(1)->set_pulse_generator_type(p_wave_shape2);
-		channel_params->get_operator_params(1)->set_detune(p_pitch_shift2);
+		channel_params->get_operator_params(1)->set_detune2(p_pitch_shift2);
 	}
 }

@@ -48,7 +48,7 @@ class TranslatorUtil {
 	struct OperatorParamsSizes {
 		int pg_type = 1;
 		int total_level = 2;
-		int detune = 1;
+		int detune2 = 1;
 		int phase = 1;
 		int fixed_pitch = 1;
 	};

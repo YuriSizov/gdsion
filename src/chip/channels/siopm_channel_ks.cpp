@@ -135,7 +135,7 @@ void SiOPMChannelKS::_apply_karplus_strong(SinglyLinkedList<int>::Element *p_buf
 	SinglyLinkedList<int>::Element *target = p_buffer_start;
 	const int pitch_idx_max = SiOPMRefTable::PITCH_TABLE_SIZE - 1;
 
-	int pitch_idx = _ks_pitch_index + _operators[0]->get_detune() + _pitch_modulation_output_level;
+	int pitch_idx = _ks_pitch_index + _operators[0]->get_ptss_detune() + _pitch_modulation_output_level;
 	pitch_idx = CLAMP(pitch_idx, 0, pitch_idx_max);
 	double wave_length_max = _table->pitch_wave_length[pitch_idx];
 
@@ -148,7 +148,7 @@ void SiOPMChannelKS::_apply_karplus_strong(SinglyLinkedList<int>::Element *p_buf
 			int value_base = _lfo_wave_table[_lfo_phase];
 			_pitch_modulation_output_level = (((value_base << 1) - 255) * _pitch_modulation_depth) >> 8;
 
-			pitch_idx = _ks_pitch_index + _operators[0]->get_detune() + _pitch_modulation_output_level;
+			pitch_idx = _ks_pitch_index + _operators[0]->get_ptss_detune() + _pitch_modulation_output_level;
 			pitch_idx = CLAMP(pitch_idx, 0, pitch_idx_max);
 			wave_length_max = _table->pitch_wave_length[pitch_idx];
 
