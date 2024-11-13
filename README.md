@@ -13,13 +13,13 @@ This project is in the _beta_ phase. This means it's feature complete, but still
 
 The project is compatible with **[Godot 4.3](https://godotengine.org/download/archive/4.3-stable/)**.
 
-### Current release: 0.7-beta4
+### Current release: 0.7-beta5
 
-* **[Download for Linux](https://github.com/YuriSizov/gdsion/releases/download/0.7-beta4/libgdsion-linux.zip)**
-* **[Download for macOS](https://github.com/YuriSizov/gdsion/releases/download/0.7-beta4/libgdsion-macos.zip)**
-* **[Download for Windows](https://github.com/YuriSizov/gdsion/releases/download/0.7-beta4/libgdsion-windows.zip)**
-* **[Download for Web](https://github.com/YuriSizov/gdsion/releases/download/0.7-beta4/libgdsion-web.zip)** (requires _4.3-beta1_ or later)
-* **[Download for Android](https://github.com/YuriSizov/gdsion/releases/download/0.7-beta4/libgdsion-android.zip)**
+* **[Download for Linux](https://github.com/YuriSizov/gdsion/releases/download/0.7-beta5/libgdsion-linux.zip)**
+* **[Download for macOS](https://github.com/YuriSizov/gdsion/releases/download/0.7-beta5/libgdsion-macos.zip)**
+* **[Download for Windows](https://github.com/YuriSizov/gdsion/releases/download/0.7-beta5/libgdsion-windows.zip)**
+* **[Download for Web](https://github.com/YuriSizov/gdsion/releases/download/0.7-beta5/libgdsion-web.zip)** (requires _4.3-beta1_ or later)
+* **[Download for Android](https://github.com/YuriSizov/gdsion/releases/download/0.7-beta5/libgdsion-android.zip)**
 
 _These archives contain both release and debug binaries._
 
