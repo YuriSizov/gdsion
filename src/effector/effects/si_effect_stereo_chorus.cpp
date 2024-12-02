@@ -32,6 +32,10 @@ void SiEffectStereoChorus::set_params(double p_delay_time, double p_feedback, do
 	}
 	_phase_table.resize_zeroed(table_size);
 
+	if (_lfo_phase >= _phase_table.size()) {
+		_lfo_phase = 0;
+	}
+
 	double depth_step = 6.283185307179586 / table_size;
 	double depth_value = 0;
 	for (int i = 0; i < table_size; i++) {
@@ -94,7 +98,7 @@ int SiEffectStereoChorus::process(int p_channels, Vector<double> *r_buffer, int 
 		_process_lfo(r_buffer, i, step);
 
 		_lfo_phase++;
-		if (_lfo_phase == _phase_table.size()) {
+		if (_lfo_phase >= _phase_table.size()) {
 			_lfo_phase = 0;
 		}
 

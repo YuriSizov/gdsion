@@ -44,6 +44,8 @@ const AVAILABLE_FILTERS := [
 var _driver: SiONDriver = null
 var _active_instrument: Instrument = null
 var _active_instrument_index: int = 0
+var _effects: Array[SiEffectBase] = []
+var _active_effect: SiEffectBase = null
 
 var _active_filter_index: int = 0
 var _active_filter_power: int = 0
@@ -65,6 +67,15 @@ func initialize() -> void:
 	_active_instrument = Instrument.new()
 	_update_instrument()
 	instrument_changed.emit()
+
+	_effects.resize(AVAILABLE_FILTERS.size())
+	_effects[0] = SiEffectStereoDelay.new();
+	_effects[1] = SiEffectStereoChorus.new()
+	_effects[2] = SiEffectStereoReverb.new()
+	_effects[3] = SiEffectDistortion.new()
+	_effects[4] = SiFilterLowBoost.new()
+	_effects[5] = SiEffectCompressor.new()
+	_effects[6] = SiControllableFilterHighPass.new()
 
 
 func _update_instrument() -> void:
@@ -89,45 +100,39 @@ func _update_instrument() -> void:
 
 
 func _update_filter() -> void:
-	_driver.get_effector().clear_slot_effects(0)
 	if _active_filter_power <= 5:
+		_active_effect = null
+		_driver.get_effector().clear_slot_effects(0)
 		return
 
-	match _active_filter_index:
-		0:
-			var effect_delay := SiEffectStereoDelay.new()
-			effect_delay.set_params((300.0 * _active_filter_power) / 100.0, 0.1, false)
-			_driver.get_effector().add_slot_effect(0, effect_delay);
+	var next_effect := _effects[_active_filter_index]
+	if next_effect != _active_effect:
+		_active_effect = next_effect
+		_driver.get_effector().clear_slot_effects(0)
+		_driver.get_effector().add_slot_effect(0, _active_effect)
 
-		1:
-			var effect_chorus := SiEffectStereoChorus.new()
-			effect_chorus.set_params(20, 0.2, 4, 10 + ((50.0 * _active_filter_power) / 100.0))
-			_driver.get_effector().add_slot_effect(0, effect_chorus);
+	# Most of the values set here are default values for the corresponding arguments.
 
-		2:
-			var effect_reverb := SiEffectStereoReverb.new()
-			effect_reverb.set_params(0.7, 0.4 + ((0.5 * _active_filter_power) / 100.0), 0.8, 0.3)
-			_driver.get_effector().add_slot_effect(0, effect_reverb);
+	if _active_effect is SiEffectStereoDelay:
+		_active_effect.set_params((300.0 * _active_filter_power) / 100.0, 0.1, false)
 
-		3:
-			var effect_distortion := SiEffectDistortion.new()
-			effect_distortion.set_params(-20 - ((80.0 * _active_filter_power) / 100.0), 18, 2400, 1)
-			_driver.get_effector().add_slot_effect(0, effect_distortion);
+	elif _active_effect is SiEffectStereoChorus:
+		_active_effect.set_params(20, 0.2, 4, 10 + ((50.0 * _active_filter_power) / 100.0))
 
-		4:
-			var effect_lowboost := SiFilterLowBoost.new()
-			effect_lowboost.set_params(3000, 1, 4 + ((6.0 * _active_filter_power) / 100.0))
-			_driver.get_effector().add_slot_effect(0, effect_lowboost);
+	elif _active_effect is SiEffectStereoReverb:
+		_active_effect.set_params(0.7, 0.4 + ((0.5 * _active_filter_power) / 100.0), 0.8, 0.3)
 
-		5:
-			var effect_compressor := SiEffectCompressor.new()
-			effect_compressor.set_params(0.7, 50, 20, 20, -6, 0.2 + ((0.6 * _active_filter_power) / 100.0))
-			_driver.get_effector().add_slot_effect(0, effect_compressor);
+	elif _active_effect is SiEffectDistortion:
+		_active_effect.set_params(-20 - ((80.0 * _active_filter_power) / 100.0), 18, 2400, 1)
 
-		6:
-			var effect_highpass := SiControllableFilterHighPass.new()
-			effect_highpass.set_params_manually(((1.0 * _active_filter_power) / 100.0), 0.9)
-			_driver.get_effector().add_slot_effect(0, effect_highpass);
+	elif _active_effect is SiFilterLowBoost:
+		_active_effect.set_params(3000, 1, 4 + ((6.0 * _active_filter_power) / 100.0))
+
+	elif _active_effect is SiEffectCompressor:
+		_active_effect.set_params(0.7, 50, 20, 20, -6, 0.2 + ((0.6 * _active_filter_power) / 100.0))
+
+	elif _active_effect is SiControllableFilterHighPass:
+		_active_effect.set_params_manually(((1.0 * _active_filter_power) / 100.0), 0.9)
 
 
 # Configuration.
