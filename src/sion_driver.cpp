@@ -39,8 +39,8 @@
 #include "utils/transformer_util.h"
 
 // TODO: Extract somewhere more manageable?
-const char *SiONDriver::VERSION = "0.7.0.0"; // Original code is versioned 0.6.6.0.
-const char *SiONDriver::VERSION_FLAVOR = "beta5";
+const char *SiONDriver::VERSION = "0.7.0.0"; // Original code was last versioned as 0.6.6.0.
+const char *SiONDriver::VERSION_FLAVOR = "beta6";
 
 SiONDriver *SiONDriver::_mutex = nullptr;
 bool SiONDriver::_allow_multiple_drivers = false;
