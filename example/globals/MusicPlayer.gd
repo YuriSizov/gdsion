@@ -198,7 +198,7 @@ func play_tune(mml_string: String) -> void:
 
 
 func start_streaming() -> void:
-	_driver.play(null, false)
+	_driver.stream(false)
 	print("Driver is streaming.")
 
 

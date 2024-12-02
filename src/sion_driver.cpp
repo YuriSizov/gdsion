@@ -599,13 +599,7 @@ int SiONDriver::queue_render(const Variant &p_data, int p_buffer_size, int p_buf
 
 // Playback.
 
-void SiONDriver::play(const Variant &p_data, bool p_reset_effector) {
-	if (_is_paused) { // Just unpause and continue.
-		_is_paused = false;
-		return;
-	}
-
-	stop(); // Stop any existing sound.
+void SiONDriver::_prepare_stream(const Variant &p_data, bool p_reset_effector) {
 	_prepare_process(p_data, p_reset_effector);
 
 	_performance_stats.total_processing_time = 0;
@@ -621,6 +615,16 @@ void SiONDriver::play(const Variant &p_data, bool p_reset_effector) {
 	_audio_playback = _audio_player->get_stream_playback();
 
 	_set_processing_immediate();
+}
+
+void SiONDriver::stream(bool p_reset_effector) {
+	stop();
+	_prepare_stream(nullptr, p_reset_effector);
+}
+
+void SiONDriver::play(const Variant &p_data, bool p_reset_effector) {
+	stop();
+	_prepare_stream(p_data, p_reset_effector);
 }
 
 void SiONDriver::stop() {
@@ -657,7 +661,9 @@ void SiONDriver::reset() {
 }
 
 void SiONDriver::pause() {
-	_is_paused = true;
+	if (_is_streaming) {
+		_is_paused = true;
+	}
 }
 
 void SiONDriver::resume() {
@@ -701,7 +707,7 @@ SiMMLTrack *SiONDriver::_find_or_create_track(int p_track_id, double p_delay, do
 }
 
 SiMMLTrack *SiONDriver::sample_on(int p_sample_number, double p_length, double p_delay, double p_quant, int p_track_id, bool p_disposable) {
-	ERR_FAIL_COND_V_MSG(!_is_streaming, nullptr, "SiONDriver: Driver is not streaming, you must call SiONDriver.play() first.");
+	ERR_FAIL_COND_V_MSG(!_is_streaming, nullptr, "SiONDriver: Driver is not streaming, you must call SiONDriver.stream() first.");
 	ERR_FAIL_COND_V_MSG(p_length < 0, nullptr, "SiONDriver: Sample length cannot be less than zero.");
 
 	int delay_samples = 0;
@@ -717,7 +723,7 @@ SiMMLTrack *SiONDriver::sample_on(int p_sample_number, double p_length, double p
 }
 
 SiMMLTrack *SiONDriver::note_on(int p_note, const Ref<SiONVoice> &p_voice, double p_length, double p_delay, double p_quant, int p_track_id, bool p_disposable) {
-	ERR_FAIL_COND_V_MSG(!_is_streaming, nullptr, "SiONDriver: Driver is not streaming, you must call SiONDriver.play() first.");
+	ERR_FAIL_COND_V_MSG(!_is_streaming, nullptr, "SiONDriver: Driver is not streaming, you must call SiONDriver.stream() first.");
 	ERR_FAIL_COND_V_MSG(p_length < 0, nullptr, "SiONDriver: Note length cannot be less than zero.");
 
 	int delay_samples = 0;
@@ -735,7 +741,7 @@ SiMMLTrack *SiONDriver::note_on(int p_note, const Ref<SiONVoice> &p_voice, doubl
 }
 
 SiMMLTrack *SiONDriver::note_on_with_bend(int p_note, int p_note_to, double p_bend_length, const Ref<SiONVoice> &p_voice, double p_length, double p_delay, double p_quant, int p_track_id, bool p_disposable) {
-	ERR_FAIL_COND_V_MSG(!_is_streaming, nullptr, "SiONDriver: Driver is not streaming, you must call SiONDriver.play() first.");
+	ERR_FAIL_COND_V_MSG(!_is_streaming, nullptr, "SiONDriver: Driver is not streaming, you must call SiONDriver.stream() first.");
 	ERR_FAIL_COND_V_MSG(p_length < 0, nullptr, "SiONDriver: Note length cannot be less than zero.");
 	ERR_FAIL_COND_V_MSG(p_bend_length < 0, nullptr, "SiONDriver: Pitch bending length cannot be less than zero.");
 
@@ -755,7 +761,7 @@ SiMMLTrack *SiONDriver::note_on_with_bend(int p_note, int p_note_to, double p_be
 }
 
 TypedArray<SiMMLTrack> SiONDriver::note_off(int p_note, int p_track_id, double p_delay, double p_quant, bool p_stop_immediately) {
-	ERR_FAIL_COND_V_MSG(!_is_streaming, TypedArray<SiMMLTrack>(), "SiONDriver: Driver is not streaming, you must call SiONDriver.play() first.");
+	ERR_FAIL_COND_V_MSG(!_is_streaming, TypedArray<SiMMLTrack>(), "SiONDriver: Driver is not streaming, you must call SiONDriver.stream() first.");
 	ERR_FAIL_COND_V_MSG(p_delay < 0, TypedArray<SiMMLTrack>(), "SiONDriver: Note off delay cannot be less than zero.");
 
 	int internal_track_id = (p_track_id & SiMMLTrack::TRACK_ID_FILTER) | SiMMLTrack::DRIVER_NOTE;
@@ -1327,11 +1333,15 @@ void SiONDriver::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("render", "data", "buffer_size", "buffer_channel_num", "reset_effector"), &SiONDriver::render, DEFVAL(2), DEFVAL(true));
 	ClassDB::bind_method(D_METHOD("queue_render", "data", "buffer_size", "buffer_channel_num", "reset_effector"), &SiONDriver::queue_render, DEFVAL(2), DEFVAL(false));
 
-	ClassDB::bind_method(D_METHOD("play", "data", "reset_effector"), &SiONDriver::play, DEFVAL(Variant()), DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("stream", "reset_effector"), &SiONDriver::stream, DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("play", "data", "reset_effector"), &SiONDriver::play, DEFVAL(true));
 	ClassDB::bind_method(D_METHOD("stop"), &SiONDriver::stop);
 	ClassDB::bind_method(D_METHOD("reset"), &SiONDriver::reset);
 	ClassDB::bind_method(D_METHOD("pause"), &SiONDriver::pause);
 	ClassDB::bind_method(D_METHOD("resume"), &SiONDriver::resume);
+
+	ClassDB::bind_method(D_METHOD("is_streaming"), &SiONDriver::is_streaming);
+	ClassDB::bind_method(D_METHOD("is_paused"), &SiONDriver::is_paused);
 
 	ClassDB::bind_method(D_METHOD("sample_on", "sample_number", "length", "delay", "quantize", "track_id", "disposable"), &SiONDriver::sample_on, DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(true));
 	ClassDB::bind_method(D_METHOD("note_on", "note", "voice", "length", "delay", "quantize", "track_id", "disposable"), &SiONDriver::note_on, DEFVAL((Object *)nullptr), DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(0), DEFVAL(true));

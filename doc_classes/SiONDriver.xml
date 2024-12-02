@@ -47,7 +47,7 @@
 		<method name="get_audio_playback" qualifiers="const">
 			<return type="AudioStreamGeneratorPlayback" />
 			<description>
-				Returns the internal [AudioStreamGeneratorPlayback] instance. Only available during streaming (after calling [method play]).
+				Returns the internal [AudioStreamGeneratorPlayback] instance. Only available during streaming (see [method stream]).
 			</description>
 		</method>
 		<method name="get_audio_player" qualifiers="const">
@@ -164,9 +164,22 @@
 				Returns the flavor of the current version, e.g. "stable" or "beta1".
 			</description>
 		</method>
+		<method name="is_paused" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns whether the streaming process is paused. See [method pause] and [method resume].
+			</description>
+		</method>
 		<method name="is_queue_executing" qualifiers="const">
 			<return type="bool" />
 			<description>
+				Returns whether the job queue is currently executing jobs.
+			</description>
+		</method>
+		<method name="is_streaming" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns whether the driver is currently streaming (regardless of the paused flag). See [method stream] and [method play].
 			</description>
 		</method>
 		<method name="note_off">
@@ -179,7 +192,7 @@
 			<description>
 				Executes a note off event for all matching tracks (see also [method SiMMLTrack.get_track_id]). Returns affected tracks.
 				[param delay] and [param quantize] must be in 1/16th of a beat.
-				[b]Note:[/b] Streaming must be initialized before this method is called (see [method play]).
+				[b]Note:[/b] Streaming must be initialized before this method is called (see [method stream]).
 			</description>
 		</method>
 		<method name="note_on">
@@ -195,7 +208,7 @@
 				Executes a note on event using the given voice. Returns the affected, or newly created, track (see also [method SiMMLTrack.get_track_id]).
 				If [param length] is set to [code]0[/code], the note will play continuously, according to the voice configuration. It can die off naturally, but it can also continue playing until the [method note_off] method is called explicitly. [param length], [param delay], and [param quantize] must be in 1/16th of a beat.
 				Use [param disposable] to control whether the created track can be freed after being used. Non-disposable tracks must be treated with care as it can lead to performance penalties.
-				[b]Note:[/b] Streaming must be initialized before this method is called (see [method play]).
+				[b]Note:[/b] Streaming must be initialized before this method is called (see [method stream]).
 			</description>
 		</method>
 		<method name="note_on_with_bend">
@@ -218,16 +231,16 @@
 		<method name="pause">
 			<return type="void" />
 			<description>
-				Pauses streaming initialized by [method play].
+				Pauses streaming initialized by [method stream] or [method play].
 			</description>
 		</method>
 		<method name="play">
 			<return type="void" />
-			<param index="0" name="data" type="Variant" default="null" />
+			<param index="0" name="data" type="Variant" />
 			<param index="1" name="reset_effector" type="bool" default="true" />
 			<description>
-				Starts streaming using the data provided, which is played immediately. Stops existing streaming, if it exists (see [method stop]). Does nothing when streaming is paused (see [method pause]).
-				Empty data can be provided to this method to simply initialize streaming without playing anything immediately. See also [method note_on], [method note_off], [method sequence_on], and [method sequence_off].
+				Starts streaming using the data provided, which is played immediately. If the driver is already streaming, it is gracefully stopped first (see [method stop]). Paused streams are terminated as well.
+				To start streaming without any data, call [method stream] instead.
 				[codeblocks]
 				[gdscript]
 					driver.play("t100 l8 [ ccggaag4 ffeeddc4 | [ggffeed4]2 ]2")
@@ -288,7 +301,7 @@
 				Plays the sound for the given sample number. Returns the affected, or newly created, track (see also [method SiMMLTrack.get_track_id]).
 				[param length], [param delay], and [param quantize] must be in 1/16th of a beat.
 				Use [param disposable] to control whether the track can be freed after being used. Making a track non-disposable must be treated with care as it can lead to performance penalties.
-				[b]Note:[/b] Streaming must be initialized before this method is called (see [method play]).
+				[b]Note:[/b] Streaming must be initialized before this method is called (see [method stream]).
 			</description>
 		</method>
 		<method name="sequence_off">
@@ -300,7 +313,7 @@
 			<description>
 				Stops execution of sequences for all matching tracks (see also [method SiMMLTrack.get_track_id]). Returns affected tracks.
 				[param delay] and [param quantize] must be in 1/16th of a beat.
-				[b]Note:[/b] Streaming must be initialized before this method is called (see [method play]).
+				[b]Note:[/b] Streaming must be initialized before this method is called (see [method stream]).
 			</description>
 		</method>
 		<method name="sequence_on">
@@ -316,7 +329,7 @@
 				Executes a sequence, or sequences, provided by the given data and using the given voice. Returns affected, or newly created, tracks (see also [method SiMMLTrack.get_track_id]).
 				[param length], [param delay], and [param quantize] must be in 1/16th of a beat.
 				Use [param disposable] to control whether the created track can be freed after being used. Non-disposable tracks must be treated with care as it can lead to performance penalties.
-				[b]Note:[/b] Streaming must be initialized before this method is called (see [method play]).
+				[b]Note:[/b] Streaming must be initialized before this method is called (see [method stream]).
 			</description>
 		</method>
 		<method name="set_beat_callback_interval">
@@ -364,7 +377,21 @@
 		<method name="stop">
 			<return type="void" />
 			<description>
-				Stops streaming initialized by [method play]. Attempts to stop gracefully if triggered while processing.
+				Stops streaming initialized by [method stream] or [method play]. Attempts to stop gracefully if triggered while processing.
+			</description>
+		</method>
+		<method name="stream">
+			<return type="void" />
+			<param index="0" name="reset_effector" type="bool" default="true" />
+			<description>
+				Starts driver streaming, allowing you to use it in the interactive mode. See [method note_on], [method note_off], [method sequence_on], and [method sequence_off].
+				To immediately play some data, use [method play] instead.
+				[codeblocks]
+				[gdscript]
+					driver.stream()
+					driver.note_on(42, SiONVoice.new(), 4)
+				[/gdscript]
+				[/codeblocks]
 			</description>
 		</method>
 	</methods>
@@ -395,19 +422,19 @@
 		<signal name="fade_in_completed">
 			<param index="0" name="event" type="SiONEvent" />
 			<description>
-				Emitted if the fader is used and after the fading in has finished. This signal is emitted after the [signal streaming] signal. Contains a [SiONDriver] instance, a [SiONData] instance (unless [method play] was called without data), and the streaming buffer as a byte array.
+				Emitted if the fader is used and after the fading in has finished. This signal is emitted after the [signal streaming] signal. Contains a [SiONDriver] instance, a [SiONData] instance (if [method play] was called instead of [method stream]), and the streaming buffer as a byte array.
 			</description>
 		</signal>
 		<signal name="fade_out_completed">
 			<param index="0" name="event" type="SiONEvent" />
 			<description>
-				Emitted if the fader is used and after the fading out has finished. This signal is emitted after the [signal streaming] signal. Contains a [SiONDriver] instance, a [SiONData] instance (unless [method play] was called without data), and the streaming buffer as a byte array.
+				Emitted if the fader is used and after the fading out has finished. This signal is emitted after the [signal streaming] signal. Contains a [SiONDriver] instance, a [SiONData] instance (if [method play] was called instead of [method stream]), and the streaming buffer as a byte array.
 			</description>
 		</signal>
 		<signal name="fading">
 			<param index="0" name="event" type="SiONEvent" />
 			<description>
-				Emitted if the fader is used and while the fading is happening. This signal is emitted after the [signal streaming] signal. Contains a [SiONDriver] instance and a [SiONData] instance (unless [method play] was called without data).
+				Emitted if the fader is used and while the fading is happening. This signal is emitted after the [signal streaming] signal. Contains a [SiONDriver] instance and a [SiONData] instance (if [method play] was called instead of [method stream]).
 			</description>
 		</signal>
 		<signal name="note_off_frame">
@@ -467,19 +494,19 @@
 		<signal name="stream_started">
 			<param index="0" name="event" type="SiONEvent" />
 			<description>
-				Emitted after streaming has started. This signal is emitted before the first [signal streaming] signal. Contains a [SiONDriver] instance and a [SiONData] instance (unless [method play] was called without data).
+				Emitted after streaming has started. This signal is emitted before the first [signal streaming] signal. Contains a [SiONDriver] instance and a [SiONData] instance (if [method play] was called instead of [method stream]).
 			</description>
 		</signal>
 		<signal name="stream_stopped">
 			<param index="0" name="event" type="SiONEvent" />
 			<description>
-				Emitted after streaming has stopped. Contains a [SiONDriver] instance and a [SiONData] instance (unless [method play] was called without data).
+				Emitted after streaming has stopped. Contains a [SiONDriver] instance and a [SiONData] instance (if [method play] was called instead of [method stream]).
 			</description>
 		</signal>
 		<signal name="streaming">
 			<param index="0" name="event" type="SiONEvent" />
 			<description>
-				Emitted during streaming when a portion of the buffer is ready. Contains a [SiONDriver] instance, a [SiONData] instance (unless [method play] was called without data), and the streaming buffer as a byte array.
+				Emitted during streaming when a portion of the buffer is ready. Contains a [SiONDriver] instance, a [SiONData] instance (if [method play] was called instead of [method stream]), and the streaming buffer as a byte array.
 				See also [method set_stream_event_enabled].
 			</description>
 		</signal>

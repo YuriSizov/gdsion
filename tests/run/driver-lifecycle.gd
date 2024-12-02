@@ -26,7 +26,7 @@ func run(scene_tree: SceneTree) -> void:
 	_assert_not_null("driver parent", driver.get_parent())
 	_assert_not_null("audio player",  driver.get_audio_player())
 
-	driver.play()
+	driver.stream()
 	await scene_tree.process_frame
 
 	_assert_equal("on play: audio playing",     driver.get_audio_player().is_playing(), true)

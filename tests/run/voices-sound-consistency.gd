@@ -72,7 +72,7 @@ func _sample_voice(driver: SiONDriver, voice: SiONVoice) -> void:
 	var note_value := 60
 	var note_length := 1 * SAMPLE_LENGTH
 
-	driver.play(null, false)
+	driver.stream(false)
 	driver.streaming.connect(_collect_streamed_data)
 	driver.set_stream_event_enabled(true)
 

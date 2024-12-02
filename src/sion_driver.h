@@ -147,6 +147,7 @@ private:
 
 	void _prepare_compile(String p_mml, const Ref<SiONData> &p_data);
 	void _prepare_render(const Variant &p_data, int p_buffer_size, int p_buffer_channel_num, bool p_reset_effector);
+	void _prepare_stream(const Variant &p_data, bool p_reset_effector);
 	bool _rendering();
 	void _streaming();
 
@@ -359,9 +360,6 @@ public:
 	bool is_notify_change_bpm_on_position_changed() const { return _notify_change_bpm_on_position_changed; }
 	void set_notify_change_bpm_on_position_changed(bool p_enabled) { _notify_change_bpm_on_position_changed = p_enabled; }
 
-	bool is_streaming() const { return _is_streaming; }
-	bool is_paused() const { return _is_paused; }
-
 	double get_streaming_position() const;
 	void set_start_position(double p_value);
 
@@ -380,11 +378,15 @@ public:
 
 	// Playback.
 
-	void play(const Variant &p_data = Variant(), bool p_reset_effector = true);
+	void stream(bool p_reset_effector = true);
+	void play(const Variant &p_data, bool p_reset_effector = true);
 	void stop();
 	void reset();
 	void pause();
 	void resume();
+
+	bool is_streaming() const { return _is_streaming; }
+	bool is_paused() const { return _is_paused; }
 
 	SiMMLTrack *sample_on(int p_sample_number, double p_length = 0, double p_delay = 0, double p_quant = 0, int p_track_id = 0, bool p_disposable = true);
 	SiMMLTrack *note_on(int p_note, const Ref<SiONVoice> &p_voice = Ref<SiONVoice>(), double p_length = 0, double p_delay = 0, double p_quant = 0, int p_track_id = 0, bool p_disposable = true);
