@@ -84,6 +84,7 @@ There are several build options available, allowing you to target a specific pla
 > ```
 > git clone git@github.com:YuriSizov/gdsion.git
 > git submodule init
+> git submodule update
 > ```
 
 ## How can I help the project?
