@@ -41,7 +41,7 @@ codesign --verify "${framework_path}"
 echo "Archiving and notarizing the signed framework..."
 
 ditto -ck "${framework_path}" "${archive_path}"
-xcrun notarytool submit "${archive_path}" --apple-id ${apple_dev_id} --team-id ${apple_dev_team_id} --password ${apple_dev_password} --wait
+xcrun notarytool submit "${archive_path}" --apple-id ${apple_dev_id} --team-id ${apple_dev_team_id} --password ${apple_dev_password} --wait || { exit 1; }
 
 echo "Cleaning up..."
 
