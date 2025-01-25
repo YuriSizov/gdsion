@@ -58,7 +58,7 @@ runs:
       if: ${{ env.SCONS_PLATFORM == 'macos' && inputs.codesign == 'true' }}
       shell: bash
       env:
-        RESOURCES_PATH: '${{ inputs.directory }}/${{ inputs.target-name }}/Resources'
+        RESOURCES_PATH: '${{ inputs.directory }}/${{ inputs.target-name }}.framework/Resources'
       run: |
         mkdir $RESOURCES_PATH
         sed 's/\${FRAMEWORK_NAME}/${{ inputs.target-name }}/g' $GITHUB_ACTION_PATH/macos/Info.plist > $RESOURCES_PATH/Info.plist
@@ -71,5 +71,5 @@ runs:
         APPLE_DEV_APP_ID:   ${{ inputs.apple-dev-app-id }}
         APPLE_DEV_TEAM_ID:  ${{ inputs.apple-dev-team-id }}
         APPLE_DEV_PASSWORD: ${{ inputs.apple-dev-password }}
-        FRAMEWORK_PATH:     ${{ inputs.directory }}/${{ inputs.target-name }}
+        FRAMEWORK_PATH:     ${{ inputs.directory }}/${{ inputs.target-name }}.framework
       run: $GITHUB_ACTION_PATH/macos/sign.sh

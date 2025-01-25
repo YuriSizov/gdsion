@@ -65,7 +65,7 @@ jobs:
         with:
           codesign: true
           directory: bin
-          target-name: libgdsion.macos.template_release.framework
+          target-name: libgdsion.macos.template_release
           apple-dev-id:        ${{ secrets.APPLE_DEV_ID }}
           apple-dev-app-id:    ${{ secrets.APPLE_DEV_APP_ID }}
           apple-dev-team-id:   ${{ secrets.APPLE_DEV_TEAM_ID }}
@@ -77,7 +77,7 @@ jobs:
         with:
           codesign: true
           directory: bin
-          target-name: libgdsion.macos.template_debug.framework
+          target-name: libgdsion.macos.template_debug
           apple-dev-id:        ${{ secrets.APPLE_DEV_ID }}
           apple-dev-app-id:    ${{ secrets.APPLE_DEV_APP_ID }}
           apple-dev-team-id:   ${{ secrets.APPLE_DEV_TEAM_ID }}
