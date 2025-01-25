@@ -166,7 +166,7 @@ func _run_subscript(path: String, arguments: PackedStringArray) -> String:
 
 	var output := []
 	OS.execute(exec_path, exec_args, output, true)
-	var raw_output := output[0]
+	var raw_output: String = output[0]
 
 	# Strip ANSI escape sequences (seem to be injected on macOS specifically).
 	# Roughly based on https://github.com/chalk/ansi-regex. We can't use \u unicode escapes,
