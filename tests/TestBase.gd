@@ -166,9 +166,23 @@ func _run_subscript(path: String, arguments: PackedStringArray) -> String:
 
 	var output := []
 	OS.execute(exec_path, exec_args, output, true)
+	var raw_output := output[0]
+
+	# Strip ANSI escape sequences (seem to be injected on macOS specifically).
+	# Roughly based on https://github.com/chalk/ansi-regex. We can't use \u unicode escapes,
+	# but \x work just as well for our case.
+	var ansi_patterns := [
+		"[\\x1b\\x9b][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?(?:\\x07|\\x1b\\x5c|\\x9c))",
+		"(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))",
+	]
+	var ansi_re := RegEx.new()
+	ansi_re.compile("|".join(ansi_patterns))
+	raw_output = ansi_re.sub(raw_output, "", true)
 
 	# Normalize the EOL sequences.
-	return output[0].replace("\r", "")
+	raw_output = raw_output.replace("\r", "")
+
+	return raw_output
 
 
 func _extract_godot_errors(buffer: String) -> String:
