@@ -18,7 +18,7 @@ runs:
     - name: Build with scons
       shell: bash
       env:
-          SCONSFLAGS: ${{ inputs.sconsflags }}
+          SCONSFLAGS: ${{ inputs.sconsflags }} use_hot_reload=no
           SCONS_CACHE: ${{ github.workspace }}/.scons-cache/
           SCONS_CACHE_LIMIT: 7168
       run: |
