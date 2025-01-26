@@ -2,7 +2,6 @@
 
 compatibility_minimum = "4.3"
 entry_symbol = "gdsion_library_init"
-reloadable = true
 
 [libraries]
 
