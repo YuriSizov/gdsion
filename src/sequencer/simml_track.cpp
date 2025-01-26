@@ -469,7 +469,7 @@ void SiMMLTrack::handle_velocity(int p_value) {
 }
 
 void SiMMLTrack::handle_velocity_shift(int p_value) {
-	set_velocity(_velocity + p_value << _velocity_shift);
+	set_velocity(_velocity + (p_value << _velocity_shift));
 }
 
 // Playback.
