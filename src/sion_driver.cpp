@@ -151,11 +151,11 @@ void SiONDriver::_start_background_sound() {
 
 	// Play sound with fade in.
 	if (_background_sound) {
-		_background_sample = Ref<SiOPMWaveSamplerData>(memnew(SiOPMWaveSamplerData(_background_sound, true, 0, 2, 2)));
-		_background_voice->set_wave_data(_background_sample);
+		Ref<SiOPMWaveSamplerData> background_sample = Ref<SiOPMWaveSamplerData>(memnew(SiOPMWaveSamplerData(_background_sound, true, 0, 2, 2)));
+		_background_voice->set_wave_data(background_sample);
 
 		if (_background_loop_point != -1) {
-			_background_sample->slice(-1, -1, _background_loop_point * 44100);
+			background_sample->slice(-1, -1, _background_loop_point * 44100);
 		}
 
 		_background_track = sequencer->create_controllable_track(SiMMLTrack::DRIVER_BACKGROUND, false);
@@ -165,7 +165,6 @@ void SiONDriver::_start_background_sound() {
 
 		end_frame = _background_total_fade_frames;
 	} else {
-		_background_sample = Ref<SiOPMWaveSamplerData>();
 		_background_voice->set_wave_data(Ref<SiOPMWaveBase>());
 		_background_loop_point = -1;
 		end_frame = _background_fade_out_frames + _background_fade_gap_frames;

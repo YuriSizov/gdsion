@@ -95,7 +95,6 @@ private:
 	double _background_loop_point = -1; // sec
 
 	Ref<SiONVoice> _background_voice;
-	Ref<SiOPMWaveSamplerData> _background_sample;
 	SiMMLTrack *_background_track = nullptr;
 	SiMMLTrack *_background_fade_out_track = nullptr;
 

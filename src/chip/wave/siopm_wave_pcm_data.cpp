@@ -157,6 +157,7 @@ SiOPMWavePCMData::SiOPMWavePCMData(const Variant &p_data, int p_sampling_pitch, 
 	_channel_count = (target_channels == 1 ? 1 : 2);
 
 	Variant::Type data_type = p_data.get_type();
+	// FIXME: This method originally supported Flash Sound objects. It needs to be adapted for Godot's native AudioStream objects.
 	switch (data_type) {
 		case Variant::PACKED_INT32_ARRAY: {
 			// TODO: If someday Vector<T> and Packed*Arrays become friends, this can be simplified.

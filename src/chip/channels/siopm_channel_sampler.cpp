@@ -148,8 +148,8 @@ void SiOPMChannelSampler::buffer(int p_length) {
 				_is_idling = true;
 				if (_sampler_table.is_valid()) {
 					_sample_data = Ref<SiOPMWaveSamplerData>();
-					break;
 				}
+				break;
 			}
 		}
 	}
