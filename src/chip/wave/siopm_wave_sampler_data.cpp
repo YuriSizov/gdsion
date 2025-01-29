@@ -7,14 +7,60 @@
 #include "siopm_wave_sampler_data.h"
 
 #include <godot_cpp/core/error_macros.hpp>
+#include <godot_cpp/classes/audio_stream.hpp>
+
 #include "sion_enums.h"
 #include "templates/singly_linked_list.h"
 #include "utils/transformer_util.h"
 
 using namespace godot;
 
+void SiOPMWaveSamplerData::_prepare_wave_data(const Variant &p_data, int p_src_channel_count, int p_channel_count) {
+	int source_channels = CLAMP(p_src_channel_count, 1, 2);
+	int target_channels = (p_channel_count == 0 ? source_channels : CLAMP(p_channel_count, 1, 2));
+
+	Variant::Type data_type = p_data.get_type();
+	switch (data_type) {
+		case Variant::PACKED_FLOAT32_ARRAY: {
+			// TODO: If someday Vector<T> and Packed*Arrays become friends, this can be simplified.
+			Vector<double> raw_data;
+			for (double value : (PackedFloat32Array)p_data) {
+				raw_data.append(value);
+			}
+
+			_wave_data = TransformerUtil::transform_sampler_data(raw_data, source_channels, target_channels);
+		} break;
+
+		case Variant::OBJECT: {
+			Ref<AudioStream> audio_stream = p_data;
+			if (audio_stream.is_valid()) {
+				Vector<double> raw_data = _extract_wave_data(audio_stream, &source_channels);
+				if (p_channel_count == 0) { // Update if necessary.
+					target_channels = source_channels;
+				}
+
+				_wave_data = TransformerUtil::transform_sampler_data(raw_data, source_channels, target_channels);
+				break;
+			}
+
+			ERR_FAIL_MSG("SiOPMWaveSamplerData: Unsupported data type.");
+		} break;
+
+		case Variant::NIL: {
+			// Nothing to do.
+		} break;
+
+		default: {
+			ERR_FAIL_MSG("SiOPMWaveSamplerData: Unsupported data type.");
+		} break;
+	}
+
+	_channel_count = target_channels;
+	_end_point = get_length();
+}
+
 int SiOPMWaveSamplerData::get_length() const {
-	if (_is_extracted) {
+	if (_channel_count > 0) {
 		return _wave_data.size() >> (_channel_count - 1);
 	}
 
@@ -147,38 +193,8 @@ void SiOPMWaveSamplerData::slice(int p_start_point, int p_end_point, int p_loop_
 
 SiOPMWaveSamplerData::SiOPMWaveSamplerData(const Variant &p_data, int p_ignore_note_off, int p_pan, int p_src_channel_count, int p_channel_count) :
 		SiOPMWaveBase(SiONModuleType::MODULE_SAMPLE) {
-	if (!p_data) {
-		return;
-	}
 
-	int source_channels = (p_src_channel_count == 1 ? 1 : 2);
-	int target_channels = (p_channel_count == 0 ? source_channels : p_channel_count);
-	_channel_count = (target_channels == 1 ? 1 : 2);
-
-	Variant::Type data_type = p_data.get_type();
-	// FIXME: This method originally supported Flash Sound objects. It needs to be adapted for Godot's native AudioStream objects.
-	switch (data_type) {
-		case Variant::PACKED_FLOAT32_ARRAY: {
-			// TODO: If someday Vector<T> and Packed*Arrays become friends, this can be simplified.
-			Vector<double> raw_data;
-			for (double value : (PackedFloat32Array)p_data) {
-				raw_data.append(value);
-			}
-			_wave_data = TransformerUtil::transform_sampler_data(raw_data, source_channels, _channel_count);
-			_is_extracted = true;
-		} break;
-
-		case Variant::NIL: {
-			_wave_data.clear();
-			_is_extracted = false;
-		} break;
-
-		default: {
-			ERR_FAIL_MSG("SiOPMWaveSamplerData: Unsupported data type.");
-		} break;
-	}
-
-	_end_point = get_length();
+	_prepare_wave_data(p_data, p_src_channel_count, p_channel_count);
 	set_ignore_note_off(p_ignore_note_off);
 	_pan = p_pan;
 }

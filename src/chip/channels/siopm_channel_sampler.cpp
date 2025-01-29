@@ -103,7 +103,7 @@ void SiOPMChannelSampler::note_off() {
 }
 
 void SiOPMChannelSampler::buffer(int p_length) {
-	if (_is_idling || _sample_data == nullptr || !_sample_data->is_extracted() || _mute) {
+	if (_is_idling || _sample_data == nullptr || _sample_data->get_length() <= 0 || _mute) {
 		buffer_no_process(p_length);
 		return;
 	}

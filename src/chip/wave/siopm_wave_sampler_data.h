@@ -22,7 +22,7 @@ class SiOPMWaveSamplerData : public SiOPMWaveBase {
 	// This flag is only available for non-loop samples.
 	bool _ignore_note_off = false;
 
-	bool _is_extracted = false;
+	void _prepare_wave_data(const Variant &p_data, int p_src_channel_count, int p_channel_count);
 
 	//
 
@@ -31,7 +31,7 @@ class SiOPMWaveSamplerData : public SiOPMWaveBase {
 	int _end_point = 0;
 	int _loop_point = -1; // -1 means no looping.
 
-	// Seek MP3 head and end gaps.
+	// Seek head and end gaps in the sample.
 	int _seek_head_silence();
 	int _seek_end_gap();
 	void _slice();
@@ -47,8 +47,6 @@ public:
 
 	bool is_ignoring_note_off() const { return _ignore_note_off; }
 	void set_ignore_note_off(bool p_ignore);
-
-	bool is_extracted() const { return _is_extracted; }
 
 	//
 

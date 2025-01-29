@@ -7,6 +7,8 @@
 #include "siopm_wave_pcm_data.h"
 
 #include <godot_cpp/core/math.hpp>
+#include <godot_cpp/classes/audio_stream.hpp>
+
 #include "sion_enums.h"
 #include "chip/siopm_ref_table.h"
 #include "utils/transformer_util.h"
@@ -15,12 +17,63 @@ using namespace godot;
 
 Vector<double> SiOPMWavePCMData::_sin_table;
 
-int SiOPMWavePCMData::get_sample_count() const {
-	if (_wavelet.is_empty()) {
-		return 0;
+void SiOPMWavePCMData::_prepare_wavelet(const Variant &p_data, int p_src_channel_count, int p_channel_count) {
+	int source_channels = CLAMP(p_src_channel_count, 1, 2);
+	int target_channels = (p_channel_count == 0 ? source_channels : CLAMP(p_channel_count, 1, 2));
+
+	Variant::Type data_type = p_data.get_type();
+	switch (data_type) {
+		case Variant::PACKED_INT32_ARRAY: {
+			// TODO: If someday Vector<T> and Packed*Arrays become friends, this can be simplified.
+			for (int value : (PackedInt32Array)p_data) {
+				_wavelet.append(value);
+			}
+		} break;
+
+		case Variant::PACKED_FLOAT32_ARRAY: {
+			// TODO: If someday Vector<T> and Packed*Arrays become friends, this can be simplified.
+			Vector<double> raw_data;
+			for (double value : (PackedFloat32Array)p_data) {
+				raw_data.append(value);
+			}
+
+			_wavelet = TransformerUtil::transform_pcm_data(raw_data, source_channels, target_channels);
+		} break;
+
+		case Variant::OBJECT: {
+			Ref<AudioStream> audio_stream = p_data;
+			if (audio_stream.is_valid()) {
+				Vector<double> raw_data = _extract_wave_data(audio_stream, &source_channels);
+				if (p_channel_count == 0) { // Update if necessary.
+					target_channels = source_channels;
+				}
+
+				_wavelet = TransformerUtil::transform_pcm_data(raw_data, source_channels, target_channels);
+				break;
+			}
+
+			ERR_FAIL_MSG("SiOPMWavePCMData: Unsupported data type.");
+		} break;
+
+		case Variant::NIL: {
+			// Nothing to do.
+		} break;
+
+		default: {
+			ERR_FAIL_MSG("SiOPMWavePCMData: Unsupported data type.");
+		} break;
 	}
 
-	return _wavelet.size() >> (_channel_count - 1);
+	_channel_count = target_channels;
+	_end_point = get_sample_count() - 1;
+}
+
+int SiOPMWavePCMData::get_sample_count() const {
+	if (_channel_count > 0) {
+		return _wavelet.size() >> (_channel_count - 1);
+	}
+
+	return 0;
 }
 
 int SiOPMWavePCMData::get_sampling_octave() const {
@@ -148,42 +201,7 @@ void SiOPMWavePCMData::loop_tail_samples(int p_sample_count, int p_tail_margin, 
 
 SiOPMWavePCMData::SiOPMWavePCMData(const Variant &p_data, int p_sampling_pitch, int p_src_channel_count, int p_channel_count) :
 		SiOPMWaveBase(SiONModuleType::MODULE_PCM) {
-	if (!p_data) {
-		return;
-	}
 
-	int source_channels = (p_src_channel_count == 1 ? 1 : 2);
-	int target_channels = (p_channel_count == 0 ? source_channels : p_channel_count);
-	_channel_count = (target_channels == 1 ? 1 : 2);
-
-	Variant::Type data_type = p_data.get_type();
-	// FIXME: This method originally supported Flash Sound objects. It needs to be adapted for Godot's native AudioStream objects.
-	switch (data_type) {
-		case Variant::PACKED_INT32_ARRAY: {
-			// TODO: If someday Vector<T> and Packed*Arrays become friends, this can be simplified.
-			for (int value : (PackedInt32Array)p_data) {
-				_wavelet.append(value);
-			}
-		} break;
-
-		case Variant::PACKED_FLOAT32_ARRAY: {
-			// TODO: If someday Vector<T> and Packed*Arrays become friends, this can be simplified.
-			Vector<double> raw_data;
-			for (double value : (PackedFloat32Array)p_data) {
-				raw_data.append(value);
-			}
-			_wavelet = TransformerUtil::transform_pcm_data(raw_data, source_channels, _channel_count);
-		} break;
-
-		case Variant::NIL: {
-			_wavelet.clear();
-		} break;
-
-		default: {
-			ERR_FAIL_MSG("SiOPMWavePCMData: Unsupported data type.");
-		} break;
-	}
-
+	_prepare_wavelet(p_data, p_src_channel_count, p_channel_count);
 	_sampling_pitch = p_sampling_pitch;
-	_end_point = get_sample_count() - 1;
 }

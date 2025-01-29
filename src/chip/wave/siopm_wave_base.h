@@ -8,13 +8,11 @@
 #define SIOPM_WAVE_BASE_H
 
 #include <godot_cpp/classes/ref_counted.hpp>
+#include <godot_cpp/classes/audio_stream.hpp>
+#include <godot_cpp/templates/vector.hpp>
 #include "sion_enums.h"
 
 using namespace godot;
-
-// Note that original classes also support Flash's native Sound objects.
-// This is naturally not relevant here, but it may make sense to support Godot's
-// native audio stream objects.
 
 class SiOPMWaveBase : public RefCounted {
 	GDCLASS(SiOPMWaveBase, RefCounted)
@@ -23,6 +21,8 @@ class SiOPMWaveBase : public RefCounted {
 
 protected:
 	static void _bind_methods() {}
+
+	Vector<double> _extract_wave_data(const Ref<AudioStream> &p_stream, int *r_channel_count);
 
 public:
 	SiONModuleType get_module_type() const { return _module_type; }

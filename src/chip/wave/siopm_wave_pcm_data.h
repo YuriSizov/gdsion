@@ -22,12 +22,16 @@ class SiOPMWavePCMData : public SiOPMWaveBase {
 	int _channel_count = 0;
 	int _sampling_pitch = 0;
 
+	void _prepare_wavelet(const Variant &p_data, int p_src_channel_count, int p_channel_count);
+
+	//
+
 	// Wave positions in the sample count.
 	int _start_point = 0;
 	int _end_point = 0;
 	int _loop_point = -1; // -1 means no looping.
 
-	// Seek MP3 head and end gaps.
+	// Seek head and end gaps in the sample.
 	int _seek_head_silence();
 	int _seek_end_gap();
 	void _slice();
