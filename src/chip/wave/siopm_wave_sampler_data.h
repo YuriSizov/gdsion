@@ -59,7 +59,7 @@ public:
 
 	//
 
-	SiOPMWaveSamplerData(const Variant &p_data = Variant(), int p_ignore_note_off = false, int p_pan = 0, int p_src_channel_count = 2, int p_channel_count = 0);
+	SiOPMWaveSamplerData(const Variant &p_data = Variant(), bool p_ignore_note_off = false, int p_pan = 0, int p_src_channel_count = 2, int p_channel_count = 0);
 	~SiOPMWaveSamplerData() {}
 };
 

@@ -7,6 +7,7 @@
 #ifndef SION_DRIVER_H
 #define SION_DRIVER_H
 
+#include <godot_cpp/classes/audio_stream.hpp>
 #include <godot_cpp/classes/audio_stream_generator.hpp>
 #include <godot_cpp/classes/audio_stream_generator_playback.hpp>
 #include <godot_cpp/classes/audio_stream_player.hpp>
@@ -15,7 +16,9 @@
 #include <godot_cpp/templates/list.hpp>
 #include <godot_cpp/templates/vector.hpp>
 #include <godot_cpp/variant/typed_array.hpp>
+
 #include "sion_voice.h"
+#include "chip/wave/siopm_wave_sampler_data.h"
 #include "events/sion_event.h"
 #include "events/sion_track_event.h"
 #include "sequencer/base/mml_data.h"
@@ -91,8 +94,9 @@ private:
 
 	// Background sound.
 
-	Object *_background_sound = nullptr;
-	double _background_loop_point = -1; // sec
+	Ref<AudioStream> _background_sample;
+	Ref<SiOPMWaveSamplerData> _background_sample_data;
+	double _background_loop_point = -1; // In seconds.
 
 	Ref<SiONVoice> _background_voice;
 	SiMMLTrack *_background_track = nullptr;
@@ -105,8 +109,8 @@ private:
 
 	FaderUtil *_background_fader = nullptr;
 
-	void _set_background_sound(Object *p_sound);
-	void _start_background_sound();
+	void _set_background_sample(const Ref<AudioStream> &p_sound);
+	void _start_background_sample();
 	void _fade_background_callback(double p_value);
 
 	// Sound and output properties.
@@ -319,18 +323,21 @@ public:
 
 	// Background sound.
 
-	Object *get_background_sound() const { return _background_sound; }
-	void set_background_sound(Object *p_sound, double p_mix_level = 0.5, double p_loop_point = -1);
-	void clear_background_sound();
-	SiMMLTrack *get_background_sound_track() const { return _background_track; }
+	Ref<AudioStream> get_background_sample() const { return _background_sample; }
+	void set_background_sample(const Ref<AudioStream> &p_sound, double p_mix_level = 0.5, double p_loop_point = -1);
+	void clear_background_sample();
+	Ref<SiOPMWaveSamplerData> get_background_sample_data() const { return _background_sample_data; }
+	SiMMLTrack *get_background_sample_track() const { return _background_track; }
 
-	double get_background_sound_fade_out_time() const;
-	double get_background_sound_fade_in_time() const;
-	double get_background_sound_fade_gap_time() const;
-	void set_background_sound_fade_times(double p_fade_in_time, double p_fade_out_time, double p_gap_time);
+	double get_background_sample_fade_out_time() const;
+	void set_background_sample_fade_out_time(double p_time);
+	double get_background_sample_fade_in_time() const;
+	void set_background_sample_fade_in_times(double p_time);
+	double get_background_sample_fade_gap_time() const;
+	void set_background_sample_fade_gap_time(double p_time);
 
-	double get_background_sound_volume() const;
-	void set_background_sound_volume(double p_value);
+	double get_background_sample_volume() const;
+	void set_background_sample_volume(double p_value);
 
 	// Sound and output properties.
 

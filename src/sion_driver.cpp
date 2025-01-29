@@ -114,22 +114,27 @@ void SiONDriver::notify_user_defined_track(int p_event_trigger_id, int p_note) {
 
 // Background sound.
 
-void SiONDriver::_set_background_sound(Object *p_sound) {
-	// FIXME: NOT IMPLEMENTED.
-	// This method only supports native Flash Sound object and needs to be remade.
+void SiONDriver::_set_background_sample(const Ref<AudioStream> &p_sound) {
+	_background_sample = p_sound;
+	_background_sample_data = Ref<SiOPMWaveSamplerData>(memnew(SiOPMWaveSamplerData(_background_sample, true)));
+
+	if (_is_streaming) {
+		_start_background_sample();
+	}
 }
 
-void SiONDriver::set_background_sound(Object *p_sound, double p_mix_level, double p_loop_point) {
-	set_background_sound_volume(p_mix_level);
+void SiONDriver::set_background_sample(const Ref<AudioStream> &p_sound, double p_mix_level, double p_loop_point) {
+	set_background_sample_volume(p_mix_level);
 	_background_loop_point = p_loop_point;
-	_set_background_sound(p_sound);
+	_set_background_sample(p_sound);
 }
 
-void SiONDriver::clear_background_sound() {
-	_set_background_sound(nullptr);
+void SiONDriver::clear_background_sample() {
+	_background_loop_point = -1;
+	_set_background_sample(nullptr);
 }
 
-void SiONDriver::_start_background_sound() {
+void SiONDriver::_start_background_sample() {
 	int start_frame = 0;
 	int end_frame = 0;
 
@@ -150,12 +155,10 @@ void SiONDriver::_start_background_sound() {
 	}
 
 	// Play sound with fade in.
-	if (_background_sound) {
-		Ref<SiOPMWaveSamplerData> background_sample = Ref<SiOPMWaveSamplerData>(memnew(SiOPMWaveSamplerData(_background_sound, true, 0, 2, 2)));
-		_background_voice->set_wave_data(background_sample);
-
+	if (_background_sample_data.is_valid()) {
+		_background_voice->set_wave_data(_background_sample_data);
 		if (_background_loop_point != -1) {
-			background_sample->slice(-1, -1, _background_loop_point * 44100);
+			_background_sample_data->slice(-1, -1, _background_loop_point * 44100);
 		}
 
 		_background_track = sequencer->create_controllable_track(SiMMLTrack::DRIVER_BACKGROUND, false);
@@ -214,32 +217,44 @@ void SiONDriver::_fade_background_callback(double p_value) {
 	}
 }
 
-double SiONDriver::get_background_sound_fade_out_time() const {
+double SiONDriver::get_background_sample_fade_out_time() const {
 	return _background_fade_out_frames * _buffer_length / _sample_rate;
 }
 
-double SiONDriver::get_background_sound_fade_in_time() const {
-	return _background_fade_in_frames * _buffer_length / _sample_rate;
-}
-
-double SiONDriver::get_background_sound_fade_gap_time() const {
-	return _background_fade_gap_frames * _buffer_length / _sample_rate;
-}
-
-void SiONDriver::set_background_sound_fade_times(double p_fade_in_time, double p_fade_out_time, double p_gap_time) {
+void SiONDriver::set_background_sample_fade_out_time(double p_time) {
 	double ratio = _sample_rate / _buffer_length;
 
-	_background_fade_in_frames  = p_fade_in_time  * ratio;
-	_background_fade_out_frames = p_fade_out_time * ratio;
-	_background_fade_gap_frames = p_gap_time     * ratio;
+	_background_fade_out_frames = p_time * ratio;
 	_background_total_fade_frames = _background_fade_out_frames + _background_fade_in_frames + _background_fade_gap_frames;
 }
 
-double SiONDriver::get_background_sound_volume() const {
+double SiONDriver::get_background_sample_fade_in_time() const {
+	return _background_fade_in_frames * _buffer_length / _sample_rate;
+}
+
+void SiONDriver::set_background_sample_fade_in_times(double p_time) {
+	double ratio = _sample_rate / _buffer_length;
+
+	_background_fade_in_frames = p_time * ratio;
+	_background_total_fade_frames = _background_fade_out_frames + _background_fade_in_frames + _background_fade_gap_frames;
+}
+
+double SiONDriver::get_background_sample_fade_gap_time() const {
+	return _background_fade_gap_frames * _buffer_length / _sample_rate;
+}
+
+void SiONDriver::set_background_sample_fade_gap_time(double p_time) {
+	double ratio = _sample_rate / _buffer_length;
+
+	_background_fade_gap_frames = p_time * ratio;
+	_background_total_fade_frames = _background_fade_out_frames + _background_fade_in_frames + _background_fade_gap_frames;
+}
+
+double SiONDriver::get_background_sample_volume() const {
 	return _background_voice->get_channel_params()->get_master_volume(0);
 }
 
-void SiONDriver::set_background_sound_volume(double p_value) {
+void SiONDriver::set_background_sample_volume(double p_value) {
 	_background_voice->get_channel_params()->set_master_volume(0, p_value);
 	if (_background_track) {
 		_background_track->set_master_volume(p_value * 128);
@@ -640,7 +655,7 @@ void SiONDriver::stop() {
 	_is_streaming = false;
 
 	clear_data(); // Original SiON doesn't do that, but that seems like an oversight.
-	clear_background_sound();
+	clear_background_sample();
 	_clear_processing();
 
 	_fader->stop();
@@ -930,8 +945,8 @@ void SiONDriver::_prepare_process(const Variant &p_data, bool p_reset_effector) 
 		sequencer->process_dummy(_start_position * _sample_rate * 0.001);
 	}
 
-	if (_background_sound) {
-		_start_background_sound();
+	if (_background_sample_data.is_valid()) {
+		_start_background_sample();
 	}
 
 	if (_timer_interval_event->get_length() > 0) {
