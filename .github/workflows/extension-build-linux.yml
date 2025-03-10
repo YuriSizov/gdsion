@@ -15,7 +15,7 @@ concurrency:
 jobs:
   build:
     name: Compile and upload Linux version
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       GIT_BASE_REF: ${{ inputs.git-base-ref }}
       SCONS_PLATFORM: linux

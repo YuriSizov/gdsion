@@ -12,7 +12,7 @@ env:
   GODOT_VERSION: "4.3.0-stable"
 
 jobs:
-  export-publish:
+  run-tests:
     strategy:
       fail-fast: false
       matrix:
@@ -20,7 +20,7 @@ jobs:
           - platform: linux
             arch: x86_64
             preset: "Linux - x86_64"
-            runs-on: ubuntu-latest
+            runs-on: ubuntu-22.04
 
           - platform: macos
             arch: universal
