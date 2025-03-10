@@ -116,7 +116,11 @@ void SiONDriver::notify_user_defined_track(int p_event_trigger_id, int p_note) {
 
 void SiONDriver::_set_background_sample(const Ref<AudioStream> &p_sound) {
 	_background_sample = p_sound;
-	_background_sample_data = Ref<SiOPMWaveSamplerData>(memnew(SiOPMWaveSamplerData(_background_sample, true)));
+	if (_background_sample.is_valid()) {
+		_background_sample_data = Ref<SiOPMWaveSamplerData>(memnew(SiOPMWaveSamplerData(_background_sample, true)));
+	} else {
+		_background_sample_data = Ref<SiOPMWaveSamplerData>();
+	}
 
 	if (_is_streaming) {
 		_start_background_sample();
