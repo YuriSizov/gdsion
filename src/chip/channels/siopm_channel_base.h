@@ -82,6 +82,8 @@ protected:
 
 	// Pipe buffer.
 
+	int _clamp_buffer_index(int p_buffer_index) const;
+
 	int _buffer_index = 0;
 	int _input_level = 0;
 	double _ringmod_level = 0;

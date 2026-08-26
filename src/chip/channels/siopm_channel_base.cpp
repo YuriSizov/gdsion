@@ -281,6 +281,19 @@ void SiOPMChannelBase::reset_channel_buffer_status() {
 	_buffer_index = 0;
 }
 
+// A buffer index is a position inside the frame being rendered, and once a frame has been rendered every
+// channel's index sits at the end of the buffer, one past its last sample. A channel initialized with such an
+// index, which is what happens when a track that is already sounding is given a new voice, then asks for a
+// pipe that is out of range, gets a null back, and dereferences it while buffering. Start those channels at
+// the beginning of the buffer instead, which is where the next frame is going to be written anyway.
+int SiOPMChannelBase::_clamp_buffer_index(int p_buffer_index) const {
+	if (unlikely(p_buffer_index < 0 || p_buffer_index >= _sound_chip->get_buffer_length())) {
+		return 0;
+	}
+
+	return p_buffer_index;
+}
+
 void SiOPMChannelBase::_apply_ring_modulation(SinglyLinkedList<int>::Element *p_buffer_start, int p_length) {
 	SinglyLinkedList<int>::Element *target = p_buffer_start;
 
@@ -420,7 +433,7 @@ void SiOPMChannelBase::initialize(SiOPMChannelBase *p_prev, int p_buffer_index) 
 	// Buffer index.
 	_is_note_on = false;
 	_is_idling = true;
-	_buffer_index = p_buffer_index;
+	_buffer_index = _clamp_buffer_index(p_buffer_index);
 
 	// LFO.
 	initialize_lfo(SiOPMRefTable::LFO_WAVE_TRIANGLE);
