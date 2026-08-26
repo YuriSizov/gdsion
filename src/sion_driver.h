@@ -439,4 +439,6 @@ public:
 	~SiONDriver();
 };
 
+VARIANT_ENUM_CAST(SiONDriver::ExceptionMode);
+
 #endif // SION_DRIVER_H

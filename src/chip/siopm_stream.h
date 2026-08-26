@@ -17,6 +17,8 @@ class SiOPMStream {
 	int channels = 2;
 	Vector<double> buffer;
 
+	int _clamp_write_length(int p_offset, int p_length) const;
+
 public:
 	int get_channel_count() const { return channels; }
 	void set_channel_count(int p_value) { channels = p_value; }

@@ -564,7 +564,7 @@ void SiOPMChannelPCM::initialize(SiOPMChannelBase *p_prev, int p_buffer_index) {
 	_operator->initialize();
 
 	_is_note_on = false;
-	_out_pipe2 = _sound_chip->get_pipe(3, p_buffer_index);
+	_out_pipe2 = _sound_chip->get_pipe(3, _clamp_buffer_index(p_buffer_index));
 
 	_filter_variables2[0] = 0;
 	_filter_variables2[1] = 0;

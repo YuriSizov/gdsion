@@ -706,6 +706,10 @@ SiMMLTrack *SiONDriver::_find_or_create_track(int p_track_id, double p_delay, do
 		}
 		if (track && _note_on_exception_mode == NEM_SHIFT) {
 			int step = sequencer->calculate_sample_length(p_quant);
+			// Without a quantization value there is no step to shift the note by, and the loop below would
+			// look for a free slot forever.
+			ERR_FAIL_COND_V_MSG(step <= 0, nullptr, "SiONDriver: Cannot shift a conflicting note on without a quantization value, pass a non-zero quant.");
+
 			while (track) {
 				delay_samples += step;
 				track = sequencer->find_active_track(internal_track_id, delay_samples);
@@ -1321,6 +1325,11 @@ void SiONDriver::_bind_methods() {
 
 	ClassDB::add_property("SiONDriver", PropertyInfo(Variant::INT, "max_track_count"), "set_max_track_count", "get_max_track_count");
 
+	ClassDB::bind_method(D_METHOD("get_note_on_exception_mode"), &SiONDriver::get_note_on_exception_mode);
+	ClassDB::bind_method(D_METHOD("set_note_on_exception_mode", "mode"), &SiONDriver::set_note_on_exception_mode);
+
+	ClassDB::add_property("SiONDriver", PropertyInfo(Variant::INT, "note_on_exception_mode", PROPERTY_HINT_ENUM, "Ignore,Reject,Overwrite,Shift"), "set_note_on_exception_mode", "get_note_on_exception_mode");
+
 	ClassDB::bind_method(D_METHOD("get_buffer_length"), &SiONDriver::get_buffer_length);
 	ClassDB::bind_method(D_METHOD("get_channel_num"), &SiONDriver::get_channel_num);
 	ClassDB::bind_method(D_METHOD("get_sample_rate"), &SiONDriver::get_sample_rate);
@@ -1412,6 +1421,12 @@ void SiONDriver::_bind_methods() {
 	ADD_SIGNAL(MethodInfo(SiONTrackEvent::USER_DEFINED, PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "SiONTrackEvent")));
 
 	//
+
+	BIND_ENUM_CONSTANT(NEM_IGNORE);
+	BIND_ENUM_CONSTANT(NEM_REJECT);
+	BIND_ENUM_CONSTANT(NEM_OVERWRITE);
+	BIND_ENUM_CONSTANT(NEM_SHIFT);
+	BIND_ENUM_CONSTANT(NEM_MAX);
 
 	BIND_ENUM_CONSTANT(CHIP_AUTO);
 	BIND_ENUM_CONSTANT(CHIP_SIOPM);
