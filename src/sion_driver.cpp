@@ -729,7 +729,7 @@ SiMMLTrack *SiONDriver::sample_on(int p_sample_number, double p_length, double p
 	ERR_FAIL_COND_V_MSG(p_length < 0, nullptr, "SiONDriver: Sample length cannot be less than zero.");
 
 	int delay_samples = 0;
-	SiMMLTrack *track = _find_or_create_track(p_delay, p_quant, p_track_id, p_disposable, &delay_samples);
+	SiMMLTrack *track = _find_or_create_track(p_track_id, p_delay, p_quant, p_disposable, &delay_samples);
 	if (!track) {
 		return nullptr;
 	}
@@ -745,7 +745,7 @@ SiMMLTrack *SiONDriver::note_on(int p_note, const Ref<SiONVoice> &p_voice, doubl
 	ERR_FAIL_COND_V_MSG(p_length < 0, nullptr, "SiONDriver: Note length cannot be less than zero.");
 
 	int delay_samples = 0;
-	SiMMLTrack *track = _find_or_create_track(p_delay, p_quant, p_track_id, p_disposable, &delay_samples);
+	SiMMLTrack *track = _find_or_create_track(p_track_id, p_delay, p_quant, p_disposable, &delay_samples);
 	if (!track) {
 		return nullptr;
 	}
@@ -764,7 +764,7 @@ SiMMLTrack *SiONDriver::note_on_with_bend(int p_note, int p_note_to, double p_be
 	ERR_FAIL_COND_V_MSG(p_bend_length < 0, nullptr, "SiONDriver: Pitch bending length cannot be less than zero.");
 
 	int delay_samples = 0;
-	SiMMLTrack *track = _find_or_create_track(p_delay, p_quant, p_track_id, p_disposable, &delay_samples);
+	SiMMLTrack *track = _find_or_create_track(p_track_id, p_delay, p_quant, p_disposable, &delay_samples);
 	if (!track) {
 		return nullptr;
 	}
