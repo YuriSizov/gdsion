@@ -61,7 +61,7 @@ func _init(controller: Node) -> void:
 # Initialization.
 
 func initialize() -> void:
-	_driver.set_timer_interval(1)
+	# _driver.set_timer_interval(1)  # commented out to allow tempo changes mid-song
 	_driver.set_bpm(Controller.bpm)
 
 	_active_instrument = Instrument.new()
